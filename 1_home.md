@@ -1,6 +1,6 @@
 <div style="width: 100%; text-align: center;">
 <div style="background: #8b7da7;">
-  <p style="background: #20a5de; font-weight: 300; color: #fff; padding: 15px 0; font-size: 20px;"><span style="font-weight: 400;">Start Date:</span> 1/17/18 | <span style="font-weight: 400;">End Date: 1/31/18</span> TBD</p>
+  <p style="background: #20a5de; font-weight: 300; color: #fff; padding: 15px 0; font-size: 20px;"><span style="font-weight: 400;">Start Date:</span> 1/17/18 | <span style="font-weight: 400;"></span> End Date: 1/31/18</p>
 </div>
 <h1 style="padding: 30px 0 15px; font-weight:500; text-transform: uppercase; margin-bottom: 0; font-weight: 600;">WELCOME TO YOUR LOOKER TRIAL</h1>
 
