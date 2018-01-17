@@ -9,6 +9,6 @@ include: "*.dashboard.lookml"  # include all dashboards in this project
 explore: visits {
   join: markets {
     relationship: many_to_one
-    sql_on: ${visits.market_dim_id} = ${markets.id} ;;
+    sql_on: ${markets.id} = ${visits.market_dim_id} ;;
   }
 }
