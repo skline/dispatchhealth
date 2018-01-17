@@ -14,4 +14,30 @@ explore: visit_facts {
     relationship: many_to_one
     sql_on: ${market_dimensions.id} = ${visit_facts.market_dim_id} ;;
   }
+
+  join: channel_dimensions {
+    relationship: many_to_one
+    sql_on: ${channel_dimensions.id} = ${visit_facts.channel_dim_id} ;;
+  }
+
+  join: request_type_dimensions {
+    relationship: many_to_one
+    sql_on: ${request_type_dimensions.id} = ${visit_facts.request_type_dim_id} ;;
+  }
+
+  join: visit_dimensions {
+    relationship: many_to_one
+    sql_on: ${visit_dimensions.visit_number} = ${visit_facts.visit_dim_number} ;;
+  }
+
+  join: car_dimensions {
+    relationship: many_to_one
+    sql_on: ${car_dimensions.id} = ${visit_facts.car_dim_id} ;;
+  }
+
+  join: provider_dimensions {
+    relationship: many_to_one
+    sql_on: ${provider_dimensions.id} = ${visit_facts.provider_dim_id} ;;
+  }
+
 }
