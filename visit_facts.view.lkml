@@ -100,6 +100,7 @@ view: visit_facts {
   }
 
   dimension: latitude {
+    hidden: yes
     type: number
     sql: ${TABLE}.latitude ;;
   }
@@ -189,7 +190,14 @@ view: visit_facts {
     sql: ${TABLE}.location_dim_id ;;
   }
 
+  dimension: visit_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
+  }
+
   dimension: longitude {
+    hidden: yes
     type: number
     sql: ${TABLE}.longitude ;;
   }
@@ -311,6 +319,11 @@ view: visit_facts {
     sql: ${TABLE}.seconds_on_scene ;;
   }
 
+  dimension: hours_on_scene {
+    type: number
+    sql: 1.0 * ${seconds_on_scene} / 3600 ;;
+  }
+
   dimension: total_acct_receivable_payments {
     type: number
     sql: ${TABLE}.total_acct_receivable_payments ;;
@@ -367,7 +380,7 @@ view: visit_facts {
 
   measure: count {
     type: count
-    drill_fields: [id]
+    drill_fields: [details*]
   }
 
   measure: count_of_billable_visits {
@@ -376,6 +389,18 @@ view: visit_facts {
       field: billable_visit
       value: "yes"
     }
+
+    drill_fields: [details*]
+  }
+
+  measure: average_on_scene_time {
+    type: average
+    sql: ${seconds_on_scene} ;;
+    drill_fields: [details*]
+  }
+
+  set: details {
+    fields: [id, seconds_on_scene, total_charge]
   }
 
 }

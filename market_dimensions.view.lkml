@@ -33,13 +33,21 @@ view: market_dimensions {
   }
 
   dimension: market_lat {
+    hidden: yes
     type: number
     sql: ${TABLE}.market_lat ;;
   }
 
   dimension: market_long {
+    hidden: yes
     type: number
     sql: ${TABLE}.market_long ;;
+  }
+
+  dimension: market_location {
+    type: location
+    sql_latitude: ${market_lat} ;;
+    sql_longitude: ${market_long} ;;
   }
 
   dimension: market_name {
