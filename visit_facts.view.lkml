@@ -395,12 +395,13 @@ view: visit_facts {
 
   measure: average_on_scene_time {
     type: average
-    sql: ${seconds_on_scene} ;;
+    sql: ${hours_on_scene} ;;
     drill_fields: [details*]
+    value_format_name: decimal_2
   }
 
   set: details {
-    fields: [id, seconds_on_scene, total_charge]
+    fields: [id, hours_on_scene, total_charge]
   }
 
 }
