@@ -12,6 +12,11 @@ view: car_dimensions {
     sql: ${TABLE}.car_name ;;
   }
 
+  dimension: smfr_car {
+    type: yesno
+    sql: ${car_name} LIKE "%SMFR" ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [
