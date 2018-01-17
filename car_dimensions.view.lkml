@@ -14,7 +14,7 @@ view: car_dimensions {
 
   dimension: smfr_car {
     type: yesno
-    sql: ${car_name} LIKE "%SMFR" ;;
+    sql: ${car_name} = "SMFR_Car" ;;
   }
 
   dimension_group: created {
