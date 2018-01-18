@@ -17,6 +17,11 @@ view: car_dimensions {
     sql: ${car_name} = "SMFR_Car" ;;
   }
 
+  dimension: non_smfr_car {
+    type: yesno
+    sql: ${car_name} != "SMFR_Car" ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [
