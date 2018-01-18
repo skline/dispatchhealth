@@ -393,11 +393,16 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  dimension: resolved_request {
+    type: yesno
+    sql: ${resolved} IS TRUE ;;
+  }
+
   measure: count_of_resolved_requests {
     type: count
     filters: {
       field: resolved
-      value: "Y"
+      value: "yes"
     }
 
     drill_fields: [details*]
