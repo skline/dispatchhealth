@@ -393,6 +393,16 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  measure: count_of_resolved_requests {
+    type: count
+    filters: {
+      field: resolved
+      value: "Y"
+    }
+
+    drill_fields: [details*]
+  }
+
   measure: average_on_scene_time {
     type: average
     sql: ${hours_on_scene} ;;
