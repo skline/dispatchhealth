@@ -16,7 +16,7 @@ explore: visit_facts {
   }
 
   join: channel_dimensions {
-    relationship: many_to_one
+    relationship: one_to_many
     sql_on: ${channel_dimensions.id} = ${visit_facts.channel_dim_id} ;;
   }
 
