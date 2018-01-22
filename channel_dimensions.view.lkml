@@ -40,7 +40,7 @@ view: channel_dimensions {
     type: string
     sql: CASE WHEN ${subtotal_over.row_type_description} = '' THEN ${organization}
               ELSE 'Subtotal' END ;;
-    html:{% if value == 'Subtotal' %}<b><i><span style="color: black;">SUBTOTAL</span></i></b>{% else %} {{ linked_value }}{% endif %};;
+    html:{% if value == 'Subtotal' %}<b><i><span style="color: black;">Subtotal</span></i></b>{% else %} {{ linked_value }}{% endif %};;
   }
 
   dimension: sub_type {
