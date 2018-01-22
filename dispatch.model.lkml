@@ -16,12 +16,12 @@ explore: visit_facts {
   }
 
   join: channel_dimensions {
-    relationship: one_to_many
+    relationship: many_to_one
     sql_on: ${channel_dimensions.id} = ${visit_facts.channel_dim_id} ;;
   }
 
   join: subtotal_over {
-    relationship: one_to_many
+    relationship: many_to_one
     type: cross
   }
 
@@ -43,12 +43,6 @@ explore: visit_facts {
   join: provider_dimensions {
     relationship: many_to_one
     sql_on: ${provider_dimensions.id} = ${visit_facts.provider_dim_id} ;;
-  }
-
-  #Join the subtotaling view using a cross join.
-  join: subtotal_over {
-    type: cross
-    relationship: one_to_many
   }
 
 }
