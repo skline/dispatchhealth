@@ -16,7 +16,7 @@ view: subtotal_over {
   dimension: row_type_description_order {
     hidden:yes
     type:  number
-    sql: coalesce(cast(coalesce(cast(${row_type_description} as float),-9999999999)||${row_type_checker} as float),9999999999);;
+    sql: coalesce(cast(coalesce(cast(${row_type_description} as varchar),'          ')||${row_type_checker} as varchar),'ZZZZZZZZZZ');;
   }
 
 }
