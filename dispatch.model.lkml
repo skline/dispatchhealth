@@ -20,6 +20,11 @@ explore: visit_facts {
     sql_on: ${channel_dimensions.id} = ${visit_facts.channel_dim_id} ;;
   }
 
+  join: subtotal_over {
+    relationship: one_to_many
+    type: cross
+  }
+
   join: request_type_dimensions {
     relationship: many_to_one
     sql_on: ${request_type_dimensions.id} = ${visit_facts.request_type_dim_id} ;;
