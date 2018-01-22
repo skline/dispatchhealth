@@ -16,8 +16,13 @@ explore: visit_facts {
   }
 
   join: channel_dimensions {
-    relationship: one_to_many
+    relationship: many_to_one
     sql_on: ${channel_dimensions.id} = ${visit_facts.channel_dim_id} ;;
+  }
+
+  join: subtotal_over {
+    relationship: many_to_one
+    type: cross
   }
 
   join: request_type_dimensions {
