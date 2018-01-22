@@ -31,6 +31,11 @@ view: channel_dimensions {
     sql: ${TABLE}.main_type ;;
   }
 
+  dimension: sub_type {
+    type: string
+    sql: ${TABLE}.sub_type ;;
+  }
+
   dimension: organization {
     type: string
     sql: ${TABLE}.organization ;;
@@ -45,16 +50,10 @@ view: channel_dimensions {
   }
 
   dimension: org_label_order {
+    type: string
     hidden: yes
     #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
-    # sql: coalesce(cast(coalesce(cast(${organization_label} as varchar),'          ')||${subtotal_over.row_type_checker} as varchar),'ZZZZZZZZZZ');;
-    sql: CASE WHEN ${organization_label} = ${organization} THEN '          '
-    ELSE 'ZZZZZZZZZZ' END ;;
-  }
-
-  dimension: sub_type {
-    type: string
-    sql: ${TABLE}.sub_type ;;
+    sql: CONCAT(${sub_type},IF(${organization_label} = 'Subtotal', 'ZZZZZZZZ', ${organization}))
   }
 
   dimension_group: updated {
