@@ -40,4 +40,10 @@ explore: visit_facts {
     sql_on: ${provider_dimensions.id} = ${visit_facts.provider_dim_id} ;;
   }
 
+  #Join the subtotaling view using a cross join.
+  join: subtotal_over {
+    type: cross
+    relationship: one_to_many
+  }
+
 }
