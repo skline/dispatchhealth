@@ -53,7 +53,8 @@ view: channel_dimensions {
     type: string
     hidden: yes
     #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
-    sql: CONCAT(${sub_type},IF(${organization_label} == 'Subtotal', 'ZZZZZZZZ', ${organization}))
+    sql:  CASE WHEN ${organization_label} = ${organization} THEN ${sub_type}||${organization}
+               ELSE ${sub_type}||'ZZZZZZZZ';;
   }
 
   dimension_group: updated {
