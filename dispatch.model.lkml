@@ -40,9 +40,15 @@ explore: visit_facts {
     sql_on: ${car_dimensions.id} = ${visit_facts.car_dim_id} ;;
   }
 
-  join: provider_dimensions {
+  join: ed_diversion_survey_response_rate {
     relationship: many_to_one
-    sql_on: ${provider_dimensions.id} = ${visit_facts.provider_dim_id} ;;
+    sql_on: ${ed_diversion_survey_response_rate.market_dim_id} = ${visit_facts.market_dim_id} ;;
+  }
+
+  join: survey_response_facts {
+    relationship: many_to_one
+    sql_on: ${survey_response_facts.visit_dim_number} = ${visit_facts.visit_dim_number}
+    and ${survey_response_facts.question_dim_id} = 3 ;;
   }
 
 }
