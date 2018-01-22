@@ -38,9 +38,18 @@ view: channel_dimensions {
 
   dimension: organization_label {
     type: string
+    order_by_field: org_label_order
     sql: CASE WHEN ${subtotal_over.row_type_description} = '' THEN ${organization}
               ELSE 'Subtotal' END ;;
     html:{% if value == 'Subtotal' %}<b><i><span style="color: black;">Subtotal</span></i></b>{% else %} {{ linked_value }}{% endif %};;
+  }
+
+  dimension: org_label_order {
+    hidden: yes
+    #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
+    # sql: coalesce(cast(coalesce(cast(${organization_label} as varchar),'          ')||${subtotal_over.row_type_checker} as varchar),'ZZZZZZZZZZ');;
+    sql: CASE WHEN ${organization_label} = ${organization} THEN '          '
+    ELSE 'ZZZZZZZZZZ' END ;;
   }
 
   dimension: sub_type {
