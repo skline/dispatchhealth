@@ -54,7 +54,7 @@ view: channel_dimensions {
     hidden: yes
     #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
     sql:  CASE WHEN ${organization_label} = ${organization} THEN ${sub_type}||${organization}
-               ELSE ${sub_type}||'ZZZZZZZZ';;
+               ELSE ${sub_type}||'ZZZZZZZZ' END ;;
   }
 
   dimension_group: updated {
