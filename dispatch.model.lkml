@@ -41,10 +41,9 @@ explore: visit_facts {
   }
 
   join: survey_response_facts {
-    sql_table_name: ed_survey_response ;;
     relationship: many_to_one
-    sql_on: ${survey_response_facts.visit_dim_number} = ${visit_facts.visit_dim_number} ;;
-    sql_where: ${survey_response_facts.question_dim_id} = 3 ;;
+    sql_on: ${survey_response_facts.visit_dim_number} = ${visit_facts.visit_dim_number}
+    and ${survey_response_facts.question_dim_id} = 3 ;;
   }
 
 }
