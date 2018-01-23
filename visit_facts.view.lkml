@@ -475,6 +475,13 @@ view: visit_facts {
          ${local_requested_date} = ${local_accepted_date};;
   }
 
+  dimension: in_queue2 {
+    type: yesno
+    sql: ${local_requested_time} IS NOT NULL AND
+         ${local_accepted_time} IS NOT NULL AND
+         ${local_accepted_date} - ${local_requested_date} <= 1 ;;
+  }
+
   dimension: in_accepted_queue {
     type: yesno
     sql: ${local_accepted_date} IS NOT NULL AND ${local_on_route_date} IS NOT NULL ;;
@@ -495,6 +502,17 @@ view: visit_facts {
     sql: ${minutes_in_queue};;
     filters: {
       field: in_queue
+      value: "yes"
+    }
+    drill_fields: [details*]
+    value_format_name: decimal_1
+  }
+
+  measure: average_time_in_queue2 {
+    type: average
+    sql: ${minutes_in_queue};;
+    filters: {
+      field: in_queue2
       value: "yes"
     }
     drill_fields: [details*]
