@@ -22,7 +22,7 @@ view: car_dimensions {
     sql: ${car_name} != "SMFR_Car" ;;
   }
 
-  measure: non_smfr_billable_visit {
+  dimension: non_smfr_billable_visit {
     type: yesno
     sql: ${visit_facts.billable_visit} AND ${non_smfr_car} ;;
   }

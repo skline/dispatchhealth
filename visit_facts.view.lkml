@@ -304,6 +304,26 @@ view: visit_facts {
     sql: ${TABLE}.resolved ;;
   }
 
+  measure: count_resolved_requests {
+    type: count
+    filters: {
+      field: resolved
+      value: "yes"
+    }
+
+    drill_fields: [details*]
+  }
+
+  measure: count_complete_visits {
+    type: count
+    filters: {
+      field: resolved
+      value: "no"
+    }
+
+    drill_fields: [details*]
+  }
+
   dimension: secondary_resolve_reason {
     type: string
     sql: ${TABLE}.secondary_resolve_reason ;;
@@ -312,6 +332,11 @@ view: visit_facts {
   dimension: seconds_in_queue {
     type: number
     sql: ${TABLE}.seconds_in_queue ;;
+  }
+
+  dimension: minutes_in_queue {
+    type: number
+    sql: 1.0 * ${TABLE}.seconds_in_queue / 60 ;;
   }
 
   dimension: seconds_of_travel_time {
@@ -428,6 +453,30 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  dimension: on_scene_visits {
+    type: yesno
+    sql: ${resolved} = 'no' AND ${resolved_seen_flag} = 'yes' ;;
+  }
+
+  measure: count_of_on_scene_visits {
+    type: count
+    filters: {
+      field: on_scene_visits
+      value: "yes"
+    }
+
+    drill_fields: [details*]
+  }
+
+  measure: average_time_in_queue {
+    type: average
+    sql: ${minutes_in_queue};;
+    drill_fields: [details*]
+    value_format_name: decimal_1
+  }
+
+  #Sum("Completed Flag", 'Current') + Sum("Resolved-Seen Flag", 'Current')
+
   measure: average_on_scene_time {
     type: average
     sql: ${hours_on_scene} ;;
@@ -531,6 +580,21 @@ END;;
     type: sum
     sql: round(${911_diversion} * 750 + ${ed_diversion} * 2000,2);;
 
+  }
+
+  dimension: resolved_seen_flag {
+    type: yesno
+    sql: ${resolved} IS TRUE and ${local_on_scene_time} IS NOT NULL ;;
+  }
+
+  measure: count_of_resolved_seen {
+    type: count
+    filters: {
+      field: resolved_seen_flag
+      value: "yes"
+    }
+
+    drill_fields: [details*]
   }
 
   set: details {
