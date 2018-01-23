@@ -471,8 +471,7 @@ view: visit_facts {
   dimension: in_queue {
     type: yesno
     sql: ${local_requested_date} IS NOT NULL AND
-         ${local_accepted_date} IS NOT NULL AND
-         ${visit_dimensions.local_visit_date} BETWEEN timestamp('2017-10-01 00:00:00') and timestamp('2018-01-31 23:59:59.999') ;;
+         ${local_accepted_date} IS NOT NULL ;;
   }
 
   dimension: in_accepted_queue {
