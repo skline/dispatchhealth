@@ -378,6 +378,11 @@ view: visit_facts {
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL ;;
   }
 
+  dimension: non_smfr_billable_visit {
+    type: yesno
+    sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL AND ${car_dimensions.car_name} != 'SMFR_Car';;
+  }
+
   measure: count {
     type: count
     drill_fields: [details*]
@@ -387,6 +392,16 @@ view: visit_facts {
     type: count
     filters: {
       field: billable_visit
+      value: "yes"
+    }
+
+    drill_fields: [details*]
+  }
+
+  measure: count_of_non_smfr_billable_visits {
+    type: count
+    filters: {
+      field: non_smfr_billable_visit
       value: "yes"
     }
 

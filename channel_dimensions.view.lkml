@@ -31,6 +31,11 @@ view: channel_dimensions {
     sql: ${TABLE}.main_type ;;
   }
 
+  dimension: sub_type {
+    type: string
+    sql: ${TABLE}.sub_type ;;
+  }
+
   dimension: organization {
     type: string
     sql: ${TABLE}.organization ;;
@@ -38,14 +43,18 @@ view: channel_dimensions {
 
   dimension: organization_label {
     type: string
+    order_by_field: org_label_order
     sql: CASE WHEN ${subtotal_over.row_type_description} = '' THEN ${organization}
               ELSE 'Subtotal' END ;;
     html:{% if value == 'Subtotal' %}<b><i><span style="color: black;">Subtotal</span></i></b>{% else %} {{ linked_value }}{% endif %};;
   }
 
-  dimension: sub_type {
+  dimension: org_label_order {
     type: string
-    sql: ${TABLE}.sub_type ;;
+    hidden: yes
+    #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
+    sql:  CASE WHEN ${organization_label} = ${organization} THEN ${sub_type}||${organization}
+               ELSE ${sub_type}||'ZZZZZZZZ' END ;;
   }
 
   dimension_group: updated {

@@ -52,4 +52,9 @@ explore: visit_facts {
     and ${survey_response_facts_ed.question_dim_id} = 3 ;;
   }
 
+  join: app_shift_summary_facts {
+    relationship: many_to_one
+    sql_on: ${app_shift_summary_facts.start_of_month_month} = ${visit_facts.local_accepted_month};;
+  }
+
 }
