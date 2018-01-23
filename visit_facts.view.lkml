@@ -463,9 +463,18 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  dimension: time_in_queue {
+    type: yesno
+    sql: ${local_requested_date} IS NOT NULL AND ${local_accepted_date} IS NOT NULL;;
+  }
+
   measure: average_time_in_queue {
     type: average
     sql: ${minutes_in_queue};;
+    filters: {
+      field: time_in_queue
+      value: "yes"
+    }
     drill_fields: [details*]
     value_format_name: decimal_1
   }
