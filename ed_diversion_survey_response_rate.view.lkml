@@ -18,7 +18,7 @@ dimension: market_dim_id {
     sql: ${TABLE}.market_dim_id ;;
    }
 #
-   measure: er_percent {
+   dimension: er_percent {
      description: "Use this for counting lifetime orders across many users"
      type: number
      sql: ${TABLE}.default_er_response_rate ;;
