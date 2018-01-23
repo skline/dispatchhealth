@@ -329,6 +329,11 @@ view: visit_facts {
     sql: ${TABLE}.seconds_in_queue ;;
   }
 
+  dimension: minutes_in_queue {
+    type: number
+    sql: 1.0 * ${TABLE}.seconds_in_queue / 60 ;;
+  }
+
   dimension: seconds_of_travel_time {
     type: number
     sql: ${TABLE}.seconds_of_travel_time ;;
@@ -456,6 +461,13 @@ view: visit_facts {
     }
 
     drill_fields: [details*]
+  }
+
+  measure: average_time_in_queue {
+    type: average
+    sql: ${minutes_in_queue};;
+    drill_fields: [details*]
+    value_format_name: decimal_1
   }
 
   #Sum("Completed Flag", 'Current') + Sum("Resolved-Seen Flag", 'Current')
