@@ -429,44 +429,43 @@ view: visit_facts {
     drill_fields: [details*]
     value_format_name: decimal_2
   }
-  measure: category {
-    type: number
+  dimension: category {
+    type: string
     sql: CASE
-WHEN visit_facts.local_complete_time IS NULL THEN 'not completed'
-WHEN visit_facts.day_30_followup_outcome IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
+WHEN ${local_complete_raw} IS NULL THEN 'not completed'
+WHEN ${day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
   OR
-  visit_facts.day_14_followup_outcome IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
+  ${day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
   OR
-  visit_facts.day_3_followup_outcome IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
-WHEN car_dimensions.car_name = 'SMFR_Car' THEN
+  ${day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
+WHEN ${car_dimensions.car_name} = 'SMFR_Car' THEN
   'smfr'
-WHEN channel_dimensions.sub_type IN( 'home health',
+WHEN ${channel_dimensions.sub_type} IN( 'home health',
                     'snf',
                     'provider group' ) THEN channel_dimensions.sub_type
-WHEN channel_dimensions.sub_type = 'senior care'
+WHEN ${channel_dimensions.sub_type} = 'senior care'
   AND
-  hour(visit_dimensions.local_visit_date) < 15
+  hour(${visit_dimensions.local_visit_raw}) < 15
   AND
-  dayofweek(visit_dimensions.local_visit_date) NOT IN ( 1,
+  dayofweek(${visit_dimensions.local_visit_raw}) NOT IN ( 1,
                                          7 ) THEN 'senior care - weekdays before 3pm'
-WHEN channel_dimensions.sub_type = 'senior care'
+WHEN ${channel_dimensions.sub_type} = 'senior care'
   AND
   (
-    hour(visit_dimensions.local_visit_date) > 15
+    hour(${visit_dimensions.local_visit_raw}) > 15
     OR
-    dayofweek(visit_dimensions.local_visit_date) IN ( 1,
+    dayofweek(${visit_dimensions.local_visit_raw}) IN ( 1,
                                        7 )
   )
   THEN 'senior care - weekdays after 3pm and weekends'
-WHEN survey_response_facts_ed.answer_selection_value = 'Emergency Room' THEN 'survey responded emergency room'
-WHEN survey_response_facts_ed.answer_selection_value != 'Emergency Room'
+WHEN ${survey_response_facts_ed.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
+WHEN ${survey_response_facts_ed.answer_selection_value} != 'Emergency Room'
   AND
-  survey_response_facts_ed.answer_selection_value IS NOT NULL THEN 'survey responded not emergency room'
-WHEN survey_response_facts_id.answer_selection_value IS NULL THEN
+  ${survey_response_facts_ed.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
+WHEN ${survey_response_facts_ed.answer_selection_value} IS NULL THEN
   'no survey'
   ELSE 'other'
 END ;;
-
   }
 
   set: details {
