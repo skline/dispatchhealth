@@ -117,6 +117,7 @@ view: visit_facts {
 
   dimension_group: local_accepted {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -131,6 +132,7 @@ view: visit_facts {
 
   dimension_group: local_complete {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -145,6 +147,7 @@ view: visit_facts {
 
   dimension_group: local_on_route {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -159,6 +162,7 @@ view: visit_facts {
 
   dimension_group: local_on_scene {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -173,6 +177,7 @@ view: visit_facts {
 
   dimension_group: local_requested {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -445,24 +450,24 @@ WHEN ${channel_dimensions.sub_type} IN( 'home health',
                     'provider group' ) THEN channel_dimensions.sub_type
 WHEN ${channel_dimensions.sub_type} = 'senior care'
   AND
-  hour(${visit_dimensions.local_visit_date}) < 15
+  hour(${visit_dimensions.local_visit_time}) < 15
   AND
   dayofweek(${visit_dimensions.local_visit_date}) NOT IN ( 1,
                                          7 ) THEN 'senior care - weekdays before 3pm'
 WHEN ${channel_dimensions.sub_type} = 'senior care'
   AND
   (
-    hour(${visit_dimensions.local_visit_date}) > 15
+    hour(${visit_dimensions.local_visit_time}) > 15
     OR
     dayofweek(${visit_dimensions.local_visit_date}) IN ( 1,
                                        7 )
   )
   THEN 'senior care - weekdays after 3pm and weekends'
-WHEN ${survey_response_facts_ed.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
-WHEN ${survey_response_facts_ed.answer_selection_value} != 'Emergency Room'
+WHEN ${ed_diversion_survey_response.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
+WHEN ${ed_diversion_survey_response.answer_selection_value} != 'Emergency Room'
   AND
-  ${survey_response_facts_ed.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
-WHEN ${survey_response_facts_ed.answer_selection_value} IS NULL THEN
+  ${ed_diversion_survey_response.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
+WHEN ${ed_diversion_survey_response.answer_selection_value} IS NULL THEN
   'no survey'
 ELSE 'other'
 END;;

@@ -45,12 +45,16 @@ explore: visit_facts {
     sql_on: ${ed_diversion_survey_response_rate.market_dim_id} = ${visit_facts.market_dim_id} ;;
   }
 
-  join: survey_response_facts_ed {
+  join: survey_response_facts {
     relationship: many_to_one
-    from: survey_response_facts
-    sql_on: ${survey_response_facts_ed.visit_dim_number} = ${visit_facts.visit_dim_number}
-    and ${survey_response_facts_ed.question_dim_id} = 3 ;;
+    sql_on: ${survey_response_facts.visit_dim_number} = ${visit_facts.visit_dim_number} ;;
   }
+
+  join: ed_diversion_survey_response {
+    relationship: many_to_one
+    sql_on: ${ed_diversion_survey_response.visit_dim_number} = ${visit_facts.visit_dim_number} ;;
+  }
+
 
   join: app_shift_summary_facts {
     relationship: many_to_one
