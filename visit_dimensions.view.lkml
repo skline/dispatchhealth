@@ -38,6 +38,7 @@ view: visit_dimensions {
 
   dimension_group: local_visit {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
