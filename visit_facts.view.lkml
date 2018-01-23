@@ -445,7 +445,7 @@ view: visit_facts {
 
   dimension: on_scene_visits {
     type: yesno
-    sql: ${resolved_request} = 'yes' AND ${resolved_seen_flag} = 'yes' ;;
+    sql: ${resolved} = 'no' AND ${resolved_seen_flag} = 'yes' ;;
   }
 
   measure: count_of_on_scene_visits {
