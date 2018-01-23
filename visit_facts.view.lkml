@@ -432,39 +432,39 @@ view: visit_facts {
   dimension: diversion_category {
     type: string
     sql: CASE
-WHEN local_complete_time IS NULL THEN 'not completed'
-WHEN visit_facts.day_30_followup_outcome IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
+WHEN ${visit_facts.local_complete_time} IS NULL THEN 'not completed'
+WHEN ${visit_facts.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
   OR
-  visit_facts.day_14_followup_outcome IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
+  ${visit_facts.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
   OR
-  visit_facts.day_3_followup_outcome IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
-WHEN car.car_name = 'SMFR_Car' THEN
+  ${visit_facts.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
+WHEN ${car_dimensions.car_name} = 'SMFR_Car' THEN
   'smfr'
-WHEN channel_dimensions.sub_type IN( 'home health',
+WHEN ${channel_dimensions.sub_type} IN( 'home health',
                     'snf',
                     'provider group' ) THEN channel_dimensions.sub_type
-WHEN channel_dimensions.sub_type = 'senior care'
+WHEN ${channel_dimensions.sub_type} = 'senior care'
   AND
-  hour(visit_dimensions.local_visit_date) < 15
+  hour(${visit_dimensions.local_visit_date}) < 15
   AND
-  dayofweek(visit_dimensions.local_visit_date) NOT IN ( 1,
+  dayofweek(${visit_dimensions.local_visit_date}) NOT IN ( 1,
                                          7 ) THEN 'senior care - weekdays before 3pm'
-WHEN channel_dimensions.sub_type = 'senior care'
+WHEN ${channel_dimensions.sub_type} = 'senior care'
   AND
   (
-    hour(visit_dimensions.local_visit_date) > 15
+    hour(${visit_dimensions.local_visit_date}) > 15
     OR
-    dayofweek(visit_dimensions.local_visit_date) IN ( 1,
+    dayofweek(${visit_dimensions.local_visit_date}) IN ( 1,
                                        7 )
   )
   THEN 'senior care - weekdays after 3pm and weekends'
-WHEN survey_response_facts.answer_selection_value = 'Emergency Room' THEN 'survey responded emergency room'
-WHEN survey_response_facts.answer_selection_value != 'Emergency Room'
+WHEN ${survey_response_facts_ed.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
+WHEN ${survey_response_facts_ed.answer_selection_value} != 'Emergency Room'
   AND
-  survey_response_facts.answer_selection_value IS NOT NULL THEN 'survey responded not emergency room'
-WHEN survey_response_facts.answer_selection_value IS NULL THEN
+  ${survey_response_facts_ed.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
+WHEN ${survey_response_facts_ed.answer_selection_value} IS NULL THEN
   'no survey'
-  ELSE 'other'
+ELSE 'other'
 END;;
   }
 
@@ -484,6 +484,48 @@ WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0
 WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate.er_percent}
   ELSE '?'
 END ;;
+  }
+
+  dimension: 911_diversion {
+    type: number
+    sql:  CASE
+WHEN ${diversion_category} = 'smfr' THEN 1
+WHEN ${diversion_category} = 'home health' THEN .5
+WHEN ${diversion_category} = 'snf' THEN 1
+WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN  .5
+WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
+  ELSE 0
+END;;
+  }
+
+  measure: est_vol_ed_diversion {
+    type: sum
+    sql: round(${ed_diversion},1);;
+
+  }
+
+  measure: est_vol_911_diversion {
+    type: sum
+    sql: round(${911_diversion}, 1);;
+
+  }
+
+  measure: est_ed_diversion_savings {
+    type: sum
+    sql: round(${ed_diversion} * 2000,2);;
+
+  }
+
+  measure: est_911_diversion_savings {
+    type: sum
+    sql: round(${911_diversion} * 750,2);;
+
+  }
+
+  measure: est_diversion_savings {
+    type: sum
+    sql: round(${911_diversion} * 750 + ${ed_diversion} * 2000,2);;
+
   }
 
   set: details {
