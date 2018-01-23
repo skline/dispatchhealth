@@ -430,6 +430,21 @@ view: visit_facts {
     value_format_name: decimal_2
   }
 
+  dimension: resolved_seen_flag {
+    type: yesno
+    sql: ${resolved} IS TRUE and ${local_on_scene_time} IS NOT NULL ;;
+  }
+
+  measure: count_of_resolved_seen {
+    type: count
+    filters: {
+      field: resolved_seen_flag
+      value: "yes"
+    }
+
+    drill_fields: [details*]
+  }
+
   set: details {
     fields: [id, hours_on_scene, total_charge]
   }
