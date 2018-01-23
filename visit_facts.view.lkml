@@ -468,9 +468,66 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  dimension: in_queue {
+    type: yesno
+    sql: ${local_requested_date} IS NOT NULL AND ${local_accepted_date} IS NOT NULL;;
+  }
+
+  dimension: in_accepted_queue {
+    type: yesno
+    sql: ${local_accepted_date} IS NOT NULL AND ${local_on_route_date} IS NOT NULL ;;
+  }
+
+  dimension: in_on_route_queue {
+    type: yesno
+    sql: ${local_on_route_date} IS NOT NULL AND ${local_on_scene_date} IS NOT NULL ;;
+  }
+
+  dimension: in_on_scene_queue {
+    type: yesno
+    sql: ${local_on_scene_date} IS NOT NULL AND ${local_complete_date} IS NOT NULL ;;
+  }
+
   measure: average_time_in_queue {
     type: average
     sql: ${minutes_in_queue};;
+    filters: {
+      field: in_queue
+      value: "yes"
+    }
+    drill_fields: [details*]
+    value_format_name: decimal_1
+  }
+
+  measure: average_time_in_accepted_queue {
+    type: average
+    sql: ${minutes_in_queue};;
+    filters: {
+      field: in_accepted_queue
+      value: "yes"
+    }
+    drill_fields: [details*]
+    value_format_name: decimal_1
+  }
+
+  measure: average_time_in_on_route_queue {
+    type: average
+    sql: ${minutes_in_queue};;
+    filters: {
+      field: in_on_route_queue
+      value: "yes"
+    }
+    drill_fields: [details*]
+    value_format_name: decimal_1
+  }
+
+  measure: average_time_in_on_scene_queue {
+    type: average
+    sql: ${minutes_in_queue};;
+    filters: {
+      field: in_on_scene_queue
+      value: "yes"
+    }
     drill_fields: [details*]
     value_format_name: decimal_1
   }
