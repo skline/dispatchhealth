@@ -737,4 +737,9 @@ END;;
     fields: [id, hours_on_scene, total_charge]
   }
 
+  measure: sum_total_expected_allowable {
+    type: sum
+    sql:  ${total_expected_allowable} ;;
+  }
+
 }
