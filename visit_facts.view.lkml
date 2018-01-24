@@ -534,7 +534,21 @@ view: visit_facts {
     value_format_name: decimal_1
   }
 
-  #Sum("Completed Flag", 'Current') + Sum("Resolved-Seen Flag", 'Current')
+  dimension: bb_3_day {
+    type: yesno
+    sql: CASE
+      WHEN ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint' THEN 'yes'
+      ELSE 'no' ;;
+  }
+
+  measure: bb_3_day_count {
+    type: count
+    sql:  ${bb_3_day};;
+    filters: {
+      field: bb_3_day
+      value: "yes"
+    }
+  }
 
   measure: average_on_scene_time {
     type: average
