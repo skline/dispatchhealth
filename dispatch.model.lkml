@@ -86,4 +86,33 @@ explore: visit_facts {
     sql_on: ${app_shift_planning_facts.shift_id} = ${app_shift_planning_facts.shift_id};;
   }
 
+  join: primary_payer_dimension_charge {
+    sql_on: ${primary_payer_dimension_charge.visit_dim_number} = ${visit_facts.visit_dim_number}  ;;
+  }
+
+  join: transaction_facts {
+    sql_on: ${transaction_facts.visit_dim_number} = ${visit_facts.visit_dim_number}  ;;
+  }
+
+  join: primary_payer_dimensions {
+    sql_on: ${transaction_facts.primary_payer_dim_id} = ${primary_payer_dimensions.id}  ;;
+  }
+
+  join: payer_dimensions {
+    sql_on: ${transaction_facts.payer_dim_id} = ${payer_dimensions.id}  ;;
+  }
+
+  join: patient_dimensions {
+    sql_on: ${visit_facts.patient_dim_id} = ${patient_dimensions.id}  ;;
+  }
+
+  join: patient_facts {
+    sql_on: ${visit_dimensions.dashboard_patient_id} = ${patient_facts.dashboard_patient_id}  ;;
+  }
+
+  join: pcp_dimensions {
+    sql_on: ${patient_facts.pcp_dim_id} = ${pcp_dimensions.id}  ;;
+  }
+
+
 }
