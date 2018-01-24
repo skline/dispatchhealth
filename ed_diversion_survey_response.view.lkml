@@ -8,18 +8,18 @@ where survey_response_facts.question_dim_id=3
 group by 1 ) ed_diversion_survey_response
              ;;
   }
-  dimension: ed_diversion_survey_response.care_request_id {
+  dimension: care_request_id {
     type: number
     sql: ${TABLE}.care_request_id ;;
   }
 
-  dimension: ed_diversion_survey_response.visit_dim_number {
+  dimension: visit_dim_number {
     primary_key: yes
     type: number
     sql: ${TABLE}.visit_dim_number ;;
   }
 
-  dimension: ed_diversion_survey_response.answer_selection_value {
+  dimension: answer_selection_value {
     type: string
     sql: ${TABLE}.answer_selection_value ;;
   }
