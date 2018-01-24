@@ -594,7 +594,7 @@ WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN .5
 WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
 WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
 WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0
-WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate.er_percent}
+WHEN ${diversion_category} = 'no survey' THEN null
   ELSE 0
 END ;;
   }
@@ -611,32 +611,32 @@ WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THE
 END;;
   }
 
-  measure: est_vol_ed_diversion {
-    type: sum
+  dimension: est_vol_ed_diversion {
+    type: number
     sql: round(${ed_diversion},1);;
 
   }
 
-  measure: est_vol_911_diversion {
-    type: sum
+  dimension: est_vol_911_diversion {
+    type: number
     sql: round(${911_diversion}, 1);;
 
   }
 
-  measure: est_ed_diversion_savings {
-    type: sum
+  dimension: est_ed_diversion_savings {
+    type: number
     sql: round(${ed_diversion} * 2000,2);;
 
   }
 
-  measure: est_911_diversion_savings {
-    type: sum
+  dimension: est_911_diversion_savings {
+    type: number
     sql: round(${911_diversion} * 750,2);;
 
   }
 
-  measure: est_diversion_savings {
-    type: sum
+  dimension: est_diversion_savings {
+    type: number
     sql: round(${911_diversion} * 750 + ${ed_diversion} * 2000,2);;
 
   }

@@ -132,4 +132,26 @@ view: survey_response_facts {
     drill_fields: [id, survey_name]
   }
 
+  measure: distinct_care_request_ids {
+    type: count_distinct
+    sql: ${visit_facts.care_request_id} ;;
+  }
+
+  measure: count_of_emergency_room {
+    type: count
+    filters: {
+      field: survey_response_facts.answer_selection_value
+      value: "Emergency Room"
+    }
+  }
+
+  measure: er_percent {
+    type: number
+    sql: 1.0 * ${count_of_emergency_room} / NULLIF(${distinct_care_request_ids}, 0) ;;
+    value_format_name: decimal_2
+  }
+
+#   sum(IF(survey_response_facts.answer_selection_value = 'Emergency Room', 1, 0)) /
+# count(DISTINCT visit_facts.care_request_id)
+
 }

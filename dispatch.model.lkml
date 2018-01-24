@@ -41,8 +41,10 @@ explore: visit_facts {
   }
 
   join: ed_diversion_survey_response_rate {
+    from: survey_response_facts
     relationship: many_to_one
-    sql_on: ${ed_diversion_survey_response_rate.market_dim_id} = ${visit_facts.market_dim_id} ;;
+    sql_on: ${ed_diversion_survey_response_rate.visit_dim_number} = ${visit_facts.visit_dim_number} ;;
+    fields: [er_percent]
   }
 
   join: survey_response_facts {
