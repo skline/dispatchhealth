@@ -477,17 +477,20 @@ view: visit_facts {
 
   dimension: in_accepted_queue {
     type: yesno
-    sql: ${local_accepted_date} IS NOT NULL AND ${local_on_route_date} IS NOT NULL ;;
+    sql: (${local_accepted_raw} IS NOT NULL AND ${local_on_route_raw} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) / 60 <= 12) ;;
   }
 
   dimension: in_on_route_queue {
     type: yesno
-    sql: ${local_on_route_date} IS NOT NULL AND ${local_on_scene_date} IS NOT NULL ;;
+    sql: (${local_on_route_raw} IS NOT NULL AND ${local_on_scene_raw} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) / 60 <= 12) ;;
   }
 
   dimension: in_on_scene_queue {
     type: yesno
-    sql: ${local_on_scene_date} IS NOT NULL AND ${local_complete_date} IS NOT NULL ;;
+    sql: (${local_on_scene_raw} IS NOT NULL AND ${local_complete_raw} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) / 60 <= 12) ;;
   }
 
   measure: average_time_in_queue {
