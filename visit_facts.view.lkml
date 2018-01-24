@@ -547,6 +547,19 @@ view: visit_facts {
     }
   }
 
+  dimension: no_followup_3_day {
+    type: yesno
+    sql: ${day_30_followup_outcome} = 'INACTIVE' OR ${day_30_followup_outcome} = 'PENDING';;
+  }
+
+  measure: no_followup_3_day_count {
+    type: count
+    filters: {
+      field: no_followup_3_day
+      value: "yes"
+    }
+  }
+
   measure: average_on_scene_time {
     type: average
     sql: ${hours_on_scene} ;;
