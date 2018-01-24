@@ -536,7 +536,7 @@ view: visit_facts {
 
   dimension: bb_3_day {
     type: yesno
-    sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
+    sql: ${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_3_day_count {
@@ -547,15 +547,67 @@ view: visit_facts {
     }
   }
 
+  dimension: bb_14_day {
+    type: yesno
+    sql: ${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint';;
+  }
+
+  measure: bb_14_day_count {
+    type: count
+    filters: {
+      field: bb_14_day
+      value: "yes"
+    }
+  }
+
+  dimension: bb_30_day {
+    type: yesno
+    sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
+  }
+
+  measure: bb_30_day_count {
+    type: count
+    filters: {
+      field: bb_30_day
+      value: "yes"
+    }
+  }
+
   dimension: no_followup_3_day {
     type: yesno
-    sql: ${day_30_followup_outcome} = 'INACTIVE' OR ${day_30_followup_outcome} = 'PENDING';;
+    sql: ${day_3_followup_outcome} = 'INACTIVE' OR ${day_3_followup_outcome} = 'PENDING';;
   }
 
   measure: no_followup_3_day_count {
     type: count
     filters: {
       field: no_followup_3_day
+      value: "yes"
+    }
+  }
+
+  dimension: no_followup_14_day {
+    type: yesno
+    sql: ${day_14_followup_outcome} = 'INACTIVE' OR ${day_14_followup_outcome} = 'PENDING';;
+  }
+
+  measure: no_followup_14_day_count {
+    type: count
+    filters: {
+      field: no_followup_14_day
+      value: "yes"
+    }
+  }
+
+  dimension: no_followup_30_day {
+    type: yesno
+    sql: ${day_30_followup_outcome} = 'INACTIVE' OR ${day_30_followup_outcome} = 'PENDING';;
+  }
+
+  measure: no_followup_30_day_count {
+    type: count
+    filters: {
+      field: no_followup_30_day
       value: "yes"
     }
   }
