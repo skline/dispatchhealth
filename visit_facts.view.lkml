@@ -472,7 +472,7 @@ view: visit_facts {
     type: yesno
     sql: ${local_requested_time} IS NOT NULL AND
          ${local_accepted_time} IS NOT NULL AND
-         ${local_requested_date} = ${local_accepted_date};;
+         TIMESTAMPDIFF(MINUTES, ${local_requested_time}, ${local_accepted_time}) / 60 <= 12 ;;
   }
 
   dimension: in_queue2 {
