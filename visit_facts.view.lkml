@@ -609,7 +609,7 @@ WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THE
 WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
 WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0
 WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate.er_percent}
-  ELSE '?'
+  ELSE 0
 END ;;
   }
 
