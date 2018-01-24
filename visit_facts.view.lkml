@@ -575,7 +575,7 @@ view: visit_facts {
 
   dimension: no_followup_3_day {
     type: yesno
-    sql: ${day_3_followup_outcome} = 'UNDOCUMENTED' OR ${day_3_followup_outcome} = 'PENDING';;
+    sql: ${local_complete_raw} IS NOT NULL AND (${day_3_followup_outcome} = 'UNDOCUMENTED' OR ${day_3_followup_outcome} = 'PENDING') ;;
   }
 
   measure: no_followup_3_day_count {
@@ -588,7 +588,7 @@ view: visit_facts {
 
   dimension: no_followup_14_day {
     type: yesno
-    sql: ${day_14_followup_outcome} = 'UNDOCUMENTED' OR ${day_14_followup_outcome} = 'PENDING';;
+    sql: ${local_complete_raw} IS NOT NULL AND (${day_14_followup_outcome} = 'UNDOCUMENTED' OR ${day_14_followup_outcome} = 'PENDING');;
   }
 
   measure: no_followup_14_day_count {
@@ -601,7 +601,7 @@ view: visit_facts {
 
   dimension: no_followup_30_day {
     type: yesno
-    sql: ${day_30_followup_outcome} = 'UNDOCUMENTED' OR ${day_30_followup_outcome} = 'PENDING';;
+    sql: ${local_complete_raw} IS NOT NULL AND (${day_30_followup_outcome} = 'UNDOCUMENTED' OR ${day_30_followup_outcome} = 'PENDING');;
   }
 
   measure: no_followup_30_day_count {
