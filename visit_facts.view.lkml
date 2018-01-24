@@ -470,9 +470,9 @@ view: visit_facts {
 
   dimension: in_queue {
     type: yesno
-    sql: ${local_requested_time} IS NOT NULL AND
-         ${local_accepted_time} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTES, ${local_requested_time}, ${local_accepted_time}) / 60 <= 12 ;;
+    sql: (${local_requested_raw} IS NOT NULL AND
+         ${local_accepted_raw} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) / 60 <= 12) ;;
   }
 
   dimension: in_accepted_queue {
@@ -536,14 +536,11 @@ view: visit_facts {
 
   dimension: bb_3_day {
     type: yesno
-    sql: CASE
-      WHEN ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint' THEN 'yes'
-      ELSE 'no' ;;
+    sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_3_day_count {
     type: count
-    sql:  ${bb_3_day};;
     filters: {
       field: bb_3_day
       value: "yes"
