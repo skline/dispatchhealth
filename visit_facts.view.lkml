@@ -470,7 +470,9 @@ view: visit_facts {
 
   dimension: in_queue {
     type: yesno
-    sql: ${local_requested_date} IS NOT NULL AND ${local_accepted_date} IS NOT NULL;;
+    sql: ${local_requested_time} IS NOT NULL AND
+         ${local_accepted_time} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTES, ${local_requested_time}, ${local_accepted_time}) / 60 <= 12 ;;
   }
 
   dimension: in_accepted_queue {
