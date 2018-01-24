@@ -67,4 +67,8 @@ view: car_dimensions {
     type: count
     drill_fields: [id, car_name]
   }
+  measure: car_names_concat {
+    type:  string
+    sql:  GROUP_CONCAT(distinct car_name) ;;
+  }
 }

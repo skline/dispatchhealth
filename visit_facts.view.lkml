@@ -676,4 +676,10 @@ END;;
     sql:  ${total_expected_allowable} ;;
   }
 
+  measure: expected_allowable_per_hour {
+    type: number
+    sql:  round(${sum_total_expected_allowable}/${app_shift_planning_facts.worked_hours},2) ;;
+  }
+
+
 }
