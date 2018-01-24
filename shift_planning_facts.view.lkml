@@ -164,4 +164,9 @@ view: shift_planning_facts {
     type: count
     drill_fields: [id, employee_name]
   }
+  measure: worked_hours {
+    type: number
+    sql:  total_actual_seconds / 3600  ;;
+  }
+
 }

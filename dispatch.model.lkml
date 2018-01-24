@@ -61,4 +61,29 @@ explore: visit_facts {
     sql_on: ${app_shift_summary_facts.start_of_month_month} = ${visit_facts.local_accepted_month};;
   }
 
+  join: provider_dimensions {
+    relationship: many_to_one
+    sql_on: ${provider_dimensions.id} = ${visit_facts.provider_dim_id};;
+  }
+
+
+  join: app_shift_planning_facts {
+    from: shift_planning_facts
+    type: inner
+    relationship:  many_to_one
+    sql_on:(${app_shift_planning_facts.employee_name} = ${provider_dimensions.shift_app_name}
+          and date(${app_shift_planning_facts.local_actual_start_time})=date(${visit_facts.local_accepted_time})
+          and ${app_shift_planning_facts.schedule_role} in('NP/PA', 'Training/Admin'))
+          or (${visit_facts.nppa_shift_id} = ${app_shift_planning_facts.shift_id})
+
+      ;;
+  }
+
+  join: app_shift_planning_shifts {
+    from: shift_planning_shifts
+    type: inner
+    relationship: many_to_one
+    sql_on: ${app_shift_planning_facts.shift_id} = ${app_shift_planning_facts.shift_id};;
+  }
+
 }

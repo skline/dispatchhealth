@@ -54,4 +54,14 @@ view: provider_dimensions {
     type: count
     drill_fields: [id, virtual_doctor_name, emt_name, advanced_practice_provider_name]
   }
+
+  dimension: shift_app_name {
+    type: string
+    sql:case when ${advanced_practice_provider_name} like "%DAVID MACKEY%" then 'Dave Mackey'
+      when ${advanced_practice_provider_name} like '%ELIZABETH "ELLIE" NEISES%' then 'Ellie Neises'
+      when ${advanced_practice_provider_name} like "%HEATHER HOUSTON RAHIM%" then 'Heather Rahim'
+      when ${advanced_practice_provider_name} like "%DEEVAW ARTIS%"  then 'NDeevaw Artis'
+      when ${advanced_practice_provider_name} like "%JENNY  COX%"  then 'Jenny Cox'
+      else ${advanced_practice_provider_name}  end;;
+  }
 }
