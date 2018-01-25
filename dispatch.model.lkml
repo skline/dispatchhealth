@@ -115,8 +115,21 @@ explore: visit_facts {
   }
 
   join: budget_projections_by_market {
-    sql_on: ${market_dimensions.id} = ${budget_projections_by_market.market_dim_id}  ;;
+    sql_on: ${visit_facts.market_dim_id} = ${budget_projections_by_market.market_dim_id}
+            AND ${visit_dimensions.local_visit_month}=${budget_projections_by_market.month_month};;
   }
 
+  join: budget_projections_by_market_future {
+    from: budget_projections_by_market
+    sql_on: ${market_dimensions.id} = ${budget_projections_by_market_future.market_dim_id};;
+  }
 
 }
+
+explore: incontact {
+
+  join: adwords_call_data {
+    sql_on: ${adwords_call_data.end_time} = ${incontact.end_time};;
+  }
+
+  }
