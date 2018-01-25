@@ -125,3 +125,11 @@ explore: visit_facts {
   }
 
 }
+
+explore: incontact {
+
+  join: adwords_call_data {
+    sql_on: ${adwords_call_data.end_time} = ${incontact.end_time};;
+  }
+
+  }
