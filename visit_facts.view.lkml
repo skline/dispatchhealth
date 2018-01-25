@@ -681,5 +681,10 @@ END;;
     sql:  round(${sum_total_expected_allowable}/${app_shift_planning_facts.worked_hours},2) ;;
   }
 
+  measure: projected_billable_difference {
+    type: number
+    sql:  ${count_of_billable_visits}-${budget_projections_by_market.projection_visits_month_to_date};;
+  }
+
 
 }
