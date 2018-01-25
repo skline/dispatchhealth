@@ -114,5 +114,9 @@ explore: visit_facts {
     sql_on: ${patient_facts.pcp_dim_id} = ${pcp_dimensions.id}  ;;
   }
 
+  join: budget_projections_by_market {
+    sql_on: ${market_dimensions.id} = ${budget_projections_by_market.market_dim_id}  ;;
+  }
+
 
 }
