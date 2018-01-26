@@ -128,6 +128,13 @@ explore: visit_facts {
 
   }
 
+  join: channel_start_date {
+    sql_on: ${channel_start_date.market_dim_id} = ${visit_facts.market_dim_id}
+            and  ${channel_start_date.channel_dim_id} = ${visit_facts.channel_dim_id} ;;
+
+  }
+
+
 }
 
 explore: incontact {

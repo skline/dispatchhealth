@@ -412,6 +412,14 @@ view: visit_facts {
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL AND ${car_dimensions.car_name} != 'SMFR_Car';;
   }
+  dimension: season {
+    type: string
+    sql: Case when MONTH(${local_requested_time}) between 3 and 5 then 'Spring'
+            when MONTH(${local_requested_time}) between 6 and 8 then 'Summer'
+            when MONTH(${local_requested_time}) between 9 and 11 then 'Autum'
+            when MONTH(${local_requested_time}) >= 12 or MONTH(${local_requested_time}) <= 2 then 'Winter'
+       end;;
+  }
 
   measure: count {
     type: count
@@ -622,6 +630,22 @@ WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THE
 END;;
   }
 
+  dimension: market_age_months {
+    type: number
+    sql:  TIMESTAMPDIFF(MONTH, ${market_start_date.first_accepted_time}, ${local_requested_time}) ;;
+
+  }
+
+  dimension: channel_age_months {
+    type: number
+    sql:  TIMESTAMPDIFF(MONTH, ${channel_start_date.first_accepted_time}, ${local_requested_time}) ;;
+
+  }
+  dimension: month_number {
+    type: number
+    sql:month(${local_requested_time}) ;;
+
+  }
   measure: est_vol_ed_diversion {
     type: sum
     sql: round(${ed_diversion},1);;
@@ -685,6 +709,18 @@ END;;
     type: number
     sql:  ${count_of_billable_visits}-${budget_projections_by_market.projection_visits_month_to_date};;
   }
+
+measure: monthly_billable_visits_run_rate {
+  type: number
+  sql: round(${count_of_billable_visits}/${visit_dimensions.month_percent},0) ;;
+}
+
+measure: projected_billable_difference_run_rate {
+    type: number
+    sql:  ${monthly_billable_visits_run_rate}-${budget_projections_by_market.projected_visits_measure};;
+  }
+
+
 
 
 }
