@@ -480,22 +480,29 @@ view: visit_facts {
     type: yesno
     sql: (${local_requested_raw} IS NOT NULL AND
          ${local_accepted_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) / 60 <= 12) ;;
+         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) > 0) ;;
   }
 
   dimension: in_accepted_queue {
     type: yesno
-    sql: ${local_accepted_date} IS NOT NULL AND ${local_on_route_date} IS NOT NULL ;;
+    sql: (${local_accepted_raw} IS NOT NULL AND ${local_on_route_raw} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) > 0) ;;
   }
 
   dimension: in_on_route_queue {
     type: yesno
-    sql: ${local_on_route_date} IS NOT NULL AND ${local_on_scene_date} IS NOT NULL ;;
+    sql: (${local_on_route_raw} IS NOT NULL AND ${local_on_scene_raw} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) > 5) ;;
   }
 
   dimension: in_on_scene_queue {
     type: yesno
-    sql: ${local_on_scene_date} IS NOT NULL AND ${local_complete_date} IS NOT NULL ;;
+    sql: (${local_on_scene_raw} IS NOT NULL AND ${local_complete_raw} IS NOT NULL AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) > 5) ;;
   }
 
   measure: average_time_in_queue {
@@ -544,7 +551,7 @@ view: visit_facts {
 
   dimension: bb_3_day {
     type: yesno
-    sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
+    sql: ${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_3_day_count {
@@ -555,49 +562,115 @@ view: visit_facts {
     }
   }
 
+  dimension: bb_14_day {
+    type: yesno
+    sql: ${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint';;
+  }
+
+  measure: bb_14_day_count {
+    type: count
+    filters: {
+      field: bb_14_day
+      value: "yes"
+    }
+  }
+
+  dimension: bb_30_day {
+    type: yesno
+    sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
+  }
+
+  measure: bb_30_day_count {
+    type: count
+    filters: {
+      field: bb_30_day
+      value: "yes"
+    }
+  }
+
+  dimension: no_followup_3_day {
+    type: yesno
+    sql: ${local_complete_raw} IS NOT NULL AND (${day_3_followup_outcome} = 'UNDOCUMENTED' OR ${day_3_followup_outcome} = 'PENDING') ;;
+  }
+
+  measure: no_followup_3_day_count {
+    type: count
+    filters: {
+      field: no_followup_3_day
+      value: "yes"
+    }
+  }
+
+  dimension: no_followup_14_day {
+    type: yesno
+    sql: ${local_complete_raw} IS NOT NULL AND (${day_14_followup_outcome} = 'UNDOCUMENTED' OR ${day_14_followup_outcome} = 'PENDING');;
+  }
+
+  measure: no_followup_14_day_count {
+    type: count
+    filters: {
+      field: no_followup_14_day
+      value: "yes"
+    }
+  }
+
+  dimension: no_followup_30_day {
+    type: yesno
+    sql: ${local_complete_raw} IS NOT NULL AND (${day_30_followup_outcome} = 'UNDOCUMENTED' OR ${day_30_followup_outcome} = 'PENDING');;
+  }
+
+  measure: no_followup_30_day_count {
+    type: count
+    filters: {
+      field: no_followup_30_day
+      value: "yes"
+    }
+  }
+
   measure: average_on_scene_time {
     type: average
     sql: ${hours_on_scene} ;;
     drill_fields: [details*]
     value_format_name: decimal_2
   }
+
   dimension: diversion_category {
     type: string
     sql: CASE
-WHEN ${visit_facts.local_complete_time} IS NULL THEN 'not completed'
-WHEN ${visit_facts.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
-  OR
-  ${visit_facts.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
-  OR
-  ${visit_facts.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
-WHEN ${car_dimensions.car_name} = 'SMFR_Car' THEN
-  'smfr'
-WHEN ${channel_dimensions.sub_type} IN( 'home health',
-                    'snf',
-                    'provider group' ) THEN channel_dimensions.sub_type
-WHEN ${channel_dimensions.sub_type} = 'senior care'
-  AND
-  hour(${visit_dimensions.local_visit_time}) < 15
-  AND
-  dayofweek(${visit_dimensions.local_visit_date}) NOT IN ( 1,
-                                         7 ) THEN 'senior care - weekdays before 3pm'
-WHEN ${channel_dimensions.sub_type} = 'senior care'
-  AND
-  (
-    hour(${visit_dimensions.local_visit_time}) > 15
-    OR
-    dayofweek(${visit_dimensions.local_visit_date}) IN ( 1,
-                                       7 )
-  )
-  THEN 'senior care - weekdays after 3pm and weekends'
-WHEN ${ed_diversion_survey_response.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
-WHEN ${ed_diversion_survey_response.answer_selection_value} != 'Emergency Room'
-  AND
-  ${ed_diversion_survey_response.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
-WHEN ${ed_diversion_survey_response.answer_selection_value} IS NULL THEN
-  'no survey'
-ELSE 'other'
-END;;
+      WHEN ${visit_facts.local_complete_time} IS NULL THEN 'not completed'
+      WHEN ${visit_facts.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
+        OR
+        ${visit_facts.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
+        OR
+        ${visit_facts.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
+      WHEN ${car_dimensions.car_name} = 'SMFR_Car' THEN
+        'smfr'
+      WHEN ${channel_dimensions.sub_type} IN( 'home health',
+                          'snf',
+                          'provider group' ) THEN channel_dimensions.sub_type
+      WHEN ${channel_dimensions.sub_type} = 'senior care'
+        AND
+        hour(${visit_dimensions.local_visit_time}) < 15
+        AND
+        dayofweek(${visit_dimensions.local_visit_date}) NOT IN ( 1,
+                                               7 ) THEN 'senior care - weekdays before 3pm'
+      WHEN ${channel_dimensions.sub_type} = 'senior care'
+        AND
+        (
+          hour(${visit_dimensions.local_visit_time}) > 15
+          OR
+          dayofweek(${visit_dimensions.local_visit_date}) IN ( 1,
+                                             7 )
+        )
+        THEN 'senior care - weekdays after 3pm and weekends'
+      WHEN ${ed_diversion_survey_response.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
+      WHEN ${ed_diversion_survey_response.answer_selection_value} != 'Emergency Room'
+        AND
+        ${ed_diversion_survey_response.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
+      WHEN ${ed_diversion_survey_response.answer_selection_value} IS NULL THEN
+        'no survey'
+      ELSE 'other'
+      END;;
   }
 
   dimension: ed_diversion {
