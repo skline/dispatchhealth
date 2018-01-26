@@ -472,25 +472,29 @@ view: visit_facts {
     type: yesno
     sql: (${local_requested_raw} IS NOT NULL AND
          ${local_accepted_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) / 60 <= 12) ;;
+         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) > 0) ;;
   }
 
   dimension: in_accepted_queue {
     type: yesno
     sql: (${local_accepted_raw} IS NOT NULL AND ${local_on_route_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) / 60 <= 12) ;;
+         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) > 0) ;;
   }
 
   dimension: in_on_route_queue {
     type: yesno
     sql: (${local_on_route_raw} IS NOT NULL AND ${local_on_scene_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) / 60 <= 12) ;;
+         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) > 5) ;;
   }
 
   dimension: in_on_scene_queue {
     type: yesno
     sql: (${local_on_scene_raw} IS NOT NULL AND ${local_complete_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) / 60 <= 12) ;;
+         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) < 720 AND
+         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) > 5) ;;
   }
 
   measure: average_time_in_queue {
