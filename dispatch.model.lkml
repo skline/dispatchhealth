@@ -123,6 +123,10 @@ explore: visit_facts {
     from: budget_projections_by_market
     sql_on: ${market_dimensions.id} = ${budget_projections_by_market_future.market_dim_id};;
   }
+  join: market_start_date {
+    sql_on: ${market_start_date.market_dim_id} = ${market_dimensions.id} ;;
+
+  }
 
 }
 

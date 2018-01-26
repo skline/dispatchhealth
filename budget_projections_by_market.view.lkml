@@ -33,7 +33,7 @@ view: budget_projections_by_market {
 
   measure: projection_visits_month_to_date {
     type: number
-    sql: round(${budget_projections_by_market.projected_visits}*day(${visit_dimensions.max_billable_visit_date})/DAY(LAST_DAY(curdate())),0) ;;
+    sql: round(${budget_projections_by_market.projected_visits}*${visit_dimensions.month_percent},0) ;;
   }
 
 

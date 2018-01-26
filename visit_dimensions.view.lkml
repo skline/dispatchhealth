@@ -84,12 +84,20 @@ view: visit_dimensions {
     sql: ${TABLE}.visit_number ;;
   }
 
+  measure: month_percent {
+    type: number
+    sql:day(${visit_dimensions.max_billable_visit_date})/DAY(LAST_DAY(curdate())) ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id, ehr_name]
   }
   measure: max_billable_visit_date {
-    type: max
-    sql: ${local_visit_date} ;;
+    convert_tz: no
+    type:  date
+    sql: max(${local_visit_date}) ;;
   }
+
+
 }
