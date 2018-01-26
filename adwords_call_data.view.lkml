@@ -12,6 +12,7 @@ view: adwords_call_data {
   }
 
   dimension_group: end {
+    convert_tz: no
     type: time
     timeframes: [
       raw,
@@ -31,6 +32,7 @@ view: adwords_call_data {
   }
 
   dimension_group: start {
+    convert_tz: no
     type: time
     timeframes: [
       raw,

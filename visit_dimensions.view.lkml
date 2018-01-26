@@ -89,7 +89,7 @@ view: visit_dimensions {
     drill_fields: [id, ehr_name]
   }
   measure: max_billable_visit_date {
-    type: max
-    sql: ${local_visit_date} ;;
+    type:  date
+    sql: max(${local_visit_date}) ;;
   }
 }

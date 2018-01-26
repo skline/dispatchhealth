@@ -22,6 +22,7 @@ view: incontact {
   }
 
   dimension_group: end {
+    convert_tz: no
     type: time
     timeframes: [
       raw,
@@ -46,6 +47,7 @@ view: incontact {
   }
 
   dimension_group: start {
+    convert_tz: no
     type: time
     timeframes: [
       raw,
