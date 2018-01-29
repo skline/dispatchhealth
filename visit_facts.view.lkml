@@ -453,12 +453,9 @@ view: visit_facts {
   }
 
   measure: average_expected_allowable {
-    type: average
-    filters: {
-      field: total_expected_allowable
-    }
+    type: number
+    sql: avg(${visit_facts.total_expected_allowable}) ;;
 
-    drill_fields: [details*]
   }
 
   measure: count_of_non_smfr_billable_visits {
