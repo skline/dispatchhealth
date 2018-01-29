@@ -133,14 +133,17 @@ explore: visit_facts {
             and  ${channel_start_date.channel_dim_id} = ${visit_facts.channel_dim_id} ;;
 
   }
-
-
+  join:  capacity_model_processed {
+    sql_on: ${market_dimensions.id} =  ${capacity_model_processed.market_dim_id}
+            and ${channel_dimensions.id} = ${capacity_model_processed.channel_dim_id}
+    ;;
+    }
 }
 
 explore: incontact {
-
   join: adwords_call_data {
     sql_on: ${adwords_call_data.end_time} = ${incontact.end_time};;
   }
+}
 
-  }
+

@@ -788,6 +788,16 @@ measure: monthly_billable_visits_run_rate {
   sql: round(${count_of_billable_visits}/${visit_dimensions.month_percent},0) ;;
 }
 
+  measure: monthly_total_expected_allowable_rate {
+    type: number
+    sql: round(${sum_total_expected_allowable}/${visit_dimensions.month_percent},0) ;;
+  }
+
+  measure: average_expected_allowable {
+    type: number
+    sql: round(${sum_total_expected_allowable}/${count_of_billable_visits},2) ;;
+  }
+
 measure: projected_billable_difference_run_rate {
     type: number
     sql:  ${monthly_billable_visits_run_rate}-${budget_projections_by_market.projected_visits_measure};;
