@@ -408,6 +408,12 @@ view: visit_facts {
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL ;;
   }
 
+  dimension: billable_visit_with_expected_allowable {
+    type: yesno
+    sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL
+        and ${total_expected_allowable}>0;;
+  }
+
   dimension: non_smfr_billable_visit {
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL AND ${car_dimensions.car_name} != 'SMFR_Car';;
@@ -430,6 +436,26 @@ view: visit_facts {
     type: count
     filters: {
       field: billable_visit
+      value: "yes"
+    }
+
+    drill_fields: [details*]
+  }
+
+  measure: count_of_billable_visit_with_expected_allowable {
+    type: count
+    filters: {
+      field: billable_visit_with_expected_allowable
+      value: "yes"
+    }
+
+    drill_fields: [details*]
+  }
+
+  measure: average_expected_allowable {
+    type: average
+    filters: {
+      field: total_expected_allowable
       value: "yes"
     }
 
@@ -791,11 +817,6 @@ measure: monthly_billable_visits_run_rate {
   measure: monthly_total_expected_allowable_rate {
     type: number
     sql: round(${sum_total_expected_allowable}/${visit_dimensions.month_percent},0) ;;
-  }
-
-  measure: average_expected_allowable {
-    type: number
-    sql: round(${sum_total_expected_allowable}/${count_of_billable_visits},2) ;;
   }
 
 measure: projected_billable_difference_run_rate {
