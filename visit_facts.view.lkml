@@ -456,7 +456,6 @@ view: visit_facts {
     type: average
     filters: {
       field: total_expected_allowable
-      value: "yes"
     }
 
     drill_fields: [details*]
