@@ -454,7 +454,7 @@ view: visit_facts {
 
   measure: average_expected_allowable {
     type: number
-    sql: avg(${visit_facts.total_expected_allowable}) ;;
+    sql: roundavg(${visit_facts.total_expected_allowable}),2) ;;
 
   }
 
