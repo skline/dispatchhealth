@@ -138,6 +138,11 @@ explore: visit_facts {
             and ${channel_dimensions.id} = ${capacity_model_processed.channel_dim_id}
     ;;
     }
+
+  join:  location_dimensions {
+    sql_on: ${visit_facts.location_dim_id} =  ${location_dimensions.id}
+    ;;
+  }
 }
 
 explore: incontact {
@@ -145,5 +150,3 @@ explore: incontact {
     sql_on: ${adwords_call_data.end_time} = ${incontact.end_time};;
   }
 }
-
-
