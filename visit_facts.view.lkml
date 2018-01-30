@@ -314,6 +314,11 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  dimension:  complete_visit {
+    type: yesno
+    sql: NOT ${resolved} ;;
+  }
+
   measure: count_complete_visits {
     type: count
     filters: {
@@ -323,6 +328,8 @@ view: visit_facts {
 
     drill_fields: [details*]
   }
+
+
 
   dimension: secondary_resolve_reason {
     type: string
@@ -488,15 +495,15 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
-  dimension: on_scene_visits {
+  dimension: on_scene_visit {
     type: yesno
-    sql: ${resolved} = 'no' AND ${resolved_seen_flag} = 'yes' ;;
+    sql: (${resolved_seen_flag} AND NOT ${resolved}) ;;
   }
 
   measure: count_of_on_scene_visits {
     type: count
     filters: {
-      field: on_scene_visits
+      field: on_scene_visit
       value: "yes"
     }
 
@@ -778,7 +785,7 @@ END;;
 
   dimension: resolved_seen_flag {
     type: yesno
-    sql: ${resolved} IS TRUE and ${local_on_scene_time} IS NOT NULL ;;
+    sql: (${resolved} AND ${local_on_scene_time} IS NOT NULL) OR NOT ${resolved} ;;
   }
 
   measure: count_of_resolved_seen {
