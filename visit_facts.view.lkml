@@ -511,9 +511,22 @@ view: visit_facts {
   dimension: in_queue {
     type: yesno
     sql: (${local_requested_raw} IS NOT NULL AND
-         ${local_accepted_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) < 720 AND
-         TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) > 0) ;;
+         ${local_accepted_raw} IS NOT NULL ;;
+  }
+
+  dimension: in_queue_mins {
+    type: number
+    sql: TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) ;;
+  }
+
+  measure: avg_in_queue_mins {
+    type: average
+    sql: ${in_queue_mins} ;;
+    filters: {
+        field: in_queue
+        value: "yes"
+    }
+    drill_fields: [details*]
   }
 
   dimension: in_accepted_queue {
