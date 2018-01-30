@@ -67,6 +67,6 @@ view: payer_dimensions {
 
   measure: count {
     type: count
-    drill_fields: [id, insurance_package_name]
+    drill_fields: [id, insurance_package_name, insurance_reporting_category]
   }
 }
