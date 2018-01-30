@@ -3,6 +3,7 @@ view: market_start_date {
 
   dimension_group: first_accepted {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
