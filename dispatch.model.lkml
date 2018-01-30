@@ -32,7 +32,7 @@ explore: visit_facts {
 
   join: visit_dimensions {
     relationship: many_to_one
-    sql_on: ${visit_dimensions.visit_number} = ${visit_facts.visit_dim_number} ;;
+    sql_on: ${visit_dimensions.care_request_id} = ${visit_facts.care_request_id} ;;
   }
 
   join: car_dimensions {
@@ -55,7 +55,6 @@ explore: visit_facts {
     sql_on: ${ed_diversion_survey_response.visit_dim_number} = ${visit_facts.visit_dim_number} ;;
   }
 
-
   join: app_shift_summary_facts {
     relationship: many_to_one
     sql_on: ${app_shift_summary_facts.start_of_month_month} = ${visit_facts.local_accepted_month};;
@@ -65,7 +64,6 @@ explore: visit_facts {
     relationship: many_to_one
     sql_on: ${provider_dimensions.id} = ${visit_facts.provider_dim_id};;
   }
-
 
   join: app_shift_planning_facts {
     from: shift_planning_facts
@@ -91,7 +89,7 @@ explore: visit_facts {
   }
 
   join: transaction_facts {
-    sql_on: ${transaction_facts.visit_dim_number} = ${visit_facts.visit_dim_number}  ;;
+    sql_on: ${transaction_facts.visit_dim_number} = ${visit_dimensions.visit_number}  ;;
   }
 
   join: primary_payer_dimensions {
