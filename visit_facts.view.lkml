@@ -428,8 +428,13 @@ view: visit_facts {
   }
 
   measure: count {
-    type: count_distinct
+    type: count
     drill_fields: [details*]
+  }
+
+  measure: visits  {
+    type: count_distinct
+    sql: ${care_request_id} ;;
   }
 
   measure: count_of_billable_visits {
