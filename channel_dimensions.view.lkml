@@ -57,6 +57,11 @@ view: channel_dimensions {
                ELSE ${sub_type}||'ZZZZZZZZ' END ;;
   }
 
+  dimension: digital {
+    type: yesno
+    sql: ${organization} in('google or other search', 'social media (facebook, linkedin, twitter, instagram)', 'social media(facebook, linkedin, twitter, instagram)') ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
