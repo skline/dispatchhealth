@@ -428,7 +428,7 @@ view: visit_facts {
   }
 
   measure: count {
-    type: count
+    type: count_distinct
     drill_fields: [details*]
   }
 
