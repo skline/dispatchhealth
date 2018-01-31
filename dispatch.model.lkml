@@ -145,6 +145,9 @@ explore: visit_facts {
 
 explore: incontact {
   join: adwords_call_data {
-    sql_on: ${adwords_call_data.end_time} = ${incontact.end_time};;
+    sql_on: ${adwords_call_data.end_time} = ${incontact.end_time}
+    or ${adwords_call_data.end_time}+1 = ${incontact.end_time}
+    or ${adwords_call_data.end_time}-1 = ${incontact.end_time}
+    ;;
   }
 }
