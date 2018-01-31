@@ -26,6 +26,21 @@ view: adwords_call_data {
     sql: ${TABLE}.end_time ;;
   }
 
+  dimension: end_time_raw {
+    type: string
+    sql: ${TABLE}.end_time ;;
+  }
+
+  dimension: end_time_plus_one {
+    type: string
+    sql: ${TABLE}.end_time+1 ;;
+  }
+
+  dimension: end_time_minus_one {
+    type: string
+    sql: ${TABLE}.end_time-1 ;;
+  }
+
   dimension: seconds {
     type: number
     sql: ${TABLE}.seconds ;;
@@ -45,6 +60,12 @@ view: adwords_call_data {
     ]
     sql: ${TABLE}.start_time ;;
   }
+
+  measure: average_call_time{
+    type: number
+    sql: round(avg(${seconds}),1);;
+  }
+
 
   measure: count {
     type: count
