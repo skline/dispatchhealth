@@ -510,7 +510,7 @@ view: visit_facts {
 
   dimension: in_queue {
     type: yesno
-    sql: (${local_requested_raw} IS NOT NULL AND
+    sql: ${local_requested_raw} IS NOT NULL AND
          ${local_accepted_raw} IS NOT NULL ;;
   }
 
@@ -519,31 +519,77 @@ view: visit_facts {
     sql: TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) ;;
   }
 
-  measure: avg_in_queue_mins {
+  measure: avg_queue_mins {
     type: average
     sql: ${in_queue_mins} ;;
+    filters: {
+      field: in_queue
+      value: "yes"
+    }
     drill_fields: [details*]
   }
 
   dimension: in_accepted_queue {
     type: yesno
-    sql: (${local_accepted_raw} IS NOT NULL AND ${local_on_route_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) < 720 AND
-         TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) > 0) ;;
+    sql: ${local_accepted_raw} IS NOT NULL AND
+         ${local_on_route_raw} IS NOT NULL;;
+  }
+
+  dimension: in_accepted_queue_mins {
+    type: number
+    sql: TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) ;;
+  }
+
+  measure: avg_accepted_queue_mins {
+    type: average
+    sql: ${in_accepted_queue_mins} ;;
+    filters: {
+      field: in_accepted_queue
+      value: "yes"
+    }
+    drill_fields: [details*]
   }
 
   dimension: in_on_route_queue {
     type: yesno
-    sql: (${local_on_route_raw} IS NOT NULL AND ${local_on_scene_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) < 720 AND
-         TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) > 5) ;;
+    sql: ${local_on_route_raw} IS NOT NULL AND
+         ${local_on_scene_raw} IS NOT NULL ;;
+  }
+
+  dimension: in_on_route_queue_mins {
+    type: number
+    sql: TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) ;;
+  }
+
+  measure: avg_on_route_queue_mins {
+    type: average
+    sql: ${in_on_route_queue_mins} ;;
+    filters: {
+      field: in_on_route_queue
+      value: "yes"
+    }
+    drill_fields: [details*]
   }
 
   dimension: in_on_scene_queue {
     type: yesno
-    sql: (${local_on_scene_raw} IS NOT NULL AND ${local_complete_raw} IS NOT NULL AND
-         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) < 720 AND
-         TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) > 5) ;;
+    sql: ${local_on_scene_raw} IS NOT NULL AND
+         ${local_complete_raw} IS NOT NULL ;;
+  }
+
+  dimension: in_on_scene_queue_mins {
+    type: number
+    sql: TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) ;;
+  }
+
+  measure: avg_on_scene_queue_mins {
+    type: average
+    sql: ${in_on_scene_queue_mins} ;;
+    filters: {
+      field: in_on_scene_queue
+      value: "yes"
+    }
+    drill_fields: [details*]
   }
 
   measure: average_time_in_queue {
