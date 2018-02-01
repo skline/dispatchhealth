@@ -18,7 +18,7 @@ view: incontact {
 
   dimension: duration {
     type: number
-    sql: ${TABLE}.duration ;;
+    sql: coalesce(${TABLE}.duration,0) ;;
   }
 
   dimension_group: end {
@@ -33,6 +33,11 @@ view: incontact {
       quarter,
       year
     ]
+  sql: ${TABLE}.end_time ;;
+  }
+
+  dimension: end_time_raw {
+    type: string
     sql: ${TABLE}.end_time ;;
   }
 
@@ -63,7 +68,7 @@ view: incontact {
 
   dimension: talk_time_sec {
     type: number
-    sql: ${TABLE}.talk_time_sec ;;
+    sql: coalesce(${TABLE}.talk_time_sec,0) ;;
   }
 
   dimension: to_number {
@@ -74,5 +79,13 @@ view: incontact {
   measure: count {
     type: count
     drill_fields: [skll_name]
+  }
+  measure:  wait_time{
+    type: number
+    sql: ${contact_time_sec} - ${talk_time_sec} ;;
+  }
+  measure:  average_wait_time{
+    type: number
+    sql: round(avg(${wait_time}),1) ;;
   }
 }
