@@ -522,10 +522,6 @@ view: visit_facts {
   measure: avg_in_queue_mins {
     type: average
     sql: ${in_queue_mins} ;;
-    filters: {
-        field: in_queue
-        value: "yes"
-    }
     drill_fields: [details*]
   }
 
