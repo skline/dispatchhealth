@@ -109,6 +109,12 @@ view: app_shift_summary_facts {
     sql: ${TABLE}.updated_at ;;
   }
 
+  measure: count_total_actual_hours {
+    type: sum
+    sql: ${TABLE}.total_actual_hours ;;
+    drill_fields: [id]
+  }
+
   measure: count {
     type: count
     drill_fields: [id]
