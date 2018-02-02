@@ -21,6 +21,7 @@ view: productivity_data {
   }
 
   dimension_group: date {
+    convert_tz: no
     type: time
     timeframes: [
       raw,
@@ -50,6 +51,7 @@ view: productivity_data {
   }
 
   dimension_group: updated_ts {
+
     type: time
     timeframes: [
       raw,
