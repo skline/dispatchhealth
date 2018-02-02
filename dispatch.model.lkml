@@ -137,6 +137,13 @@ explore: visit_facts {
     ;;
     }
 
+  join:  productivity_data {
+    relationship: many_to_one
+    sql_on: ${productivity_data.date_date}} =  ${visit_dimensions.local_visit_date}
+            and ${productivity_data.market_dim_id} = ${visit_facts.market_dim_id}
+    ;;
+  }
+
   join:  location_dimensions {
     sql_on: ${visit_facts.location_dim_id} =  ${location_dimensions.id}
     ;;
