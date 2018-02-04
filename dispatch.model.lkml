@@ -138,8 +138,8 @@ explore: visit_facts {
     }
 
   join:  productivity_data {
-    relationship: many_to_one
-    sql_on: date(${productivity_data.date_date}) =  date(${visit_dimensions.local_visit_date})
+    relationship: one_to_many
+    sql_on: date(${productivity_data.date_date}) = date(${visit_dimensions.local_visit_date})
             and ${productivity_data.market_dim_id} = ${visit_facts.market_dim_id}
     ;;
   }
