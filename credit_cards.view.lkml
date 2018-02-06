@@ -110,4 +110,9 @@ view: credit_cards {
     type: count
     drill_fields: [id, ehr_name, care_requests.ehr_name, care_requests.consenter_name, care_requests.id]
   }
+
+  measure: credit_card_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+  }
 }
