@@ -156,5 +156,35 @@ explore: incontact {
     or ${adwords_call_data.end_time_plus_one} = ${incontact.end_time_raw}
     or ${adwords_call_data.end_time_minus_one}= ${incontact.end_time_raw}
     ;;
+
   }
+
+  join: invoca {
+    type: inner
+    sql_on: ${invoca.end_time} = ${incontact.end_time_raw}
+          or ${invoca.end_time_plus_one} = ${incontact.end_time_raw}
+          or ${invoca.end_time_minus_one}= ${incontact.end_time_raw}
+          and ${invoca.caller_id} = ${incontact.from_number}
+          ;;
+
+    }
+    }
+
+  explore: invoca {
+    join: adwords_call_data {
+      sql_on: ${adwords_call_data.end_time_raw} = ${invoca.end_time}
+            or ${adwords_call_data.end_time_plus_one} = ${invoca.end_time}
+            or ${adwords_call_data.end_time_minus_one}= ${invoca.end_time}
+            ;;
+
+      }
+
+      join: incontact {
+        sql_on: ${invoca.end_time} = ${incontact.end_time_raw}
+          or ${invoca.end_time_plus_one} = ${incontact.end_time_raw}
+          or ${invoca.end_time_minus_one}= ${incontact.end_time_raw}
+          and ${invoca.caller_id} = ${incontact.from_number}
+          ;;
+
+        }
 }
