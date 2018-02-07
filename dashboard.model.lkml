@@ -16,8 +16,18 @@ explore: care_requests {
   }
 
   join: markets {
-    relationship: many_to_one
+    relationship: one_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
+  }
+
+  join: shift_teams {
+    relationship: one_to_one
+    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+  }
+
+  join: shift_team_members {
+    relationship: one_to_many
+    sql_on:  ${shift_teams.id} = ${shift_team_members.shift_team_id};;
   }
 
   join: care_request_providers {
