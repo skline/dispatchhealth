@@ -152,19 +152,16 @@ explore: visit_facts {
 
 explore: incontact {
   join: adwords_call_data {
-    sql_on: ${adwords_call_data.end_time_raw} = ${incontact.end_time_raw}
-    or ${adwords_call_data.end_time_plus_one} = ${incontact.end_time_raw}
-    or ${adwords_call_data.end_time_minus_one}= ${incontact.end_time_raw}
+    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time_raw},${adwords_call_data.end_time_raw}))) < 3
+     and ${incontact.from_number} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
     ;;
 
   }
 
   join: invoca {
-    type: inner
-    sql_on: ${invoca.end_time} = ${incontact.end_time_raw}
-          or ${invoca.end_time_plus_one} = ${incontact.end_time_raw}
-          or ${invoca.end_time_minus_one}= ${incontact.end_time_raw}
-          and ${invoca.caller_id} = ${incontact.from_number}
+    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
+             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time_raw}, ${invoca.start_time_raw})))<15
+             and ${invoca.caller_id} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
           ;;
 
     }
@@ -172,19 +169,35 @@ explore: incontact {
 
   explore: invoca {
     join: adwords_call_data {
-      sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time}, (addtime(${invoca.start_time}, ${invoca.total_duration}))))) < 15 and
-             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time}, ${invoca.start_time})))<15
+      sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
+             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time_raw}, ${invoca.start_time_raw})))<15
              and ${invoca.caller_id} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
             ;;
 
       }
 
       join: incontact {
-        sql_on: ${invoca.end_time} = ${incontact.end_time_raw}
-          or ${invoca.end_time_plus_one} = ${incontact.end_time_raw}
-          or ${invoca.end_time_minus_one}= ${incontact.end_time_raw}
-          and ${invoca.caller_id} = ${incontact.from_number}
+        sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 3
+                and ${incontact.from_number} like  CONCAT('%', ${invoca.caller_id} ,'%')
           ;;
 
         }
+
+}
+explore: adwords_call_data {
+  join: incontact {
+    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time_raw},${adwords_call_data.end_time_raw}))) < 3
+           and ${incontact.from_number} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
+          ;;
+
+    }
+  join: invoca {
+    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
+             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time_raw}, ${invoca.start_time_raw})))<15
+             and ${invoca.caller_id} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
+            ;;
+
+    }
+
+
 }

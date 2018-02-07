@@ -51,6 +51,10 @@ view: adwords_call_data {
     sql: ${TABLE}.start_time ;;
   }
 
+  dimension: start_time_raw {
+    type: string
+    sql: ${TABLE}.start_time ;;
+  }
   measure: average_call_time{
     type: number
     sql: round(avg(${seconds}),1);;

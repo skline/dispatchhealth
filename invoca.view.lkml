@@ -210,6 +210,10 @@ view: invoca {
     ]
     sql: ${TABLE}.start_time ;;
   }
+  dimension: start_time_raw {
+    type: string
+    sql: ${TABLE}.start_time ;;
+  }
 
   dimension: state {
     type: string

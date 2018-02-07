@@ -41,6 +41,11 @@ view: incontact {
     sql: ${TABLE}.end_time ;;
   }
 
+  dimension: start_time_raw {
+    type: string
+    sql: ${TABLE}.start_time ;;
+  }
+
   dimension: from_number {
     type: string
     sql: ${TABLE}.from_number ;;
