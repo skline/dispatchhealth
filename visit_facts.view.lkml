@@ -885,7 +885,16 @@ measure: projected_billable_difference_run_rate {
     sql:  ${monthly_billable_visits_run_rate}-${budget_projections_by_market.projected_visits_measure};;
   }
 
-
-
+dimension: scheduled {
+  type: yesno
+  sql:  abs(TIME_TO_SEC(timediff(${visit_facts.requested_time}, ${visit_facts.accepted_time})))>(12*60*60);;
+}
+  measure: scheduled_count {
+    type: count
+    filters: {
+      field: scheduled
+      value: "yes"
+    }
+  }
 
 }
