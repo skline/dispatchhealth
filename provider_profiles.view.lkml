@@ -102,7 +102,7 @@ view: provider_profiles {
 
   dimension: emt_flag {
     type: yesno
-    sql: ${TABLE}.position = "emt" ;;
+    sql: ${TABLE}.position = 'emt' ;;
   }
 
   dimension: user_id {
