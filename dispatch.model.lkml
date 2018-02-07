@@ -172,9 +172,9 @@ explore: incontact {
 
   explore: invoca {
     join: adwords_call_data {
-      sql_on: ${adwords_call_data.end_time_raw} = ${invoca.end_time}
-            or ${adwords_call_data.end_time_plus_one} = ${invoca.end_time}
-            or ${adwords_call_data.end_time_minus_one}= ${invoca.end_time}
+      sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time}, (addtime(${invoca.start_time}, ${invoca.total_duration}))))) < 15 and
+             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time}, ${invoca.start_time})))<15
+             and ${invoca.caller_id} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
             ;;
 
       }
