@@ -36,7 +36,7 @@ explore: care_requests {
   }
 
   join: provider_profiles {
-    relationship: many_to_one
-    sql_on: ${care_request_providers.user_id} = ${provider_profiles.user_id} ;;
+    relationship: one_to_one
+    sql_on: ${shift_team_members.user_id} = ${provider_profiles.user_id} ;;
   }
 }
