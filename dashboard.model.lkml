@@ -3,21 +3,6 @@ connection: "dashboard"
 include: "*.view.lkml"         # include all views in this project
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
-# # Select the views that should be a part of this model,
-# # and define the joins that connect them together.
-#
-# explore: order_items {
-#   join: orders {
-#     relationship: many_to_one
-#     sql_on: ${orders.id} = ${order_items.order_id} ;;
-#   }
-#
-#   join: users {
-#     relationship: many_to_one
-#     sql_on: ${users.id} = ${orders.user_id} ;;
-#   }
-# }
-
 explore: care_requests {
 
   access_filter: {
@@ -33,5 +18,15 @@ explore: care_requests {
   join: markets {
     relationship: many_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
+  }
+
+  join: care_request_providers {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${care_request_providers.care_request_id} ;;
+  }
+
+  join: provider_profiles {
+    relationship: many_to_one
+    sql_on: ${care_request_providers.user_id} = ${provider_profiles.user_id} ;;
   }
 }

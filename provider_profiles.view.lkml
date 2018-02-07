@@ -100,6 +100,11 @@ view: provider_profiles {
     sql: ${TABLE}.updated_at ;;
   }
 
+  dimension: emt_flag {
+    type: yesno
+    sql: ${TABLE}.position = "emt" ;;
+  }
+
   dimension: user_id {
     type: number
     sql: ${TABLE}.user_id ;;
