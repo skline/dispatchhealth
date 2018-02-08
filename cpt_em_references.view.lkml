@@ -1,9 +1,11 @@
 view: cpt_em_references {
+  label: "CPT E&M Reference Table"
   sql_table_name: jasperdb.cpt_em_references ;;
 
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}.id ;;
   }
 

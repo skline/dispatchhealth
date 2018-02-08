@@ -2,6 +2,7 @@ view: market_dimensions {
   sql_table_name: jasperdb.market_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;

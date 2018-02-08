@@ -150,6 +150,15 @@ explore: visit_facts {
     sql_on: ${visit_facts.location_dim_id} =  ${location_dimensions.id}
     ;;
   }
+
+  join: cpt_code_dimensions {
+    sql_on: ${transaction_facts.cpt_code_dim_id} = ${cpt_code_dimensions.id} ;;
+  }
+
+  join: cpt_em_references {
+    sql_on: ${cpt_code_dimensions.cpt_code} = ${cpt_em_references.cpt_code} ;;
+  }
+
 }
 
 explore: incontact {

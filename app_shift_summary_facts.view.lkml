@@ -1,7 +1,9 @@
 view: app_shift_summary_facts {
+  label: "APP Shift Summary Facts"
   sql_table_name: jasperdb.app_shift_summary_facts ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -13,6 +15,7 @@ view: app_shift_summary_facts {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -96,6 +99,7 @@ view: app_shift_summary_facts {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

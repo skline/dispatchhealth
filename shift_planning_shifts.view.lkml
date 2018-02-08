@@ -1,7 +1,9 @@
 view: shift_planning_shifts {
+  label: "APP Shift Planning Shifts"
   sql_table_name: jasperdb.shift_planning_shifts ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -28,6 +30,7 @@ view: shift_planning_shifts {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -110,6 +113,7 @@ view: shift_planning_shifts {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

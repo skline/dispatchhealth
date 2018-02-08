@@ -2,6 +2,7 @@ view: patient_dimensions {
   sql_table_name: jasperdb.patient_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
