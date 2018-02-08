@@ -47,7 +47,8 @@ explore: visit_facts {
 
   join: survey_response_facts {
     relationship: many_to_one
-    sql_on: ${survey_response_facts.visit_dim_number} = ${visit_facts.visit_dim_number} ;;
+    # change association to be the care request id instead of visit number - DH
+    sql_on: ${survey_response_facts.care_request_id} = ${visit_facts.care_request_id} ;;
   }
 
   join: ed_diversion_survey_response {
@@ -57,7 +58,8 @@ explore: visit_facts {
 
   join: app_shift_summary_facts {
     relationship: many_to_one
-    sql_on: ${app_shift_summary_facts.start_of_month_month} = ${visit_facts.local_accepted_month};;
+    # change association to be the visit dimension local visit month from visit facts local requested month - DH
+    sql_on: ${app_shift_summary_facts.start_of_month_month} = ${visit_dimensions.local_visit_month};;
   }
 
   join: provider_dimensions {
