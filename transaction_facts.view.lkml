@@ -144,7 +144,6 @@ view: transaction_facts {
   }
 
   dimension_group: post {
-    label: "Post Date"
     type: time
     timeframes: [
       raw,

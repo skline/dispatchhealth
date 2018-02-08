@@ -119,6 +119,7 @@ view: visit_facts {
   }
 
   dimension: letter_sent {
+    label: "Clinical Letter Sent flag"
     type: yesno
     sql: ${TABLE}.letter_sent ;;
   }
@@ -316,11 +317,13 @@ view: visit_facts {
   }
 
   dimension: resolved {
+    label: "Resolved flag"
     type: yesno
     sql: ${TABLE}.resolved ;;
   }
 
   measure: count_resolved_requests {
+    label: "Resolved Requests Count"
     type: count
     filters: {
       field: resolved
@@ -331,11 +334,13 @@ view: visit_facts {
   }
 
   dimension: complete_visit {
+    label: "Complete Visit flag"
     type: yesno
     sql: NOT ${resolved} ;;
   }
 
   measure: count_complete_visits {
+    label: "Complete Visits Count"
     type: count
     filters: {
       field: complete_visit
@@ -351,41 +356,49 @@ view: visit_facts {
   }
 
   dimension: seconds_in_queue {
+    label: "In-Queue Time (seconds)"
     type: number
     sql: ${TABLE}.seconds_in_queue ;;
   }
 
   dimension: minutes_in_queue {
+    label: "In-Queue Time (minutes)"
     type: number
     sql: 1.0 * ${TABLE}.seconds_in_queue / 60 ;;
   }
 
   dimension: seconds_of_travel_time {
+    label: "Travel Time (seconds)"
     type: number
     sql: ${TABLE}.seconds_of_travel_time ;;
   }
 
   dimension: seconds_on_scene {
+    label: "On-Scene Time (seconds)"
     type: number
     sql: ${TABLE}.seconds_on_scene ;;
   }
 
   dimension: hours_on_scene {
+    label: "On-Scene Time (hours)"
     type: number
     sql: 1.0 * ${seconds_on_scene} / 3600 ;;
   }
 
   dimension: total_acct_receivable_payments {
+    label: "Total Amount AR payments"
     type: number
     sql: ${TABLE}.total_acct_receivable_payments ;;
   }
 
   dimension: total_acct_receivable_transactions {
+    label: "Total Amount AR Transactions"
     type: number
     sql: ${TABLE}.total_acct_receivable_transactions ;;
   }
 
   dimension: total_charge {
+    label: "Total Charge Amount"
     type: number
     sql: ${TABLE}.total_charge ;;
   }
@@ -417,6 +430,7 @@ view: visit_facts {
   }
 
   dimension: visit_dim_number {
+    label: "EHR Visit Number"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
   }
@@ -546,13 +560,13 @@ view: visit_facts {
   }
 
   dimension: in_queue_mins {
-    label: "Minutes In-Queue"
+    label: "In-Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) ;;
   }
 
   measure: avg_queue_mins {
-    label: "Average In-Queue Minutes"
+    label: "In-Queue Avg Time (mins)"
     type: average
     sql: ${in_queue_mins} ;;
     filters: {
@@ -570,13 +584,13 @@ view: visit_facts {
   }
 
   dimension: in_accepted_queue_mins {
-    label: "Minutes In-Accepted Queue"
+    label: "In-Accepted Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) ;;
   }
 
   measure: avg_accepted_queue_mins {
-    label: "Average In-Accepted Queue Minutes"
+    label: "In-Accepted Queue Avg Time (mins)"
     type: average
     sql: ${in_accepted_queue_mins} ;;
     filters: {
@@ -594,13 +608,13 @@ view: visit_facts {
   }
 
   dimension: in_on_route_queue_mins {
-    label: "Minutes On-Route Queue"
+    label: "On-Route Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) ;;
   }
 
   measure: avg_on_route_queue_mins {
-    label: "Average On-Route Queue Minutes"
+    label: "On-Route Queue Avg Time (mins)"
     type: average
     sql: ${in_on_route_queue_mins} ;;
     filters: {
@@ -618,13 +632,13 @@ view: visit_facts {
   }
 
   dimension: in_on_scene_queue_mins {
-    label: "Minutes On-Scene Queue"
+    label: "On-Scene Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) ;;
   }
 
   measure: avg_on_scene_queue_mins {
-    label: "Average On-Scene Queue Minutes"
+    label: "On-Scene Queue Avg Time (mins)"
     type: average
     sql: ${in_on_scene_queue_mins} ;;
     filters: {
@@ -815,6 +829,7 @@ view: visit_facts {
   }
 
   dimension: ed_diversion {
+    label: "ED Diversion"
     type: number
     sql:  CASE
 WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
@@ -896,6 +911,7 @@ END;;
   }
 
   measure: count_of_resolved_seen {
+    label: "Resolved & Seen Count"
     type: count
     filters: {
       field: resolved_seen_flag
