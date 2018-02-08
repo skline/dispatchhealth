@@ -14,16 +14,19 @@ view: cpt_code_dimensions {
   }
 
   dimension: cpt_code {
+    label: "CPT code"
     type: string
     sql: ${TABLE}.cpt_code ;;
   }
 
   dimension: cpt_edition {
+    label: "CPT edition"
     type: string
     sql: ${TABLE}.cpt_edition ;;
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -43,16 +46,19 @@ view: cpt_code_dimensions {
   }
 
   dimension: e_and_m_code {
+    label: "E&M CPT code flag"
     type: yesno
     sql: ${TABLE}.e_and_m_code ;;
   }
 
   dimension: em_care_level {
+    label: "E&M Code Care Level"
     type: string
     sql: ${TABLE}.em_care_level ;;
   }
 
   dimension: em_patient_type {
+    label: "E&M Code Patient Type"
     type: string
     sql: ${TABLE}.em_patient_type ;;
   }
@@ -63,11 +69,13 @@ view: cpt_code_dimensions {
   }
 
   dimension: modifiers {
+    label: "CPT code modifiers"
     type: string
     sql: ${TABLE}.modifiers ;;
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

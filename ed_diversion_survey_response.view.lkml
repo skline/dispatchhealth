@@ -1,4 +1,5 @@
 view: ed_diversion_survey_response {
+  label: "ED Diversion Survey Response"
   derived_table: {
     sql: select *
       from
@@ -16,6 +17,7 @@ group by 1 ) ed_diversion_survey_response
   }
 
   dimension: visit_dim_number {
+    label: "EHR ID"
     primary_key: yes
     type: number
     sql: ${TABLE}.visit_dim_number ;;

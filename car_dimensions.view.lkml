@@ -34,6 +34,7 @@ view: car_dimensions {
   }
 
   measure: count_of_non_smfr_billable_visit {
+    label: "Non-SMFR billable visit count"
     type: count
     filters: {
       field: non_smfr_billable_visit

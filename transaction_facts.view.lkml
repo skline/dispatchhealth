@@ -1,7 +1,9 @@
 view: transaction_facts {
+  label: "EHR Transaction Facts"
   sql_table_name: jasperdb.transaction_facts ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -13,16 +15,19 @@ view: transaction_facts {
   }
 
   dimension: athena_charge_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.athena_charge_id ;;
   }
 
   dimension: athena_claim_id {
+    label: "EHR Claim ID"
     type: number
     sql: ${TABLE}.athena_claim_id ;;
   }
 
   dimension: athena_transaction_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.athena_transaction_id ;;
   }
@@ -33,6 +38,7 @@ view: transaction_facts {
   }
 
   dimension: channel_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.channel_dim_id ;;
   }
@@ -43,11 +49,13 @@ view: transaction_facts {
   }
 
   dimension: cpt_code_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.cpt_code_dim_id ;;
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -67,11 +75,13 @@ view: transaction_facts {
   }
 
   dimension: facility_type_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.facility_type_dim_id ;;
   }
 
   dimension: fee_schedule_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.fee_schedule_dim_id ;;
   }
@@ -105,11 +115,13 @@ view: transaction_facts {
   }
 
   dimension: location_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.location_dim_id ;;
   }
 
   dimension: market_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.market_dim_id ;;
   }
@@ -120,16 +132,19 @@ view: transaction_facts {
   }
 
   dimension: patient_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.patient_dim_id ;;
   }
 
   dimension: payer_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.payer_dim_id ;;
   }
 
   dimension_group: post {
+    label: "Post Date"
     type: time
     timeframes: [
       raw,
@@ -144,6 +159,7 @@ view: transaction_facts {
   }
 
   dimension: primary_payer_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.primary_payer_dim_id ;;
   }
@@ -154,6 +170,7 @@ view: transaction_facts {
   }
 
   dimension: total_rvu {
+    label: "Total RVU"
     type: number
     sql: ${TABLE}.total_rvu ;;
   }
@@ -169,6 +186,7 @@ view: transaction_facts {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -183,6 +201,7 @@ view: transaction_facts {
   }
 
   dimension: visit_dim_number {
+    label: "EHR ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
   }
@@ -193,6 +212,7 @@ view: transaction_facts {
   }
 
   dimension: work_rvu {
+    label: "Work RVU"
     type: number
     sql: ${TABLE}.work_rvu ;;
   }

@@ -2,6 +2,7 @@ view: visit_facts {
   sql_table_name: jasperdb.visit_facts ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -22,6 +23,7 @@ view: visit_facts {
   }
 
   dimension: car_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.car_dim_id ;;
   }
@@ -32,6 +34,7 @@ view: visit_facts {
   }
 
   dimension: channel_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.channel_dim_id ;;
   }
@@ -56,6 +59,7 @@ view: visit_facts {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -70,6 +74,7 @@ view: visit_facts {
   }
 
   dimension: csc_shift_id {
+    hidden: yes
     type: string
     sql: ${TABLE}.csc_shift_id ;;
   }
@@ -90,11 +95,13 @@ view: visit_facts {
   }
 
   dimension: emt_shift_id {
+    hidden: yes
     type: string
     sql: ${TABLE}.emt_shift_id ;;
   }
 
   dimension: facility_type_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.facility_type_dim_id ;;
   }
@@ -106,6 +113,7 @@ view: visit_facts {
   }
 
   dimension: letter_recipient_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.letter_recipient_dim_id ;;
   }
@@ -191,6 +199,7 @@ view: visit_facts {
   }
 
   dimension: location_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.location_dim_id ;;
   }
@@ -208,11 +217,13 @@ view: visit_facts {
   }
 
   dimension: market_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.market_dim_id ;;
   }
 
   dimension: new_patient {
+    label: "New Patient flag"
     type: yesno
     sql: ${TABLE}.new_patient ;;
   }
@@ -223,6 +234,7 @@ view: visit_facts {
   }
 
   dimension: nppa_shift_id {
+    hidden: yes
     type: string
     sql: ${TABLE}.nppa_shift_id ;;
   }
@@ -261,21 +273,25 @@ view: visit_facts {
   }
 
   dimension: patient_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.patient_dim_id ;;
   }
 
   dimension: patient_employer_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.patient_employer_dim_id ;;
   }
 
   dimension: provider_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.provider_dim_id ;;
   }
 
   dimension: request_type_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.request_type_dim_id ;;
   }
@@ -314,7 +330,7 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
-  dimension:  complete_visit {
+  dimension: complete_visit {
     type: yesno
     sql: NOT ${resolved} ;;
   }
@@ -380,11 +396,13 @@ view: visit_facts {
   }
 
   dimension: total_rvus {
+    label: "Total RVUs"
     type: number
     sql: ${TABLE}.total_rvus ;;
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -404,22 +422,26 @@ view: visit_facts {
   }
 
   dimension: work_rvus {
+    label: "Work RVUs"
     type: number
     sql: ${TABLE}.work_rvus ;;
   }
 
   dimension: billable_visit {
+    label: "Billable Visit flag"
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL ;;
   }
 
   dimension: billable_visit_with_expected_allowable {
+    label: "Billable Visits with Expected Allowable flag"
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL
         and ${total_expected_allowable}>0;;
   }
 
   dimension: non_smfr_billable_visit {
+    label: "Non-SMFR Billable visit flag"
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL AND ${car_dimensions.car_name} != 'SMFR_Car';;
   }
@@ -427,7 +449,7 @@ view: visit_facts {
     type: string
     sql: Case when MONTH(${local_requested_time}) between 3 and 5 then 'Spring'
             when MONTH(${local_requested_time}) between 6 and 8 then 'Summer'
-            when MONTH(${local_requested_time}) between 9 and 11 then 'Autum'
+            when MONTH(${local_requested_time}) between 9 and 11 then 'Autumn'
             when MONTH(${local_requested_time}) >= 12 or MONTH(${local_requested_time}) <= 2 then 'Winter'
        end;;
   }
@@ -438,11 +460,13 @@ view: visit_facts {
   }
 
   measure: visits  {
+    label: "Total Care Requests"
     type: count_distinct
     sql: ${care_request_id} ;;
   }
 
   measure: count_of_billable_visits {
+    label: "Billable Visit Count"
     type: count
     filters: {
       field: billable_visit
@@ -453,6 +477,7 @@ view: visit_facts {
   }
 
   measure: count_of_billable_visit_with_expected_allowable {
+    label: "Billable Visit with Expected Allowable Count"
     type: count
     filters: {
       field: billable_visit_with_expected_allowable
@@ -469,6 +494,7 @@ view: visit_facts {
   }
 
   measure: count_of_non_smfr_billable_visits {
+    label: "Non-SMFR Billable Visit Count"
     type: count
     filters: {
       field: non_smfr_billable_visit
@@ -479,11 +505,13 @@ view: visit_facts {
   }
 
   dimension: resolved_request {
+    label: "Resolved flag"
     type: yesno
     sql: ${resolved} IS TRUE ;;
   }
 
   measure: count_of_resolved_requests {
+    label: "Resolved Request Count"
     type: count
     filters: {
       field: resolved
@@ -494,11 +522,13 @@ view: visit_facts {
   }
 
   dimension: on_scene_visit {
+    label: "On-Scene Visit flag"
     type: yesno
     sql: (${complete_visit} OR ${resolved_seen_flag}) ;;
   }
 
   measure: count_of_on_scene_visits {
+    label: "On-Scene Visit Count"
     type: count
     filters: {
       field: on_scene_visit
@@ -509,17 +539,20 @@ view: visit_facts {
   }
 
   dimension: in_queue {
+    label: "In-Queue flag"
     type: yesno
     sql: ${local_requested_raw} IS NOT NULL AND
          ${local_accepted_raw} IS NOT NULL ;;
   }
 
   dimension: in_queue_mins {
+    label: "Minutes In-Queue"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) ;;
   }
 
   measure: avg_queue_mins {
+    label: "Average In-Queue Minutes"
     type: average
     sql: ${in_queue_mins} ;;
     filters: {
@@ -530,17 +563,20 @@ view: visit_facts {
   }
 
   dimension: in_accepted_queue {
+    label: "In-Accepted Queue flag"
     type: yesno
     sql: ${local_accepted_raw} IS NOT NULL AND
          ${local_on_route_raw} IS NOT NULL;;
   }
 
   dimension: in_accepted_queue_mins {
+    label: "Minutes In-Accepted Queue"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) ;;
   }
 
   measure: avg_accepted_queue_mins {
+    label: "Average In-Accepted Queue Minutes"
     type: average
     sql: ${in_accepted_queue_mins} ;;
     filters: {
@@ -551,17 +587,20 @@ view: visit_facts {
   }
 
   dimension: in_on_route_queue {
+    label: "On-Route Queue flag"
     type: yesno
     sql: ${local_on_route_raw} IS NOT NULL AND
          ${local_on_scene_raw} IS NOT NULL ;;
   }
 
   dimension: in_on_route_queue_mins {
+    label: "Minutes On-Route Queue"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) ;;
   }
 
   measure: avg_on_route_queue_mins {
+    label: "Average On-Route Queue Minutes"
     type: average
     sql: ${in_on_route_queue_mins} ;;
     filters: {
@@ -572,17 +611,20 @@ view: visit_facts {
   }
 
   dimension: in_on_scene_queue {
+    label: "On-Scene Queue flag"
     type: yesno
     sql: ${local_on_scene_raw} IS NOT NULL AND
          ${local_complete_raw} IS NOT NULL ;;
   }
 
   dimension: in_on_scene_queue_mins {
+    label: "Minutes On-Scene Queue"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) ;;
   }
 
   measure: avg_on_scene_queue_mins {
+    label: "Average On-Scene Queue Minutes"
     type: average
     sql: ${in_on_scene_queue_mins} ;;
     filters: {
@@ -637,11 +679,13 @@ view: visit_facts {
   }
 
   dimension: bb_3_day {
+    label: "3-Day Bounce back flag"
     type: yesno
     sql: ${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_3_day_count {
+    label: "3-Day Bounce back Count"
     type: count
     filters: {
       field: bb_3_day
@@ -650,11 +694,13 @@ view: visit_facts {
   }
 
   dimension: bb_14_day {
+    label: "14-Day Bounce back flag"
     type: yesno
     sql: ${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_14_day_count {
+    label: "14-Day Bounce back Count"
     type: count
     filters: {
       field: bb_14_day
@@ -663,11 +709,13 @@ view: visit_facts {
   }
 
   dimension: bb_30_day {
+    label: "30-Day Bounce back flag"
     type: yesno
     sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_30_day_count {
+    label: "30-Day Bounce back Count"
     type: count
     filters: {
       field: bb_30_day
@@ -676,11 +724,13 @@ view: visit_facts {
   }
 
   dimension: no_followup_3_day {
+    label: "No 3-Day followup flag"
     type: yesno
     sql: ${local_complete_raw} IS NOT NULL AND (${day_3_followup_outcome} = 'UNDOCUMENTED' OR ${day_3_followup_outcome} = 'PENDING') ;;
   }
 
   measure: no_followup_3_day_count {
+    label: "No 3-Day followup Count"
     type: count
     filters: {
       field: no_followup_3_day
@@ -689,11 +739,13 @@ view: visit_facts {
   }
 
   dimension: no_followup_14_day {
+    label: "No 14-Day followup flag"
     type: yesno
     sql: ${local_complete_raw} IS NOT NULL AND (${day_14_followup_outcome} = 'UNDOCUMENTED' OR ${day_14_followup_outcome} = 'PENDING');;
   }
 
   measure: no_followup_14_day_count {
+    label: "No 14-Day followup Count"
     type: count
     filters: {
       field: no_followup_14_day
@@ -702,11 +754,13 @@ view: visit_facts {
   }
 
   dimension: no_followup_30_day {
+    label: "No 30-Day followup flag"
     type: yesno
     sql: ${local_complete_raw} IS NOT NULL AND (${day_30_followup_outcome} = 'UNDOCUMENTED' OR ${day_30_followup_outcome} = 'PENDING');;
   }
 
   measure: no_followup_30_day_count {
+    label: "No 30-Day followup Count"
     type: count
     filters: {
       field: no_followup_30_day

@@ -2,6 +2,7 @@ view: visit_dimensions {
   sql_table_name: jasperdb.visit_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -13,6 +14,7 @@ view: visit_dimensions {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -27,11 +29,13 @@ view: visit_dimensions {
   }
 
   dimension: dashboard_patient_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.dashboard_patient_id ;;
   }
 
   dimension: ehr_name {
+    label: "EHR Name"
     type: string
     sql: ${TABLE}.ehr_name ;;
   }
@@ -52,6 +56,7 @@ view: visit_dimensions {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

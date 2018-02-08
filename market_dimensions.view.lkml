@@ -82,6 +82,7 @@ view: market_dimensions {
   }
 
   dimension: utc_offset {
+    hidden: yes
     type: string
     sql: ${TABLE}.utc_offset ;;
   }

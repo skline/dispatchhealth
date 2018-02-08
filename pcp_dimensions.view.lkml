@@ -1,13 +1,16 @@
 view: pcp_dimensions {
+  label: "PCP Dimensions"
   sql_table_name: jasperdb.pcp_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -22,16 +25,19 @@ view: pcp_dimensions {
   }
 
   dimension: pcp_name {
+    label: "PCP Name"
     type: string
     sql: ${TABLE}.pcp_name ;;
   }
 
   dimension: pcp_phone {
+    label: "PCP Phone"
     type: string
     sql: ${TABLE}.pcp_phone ;;
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

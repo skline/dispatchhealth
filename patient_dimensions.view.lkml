@@ -74,6 +74,7 @@ view: patient_dimensions {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -93,6 +94,7 @@ view: patient_dimensions {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

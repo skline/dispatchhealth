@@ -2,6 +2,7 @@ view: provider_dimensions {
   sql_table_name: jasperdb.provider_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -13,6 +14,7 @@ view: provider_dimensions {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -27,11 +29,13 @@ view: provider_dimensions {
   }
 
   dimension: emt_name {
+    label: "Medic Name"
     type: string
     sql: ${TABLE}.emt_name ;;
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -56,6 +60,7 @@ view: provider_dimensions {
   }
 
   dimension: shift_app_name {
+    label: "Shift APP Name"
     type: string
     sql:case when ${advanced_practice_provider_name} like "%DAVID MACKEY%" then 'Dave Mackey'
       when ${advanced_practice_provider_name} like '%ELIZABETH "ELLIE" NEISES%' then 'Ellie Neises'
