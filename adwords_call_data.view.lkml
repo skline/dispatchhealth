@@ -178,4 +178,8 @@ view: adwords_call_data {
       type: count
       drill_fields: [bussiness_name]
     }
+    dimension: phone_number {
+      type: string
+      sql:  coalesce(${invoca.caller_id}, ${incontact.from_number}, null) ;;
+    }
   }
