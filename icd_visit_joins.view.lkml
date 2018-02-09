@@ -1,4 +1,5 @@
 view: icd_visit_joins {
+  label: "ICD Code Visit Join Table"
   sql_table_name: jasperdb.icd_visit_joins ;;
 
   dimension: id {

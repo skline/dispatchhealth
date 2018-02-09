@@ -1,4 +1,5 @@
 view: icd_code_dimensions {
+  label: "ICD Code Dimensions"
   sql_table_name: jasperdb.icd_code_dimensions ;;
 
   dimension: id {
