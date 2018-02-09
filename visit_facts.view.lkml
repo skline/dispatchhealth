@@ -169,6 +169,12 @@ view: visit_facts {
     sql: ${TABLE}.local_on_route_time ;;
   }
 
+  dimension: local_on_route_hour {
+    type: date_hour
+    convert_tz: no
+    sql: HOUR(${local_on_route_date}) ;;
+  }
+
   dimension_group: local_on_scene {
     type: time
     convert_tz: no
