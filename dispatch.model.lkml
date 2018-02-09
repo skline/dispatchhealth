@@ -163,6 +163,22 @@ explore: visit_facts {
     sql_on: ${athena_encounter_claims.appointment_id} = ${visit_facts.visit_dim_number} ;;
   }
 
+  join: facility_type_dimensions {
+    sql_on: ${visit_facts.facility_type_dim_id} = ${facility_type_dimensions.id} ;;
+  }
+
+  join: icd_code_dimensions {
+    sql_on: ${icd_visit_joins.icd_dim_id} = ${icd_code_dimensions.id} ;;
+  }
+
+  join: icd_visit_joins {
+    sql_on: ${transaction_facts.visit_dim_number} = ${icd_visit_joins.visit_dim_number} ;;
+  }
+
+  join: respondent_dimensions {
+    sql_on: ${survey_response_facts.respondent_dim_id} = ${respondent_dimensions.id} ;;
+  }
+
 }
 
 explore: incontact {
