@@ -160,6 +160,7 @@ view: visit_facts {
     timeframes: [
       raw,
       time,
+      hour_of_day,
       date,
       week,
       month,
@@ -167,12 +168,6 @@ view: visit_facts {
       year
     ]
     sql: ${TABLE}.local_on_route_time ;;
-  }
-
-  dimension: local_on_route_hour {
-    type: date_hour
-    convert_tz: no
-    sql: HOUR(${local_on_route_raw}) ;;
   }
 
   dimension_group: local_on_scene {
