@@ -159,6 +159,10 @@ explore: visit_facts {
     sql_on: ${cpt_code_dimensions.cpt_code} = ${cpt_em_references.cpt_code} ;;
   }
 
+  join: athena_encounter_claims {
+    sql_on: ${athena_encounter_claims.appointment_id} = ${visit_facts.visit_dim_number} ;;
+  }
+
 }
 
 explore: incontact {
