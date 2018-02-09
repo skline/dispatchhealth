@@ -172,7 +172,7 @@ view: visit_facts {
   dimension: local_on_route_hour {
     type: date_hour
     convert_tz: no
-    sql: HOUR(${local_on_route_date}) ;;
+    sql: HOUR(${local_on_route_raw}) ;;
   }
 
   dimension_group: local_on_scene {
