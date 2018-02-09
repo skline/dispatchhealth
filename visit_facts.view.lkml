@@ -9,6 +9,7 @@ view: visit_facts {
   }
 
   dimension_group: accepted {
+    description: "The timestamp the care request was accepted by Provider in UTC"
     type: time
     timeframes: [
       raw,
@@ -29,6 +30,7 @@ view: visit_facts {
   }
 
   dimension: care_request_id {
+    description: "The ID assigned by DispatchHealth Dashboard software"
     type: number
     sql: ${TABLE}.care_request_id ;;
   }
@@ -40,11 +42,13 @@ view: visit_facts {
   }
 
   dimension: chief_complaint {
+    description: "The main description of patient symptoms for the care request"
     type: string
     sql: ${TABLE}.chief_complaint ;;
   }
 
   dimension_group: complete {
+    description: "The timestamp the care request was completed by the Provider in UTC"
     type: time
     timeframes: [
       raw,
@@ -80,16 +84,19 @@ view: visit_facts {
   }
 
   dimension: day_14_followup_outcome {
+    description: "The outcome of the provider visit 14 days after seeing patient"
     type: string
     sql: ${TABLE}.day_14_followup_outcome ;;
   }
 
   dimension: day_30_followup_outcome {
+    description: "The outcome of the provider visit 30 days after seeing patient"
     type: string
     sql: ${TABLE}.day_30_followup_outcome ;;
   }
 
   dimension: day_3_followup_outcome {
+    description: "The outcome of the provider visit 3 days after seeing patient"
     type: string
     sql: ${TABLE}.day_3_followup_outcome ;;
   }
@@ -125,6 +132,7 @@ view: visit_facts {
   }
 
   dimension_group: local_accepted {
+    description: "The timestamp the care request was accepted by Provider in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -140,6 +148,7 @@ view: visit_facts {
   }
 
   dimension_group: local_complete {
+    description: "The timestamp the care request was completed by the Provider in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -155,6 +164,7 @@ view: visit_facts {
   }
 
   dimension_group: local_on_route {
+    description: "The timestamp the Provider was on route to the appointment in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -171,6 +181,7 @@ view: visit_facts {
   }
 
   dimension_group: local_on_scene {
+    description: "The timestamp the Provider was on scene at the appointment in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -186,6 +197,7 @@ view: visit_facts {
   }
 
   dimension_group: local_requested {
+    description: "The timestamp the care request was created in the Provider Dashboard in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -207,6 +219,7 @@ view: visit_facts {
   }
 
   dimension: visit_location {
+    description: "The geocode (latitude and longitude) for the care request"
     type: location
     sql_latitude: ${latitude} ;;
     sql_longitude: ${longitude} ;;
@@ -231,6 +244,7 @@ view: visit_facts {
   }
 
   dimension: no_charge_entry_reason {
+    description: "The provided reason for a no-charge claim"
     type: string
     sql: ${TABLE}.no_charge_entry_reason ;;
   }
@@ -242,6 +256,7 @@ view: visit_facts {
   }
 
   dimension_group: on_route {
+    description: "The timestamp the Provider was on route to the appointment in UTC"
     type: time
     timeframes: [
       raw,
@@ -256,6 +271,7 @@ view: visit_facts {
   }
 
   dimension_group: on_scene {
+    description: "The timestamp the Provider was on scene at the appointment in UTC"
     type: time
     timeframes: [
       raw,
@@ -270,6 +286,7 @@ view: visit_facts {
   }
 
   dimension: other_resolve_reason {
+    description: "The text field contents for the resolve reason other field"
     type: string
     sql: ${TABLE}.other_resolve_reason ;;
   }
@@ -299,6 +316,7 @@ view: visit_facts {
   }
 
   dimension_group: requested {
+    description: "The timestamp the care request was created in the Provider Dashboard in UTC"
     type: time
     timeframes: [
       raw,
@@ -313,6 +331,7 @@ view: visit_facts {
   }
 
   dimension: resolve_reason {
+    description: "The reason the care request of resolved"
     type: string
     sql: ${TABLE}.resolve_reason ;;
   }
@@ -352,6 +371,7 @@ view: visit_facts {
   }
 
   dimension: secondary_resolve_reason {
+    description: "Addition information regarding the care request resolve reason"
     type: string
     sql: ${TABLE}.secondary_resolve_reason ;;
   }
@@ -405,12 +425,14 @@ view: visit_facts {
   }
 
   dimension: total_expected_allowable {
+    description: "The total of all expected allowed charge amounts for a patient visit"
     type: number
     sql: ${TABLE}.total_expected_allowable ;;
   }
 
   dimension: total_rvus {
     label: "Total RVUs"
+    description: "Total RVU for the care request includes Work, Practice Expense, and Malpractice RVU, also adjusted for number of charges and units. Not adjusted for GPCI location."
     type: number
     sql: ${TABLE}.total_rvus ;;
   }
@@ -431,13 +453,14 @@ view: visit_facts {
   }
 
   dimension: visit_dim_number {
-    label: "EHR Visit Number"
+    label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
   }
 
   dimension: work_rvus {
     label: "Work RVUs"
+    description: "The total Work RVU value for the care request for the procedure code adjusted for the number of charges and units. Not adjusted for GPCI location."
     type: number
     sql: ${TABLE}.work_rvus ;;
   }

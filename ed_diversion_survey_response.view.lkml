@@ -17,7 +17,7 @@ group by 1 ) ed_diversion_survey_response
   }
 
   dimension: visit_dim_number {
-    label: "EHR ID"
+    label: "EHR Appointment ID"
     primary_key: yes
     type: number
     sql: ${TABLE}.visit_dim_number ;;

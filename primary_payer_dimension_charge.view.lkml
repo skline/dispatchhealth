@@ -29,6 +29,7 @@ GROUP BY   tf.visit_dim_number,
       indexes: ["visit_dim_number", "payer_dim_id"]
     }
     dimension: visit_dim_number {
+      label: "EHR Appointment ID"
       type: number
       sql: ${TABLE}.visit_dim_number ;;
     }

@@ -85,6 +85,7 @@ view: visit_dimensions {
   }
 
   dimension: visit_number {
+    label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_number ;;
   }

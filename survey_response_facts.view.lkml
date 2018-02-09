@@ -133,6 +133,7 @@ view: survey_response_facts {
   }
 
   dimension: visit_dim_number {
+    label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
   }

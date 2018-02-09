@@ -36,6 +36,7 @@ view: icd_visit_joins {
   }
 
   dimension: sequence_number {
+    description: "The ordered number for the ICD code used in the claim"
     type: number
     sql: ${TABLE}.sequence_number ;;
   }
@@ -56,6 +57,7 @@ view: icd_visit_joins {
   }
 
   dimension: visit_dim_number {
+    label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
   }

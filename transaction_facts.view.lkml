@@ -10,6 +10,7 @@ view: transaction_facts {
   }
 
   dimension: amount {
+    description: "The gross dollar amount of the transaction"
     type: number
     sql: ${TABLE}.amount ;;
   }
@@ -22,6 +23,7 @@ view: transaction_facts {
 
   dimension: athena_claim_id {
     label: "EHR Claim ID"
+    description: "The ID assigned to each claim filed for an appointment"
     type: number
     sql: ${TABLE}.athena_claim_id ;;
   }
@@ -33,6 +35,7 @@ view: transaction_facts {
   }
 
   dimension: billable_to {
+    description: "The role of the payer charged for the activity"
     type: string
     sql: ${TABLE}.billable_to ;;
   }
@@ -44,6 +47,7 @@ view: transaction_facts {
   }
 
   dimension: claim_status {
+    description: "The current primary claim status of the claim; primary indicates that the patient's primary insurance is the responsible payer. values: drop, closed, hold, billed"
     type: string
     sql: ${TABLE}.claim_status ;;
   }
@@ -70,6 +74,7 @@ view: transaction_facts {
   }
 
   dimension: expected_allowed_amount {
+    description: "The dollar amount expected to be paid as calculated by the EHR provider"
     type: number
     sql: ${TABLE}.expected_allowed_amount ;;
   }
@@ -87,6 +92,7 @@ view: transaction_facts {
   }
 
   dimension_group: local_first_billed_datetime {
+    description: "The date the applicable responsible party charges were first billed"
     type: time
     timeframes: [
       raw,
@@ -101,6 +107,7 @@ view: transaction_facts {
   }
 
   dimension_group: local_last_billed_datetime {
+    description: "The most recent bill date for the applicable responsible party"
     type: time
     timeframes: [
       raw,
@@ -127,6 +134,7 @@ view: transaction_facts {
   }
 
   dimension: no_charge_entry_reason {
+    description: "The provided reason for a no-charge claim"
     type: string
     sql: ${TABLE}.no_charge_entry_reason ;;
   }
@@ -144,6 +152,7 @@ view: transaction_facts {
   }
 
   dimension_group: post {
+    description: "The date the transaction posted in the EHR"
     type: time
     timeframes: [
       raw,
@@ -164,22 +173,26 @@ view: transaction_facts {
   }
 
   dimension: reversal_flag {
+    description: "Indicator to reverse the EHR transaction"
     type: number
     sql: ${TABLE}.reversal_flag ;;
   }
 
   dimension: total_rvu {
     label: "Total RVU"
+    description: "Total RVU includes Work, Practice Expense, and Malpractice RVU, also adjusted for number of charges and units. Not adjusted for GPCI location."
     type: number
     sql: ${TABLE}.total_rvu ;;
   }
 
   dimension: transaction_reason {
+    description: "The subtype of adjustment and transfer transaction types"
     type: string
     sql: ${TABLE}.transaction_reason ;;
   }
 
   dimension: transaction_type {
+    description: "The type of the EHR transaction"
     type: string
     sql: ${TABLE}.transaction_type ;;
   }
@@ -200,18 +213,20 @@ view: transaction_facts {
   }
 
   dimension: visit_dim_number {
-    label: "EHR ID"
+    label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
   }
 
   dimension: voided_date {
+    description: "The date the EHR transaction is voided"
     type: string
     sql: ${TABLE}.voided_date ;;
   }
 
   dimension: work_rvu {
     label: "Work RVU"
+    description: "The Work RVU value for the procedure code adjusted for the number of charges and units. Not adjusted for GPCI location."
     type: number
     sql: ${TABLE}.work_rvu ;;
   }
