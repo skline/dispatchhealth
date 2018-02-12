@@ -1,6 +1,5 @@
-view: pcp_dimensions {
-  label: "PCP Dimensions"
-  sql_table_name: jasperdb.pcp_dimensions ;;
+view: letter_recipient_dimensions {
+  sql_table_name: jasperdb.letter_recipient_dimensions ;;
 
   dimension: id {
     hidden: yes
@@ -24,16 +23,19 @@ view: pcp_dimensions {
     sql: ${TABLE}.created_at ;;
   }
 
-  dimension: pcp_name {
-    label: "PCP Name"
+  dimension: recipient_name {
     type: string
-    sql: ${TABLE}.pcp_name ;;
+    sql: ${TABLE}.recipient_name ;;
   }
 
-  dimension: pcp_phone {
-    label: "PCP Phone"
+  dimension: recipient_organization {
     type: string
-    sql: ${TABLE}.pcp_phone ;;
+    sql: ${TABLE}.recipient_organization ;;
+  }
+
+  dimension: recipient_type {
+    type: string
+    sql: ${TABLE}.recipient_type ;;
   }
 
   dimension_group: updated {
@@ -53,6 +55,6 @@ view: pcp_dimensions {
 
   measure: count {
     type: count
-    drill_fields: [id, pcp_name]
+    drill_fields: [id, recipient_name]
   }
 }

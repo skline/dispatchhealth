@@ -2,6 +2,7 @@ view: location_dimensions {
   sql_table_name: jasperdb.location_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -13,6 +14,7 @@ view: location_dimensions {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -32,6 +34,7 @@ view: location_dimensions {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

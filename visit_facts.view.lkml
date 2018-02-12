@@ -2,12 +2,14 @@ view: visit_facts {
   sql_table_name: jasperdb.visit_facts ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension_group: accepted {
+    description: "The timestamp the care request was accepted by Provider in UTC"
     type: time
     timeframes: [
       raw,
@@ -22,26 +24,31 @@ view: visit_facts {
   }
 
   dimension: car_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.car_dim_id ;;
   }
 
   dimension: care_request_id {
+    description: "The ID assigned by DispatchHealth Dashboard software"
     type: number
     sql: ${TABLE}.care_request_id ;;
   }
 
   dimension: channel_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.channel_dim_id ;;
   }
 
   dimension: chief_complaint {
+    description: "The main description of patient symptoms for the care request"
     type: string
     sql: ${TABLE}.chief_complaint ;;
   }
 
   dimension_group: complete {
+    description: "The timestamp the care request was completed by the Provider in UTC"
     type: time
     timeframes: [
       raw,
@@ -56,6 +63,7 @@ view: visit_facts {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -70,31 +78,37 @@ view: visit_facts {
   }
 
   dimension: csc_shift_id {
+    hidden: yes
     type: string
     sql: ${TABLE}.csc_shift_id ;;
   }
 
   dimension: day_14_followup_outcome {
+    description: "The outcome of the provider visit 14 days after seeing patient"
     type: string
     sql: ${TABLE}.day_14_followup_outcome ;;
   }
 
   dimension: day_30_followup_outcome {
+    description: "The outcome of the provider visit 30 days after seeing patient"
     type: string
     sql: ${TABLE}.day_30_followup_outcome ;;
   }
 
   dimension: day_3_followup_outcome {
+    description: "The outcome of the provider visit 3 days after seeing patient"
     type: string
     sql: ${TABLE}.day_3_followup_outcome ;;
   }
 
   dimension: emt_shift_id {
+    hidden: yes
     type: string
     sql: ${TABLE}.emt_shift_id ;;
   }
 
   dimension: facility_type_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.facility_type_dim_id ;;
   }
@@ -106,16 +120,19 @@ view: visit_facts {
   }
 
   dimension: letter_recipient_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.letter_recipient_dim_id ;;
   }
 
   dimension: letter_sent {
+    label: "Clinical Letter Sent flag"
     type: yesno
     sql: ${TABLE}.letter_sent ;;
   }
 
   dimension_group: local_accepted {
+    description: "The timestamp the care request was accepted by Provider in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -131,6 +148,7 @@ view: visit_facts {
   }
 
   dimension_group: local_complete {
+    description: "The timestamp the care request was completed by the Provider in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -146,11 +164,13 @@ view: visit_facts {
   }
 
   dimension_group: local_on_route {
+    description: "The timestamp the Provider was on route to the appointment in local time"
     type: time
     convert_tz: no
     timeframes: [
       raw,
       time,
+      hour_of_day,
       date,
       week,
       month,
@@ -161,6 +181,7 @@ view: visit_facts {
   }
 
   dimension_group: local_on_scene {
+    description: "The timestamp the Provider was on scene at the appointment in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -176,6 +197,7 @@ view: visit_facts {
   }
 
   dimension_group: local_requested {
+    description: "The timestamp the care request was created in the Provider Dashboard in local time"
     type: time
     convert_tz: no
     timeframes: [
@@ -191,11 +213,13 @@ view: visit_facts {
   }
 
   dimension: location_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.location_dim_id ;;
   }
 
   dimension: visit_location {
+    description: "The geocode (latitude and longitude) for the care request"
     type: location
     sql_latitude: ${latitude} ;;
     sql_longitude: ${longitude} ;;
@@ -208,26 +232,31 @@ view: visit_facts {
   }
 
   dimension: market_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.market_dim_id ;;
   }
 
   dimension: new_patient {
+    label: "New Patient flag"
     type: yesno
     sql: ${TABLE}.new_patient ;;
   }
 
   dimension: no_charge_entry_reason {
+    description: "The provided reason for a no-charge claim"
     type: string
     sql: ${TABLE}.no_charge_entry_reason ;;
   }
 
   dimension: nppa_shift_id {
+    hidden: yes
     type: string
     sql: ${TABLE}.nppa_shift_id ;;
   }
 
   dimension_group: on_route {
+    description: "The timestamp the Provider was on route to the appointment in UTC"
     type: time
     timeframes: [
       raw,
@@ -242,6 +271,7 @@ view: visit_facts {
   }
 
   dimension_group: on_scene {
+    description: "The timestamp the Provider was on scene at the appointment in UTC"
     type: time
     timeframes: [
       raw,
@@ -256,31 +286,37 @@ view: visit_facts {
   }
 
   dimension: other_resolve_reason {
+    description: "The text field contents for the resolve reason other field"
     type: string
     sql: ${TABLE}.other_resolve_reason ;;
   }
 
   dimension: patient_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.patient_dim_id ;;
   }
 
   dimension: patient_employer_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.patient_employer_dim_id ;;
   }
 
   dimension: provider_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.provider_dim_id ;;
   }
 
   dimension: request_type_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.request_type_dim_id ;;
   }
 
   dimension_group: requested {
+    description: "The timestamp the care request was created in the Provider Dashboard in UTC"
     type: time
     timeframes: [
       raw,
@@ -295,16 +331,19 @@ view: visit_facts {
   }
 
   dimension: resolve_reason {
+    description: "The reason the care request of resolved"
     type: string
     sql: ${TABLE}.resolve_reason ;;
   }
 
   dimension: resolved {
+    label: "Resolved flag"
     type: yesno
     sql: ${TABLE}.resolved ;;
   }
 
   measure: count_resolved_requests {
+    label: "Resolved Requests Count"
     type: count
     filters: {
       field: resolved
@@ -314,12 +353,14 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
-  dimension:  complete_visit {
+  dimension: complete_visit {
+    label: "Complete Visit flag"
     type: yesno
     sql: NOT ${resolved} ;;
   }
 
   measure: count_complete_visits {
+    label: "Complete Visits Count"
     type: count
     filters: {
       field: complete_visit
@@ -330,61 +371,74 @@ view: visit_facts {
   }
 
   dimension: secondary_resolve_reason {
+    description: "Addition information regarding the care request resolve reason"
     type: string
     sql: ${TABLE}.secondary_resolve_reason ;;
   }
 
   dimension: seconds_in_queue {
+    label: "In-Queue Time (seconds)"
     type: number
     sql: ${TABLE}.seconds_in_queue ;;
   }
 
   dimension: minutes_in_queue {
+    label: "In-Queue Time (minutes)"
     type: number
     sql: 1.0 * ${TABLE}.seconds_in_queue / 60 ;;
   }
 
   dimension: seconds_of_travel_time {
+    label: "Travel Time (seconds)"
     type: number
     sql: ${TABLE}.seconds_of_travel_time ;;
   }
 
   dimension: seconds_on_scene {
+    label: "On-Scene Time (seconds)"
     type: number
     sql: ${TABLE}.seconds_on_scene ;;
   }
 
   dimension: hours_on_scene {
+    label: "On-Scene Time (hours)"
     type: number
     sql: 1.0 * ${seconds_on_scene} / 3600 ;;
   }
 
   dimension: total_acct_receivable_payments {
+    label: "Total Amount AR payments"
     type: number
     sql: ${TABLE}.total_acct_receivable_payments ;;
   }
 
   dimension: total_acct_receivable_transactions {
+    label: "Total Amount AR Transactions"
     type: number
     sql: ${TABLE}.total_acct_receivable_transactions ;;
   }
 
   dimension: total_charge {
+    label: "Total Charge Amount"
     type: number
     sql: ${TABLE}.total_charge ;;
   }
 
   dimension: total_expected_allowable {
+    description: "The total of all expected allowed charge amounts for a patient visit"
     type: number
     sql: ${TABLE}.total_expected_allowable ;;
   }
 
   dimension: total_rvus {
+    label: "Total RVUs"
+    description: "Total RVU for the care request includes Work, Practice Expense, and Malpractice RVU, also adjusted for number of charges and units. Not adjusted for GPCI location."
     type: number
     sql: ${TABLE}.total_rvus ;;
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -399,27 +453,33 @@ view: visit_facts {
   }
 
   dimension: visit_dim_number {
+    label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
   }
 
   dimension: work_rvus {
+    label: "Work RVUs"
+    description: "The total Work RVU value for the care request for the procedure code adjusted for the number of charges and units. Not adjusted for GPCI location."
     type: number
     sql: ${TABLE}.work_rvus ;;
   }
 
   dimension: billable_visit {
+    label: "Billable Visit flag"
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL ;;
   }
 
   dimension: billable_visit_with_expected_allowable {
+    label: "Billable Visits with Expected Allowable flag"
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL
         and ${total_expected_allowable}>0;;
   }
 
   dimension: non_smfr_billable_visit {
+    label: "Non-SMFR Billable visit flag"
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL AND ${car_dimensions.car_name} != 'SMFR_Car';;
   }
@@ -427,7 +487,7 @@ view: visit_facts {
     type: string
     sql: Case when MONTH(${local_requested_time}) between 3 and 5 then 'Spring'
             when MONTH(${local_requested_time}) between 6 and 8 then 'Summer'
-            when MONTH(${local_requested_time}) between 9 and 11 then 'Autum'
+            when MONTH(${local_requested_time}) between 9 and 11 then 'Autumn'
             when MONTH(${local_requested_time}) >= 12 or MONTH(${local_requested_time}) <= 2 then 'Winter'
        end;;
   }
@@ -438,11 +498,13 @@ view: visit_facts {
   }
 
   measure: visits  {
+    label: "Total Care Requests"
     type: count_distinct
     sql: ${care_request_id} ;;
   }
 
   measure: count_of_billable_visits {
+    label: "Billable Visit Count"
     type: count
     filters: {
       field: billable_visit
@@ -453,6 +515,7 @@ view: visit_facts {
   }
 
   measure: count_of_billable_visit_with_expected_allowable {
+    label: "Billable Visit with Expected Allowable Count"
     type: count
     filters: {
       field: billable_visit_with_expected_allowable
@@ -469,6 +532,7 @@ view: visit_facts {
   }
 
   measure: count_of_non_smfr_billable_visits {
+    label: "Non-SMFR Billable Visit Count"
     type: count
     filters: {
       field: non_smfr_billable_visit
@@ -479,11 +543,13 @@ view: visit_facts {
   }
 
   dimension: resolved_request {
+    label: "Resolved flag"
     type: yesno
     sql: ${resolved} IS TRUE ;;
   }
 
   measure: count_of_resolved_requests {
+    label: "Resolved Request Count"
     type: count
     filters: {
       field: resolved
@@ -494,11 +560,13 @@ view: visit_facts {
   }
 
   dimension: on_scene_visit {
+    label: "On-Scene Visit flag"
     type: yesno
     sql: (${complete_visit} OR ${resolved_seen_flag}) ;;
   }
 
   measure: count_of_on_scene_visits {
+    label: "On-Scene Visit Count"
     type: count
     filters: {
       field: on_scene_visit
@@ -509,17 +577,20 @@ view: visit_facts {
   }
 
   dimension: in_queue {
+    label: "In-Queue flag"
     type: yesno
     sql: ${local_requested_raw} IS NOT NULL AND
          ${local_accepted_raw} IS NOT NULL ;;
   }
 
   dimension: in_queue_mins {
+    label: "In-Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) ;;
   }
 
   measure: avg_queue_mins {
+    label: "In-Queue Avg Time (mins)"
     type: average
     sql: ${in_queue_mins} ;;
     filters: {
@@ -530,17 +601,20 @@ view: visit_facts {
   }
 
   dimension: in_accepted_queue {
+    label: "In-Accepted Queue flag"
     type: yesno
     sql: ${local_accepted_raw} IS NOT NULL AND
          ${local_on_route_raw} IS NOT NULL;;
   }
 
   dimension: in_accepted_queue_mins {
+    label: "In-Accepted Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) ;;
   }
 
   measure: avg_accepted_queue_mins {
+    label: "In-Accepted Queue Avg Time (mins)"
     type: average
     sql: ${in_accepted_queue_mins} ;;
     filters: {
@@ -551,17 +625,20 @@ view: visit_facts {
   }
 
   dimension: in_on_route_queue {
+    label: "On-Route Queue flag"
     type: yesno
     sql: ${local_on_route_raw} IS NOT NULL AND
          ${local_on_scene_raw} IS NOT NULL ;;
   }
 
   dimension: in_on_route_queue_mins {
+    label: "On-Route Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) ;;
   }
 
   measure: avg_on_route_queue_mins {
+    label: "On-Route Queue Avg Time (mins)"
     type: average
     sql: ${in_on_route_queue_mins} ;;
     filters: {
@@ -572,17 +649,20 @@ view: visit_facts {
   }
 
   dimension: in_on_scene_queue {
+    label: "On-Scene Queue flag"
     type: yesno
     sql: ${local_on_scene_raw} IS NOT NULL AND
          ${local_complete_raw} IS NOT NULL ;;
   }
 
   dimension: in_on_scene_queue_mins {
+    label: "On-Scene Queue Time (mins)"
     type: number
     sql: TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) ;;
   }
 
   measure: avg_on_scene_queue_mins {
+    label: "On-Scene Queue Avg Time (mins)"
     type: average
     sql: ${in_on_scene_queue_mins} ;;
     filters: {
@@ -637,11 +717,13 @@ view: visit_facts {
   }
 
   dimension: bb_3_day {
+    label: "3-Day Bounce back flag"
     type: yesno
     sql: ${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_3_day_count {
+    label: "3-Day Bounce back Count"
     type: count
     filters: {
       field: bb_3_day
@@ -650,11 +732,13 @@ view: visit_facts {
   }
 
   dimension: bb_14_day {
+    label: "14-Day Bounce back flag"
     type: yesno
     sql: ${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_14_day_count {
+    label: "14-Day Bounce back Count"
     type: count
     filters: {
       field: bb_14_day
@@ -663,11 +747,13 @@ view: visit_facts {
   }
 
   dimension: bb_30_day {
+    label: "30-Day Bounce back flag"
     type: yesno
     sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
   }
 
   measure: bb_30_day_count {
+    label: "30-Day Bounce back Count"
     type: count
     filters: {
       field: bb_30_day
@@ -676,11 +762,13 @@ view: visit_facts {
   }
 
   dimension: no_followup_3_day {
+    label: "No 3-Day followup flag"
     type: yesno
     sql: ${local_complete_raw} IS NOT NULL AND (${day_3_followup_outcome} = 'UNDOCUMENTED' OR ${day_3_followup_outcome} = 'PENDING') ;;
   }
 
   measure: no_followup_3_day_count {
+    label: "No 3-Day followup Count"
     type: count
     filters: {
       field: no_followup_3_day
@@ -689,11 +777,13 @@ view: visit_facts {
   }
 
   dimension: no_followup_14_day {
+    label: "No 14-Day followup flag"
     type: yesno
     sql: ${local_complete_raw} IS NOT NULL AND (${day_14_followup_outcome} = 'UNDOCUMENTED' OR ${day_14_followup_outcome} = 'PENDING');;
   }
 
   measure: no_followup_14_day_count {
+    label: "No 14-Day followup Count"
     type: count
     filters: {
       field: no_followup_14_day
@@ -702,11 +792,13 @@ view: visit_facts {
   }
 
   dimension: no_followup_30_day {
+    label: "No 30-Day followup flag"
     type: yesno
     sql: ${local_complete_raw} IS NOT NULL AND (${day_30_followup_outcome} = 'UNDOCUMENTED' OR ${day_30_followup_outcome} = 'PENDING');;
   }
 
   measure: no_followup_30_day_count {
+    label: "No 30-Day followup Count"
     type: count
     filters: {
       field: no_followup_30_day
@@ -761,6 +853,7 @@ view: visit_facts {
   }
 
   dimension: ed_diversion {
+    label: "ED Diversion"
     type: number
     sql:  CASE
 WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
@@ -842,6 +935,7 @@ END;;
   }
 
   measure: count_of_resolved_seen {
+    label: "Resolved & Seen Count"
     type: count
     filters: {
       field: resolved_seen_flag

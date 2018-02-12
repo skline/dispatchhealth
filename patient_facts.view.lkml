@@ -2,22 +2,26 @@ view: patient_facts {
   sql_table_name: jasperdb.patient_facts ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension: athena_patient_id {
+    label: "Athena Patient ID"
     type: string
     sql: ${TABLE}.athena_patient_id ;;
   }
 
   dimension: chrono_patient_id {
+    label: "DrChrono Patient ID"
     type: string
     sql: ${TABLE}.chrono_patient_id ;;
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -32,21 +36,25 @@ view: patient_facts {
   }
 
   dimension: dashboard_account_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.dashboard_account_id ;;
   }
 
   dimension: dashboard_patient_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.dashboard_patient_id ;;
   }
 
   dimension: dashboard_user_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.dashboard_user_id ;;
   }
 
   dimension: dob {
+    label: "Date of Birth"
     type: string
     sql: ${TABLE}.dob ;;
   }
@@ -72,6 +80,7 @@ view: patient_facts {
   }
 
   dimension: pcp_dim_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.pcp_dim_id ;;
   }
@@ -82,6 +91,7 @@ view: patient_facts {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

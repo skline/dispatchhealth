@@ -1,6 +1,5 @@
-view: pcp_dimensions {
-  label: "PCP Dimensions"
-  sql_table_name: jasperdb.pcp_dimensions ;;
+view: respondent_dimensions {
+  sql_table_name: jasperdb.respondent_dimensions ;;
 
   dimension: id {
     hidden: yes
@@ -24,16 +23,24 @@ view: pcp_dimensions {
     sql: ${TABLE}.created_at ;;
   }
 
-  dimension: pcp_name {
-    label: "PCP Name"
-    type: string
-    sql: ${TABLE}.pcp_name ;;
+  dimension_group: survey_answer {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.survey_answer_date ;;
   }
 
-  dimension: pcp_phone {
-    label: "PCP Phone"
+  dimension: survey_monkey_respondent_id {
+    hidden: yes
     type: string
-    sql: ${TABLE}.pcp_phone ;;
+    sql: ${TABLE}.survey_monkey_respondent_id ;;
   }
 
   dimension_group: updated {
@@ -53,6 +60,6 @@ view: pcp_dimensions {
 
   measure: count {
     type: count
-    drill_fields: [id, pcp_name]
+    drill_fields: [id]
   }
 }

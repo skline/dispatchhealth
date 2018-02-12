@@ -1,12 +1,17 @@
-view: pcp_dimensions {
-  label: "PCP Dimensions"
-  sql_table_name: jasperdb.pcp_dimensions ;;
+view: icd_visit_joins {
+  label: "ICD Code Visit Join Table"
+  sql_table_name: jasperdb.icd_visit_joins ;;
 
   dimension: id {
     hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
+  }
+
+  dimension: care_request_id {
+    type: number
+    sql: ${TABLE}.care_request_id ;;
   }
 
   dimension_group: created {
@@ -24,16 +29,16 @@ view: pcp_dimensions {
     sql: ${TABLE}.created_at ;;
   }
 
-  dimension: pcp_name {
-    label: "PCP Name"
+  dimension: icd_dim_id {
+    hidden: yes
     type: string
-    sql: ${TABLE}.pcp_name ;;
+    sql: ${TABLE}.icd_dim_id ;;
   }
 
-  dimension: pcp_phone {
-    label: "PCP Phone"
-    type: string
-    sql: ${TABLE}.pcp_phone ;;
+  dimension: sequence_number {
+    description: "The ordered number for the ICD code used in the claim"
+    type: number
+    sql: ${TABLE}.sequence_number ;;
   }
 
   dimension_group: updated {
@@ -51,8 +56,14 @@ view: pcp_dimensions {
     sql: ${TABLE}.updated_at ;;
   }
 
+  dimension: visit_dim_number {
+    label: "EHR Appointment ID"
+    type: string
+    sql: ${TABLE}.visit_dim_number ;;
+  }
+
   measure: count {
     type: count
-    drill_fields: [id, pcp_name]
+    drill_fields: [id]
   }
 }

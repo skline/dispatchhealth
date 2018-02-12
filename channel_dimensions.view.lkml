@@ -2,12 +2,14 @@ view: channel_dimensions {
   sql_table_name: jasperdb.channel_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -22,6 +24,7 @@ view: channel_dimensions {
   }
 
   dimension: dashboard_channel_item_id {
+    hidden: yes
     type: number
     sql: ${TABLE}.dashboard_channel_item_id ;;
   }
@@ -32,6 +35,7 @@ view: channel_dimensions {
   }
 
   dimension: sub_type {
+    label: "Subtype"
     type: string
     sql: ${TABLE}.sub_type ;;
   }
@@ -63,6 +67,7 @@ view: channel_dimensions {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

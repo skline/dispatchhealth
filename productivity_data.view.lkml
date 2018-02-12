@@ -50,6 +50,11 @@ view: productivity_data {
     sql: ${TABLE}.smfr_visits ;;
   }
 
+  dimension: goal {
+    type: number
+    sql: ${TABLE}.goal ;;
+  }
+
   dimension_group: updated_ts {
 
     type: time

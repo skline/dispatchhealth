@@ -1,7 +1,9 @@
 view: shift_planning_shifts {
+  label: "APP Shift Planning Shifts"
   sql_table_name: jasperdb.shift_planning_shifts ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -13,21 +15,25 @@ view: shift_planning_shifts {
   }
 
   dimension: cost_dollars {
+    hidden: yes
     type: string
     sql: ${TABLE}.cost_dollars ;;
   }
 
   dimension: cost_hours {
+    hidden: yes
     type: string
     sql: ${TABLE}.cost_hours ;;
   }
 
   dimension: cost_staff {
+    hidden: yes
     type: string
     sql: ${TABLE}.cost_staff ;;
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -47,11 +53,13 @@ view: shift_planning_shifts {
   }
 
   dimension: employee_rate {
+    hidden: yes
     type: string
     sql: ${TABLE}.employee_rate ;;
   }
 
   dimension: employee_wage {
+    hidden: yes
     type: string
     sql: ${TABLE}.employee_wage ;;
   }
@@ -110,6 +118,7 @@ view: shift_planning_shifts {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

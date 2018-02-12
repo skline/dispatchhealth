@@ -2,6 +2,7 @@ view: patient_dimensions {
   sql_table_name: jasperdb.patient_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
@@ -73,6 +74,7 @@ view: patient_dimensions {
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -92,6 +94,7 @@ view: patient_dimensions {
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

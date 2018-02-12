@@ -2,12 +2,14 @@ view: primary_payer_dimensions {
   sql_table_name: jasperdb.primary_payer_dimensions ;;
 
   dimension: id {
+    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension_group: created {
+    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -27,6 +29,7 @@ view: primary_payer_dimensions {
   }
 
   dimension: insurance_package_id {
+    label: "Insurance Package ID"
     type: string
     sql: ${TABLE}.insurance_package_id ;;
   }
@@ -47,11 +50,13 @@ view: primary_payer_dimensions {
   }
 
   dimension: irc_group {
+    label: "IRC Group"
     type: string
     sql: ${TABLE}.irc_group ;;
   }
 
   dimension_group: updated {
+    hidden: yes
     type: time
     timeframes: [
       raw,

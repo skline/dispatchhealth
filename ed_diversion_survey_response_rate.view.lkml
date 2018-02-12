@@ -1,4 +1,5 @@
 view: ed_diversion_survey_response_rate {
+  label: "ED Diversion Survey Response Rate"
    # Or, you could make this view a derived table, like this:
   derived_table: {
      sql: select *
@@ -21,6 +22,7 @@ dimension: market_dim_id {
    }
 #
    dimension: er_percent {
+    label: "ER percent"
      type: number
      sql: ${TABLE}.default_er_response_rate ;;
    }
