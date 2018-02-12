@@ -70,6 +70,11 @@ view: productivity_data {
     sql: ${TABLE}.updated_ts ;;
   }
 
+  measure: average_billable_visits {
+    type: average
+    sql: ${TABLE}.billable_visits ;;
+  }
+
   measure: count {
     type: count
     drill_fields: []
