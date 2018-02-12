@@ -235,7 +235,7 @@ explore: adwords_call_data {
 
 explore: productivity_data {
   join: market_dimensions {
-    sql_on: ${productivity_data.market_dim_id} = ${market_dimensions.id})))
+    sql_on: ${productivity_data.market_dim_id} = ${market_dimensions.id}
           ;;
     }
   }
