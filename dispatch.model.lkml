@@ -139,12 +139,12 @@ explore: visit_facts {
     ;;
     }
 
-  join:  productivity_data {
-    relationship: one_to_many
-    sql_on: date(${productivity_data.date_date}) = date(${visit_dimensions.local_visit_date})
-            and ${productivity_data.market_dim_id} = ${visit_facts.market_dim_id}
-    ;;
-  }
+  # join:  productivity_data {
+  #   relationship: one_to_many
+  #   sql_on: date(${productivity_data.date_date}) = date(${visit_dimensions.local_visit_date})
+  #           and ${productivity_data.market_dim_id} = ${visit_facts.market_dim_id}
+  #   ;;
+  # }
 
   join:  location_dimensions {
     sql_on: ${visit_facts.location_dim_id} =  ${location_dimensions.id}
@@ -196,7 +196,8 @@ explore: incontact {
           ;;
 
     }
-    }
+
+}
 
   explore: invoca {
     join: adwords_call_data {
@@ -213,8 +214,8 @@ explore: incontact {
           ;;
 
         }
+  }
 
-}
 explore: adwords_call_data {
   join: incontact {
     sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time_raw},${adwords_call_data.end_time_raw}))) < 3
@@ -230,5 +231,11 @@ explore: adwords_call_data {
 
     }
 
-
 }
+
+explore: productivity_data {
+  join: market_dimensions {
+    sql_on: ${productivity_data.market_dim_id} = ${market_dimensions.id}
+          ;;
+    }
+  }
