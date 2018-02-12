@@ -388,35 +388,52 @@ view: care_requests {
 dimension_group: today_mountain{
   type: time
   timeframes: [day_of_week_index, week]
-  sql: CURRENT_DATE - interval '7 hour';;
+  sql: current_date;;
 }
+
+dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [day_of_week_index, week]
+    sql: current_date - interval '1 day';;
+  }
 
 
 
 
 dimension:  same_day_of_week {
   type: yesno
-  sql:  ${today_mountain_day_of_week_index} = ${created_mountain_day_of_week_index};;
+  sql:  ${yesterday_mountain_day_of_week_index}= ${created_mountain_day_of_week_index};;
 }
 
 dimension: until_today {
     type: yesno
-    sql: ${created_mountain_day_of_week_index} <=  ${today_mountain_day_of_week_index} AND ${created_mountain_day_of_week_index} >= 0 ;;
+    sql: ${created_mountain_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${created_mountain_day_of_week_index} >= 0 ;;
   }
 
 dimension: this_week {
   type:  yesno
-  sql: ${today_mountain_week} =  ${created_mountain_week};;
-
+  sql: ${yesterday_mountain_week} =  ${created_mountain_week};;
 }
 measure: distinct_days {
   type: number
   sql: count(DISTINCT ${created_mountain_date}) ;;
 }
 
+  measure: distinct_weeks {
+    type: number
+    sql: count(DISTINCT ${created_mountain_week}) ;;
+  }
+
+
   measure: daily_average {
     type: number
     sql: ${count}/${distinct_days} ;;
+  }
+
+
+  measure: weekly_average {
+    type: number
+    sql: ${count}/${distinct_weeks} ;;
   }
 
   # ----- Sets of fields for drilling ------
