@@ -46,6 +46,25 @@ explore: care_requests {
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
   }
 
+  join: care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+  }
+
+  join: care_request_requested{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+  }
+
+  join: care_request_accepted{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+  }
+
+
 #   join: user_roles {
 #     relationship: one_to_one
 #     sql_on: ${users.id} = ${user_roles.user_id} ;;
@@ -66,11 +85,3 @@ explore: care_requests {
   #   relationship: one_to_many
   #   sql_on:  ${shift_teams.id} = ${shift_team_members.shift_team_id};;
   # }
-
-
-
-  # join: care_request_statuses {
-  #   relationship: one_to_many
-  #   sql_on: ${care_request_statuses.care_request_id} = ${care_request_statuses.care_request_id} ;;
-  # }
-

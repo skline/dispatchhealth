@@ -36,6 +36,24 @@ view: care_request_statuses {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension_group: created_mountain {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year, day_of_week_index
+    ]
+    sql: ${TABLE}.created_at - interval '7 hour' ;;
+  }
+  dimension: day_of_week_mountain {
+    type: date_day_of_week
+    sql: extract(dow FROM  (${created_mountain_raw})) ;;
+  }
+
   dimension_group: deleted {
     type: time
     timeframes: [
@@ -93,8 +111,49 @@ view: care_request_statuses {
     sql: ${TABLE}.user_id ;;
   }
 
+  dimension_group: today_mountain{
+    type: time
+    timeframes: [day_of_week_index, week]
+    sql: CURRENT_DATE - interval '7 hour';;
+  }
+
+
+
+
+  dimension:  same_day_of_week {
+    type: yesno
+    sql:  ${today_mountain_day_of_week_index} = ${created_mountain_day_of_week_index};;
+  }
+
+  dimension: until_today {
+    type: yesno
+    sql: ${created_mountain_day_of_week_index} <=  ${today_mountain_day_of_week_index} AND ${created_mountain_day_of_week_index} >= 0 ;;
+  }
+
+  dimension: this_week {
+    type:  yesno
+    sql: ${today_mountain_week} =  ${created_mountain_week};;
+
+  }
+  measure: distinct_days {
+    type: number
+    sql: count(DISTINCT ${created_mountain_date}) ;;
+  }
+
+  measure: daily_average {
+    type: number
+    sql: ${count_distinct}/${distinct_days} ;;
+  }
+
+
+
   measure: count {
     type: count
     drill_fields: [id, name]
+  }
+
+  measure: count_distinct {
+    type: number
+    sql: count(DISTINCT ${care_request_id});;
   }
 }
