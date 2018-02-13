@@ -12,7 +12,7 @@ WHERE    survey_response_facts.question_dim_id = 3
 GROUP BY 1) ed_diversion_survey_response_rate
        ;;
 
-sql_trigger_value: SELECT_CURDATE() ;;
+sql_trigger_value: SELECT CURDATE() ;;
 indexes: ["market_dim_id"]
  }
 dimension: market_dim_id {

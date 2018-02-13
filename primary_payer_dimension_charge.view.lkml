@@ -25,7 +25,7 @@ GROUP BY   tf.visit_dim_number,
            pd.irc_group,
            pd.custom_insurance_grouping) ed_diversion_survey_response
                      ;;
-      sql_trigger_value: SELECT_CURDATE() ;;
+      sql_trigger_value: SELECT CURDATE() ;;
       indexes: ["visit_dim_number", "payer_dim_id"]
     }
     dimension: visit_dim_number {

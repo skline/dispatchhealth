@@ -8,7 +8,7 @@ from survey_response_facts
 where survey_response_facts.question_dim_id=3
 group by 1 ) ed_diversion_survey_response
              ;;
-    sql_trigger_value: SELECT_CURDATE() ;;
+    sql_trigger_value: SELECT CURDATE() ;;
     indexes: ["visit_dim_number", "care_request_id"]
   }
   dimension: care_request_id {
