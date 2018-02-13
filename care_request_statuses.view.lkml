@@ -31,7 +31,7 @@ view: care_request_statuses {
       week,
       month,
       quarter,
-      year
+      year, day_of_month
     ]
     sql: ${TABLE}.created_at ;;
   }
@@ -45,7 +45,7 @@ view: care_request_statuses {
       week,
       month,
       quarter,
-      year, day_of_week_index
+      year, day_of_week_index, day_of_month
     ]
     sql: ${TABLE}.created_at - interval '7 hour' ;;
   }
@@ -113,13 +113,13 @@ view: care_request_statuses {
 
   dimension_group: today_mountain{
     type: time
-    timeframes: [day_of_week_index, week]
+    timeframes: [day_of_week_index, week, month, day_of_month]
     sql: CURRENT_DATE ;;
   }
 
   dimension_group: yesterday_mountain{
     type: time
-    timeframes: [day_of_week_index, week]
+    timeframes: [day_of_week_index, week, month, day_of_month]
     sql: current_date - interval '1 day';;
   }
 
@@ -138,6 +138,21 @@ view: care_request_statuses {
     sql: ${yesterday_mountain_week} =  ${created_mountain_week};;
 
   }
+  dimension: this_month {
+    type:  yesno
+    sql: ${yesterday_mountain_month} =  ${created_mountain_month};;
+  }
+
+  dimension: month_to_date  {
+    type:  yesno
+    sql: ${created_mountain_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
+  }
+
+  measure: distinct_months {
+    type: number
+    sql: count(DISTINCT ${created_mountain_month}) ;;
+  }
+
 
   measure: distinct_days {
     type: number
@@ -158,6 +173,12 @@ view: care_request_statuses {
     type: number
     sql: ${count_distinct}/${distinct_weeks} ;;
   }
+
+  measure: monthly_average {
+    type: number
+    sql: ${count_distinct}/${distinct_months} ;;
+  }
+
 
   measure: count {
     type: count

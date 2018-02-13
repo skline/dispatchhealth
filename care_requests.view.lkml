@@ -66,7 +66,7 @@ view: care_requests {
       week,
       month,
       quarter,
-      year
+      year, day_of_month
     ]
     sql: ${TABLE}.created_at ;;
   }
@@ -80,7 +80,8 @@ view: care_requests {
       month,
       quarter,
       year,
-      day_of_week_index
+      day_of_week_index,
+      day_of_month
     ]
     sql: ${TABLE}.created_at - interval '7 hour';;
   }
@@ -387,13 +388,13 @@ view: care_requests {
 
 dimension_group: today_mountain{
   type: time
-  timeframes: [day_of_week_index, week]
+  timeframes: [day_of_week_index, week, month, day_of_month]
   sql: current_date;;
 }
 
 dimension_group: yesterday_mountain{
     type: time
-    timeframes: [day_of_week_index, week]
+    timeframes: [day_of_week_index, week, month, day_of_month]
     sql: current_date - interval '1 day';;
   }
 
@@ -414,14 +415,30 @@ dimension: this_week {
   type:  yesno
   sql: ${yesterday_mountain_week} =  ${created_mountain_week};;
 }
+
+  dimension: this_month {
+    type:  yesno
+    sql: ${yesterday_mountain_month} =  ${created_mountain_month};;
+  }
 measure: distinct_days {
   type: number
   sql: count(DISTINCT ${created_mountain_date}) ;;
 }
 
+  dimension: month_to_date  {
+    type:  yesno
+    sql: ${created_mountain_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
+  }
+
+
   measure: distinct_weeks {
     type: number
     sql: count(DISTINCT ${created_mountain_week}) ;;
+  }
+
+  measure: distinct_months {
+    type: number
+    sql: count(DISTINCT ${created_mountain_month}) ;;
   }
 
 
@@ -434,6 +451,11 @@ measure: distinct_days {
   measure: weekly_average {
     type: number
     sql: ${count}/${distinct_weeks} ;;
+  }
+
+  measure: monthly_average {
+    type: number
+    sql: ${count}/${distinct_months} ;;
   }
 
   # ----- Sets of fields for drilling ------
