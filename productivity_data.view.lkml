@@ -70,9 +70,14 @@ view: productivity_data {
     sql: ${TABLE}.updated_ts ;;
   }
 
-  measure: average_billable_visits {
-    type: average
+  measure: sum_billable_visits {
+    type: sum
     sql: ${TABLE}.billable_visits ;;
+  }
+
+  measure: sum_of_goal {
+    type: sum
+    sql: ${TABLE}.goal ;;
   }
 
   measure: count {
