@@ -580,13 +580,15 @@ view: visit_facts {
     label: "In-Queue flag"
     type: yesno
     sql: ${local_requested_raw} IS NOT NULL AND
-         ${local_accepted_raw} IS NOT NULL ;;
+         ${local_accepted_raw} IS NOT NULL AND
+        TIMESTAMPDIFF(SECOND, ${local_requested_raw}, ${local_accepted_raw}) > 0 AND
+        TIMESTAMPDIFF(SECOND, ${local_requested_raw}, ${local_accepted_raw}) < 43201;;
   }
 
   dimension: in_queue_mins {
     label: "In-Queue Time (mins)"
     type: number
-    sql: TIMESTAMPDIFF(MINUTE, ${local_requested_raw}, ${local_accepted_raw}) ;;
+    sql: TIMESTAMPDIFF(SECOND, ${local_requested_raw}, ${local_accepted_raw}) / 60 ;;
   }
 
   measure: avg_queue_mins {
@@ -604,13 +606,15 @@ view: visit_facts {
     label: "In-Accepted Queue flag"
     type: yesno
     sql: ${local_accepted_raw} IS NOT NULL AND
-         ${local_on_route_raw} IS NOT NULL;;
+         ${local_on_route_raw} IS NOT NULL AND
+        TIMESTAMPDIFF(SECOND, ${local_accepted_raw}, ${local_on_route_raw}) > 0 AND
+        TIMESTAMPDIFF(SECOND, ${local_accepted_raw}, ${local_on_route_raw}) < 43201;;
   }
 
   dimension: in_accepted_queue_mins {
     label: "In-Accepted Queue Time (mins)"
     type: number
-    sql: TIMESTAMPDIFF(MINUTE, ${local_accepted_raw}, ${local_on_route_raw}) ;;
+    sql: TIMESTAMPDIFF(SECOND, ${local_accepted_raw}, ${local_on_route_raw}) / 60 ;;
   }
 
   measure: avg_accepted_queue_mins {
@@ -625,20 +629,22 @@ view: visit_facts {
   }
 
   dimension: in_on_route_queue {
-    label: "On-Route Queue flag"
+    label: "On-Route flag"
     type: yesno
     sql: ${local_on_route_raw} IS NOT NULL AND
-         ${local_on_scene_raw} IS NOT NULL ;;
+         ${local_on_scene_raw} IS NOT NULL AND
+        TIMESTAMPDIFF(SECOND, ${local_on_route_raw}, ${local_on_scene_raw}) > 299 AND
+        TIMESTAMPDIFF(SECOND, ${local_on_route_raw}, ${local_on_scene_raw}) < 14401;;
   }
 
   dimension: in_on_route_queue_mins {
-    label: "On-Route Queue Time (mins)"
+    label: "On-Route Time (mins)"
     type: number
-    sql: TIMESTAMPDIFF(MINUTE, ${local_on_route_raw}, ${local_on_scene_raw}) ;;
+    sql: TIMESTAMPDIFF(SECOND, ${local_on_route_raw}, ${local_on_scene_raw}) / 60 ;;
   }
 
   measure: avg_on_route_queue_mins {
-    label: "On-Route Queue Avg Time (mins)"
+    label: "On-Route Avg Time (mins)"
     type: average
     sql: ${in_on_route_queue_mins} ;;
     filters: {
@@ -652,17 +658,19 @@ view: visit_facts {
     label: "On-Scene Queue flag"
     type: yesno
     sql: ${local_on_scene_raw} IS NOT NULL AND
-         ${local_complete_raw} IS NOT NULL ;;
+         ${local_complete_raw} IS NOT NULL AND
+        TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) > 299 AND
+        TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) < 14401;;
   }
 
   dimension: in_on_scene_queue_mins {
-    label: "On-Scene Queue Time (mins)"
+    label: "On-Scene Time (mins)"
     type: number
-    sql: TIMESTAMPDIFF(MINUTE, ${local_on_scene_raw}, ${local_complete_raw}) ;;
+    sql: TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) / 60 ;;
   }
 
   measure: avg_on_scene_queue_mins {
-    label: "On-Scene Queue Avg Time (mins)"
+    label: "On-Scene Avg Time (mins)"
     type: average
     sql: ${in_on_scene_queue_mins} ;;
     filters: {
