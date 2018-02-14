@@ -3,6 +3,9 @@ connection: "bi"
 include: "*.view.lkml"         # include all views in this project
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
+explore: shift_planning_facts_by_hour {
+}
+
 explore: visit_facts {
 
   access_filter: {
