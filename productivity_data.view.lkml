@@ -55,6 +55,11 @@ view: productivity_data {
     sql: ${TABLE}.goal ;;
   }
 
+  dimension: monthly_goal {
+    type: number
+    sql: ${TABLE}.monthly_goal ;;
+  }
+
   dimension_group: updated_ts {
 
     type: time
