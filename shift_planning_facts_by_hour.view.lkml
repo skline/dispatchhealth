@@ -20,6 +20,13 @@ view: shift_planning_facts_by_hour {
     drill_fields: [detail*]
   }
 
+  measure: count_distinct_cars {
+    label: "Count of Distinct Cars"
+    type: count_distinct
+    sql: ${car_dim_id} ;;
+    drill_fields: [detail*]
+  }
+
   dimension_group: datehour {
     type: time
     timeframes: [
@@ -39,33 +46,69 @@ view: shift_planning_facts_by_hour {
     sql: ${TABLE}.id ;;
   }
 
-  dimension: local_expected_start_time {
-    type: string
+  dimension_group: local_expected_start {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.local_expected_start_time ;;
   }
 
-  dimension: local_expected_end_time {
-    type: string
+  dimension_group: local_expected_end {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.local_expected_end_time ;;
   }
 
-  dimension: local_actual_start_time {
-    type: string
+  dimension_group: local_actual_start {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.local_actual_start_time ;;
   }
 
-  dimension: local_actual_end_time {
-    type: string
+  dimension_group: local_actual_end {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.local_actual_end_time ;;
   }
 
   dimension: total_expected_seconds {
-    type: string
+    type: number
     sql: ${TABLE}.total_expected_seconds ;;
   }
 
   dimension: total_actual_seconds {
-    type: string
+    type: number
     sql: ${TABLE}.total_actual_seconds ;;
   }
 
@@ -90,37 +133,64 @@ view: shift_planning_facts_by_hour {
   }
 
   dimension: visit_count {
-    type: string
+    type: number
     sql: ${TABLE}.visit_count ;;
   }
 
-  dimension: created_at {
-    type: string
+  dimension_group: created_at {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.created_at ;;
   }
 
-  dimension: updated_at {
-    type: string
+  dimension_group: updated_at {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.updated_at ;;
   }
 
-  dimension: shift_date {
-    type: string
+  dimension_group: shift {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.shift_date ;;
   }
 
   dimension: total_complete_visits {
-    type: string
+    type: number
     sql: ${TABLE}.total_complete_visits ;;
   }
 
   dimension: total_resolved_on_scene_visits {
-    type: string
+    type: number
     sql: ${TABLE}.total_resolved_on_scene_visits ;;
   }
 
   dimension: total_billable_visits {
-    type: string
+    type: number
     sql: ${TABLE}.total_billable_visits ;;
   }
 
@@ -131,7 +201,7 @@ view: shift_planning_facts_by_hour {
 
   set: detail {
     fields: [
-      datehour,
+      datehour_time,
       id,
       local_expected_start_time,
       local_expected_end_time,
@@ -144,9 +214,9 @@ view: shift_planning_facts_by_hour {
       car_dim_id,
       employee_name,
       visit_count,
-      created_at,
-      updated_at,
-      shift_date,
+      created_at_time,
+      updated_at_time,
+      shift_time,
       total_complete_visits,
       total_resolved_on_scene_visits,
       total_billable_visits,
