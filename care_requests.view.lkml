@@ -192,6 +192,22 @@ view: care_requests {
     sql: ${TABLE}.on_scene_etc ;;
   }
 
+  dimension_group: on_scene_etc_mountain {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.on_scene_etc - interval '7 hour' ;;
+  }
+
+
+
   dimension: orig_city {
     type: string
     sql: ${TABLE}.orig_city ;;
@@ -375,6 +391,27 @@ view: care_requests {
     type: yesno
     sql: ${care_request_complete.care_request_id} is not null;;
   }
+
+  dimension:  referred_point_of_care {
+    type: yesno
+    sql: ${care_request_archived.comment} like '%Referred - Point of Care%';;
+  }
+
+  dimension:  billable_est {
+    type: yesno
+    sql: ${referred_point_of_care} or ${complete_visit};;
+  }
+
+  measure: count_billable_est {
+    type: count
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+
+
 
 
   dimension:  accepted_visit {

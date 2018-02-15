@@ -64,6 +64,13 @@ explore: care_requests {
     sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
   }
 
+  join: care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+  }
+
+
   join: budget_projections_by_market_clone {
     sql_on: ${care_requests.market_id} = ${budget_projections_by_market_clone.market_dim_id}
       AND ${care_requests.created_mountain_month}=${budget_projections_by_market_clone.month_month};;
