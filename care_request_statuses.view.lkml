@@ -257,6 +257,12 @@ view: care_request_statuses {
     sql: round(${count_distinct}/${month_percent});;
   }
 
+  measure: projections_diff {
+    type: number
+    sql: round(${care_request_complete.monthly_visits_run_rate}-${budget_projections_by_market_clone.projected_visits}) ;;
+  }
+
+
 
 
 }
