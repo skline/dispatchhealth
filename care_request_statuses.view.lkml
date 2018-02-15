@@ -242,4 +242,21 @@ view: care_request_statuses {
 
   }
 
+  measure: month_percent {
+    type: number
+    sql:    extract(day from ${max_day})
+    /    DATE_PART('days',
+        DATE_TRUNC('month', current_date)
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    );;
+  }
+
+  measure: monthly_visits_run_rate {
+    type: number
+    sql: round(${count_distinct}/${month_percent});;
+  }
+
+
+
 }

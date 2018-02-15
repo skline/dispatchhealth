@@ -376,6 +376,7 @@ view: care_requests {
     sql: ${care_request_complete.care_request_id} is not null;;
   }
 
+
   dimension:  accepted_visit {
     type: yesno
     sql: ${care_request_accepted.care_request_id} is not null;;
@@ -512,6 +513,7 @@ measure: distinct_days {
     sql: concat(${min_day}, ' thru ', ${max_day});;
 
     }
+
 
   # ----- Sets of fields for drilling ------
   set: detail {
