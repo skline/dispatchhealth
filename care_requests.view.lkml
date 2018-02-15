@@ -70,6 +70,7 @@ view: care_requests {
     ]
     sql: ${TABLE}.created_at ;;
   }
+
   dimension_group: created_mountain {
     type: time
     timeframes: [
@@ -190,6 +191,22 @@ view: care_requests {
     ]
     sql: ${TABLE}.on_scene_etc ;;
   }
+
+  dimension_group: on_scene_etc_mountain {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.on_scene_etc - interval '7 hour' ;;
+  }
+
+
 
   dimension: orig_city {
     type: string
@@ -375,6 +392,28 @@ view: care_requests {
     sql: ${care_request_complete.care_request_id} is not null;;
   }
 
+  dimension:  referred_point_of_care {
+    type: yesno
+    sql: ${care_request_archived.comment} like '%Referred - Point of Care%';;
+  }
+
+  dimension:  billable_est {
+    type: yesno
+    sql: ${referred_point_of_care} or ${complete_visit};;
+  }
+
+  measure: count_billable_est {
+    type: count
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+
+
+
+
   dimension:  accepted_visit {
     type: yesno
     sql: ${care_request_accepted.care_request_id} is not null;;
@@ -430,7 +469,10 @@ measure: distinct_days {
     sql: ${created_mountain_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
   }
 
-
+  dimension: current_day_string {
+    type: string
+    sql:trim(to_char(current_date - interval '1 day', 'day')) ;;
+  }
   measure: distinct_weeks {
     type: number
     sql: count(DISTINCT ${created_mountain_week}) ;;
@@ -457,6 +499,58 @@ measure: distinct_days {
     type: number
     sql: ${count}/${distinct_months} ;;
   }
+  measure: min_day {
+    type: date
+    sql: min(${created_mountain_date}) ;;
+  }
+
+  measure: max_day {
+    type: date
+    sql:max(${created_mountain_date}) ;;
+  }
+
+  measure: min_week {
+    type: string
+    sql: min(${created_mountain_week}) ;;
+  }
+
+  measure: max_week {
+    type: string
+    sql:max(${created_mountain_week}) ;;
+  }
+  measure: min_month {
+    type: string
+    sql: min(${created_mountain_month}) ;;
+  }
+
+  measure: max_month {
+    type: string
+    sql:max(${created_mountain_month}) ;;
+  }
+
+
+  measure: min_max_range_day {
+    type: string
+    sql:
+  case when ${min_week} =  ${yesterday_mountain_week} then ${min_day}::text
+  else concat(${current_day_string}, 's ', ${min_day}, ' thru ', ${max_day}) end ;;
+
+  }
+
+  measure: min_max_range_week {
+    type: string
+    sql:
+      case when ${min_week} =  ${yesterday_mountain_week} then concat(${min_day}, ' thru ', ${max_day})
+      else concat('Week to date for weeks ', ${min_week}, ' thru ', ${max_week}) end ;;
+
+    }
+
+  measure: min_max_range {
+    type: string
+    sql: concat(${min_day}, ' thru ', ${max_day});;
+
+    }
+
 
   # ----- Sets of fields for drilling ------
   set: detail {

@@ -189,4 +189,80 @@ view: care_request_statuses {
     type: number
     sql: count(DISTINCT ${care_request_id});;
   }
+
+  measure: min_day {
+    type: date
+    sql: min(${created_mountain_date}) ;;
+  }
+
+  measure: max_day {
+    type: date
+    sql:max(${created_mountain_date}) ;;
+  }
+
+  measure: min_week {
+    type: string
+    sql: min(${created_mountain_week}) ;;
+  }
+
+  measure: max_week {
+    type: string
+    sql:max(${created_mountain_week}) ;;
+  }
+  measure: min_month {
+    type: string
+    sql: min(${created_mountain_month}) ;;
+  }
+
+  measure: max_month {
+    type: string
+    sql:max(${created_mountain_month}) ;;
+  }
+
+
+  measure: min_max_range_day {
+    type: string
+    sql:
+      case when ${min_week} =  ${yesterday_mountain_week} then ${min_day}::text
+      else concat(trim(to_char(current_date - interval '1 day', 'day')), 's ', ${min_day}, ' thru ', ${max_day}) end ;;
+
+    }
+
+  measure: min_max_range_week {
+    type: string
+    sql:
+      case when ${min_week} =  ${yesterday_mountain_week} then concat(${min_day}, ' thru ', ${max_day})
+      else concat('Week to date for weeks ', ${min_week}, ' thru ', ${max_week}) end ;;
+
+    }
+
+  measure: min_max_range {
+    type: string
+    sql: concat(${min_day}, ' thru ', ${max_day});;
+
+  }
+
+  measure: month_percent {
+    type: number
+    sql:    extract(day from ${max_day})
+    /    DATE_PART('days',
+        DATE_TRUNC('month', current_date)
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    );;
+  }
+
+  measure: monthly_visits_run_rate {
+    type: number
+    sql: round(${count_distinct}/${month_percent});;
+  }
+
+  measure: projections_diff {
+    type: number
+    sql: round(${care_request_complete.monthly_visits_run_rate}-${budget_projections_by_market_clone.projected_visits}) ;;
+  }
+
+
+
+
 }
