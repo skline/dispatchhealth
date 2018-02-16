@@ -111,7 +111,15 @@ explore: care_requests {
        and ${invoca_clone.caller_id}::text like  CONCAT('%', ${adwords_call_data_clone.area_code} ,'%')
             ;;
     }
+
 }
+
+explore: zipcodes {
+  join: markets {
+    sql_on: ${zipcodes.market_id} = ${markets.id} ;;
+  }
+}
+
 #   join: user_roles {
 #     relationship: one_to_one
 #     sql_on: ${users.id} = ${user_roles.user_id} ;;
