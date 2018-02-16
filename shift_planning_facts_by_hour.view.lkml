@@ -1,4 +1,5 @@
 view: shift_planning_facts_by_hour {
+
   derived_table: {
     sql: SELECT *
       FROM
@@ -112,6 +113,11 @@ view: shift_planning_facts_by_hour {
     sql: ${TABLE}.total_actual_seconds ;;
   }
 
+  measure: sum_total_actual_minutes{
+    type: sum
+    sql: ${total_actual_seconds} / 3600 ;;
+  }
+
   dimension: shift_id {
     type: string
     sql: ${TABLE}.shift_id ;;
@@ -184,14 +190,29 @@ view: shift_planning_facts_by_hour {
     sql: ${TABLE}.total_complete_visits ;;
   }
 
+  measure: complete_visits_sum {
+    type: sum
+    sql: ${total_complete_visits} ;;
+  }
+
   dimension: total_resolved_on_scene_visits {
     type: number
     sql: ${TABLE}.total_resolved_on_scene_visits ;;
   }
 
+  measure: resolved_on_scene_visits_sum {
+    type: sum
+    sql: ${total_resolved_on_scene_visits} ;;
+  }
+
   dimension: total_billable_visits {
     type: number
     sql: ${TABLE}.total_billable_visits ;;
+  }
+
+  measure: billable_visits_sum {
+    type: sum
+    sql: ${total_billable_visits} ;;
   }
 
   dimension: schedule_location_id {
