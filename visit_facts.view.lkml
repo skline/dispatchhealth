@@ -356,12 +356,12 @@ view: visit_facts {
   dimension: complete_visit {
     label: "Complete Visit flag"
     type: yesno
-    sql: NOT ${resolved} ;;
+    sql: ${complete_raw} is not null;;
   }
 
   measure: count_complete_visits {
     label: "Complete Visits Count"
-    type: count
+    type: count_distinct
     filters: {
       field: complete_visit
       value: "yes"

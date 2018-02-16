@@ -550,6 +550,15 @@ measure: distinct_days {
     sql: concat(${min_day}, ' thru ', ${max_day});;
 
     }
+  dimension: care_request_patient_create_diff {
+    type: number
+    sql:EXTRACT(EPOCH FROM (${created_mountain_raw}- ${patients.created_mountain_raw} )) ;;
+  }
+
+  dimension: new_care_request_bool {
+    type:  yesno
+    sql:  ${care_request_patient_create_diff}< 4000 ;;
+  }
 
 
   # ----- Sets of fields for drilling ------

@@ -76,7 +76,42 @@ explore: care_requests {
       AND ${care_requests.created_mountain_month}=${budget_projections_by_market_clone.month_month};;
   }
 
+  join: patients {
+    sql_on:  ${patients.id} =${care_requests.patient_id} ;;
+  }
 
+  join: power_of_attorneys {
+    sql_on:  ${patients.id} =${power_of_attorneys.patient_id} ;;
+  }
+
+  join: channel_items {
+    sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+  }
+
+  join: adwords_combined {
+    sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
+            OR ${patients.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
+            ;;
+
+    }
+
+ }
+  explore: adwords_call_data_clone {
+
+  join: incontact_clone {
+    sql_on: abs(EXTRACT(EPOCH FROM ${adwords_call_data_clone.end_time_raw})-EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})) < 3
+           and ${incontact_clone.from_number}::text like  CONCAT('%', ${adwords_call_data_clone.area_code} ,'%')
+          ;;
+
+    }
+
+  join: invoca_clone {
+    sql_on: abs(EXTRACT(EPOCH FROM ${adwords_call_data_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 15 and
+    abs(EXTRACT(EPOCH FROM ${adwords_call_data_clone.start_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})) < 15
+       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${adwords_call_data_clone.area_code} ,'%')
+            ;;
+    }
+}
 #   join: user_roles {
 #     relationship: one_to_one
 #     sql_on: ${users.id} = ${user_roles.user_id} ;;
@@ -86,7 +121,7 @@ explore: care_requests {
 #     relationship: one_to_one
 #     sql_on: ${user_roles.role_id} = ${roles.id} ;;
 #   }
-}
+
 
   # join: shift_teams {
   #   relationship: one_to_one
