@@ -30,9 +30,11 @@ view: shift_planning_facts_by_hour {
 
   dimension_group: datehour {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
+      hour_of_day,
       date,
       week,
       month,
@@ -77,6 +79,7 @@ view: shift_planning_facts_by_hour {
 
   dimension_group: local_actual_start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -91,6 +94,7 @@ view: shift_planning_facts_by_hour {
 
   dimension_group: local_actual_end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
