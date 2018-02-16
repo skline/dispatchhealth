@@ -1,12 +1,38 @@
-view: visit_facts {
-  sql_table_name: jasperdb.visit_facts ;;
+view: visit_facts_by_hour {
+
+  derived_table: {
+    sql: SELECT *
+      FROM
+        (select CAST('2020-01-01 00:00:00' - INTERVAL (a.a + (10 * b.a) + (100 * c.a) + (1000 * d.a) + (10000 * e.a)) HOUR AS DATETIME) as datehour
+            from (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as a
+            cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
+            cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
+            cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as d
+            cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as e) datehour
+      INNER JOIN
+        jasperdb.visit_facts s ON datehour.datehour >= s.local_on_scene_time
+        AND datehour.datehour <= s.local_complete_time
+       ;;
+    sql_trigger_value: SELECT CURDATE() ;;
+  }
 
   dimension: id {
     hidden: yes
-    primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
+
+  # Placeholder for billable visits & SMFR visit measure
+  # measure: count_billable_visits {
+  #   label: "Count of Billable Visits"
+  #   type: count_distinct
+  #   sql: ${id} ;;
+  #   filters: {
+  #     field: billable_visit
+  #     value: "yes"
+  #   }
+  #   drill_fields: [detail*]
+  # }
 
   dimension_group: accepted {
     description: "The timestamp the care request was accepted by Provider in UTC"
@@ -475,7 +501,7 @@ view: visit_facts {
     label: "Billable Visits with Expected Allowable flag"
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL
-        and ${total_expected_allowable}>0;;
+      and ${total_expected_allowable}>0;;
   }
 
   dimension: non_smfr_billable_visit {
@@ -486,10 +512,10 @@ view: visit_facts {
   dimension: season {
     type: string
     sql: Case when MONTH(${local_requested_time}) between 3 and 5 then 'Spring'
-            when MONTH(${local_requested_time}) between 6 and 8 then 'Summer'
-            when MONTH(${local_requested_time}) between 9 and 11 then 'Autumn'
-            when MONTH(${local_requested_time}) >= 12 or MONTH(${local_requested_time}) <= 2 then 'Winter'
-       end;;
+          when MONTH(${local_requested_time}) between 6 and 8 then 'Summer'
+          when MONTH(${local_requested_time}) between 9 and 11 then 'Autumn'
+          when MONTH(${local_requested_time}) >= 12 or MONTH(${local_requested_time}) <= 2 then 'Winter'
+     end;;
   }
 
   measure: count {
@@ -512,17 +538,6 @@ view: visit_facts {
     }
 
     drill_fields: [details*]
-  }
-
-  measure: count_distinct_billable_visits {
-    label: "Count of Distinct Billable Visits (By Hour)"
-    type: count_distinct
-    sql: ${id} ;;
-    filters: {
-      field: billable_visit
-      value: "yes"
-    }
-
   }
 
   measure: count_of_billable_visit_with_expected_allowable {
@@ -591,9 +606,9 @@ view: visit_facts {
     label: "In-Queue flag"
     type: yesno
     sql: ${local_requested_raw} IS NOT NULL AND
-         ${local_accepted_raw} IS NOT NULL AND
-        TIMESTAMPDIFF(SECOND, ${local_requested_raw}, ${local_accepted_raw}) > 0 AND
-        TIMESTAMPDIFF(SECOND, ${local_requested_raw}, ${local_accepted_raw}) < 43201;;
+       ${local_accepted_raw} IS NOT NULL AND
+      TIMESTAMPDIFF(SECOND, ${local_requested_raw}, ${local_accepted_raw}) > 0 AND
+      TIMESTAMPDIFF(SECOND, ${local_requested_raw}, ${local_accepted_raw}) < 43201;;
   }
 
   dimension: in_queue_mins {
@@ -617,9 +632,9 @@ view: visit_facts {
     label: "In-Accepted Queue flag"
     type: yesno
     sql: ${local_accepted_raw} IS NOT NULL AND
-         ${local_on_route_raw} IS NOT NULL AND
-        TIMESTAMPDIFF(SECOND, ${local_accepted_raw}, ${local_on_route_raw}) > 0 AND
-        TIMESTAMPDIFF(SECOND, ${local_accepted_raw}, ${local_on_route_raw}) < 43201;;
+       ${local_on_route_raw} IS NOT NULL AND
+      TIMESTAMPDIFF(SECOND, ${local_accepted_raw}, ${local_on_route_raw}) > 0 AND
+      TIMESTAMPDIFF(SECOND, ${local_accepted_raw}, ${local_on_route_raw}) < 43201;;
   }
 
   dimension: in_accepted_queue_mins {
@@ -643,9 +658,9 @@ view: visit_facts {
     label: "On-Route flag"
     type: yesno
     sql: ${local_on_route_raw} IS NOT NULL AND
-         ${local_on_scene_raw} IS NOT NULL AND
-        TIMESTAMPDIFF(SECOND, ${local_on_route_raw}, ${local_on_scene_raw}) > 299 AND
-        TIMESTAMPDIFF(SECOND, ${local_on_route_raw}, ${local_on_scene_raw}) < 14401;;
+       ${local_on_scene_raw} IS NOT NULL AND
+      TIMESTAMPDIFF(SECOND, ${local_on_route_raw}, ${local_on_scene_raw}) > 299 AND
+      TIMESTAMPDIFF(SECOND, ${local_on_route_raw}, ${local_on_scene_raw}) < 14401;;
   }
 
   dimension: in_on_route_queue_mins {
@@ -669,9 +684,9 @@ view: visit_facts {
     label: "On-Scene Queue flag"
     type: yesno
     sql: ${local_on_scene_raw} IS NOT NULL AND
-         ${local_complete_raw} IS NOT NULL AND
-        TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) > 299 AND
-        TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) < 14401;;
+       ${local_complete_raw} IS NOT NULL AND
+      TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) > 299 AND
+      TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) < 14401;;
   }
 
   dimension: in_on_scene_queue_mins {
@@ -835,71 +850,71 @@ view: visit_facts {
   dimension: diversion_category {
     type: string
     sql: CASE
-      WHEN ${visit_facts.local_complete_time} IS NULL THEN 'not completed'
-      WHEN ${visit_facts.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
-        OR
-        ${visit_facts.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
-        OR
-        ${visit_facts.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
-      WHEN ${car_dimensions.car_name} = 'SMFR_Car' THEN
-        'smfr'
-      WHEN ${channel_dimensions.sub_type} IN( 'home health',
-                          'snf',
-                          'provider group' ) THEN channel_dimensions.sub_type
-      WHEN ${channel_dimensions.sub_type} = 'senior care'
-        AND
-        hour(${visit_dimensions.local_visit_time}) < 15
-        AND
-        dayofweek(${visit_dimensions.local_visit_date}) NOT IN ( 1,
-                                               7 ) THEN 'senior care - weekdays before 3pm'
-      WHEN ${channel_dimensions.sub_type} = 'senior care'
-        AND
-        (
-          hour(${visit_dimensions.local_visit_time}) > 15
-          OR
-          dayofweek(${visit_dimensions.local_visit_date}) IN ( 1,
-                                             7 )
-        )
-        THEN 'senior care - weekdays after 3pm and weekends'
-      WHEN ${ed_diversion_survey_response.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
-      WHEN ${ed_diversion_survey_response.answer_selection_value} != 'Emergency Room'
-        AND
-        ${ed_diversion_survey_response.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
-      WHEN ${ed_diversion_survey_response.answer_selection_value} IS NULL THEN
-        'no survey'
-      ELSE 'other'
-      END;;
+            WHEN ${visit_facts.local_complete_time} IS NULL THEN 'not completed'
+            WHEN ${visit_facts.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
+              OR
+              ${visit_facts.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
+              OR
+              ${visit_facts.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
+            WHEN ${car_dimensions.car_name} = 'SMFR_Car' THEN
+              'smfr'
+            WHEN ${channel_dimensions.sub_type} IN( 'home health',
+                                'snf',
+                                'provider group' ) THEN channel_dimensions.sub_type
+            WHEN ${channel_dimensions.sub_type} = 'senior care'
+              AND
+              hour(${visit_dimensions.local_visit_time}) < 15
+              AND
+              dayofweek(${visit_dimensions.local_visit_date}) NOT IN ( 1,
+                                                     7 ) THEN 'senior care - weekdays before 3pm'
+            WHEN ${channel_dimensions.sub_type} = 'senior care'
+              AND
+              (
+                hour(${visit_dimensions.local_visit_time}) > 15
+                OR
+                dayofweek(${visit_dimensions.local_visit_date}) IN ( 1,
+                                                   7 )
+              )
+              THEN 'senior care - weekdays after 3pm and weekends'
+            WHEN ${ed_diversion_survey_response.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
+            WHEN ${ed_diversion_survey_response.answer_selection_value} != 'Emergency Room'
+              AND
+              ${ed_diversion_survey_response.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
+            WHEN ${ed_diversion_survey_response.answer_selection_value} IS NULL THEN
+              'no survey'
+            ELSE 'other'
+            END;;
   }
 
   dimension: ed_diversion {
     label: "ED Diversion"
     type: number
     sql:  CASE
-WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
-WHEN ${diversion_category} = 'not completed' THEN 0
-WHEN ${diversion_category} = 'smfr' THEN  1
-WHEN ${diversion_category} = 'home health' THEN  .9
-WHEN ${diversion_category} = 'snf' THEN 1
-WHEN ${diversion_category} = 'provider group' THEN .5
-WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN .5
-WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
-WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
-WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0
-WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate.er_percent}
-  ELSE 0
-END ;;
+      WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
+      WHEN ${diversion_category} = 'not completed' THEN 0
+      WHEN ${diversion_category} = 'smfr' THEN  1
+      WHEN ${diversion_category} = 'home health' THEN  .9
+      WHEN ${diversion_category} = 'snf' THEN 1
+      WHEN ${diversion_category} = 'provider group' THEN .5
+      WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN .5
+      WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
+      WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
+      WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0
+      WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate.er_percent}
+        ELSE 0
+      END ;;
   }
 
   dimension: 911_diversion {
     type: number
     sql:  CASE
-WHEN ${diversion_category} = 'smfr' THEN 1
-WHEN ${diversion_category} = 'home health' THEN .5
-WHEN ${diversion_category} = 'snf' THEN 1
-WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN  .5
-WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
-  ELSE 0
-END;;
+      WHEN ${diversion_category} = 'smfr' THEN 1
+      WHEN ${diversion_category} = 'home health' THEN .5
+      WHEN ${diversion_category} = 'snf' THEN 1
+      WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN  .5
+      WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
+        ELSE 0
+      END;;
   }
 
   dimension: market_age_months {
@@ -983,25 +998,25 @@ END;;
     sql:  ${count_of_billable_visits}-${budget_projections_by_market.projection_visits_month_to_date};;
   }
 
-measure: monthly_billable_visits_run_rate {
-  type: number
-  sql: round(${count_of_billable_visits}/${visit_dimensions.month_percent},0) ;;
-}
+  measure: monthly_billable_visits_run_rate {
+    type: number
+    sql: round(${count_of_billable_visits}/${visit_dimensions.month_percent},0) ;;
+  }
 
   measure: monthly_total_expected_allowable_rate {
     type: number
     sql: round(${sum_total_expected_allowable}/${visit_dimensions.month_percent},0) ;;
   }
 
-measure: projected_billable_difference_run_rate {
+  measure: projected_billable_difference_run_rate {
     type: number
     sql:  ${monthly_billable_visits_run_rate}-${budget_projections_by_market.projected_visits_measure};;
   }
 
-dimension: scheduled {
-  type: yesno
-  sql:  abs(TIME_TO_SEC(timediff(${visit_facts.requested_time}, ${visit_facts.accepted_time})))>(12*60*60);;
-}
+  dimension: scheduled {
+    type: yesno
+    sql:  abs(TIME_TO_SEC(timediff(${visit_facts.requested_time}, ${visit_facts.accepted_time})))>(12*60*60);;
+  }
   measure: scheduled_count {
     type: count
     filters: {
