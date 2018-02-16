@@ -91,6 +91,7 @@ explore: care_requests {
   join: adwords_combined {
     sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
             OR ${patients.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
+            OR ${users.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
             ;;
 
     }
@@ -111,7 +112,15 @@ explore: care_requests {
        and ${invoca_clone.caller_id}::text like  CONCAT('%', ${adwords_call_data_clone.area_code} ,'%')
             ;;
     }
+
 }
+
+explore: zipcodes {
+  join: markets {
+    sql_on: ${zipcodes.market_id} = ${markets.id} ;;
+  }
+}
+
 #   join: user_roles {
 #     relationship: one_to_one
 #     sql_on: ${users.id} = ${user_roles.user_id} ;;
