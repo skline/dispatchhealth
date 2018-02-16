@@ -82,15 +82,22 @@ explore: visit_facts {
       ;;
   }
 
+#   join: shift_planning_facts_by_hour {
+#     type: inner
+#     relationship:  many_to_many
+#     sql_on:((${shift_planning_facts_by_hour.employee_name} = ${provider_dimensions.shift_app_name}
+#           and date(${shift_planning_facts_by_hour.local_actual_start_time})=date(${visit_facts.local_accepted_time})
+#           and ${shift_planning_facts_by_hour.schedule_role} in('NP/PA', 'Training/Admin'))
+#           or (${visit_facts.nppa_shift_id} = ${shift_planning_facts_by_hour.shift_id}))
+#           and (${shift_planning_facts_by_hour.datehour_raw} >= ${visit_facts.local_on_scene_raw}
+#           and ${shift_planning_facts_by_hour.datehour_raw} <= ${visit_facts.local_accepted_raw});;
+#   }
+
   join: shift_planning_facts_by_hour {
     type: inner
-    relationship:  many_to_many
-    sql_on:((${shift_planning_facts_by_hour.employee_name} = ${provider_dimensions.shift_app_name}
-          and date(${shift_planning_facts_by_hour.local_actual_start_time})=date(${visit_facts.local_accepted_time})
-          and ${shift_planning_facts_by_hour.schedule_role} in('NP/PA', 'Training/Admin'))
-          or (${visit_facts.nppa_shift_id} = ${shift_planning_facts_by_hour.shift_id}))
-          and (${shift_planning_facts_by_hour.datehour_raw} >= ${visit_facts.local_on_scene_raw}
-          and ${shift_planning_facts_by_hour.datehour_raw} <= ${visit_facts.local_accepted_raw});;
+    relationship:  many_to_one
+    sql_on:(${shift_planning_facts_by_hour.datehour_raw} >= ${visit_facts.local_on_scene_raw}
+          and ${shift_planning_facts_by_hour.datehour_raw} <= ${visit_facts.local_on_scene_raw});;
   }
 
   join: app_shift_planning_shifts {
