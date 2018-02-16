@@ -158,6 +158,6 @@ view: shift_planning_shifts {
   }
   measure: needed_volume {
     type:  number
-    sql: ${distinct_cars}*.7*${shift_hours} ;;
+    sql: round(${distinct_cars}*.7*${shift_hours},0) ;;
   }
 }
