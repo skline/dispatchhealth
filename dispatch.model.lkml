@@ -239,3 +239,12 @@ explore: productivity_data {
           ;;
     }
   }
+explore: shift_planning_shifts {
+  join: shift_planning_facts {
+    sql_on:  ${shift_planning_facts.shift_id}=${shift_planning_shifts.shift_id} and ${shift_planning_shifts.imported_after_shift}=0 ;;
+  }
+
+  join: market_dimensions {
+    sql_on:  ${market_dimensions.id}=${shift_planning_shifts.market_dim_id};;
+  }
+}
