@@ -37,4 +37,14 @@ on abs(EXTRACT(EPOCH FROM adwords_call_data_clone.end_time)-EXTRACT(EPOCH FROM i
     type: string
     sql: ${TABLE}.adwords_search_keyword ;;
   }
+
+  dimension: patient_poa_user {
+    type: string
+    sql:   case  when ${patients.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%') then 'patient'
+            when  REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${adwords_combined.adword_phone_number} ,'%') then 'POA'
+            when  ${users.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%') then 'user'
+            else 'none' end;;
+  }
+
+
 }

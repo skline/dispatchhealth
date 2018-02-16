@@ -91,6 +91,7 @@ explore: care_requests {
   join: adwords_combined {
     sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
             OR ${patients.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
+            OR ${users.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
             ;;
 
     }
