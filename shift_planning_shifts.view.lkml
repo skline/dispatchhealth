@@ -35,6 +35,7 @@ view: shift_planning_shifts {
   dimension_group: created {
     hidden: yes
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -71,6 +72,7 @@ view: shift_planning_shifts {
 
   dimension_group: local_shift_end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -85,6 +87,7 @@ view: shift_planning_shifts {
 
   dimension_group: local_shift_start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -131,9 +134,30 @@ view: shift_planning_shifts {
     ]
     sql: ${TABLE}.updated_at ;;
   }
+  dimension:  market_dim_id {
+    type: number
+    sql: case when ${schedule_name} like '%den%'  then 1
+     when ${schedule_name} like "%cos%" then 2
+     when ${schedule_name} like "%phx%" then 3
+     when ${schedule_name} like "%ric%" then 4
+     when ${schedule_name} like "%las%" then 5
+     else 0 end ;;
+  }
 
   measure: count {
     type: count
     drill_fields: [id, employee_name, schedule_name]
+  }
+  measure: shift_hours {
+    type: number
+    sql:  TIME_TO_SEC(TIMEDIFF(${local_shift_end_time}, ${local_shift_start_time}))/3600 ;;
+  }
+  measure: distinct_cars {
+    type:  number
+    sql: count(distinct ${schedule_name}) ;;
+  }
+  measure: needed_volume {
+    type:  number
+    sql: round(${distinct_cars}*.7*${shift_hours},0) ;;
   }
 }
