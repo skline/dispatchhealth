@@ -96,8 +96,8 @@ explore: visit_facts {
   join: shift_planning_facts_by_hour {
     type: inner
     relationship:  many_to_one
-    sql_on:(${shift_planning_facts_by_hour.datehour_raw} >= ${visit_facts.local_on_scene_raw}
-          and ${shift_planning_facts_by_hour.datehour_raw} <= ${visit_facts.local_on_scene_raw});;
+    sql_on:(HOUR(${shift_planning_facts_by_hour.datehour_raw}) = HOUR(${visit_facts.local_on_scene_raw})
+          and DATE(${shift_planning_facts_by_hour.datehour_raw}) = DATE(${visit_facts.local_on_scene_raw}));;
   }
 
   join: app_shift_planning_shifts {
