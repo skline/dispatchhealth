@@ -143,6 +143,11 @@ view: channel_items {
     type: yesno
     sql:  ${name} in('Google or other search', 'Social Media (Facebook, LinkedIn, Twitter, Instagram)', 'Social Media(Facebook, LinkedIn, Twitter, Instagram)') ;;
   }
+  dimension: channel_name_fixed {
+    type: string
+    sql:  case when ${name} in('Social Media (Facebook, LinkedIn, Twitter, Instagram)', 'Social Media(Facebook, LinkedIn, Twitter, Instagram)') then 'Social Media (Facebook, LinkedIn, Twitter, Instagram)'
+          else ${name} end;;
+  }
   measure: count {
     type: count
     drill_fields: [id, name, source_name, type_name]
