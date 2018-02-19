@@ -20,7 +20,7 @@ view: budget_projections_by_market_clone {
     sql: ${TABLE}.month ;;
   }
 
-  measure: projected_visits {
+  dimension: projected_visits {
     type: number
     sql: ${TABLE}.projected_visits ;;
   }
