@@ -49,7 +49,7 @@ view: channel_dimensions {
     type: string
     order_by_field: org_label_order
     sql: CASE WHEN ${subtotal_over.row_type_description} = '' THEN ${organization}
-              ELSE 'Subtotal' END ;;
+      ELSE 'Subtotal' END ;;
     html:{% if value == 'Subtotal' %}<b><i><span style="color: black;">Subtotal</span></i></b>{% else %} {{ linked_value }}{% endif %};;
   }
 
