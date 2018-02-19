@@ -261,6 +261,11 @@ explore: shift_planning_shifts {
   join: market_dimensions {
     sql_on:  ${market_dimensions.id}=${shift_planning_shifts.market_dim_id};;
   }
+
+  join:  budget_projections_by_market{
+    sql_on:   ${shift_planning_facts.local_expected_end_month}=${budget_projections_by_market.month_month}
+    and ${budget_projections_by_market.market_dim_id}=${shift_planning_shifts.market_dim_id};;
+  }
 }
 
 explore: dates_hours_reference {

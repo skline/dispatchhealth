@@ -152,6 +152,11 @@ view: shift_planning_shifts {
     type: number
     sql:  TIME_TO_SEC(TIMEDIFF(${local_shift_end_time}, ${local_shift_start_time}))/3600 ;;
   }
+
+  measure: total_shift_hours {
+    type: number
+    sql:  sum(${shift_hours}) ;;
+  }
   measure: distinct_cars {
     type:  number
     sql: count(distinct ${schedule_name}) ;;

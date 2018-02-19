@@ -17,8 +17,6 @@ on abs(EXTRACT(EPOCH FROM adwords_call_data_clone.end_time)-EXTRACT(EPOCH FROM i
     abs(EXTRACT(EPOCH FROM adwords_call_data_clone.start_time)-EXTRACT(EPOCH FROM invoca_clone.start_time)) < 15
        and invoca_clone.caller_id::text like  CONCAT('%', adwords_call_data_clone.area_code ,'%')) ed_diversion_survey_response_rate
                ;;
-
-        sql_trigger_value: select date_trunc('hour', now())  ;;
         indexes: ["adword_phone_number"]
       }
 

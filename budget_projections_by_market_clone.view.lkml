@@ -20,7 +20,7 @@ view: budget_projections_by_market_clone {
     sql: ${TABLE}.month ;;
   }
 
-  dimension: projected_visits {
+  measure: projected_visits {
     type: number
     sql: ${TABLE}.projected_visits ;;
   }
@@ -32,6 +32,16 @@ view: budget_projections_by_market_clone {
   measure: projection_visits_month_to_date {
     type: number
     sql: ${projected_visits}*${care_request_complete.month_percent} ;;
+  }
+
+  measure: projection_visits_daily_volume{
+    label: "Daily Volume Needed for Budget"
+    type: number
+    sql: round(avg(${projected_visits}/DATE_PART('days',
+        DATE_TRUNC('month', current_date)
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ))) ;;
   }
 
 
