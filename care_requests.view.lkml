@@ -387,10 +387,22 @@ view: care_requests {
     drill_fields: [detail*]
   }
 
+  measure: count_distinct {
+   type: number
+   sql: count(distinct ${id}) ;;
+  }
+
+
   dimension:  complete_visit {
     type: yesno
     sql: ${care_request_complete.care_request_id} is not null;;
   }
+
+  dimension:  archived_visit {
+    type: yesno
+    sql: ${care_request_archived.care_request_id} is not null;;
+  }
+
 
   dimension:  referred_point_of_care {
     type: yesno
@@ -399,7 +411,7 @@ view: care_requests {
 
   dimension:  billable_est {
     type: yesno
-    sql: ${referred_point_of_care} or ${complete_visit};;
+    sql: ${referred_point_of_care} or ${care_requests.complete_visit};;
   }
 
   measure: count_billable_est {
