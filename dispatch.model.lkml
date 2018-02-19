@@ -49,6 +49,7 @@ explore: visit_facts {
     relationship: many_to_one
     # change association to be the care request id instead of visit number - DH
     sql_on: ${survey_response_facts.care_request_id} = ${visit_facts.care_request_id} ;;
+    sql_where: ${survey_response_facts.question_dim_id} = 4 ;;
   }
 
   join: ed_diversion_survey_response {

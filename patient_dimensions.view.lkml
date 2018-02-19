@@ -68,8 +68,30 @@ view: patient_dimensions {
     sql: ${TABLE}.age_90_plus ;;
   }
 
+  dimension: age_band_sort {
+    type: number
+    label: "Age Band Sorting Value"
+    hidden: yes
+    sql: CASE
+          WHEN ${age_band} = 'age_0_to_5' THEN 1
+          WHEN ${age_band} = 'age_6_to_9' THEN 2
+          WHEN ${age_band} = 'age_10_to_19' THEN 3
+          WHEN ${age_band} = 'age_20_to_29' THEN 4
+          WHEN ${age_band} = 'age_30_to_39' THEN 5
+          WHEN ${age_band} = 'age_40_to_49' THEN 6
+          WHEN ${age_band} = 'age_50_to_59' THEN 7
+          WHEN ${age_band} = 'age_60_to_69' THEN 8
+          WHEN ${age_band} = 'age_70_to_79' THEN 9
+          WHEN ${age_band} = 'age_80_to_89' THEN 10
+          WHEN ${age_band} = 'age_90_plus' THEN 11
+          ELSE 12
+        END
+          ;;
+  }
+
   dimension: age_band {
     type: string
+    order_by_field: age_band_sort
     sql: ${TABLE}.age_band ;;
   }
 
