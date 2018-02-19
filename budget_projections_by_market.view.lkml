@@ -35,6 +35,11 @@ view: budget_projections_by_market {
     type: number
     sql: round(${budget_projections_by_market.projected_visits}*${visit_dimensions.month_percent},0) ;;
   }
+  measure: projection_visits_daily_volume{
+    label: "Daily Volume Needed for Budget"
+    type: number
+    sql: round(${budget_projections_by_market.projected_visits}/DAY(LAST_DAY(curdate())),0) ;;
+  }
 
 
   measure: count {
