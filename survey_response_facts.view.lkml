@@ -20,6 +20,18 @@ view: survey_response_facts {
     sql: ${TABLE}.answer_range_value ;;
   }
 
+  dimension: promoter {
+    label: "Promoter"
+    type: yesno
+    sql: ${answer_range_value} > 8 ;;
+  }
+
+  dimension: detractor {
+    label: "Detractor"
+    type: yesno
+    sql: ${answer_range_value} < 7;;
+  }
+
   dimension: answer_selection_value {
     label: "Selected Value"
     type: string
@@ -48,6 +60,7 @@ view: survey_response_facts {
 
   dimension_group: local_visit {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -136,6 +149,22 @@ view: survey_response_facts {
     label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
+  }
+
+  measure: promoter_count {
+    type: count
+    filters: {
+      field: promoter
+      value: "yes"
+    }
+  }
+
+  measure: detractor_count {
+    type: count
+    filters: {
+      field: detractor
+      value: "yes"
+    }
   }
 
   measure: count {
