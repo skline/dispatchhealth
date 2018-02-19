@@ -92,6 +92,7 @@ explore: visit_facts {
   }
 
   join: transaction_facts {
+    relationship: one_to_many
     sql_on: ${transaction_facts.visit_dim_number} = ${visit_dimensions.visit_number}  ;;
   }
 
