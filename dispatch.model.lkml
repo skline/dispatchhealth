@@ -79,12 +79,12 @@ explore: visit_facts {
       ;;
   }
 
-  join: app_shift_planning_shifts {
-    from: shift_planning_shifts
-    type: inner
-    relationship: many_to_one
-    sql_on: ${app_shift_planning_facts.shift_id} = ${app_shift_planning_facts.shift_id};;
-  }
+#   join: app_shift_planning_shifts {
+#     from: shift_planning_shifts
+#     type: inner
+#     relationship: many_to_one
+#     sql_on: ${app_shift_planning_facts.shift_id} = ${app_shift_planning_facts.shift_id};;
+#   }
 
   join: primary_payer_dimension_charge {
     sql_on: ${primary_payer_dimension_charge.visit_dim_number} = ${visit_facts.visit_dim_number}  ;;
@@ -179,6 +179,13 @@ explore: visit_facts {
     sql_on: ${survey_response_facts.respondent_dim_id} = ${respondent_dimensions.id} ;;
   }
 
+  join: dates_hours_reference {
+    type: left_outer
+    relationship: one_to_many
+    sql_on:  (${visit_facts.local_on_scene_date} = ${dates_hours_reference.datehour_date}
+      AND HOUR(${visit_facts.local_on_scene_raw}) = ${dates_hours_reference.hour_of_day}) ;;
+  }
+
 }
 
 explore: incontact {
@@ -246,5 +253,37 @@ explore: shift_planning_shifts {
 
   join: market_dimensions {
     sql_on:  ${market_dimensions.id}=${shift_planning_shifts.market_dim_id};;
+  }
+}
+
+explore: dates_hours_reference {
+
+  join: visit_facts {
+    type: left_outer
+    relationship: many_to_one
+    sql_on:  (${visit_facts.local_on_scene_date} = ${dates_hours_reference.datehour_date}
+      AND HOUR(${visit_facts.local_on_scene_raw}) = ${dates_hours_reference.hour_of_day}) ;;
+  }
+
+  join: shift_planning_facts {
+    type: inner
+    relationship: many_to_one
+    sql_on:  (${shift_planning_facts.shift_date} = ${dates_hours_reference.datehour_date}
+             AND ${shift_planning_facts.local_actual_start_hour_of_day} = ${dates_hours_reference.hour_of_day});;
+  }
+
+  join: market_dimensions {
+    relationship: many_to_one
+    sql_on: ${market_dimensions.id} = ${visit_facts.market_dim_id} ;;
+  }
+
+  join: visit_dimensions {
+    relationship: many_to_one
+    sql_on: ${visit_dimensions.care_request_id} = ${visit_facts.care_request_id} ;;
+  }
+
+  join: car_dimensions {
+    relationship: many_to_one
+    sql_on: ${car_dimensions.id} = ${visit_facts.car_dim_id} ;;
   }
 }

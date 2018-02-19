@@ -24,15 +24,26 @@ view: visit_facts {
   }
 
   dimension: car_dim_id {
-    hidden: yes
     type: number
     sql: ${TABLE}.car_dim_id ;;
+  }
+
+  measure: count_distinct_car_id {
+    description: "The number of unique car ID's"
+    type: count_distinct
+    sql: ${car_dim_id} ;;
   }
 
   dimension: care_request_id {
     description: "The ID assigned by DispatchHealth Dashboard software"
     type: number
     sql: ${TABLE}.care_request_id ;;
+  }
+
+  measure: count_distinct_care_requests {
+    description: "The number of unique care request ID's"
+    type: count_distinct
+    sql: ${care_request_id} ;;
   }
 
   dimension: channel_dim_id {
@@ -646,6 +657,7 @@ view: visit_facts {
   measure: avg_on_route_queue_mins {
     label: "On-Route Avg Time (mins)"
     type: average
+    value_format: "0.##"
     sql: ${in_on_route_queue_mins} ;;
     filters: {
       field: in_on_route_queue
@@ -672,6 +684,7 @@ view: visit_facts {
   measure: avg_on_scene_queue_mins {
     label: "On-Scene Avg Time (mins)"
     type: average
+    value_format: "0.##"
     sql: ${in_on_scene_queue_mins} ;;
     filters: {
       field: in_on_scene_queue
