@@ -268,8 +268,8 @@ explore: dates_hours_reference {
   join: shift_planning_facts {
     type: inner
     relationship: many_to_one
-    sql_on:  (${shift_planning_facts.shift_date} = ${dates_hours_reference.datehour_date}
-             AND ${shift_planning_facts.local_actual_start_hour_of_day} = ${dates_hours_reference.hour_of_day});;
+    sql_on:  (${dates_hours_reference.datehour_raw} >= ${shift_planning_facts.local_actual_start_raw}
+             AND ${dates_hours_reference.datehour_raw} <= ${shift_planning_facts.local_actual_end_raw});;
   }
 
   join: market_dimensions {

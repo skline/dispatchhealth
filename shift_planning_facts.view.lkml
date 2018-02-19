@@ -46,6 +46,7 @@ view: shift_planning_facts {
     convert_tz: no
     timeframes: [
       raw,
+      hour_of_day,
       time,
       date,
       week,
