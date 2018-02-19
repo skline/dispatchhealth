@@ -15,6 +15,12 @@ view: shift_planning_facts {
     sql: ${TABLE}.car_dim_id ;;
   }
 
+  measure: count_distinct_cars {
+    label: "Count of Distinct Cars"
+    type: count_distinct
+    sql: ${car_dim_id} ;;
+  }
+
   dimension_group: created {
     hidden: yes
     type: time
@@ -37,8 +43,10 @@ view: shift_planning_facts {
 
   dimension_group: local_actual_end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
+      hour_of_day,
       time,
       date,
       week,
@@ -51,8 +59,10 @@ view: shift_planning_facts {
 
   dimension_group: local_actual_start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
+      hour_of_day,
       time,
       date,
       week,
