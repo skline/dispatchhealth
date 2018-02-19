@@ -179,6 +179,12 @@ explore: visit_facts {
     sql_on: ${survey_response_facts.respondent_dim_id} = ${respondent_dimensions.id} ;;
   }
 
+  join: letter_recipient_dimensions {
+    type: left_outer
+    relationship:  many_to_one
+    sql_on: ${visit_facts.letter_recipient_dim_id} = ${letter_recipient_dimensions.id} ;;
+  }
+
   join: dates_hours_reference {
     type: left_outer
     relationship: one_to_many
