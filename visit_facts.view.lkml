@@ -737,6 +737,12 @@ view: visit_facts {
     value_format_name: decimal_1
   }
 
+  measure: total_average_time {
+    description: "The total of the averages of queue time"
+    type: number
+    sql: ${avg_queue_mins} + ${avg_accepted_queue_mins} + ${avg_on_route_queue_mins} + ${avg_on_scene_queue_mins} ;;
+  }
+
   dimension: bb_3_day {
     label: "3-Day Bounce back flag"
     type: yesno
