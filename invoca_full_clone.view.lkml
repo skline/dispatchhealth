@@ -1,5 +1,5 @@
-view: invoca_clone {
-  sql_table_name: looker_scratch.invoca_clone ;;
+view: invoca_full_clone {
+  sql_table_name: looker_scratch.invoca_full_clone ;;
 
   dimension: adset_name {
     type: string
@@ -280,9 +280,8 @@ view: invoca_clone {
     sql: ${TABLE}.zip_append ;;
   }
 
-
   measure: count {
     type: count
-    drill_fields: [last_name, first_name, display_name, signal_name]
+    drill_fields: [adset_name]
   }
 }
