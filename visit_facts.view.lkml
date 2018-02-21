@@ -539,7 +539,12 @@ view: visit_facts {
   measure: average_expected_allowable {
     type: number
     sql: round(avg(${visit_facts.total_expected_allowable}),2) ;;
+  }
 
+  measure: sum_of_expected_allowable {
+    type: sum
+    label: "The Sum of Total Expected Allowable"
+    sql: ${visit_facts.total_expected_allowable} ;;
   }
 
   measure: count_of_non_smfr_billable_visits {
