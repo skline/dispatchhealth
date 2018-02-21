@@ -44,5 +44,9 @@ on abs(EXTRACT(EPOCH FROM adwords_call_data_clone.end_time)-EXTRACT(EPOCH FROM i
             else 'none' end;;
   }
 
+  dimension: contact_id {
+    type: number
+    sql: ${TABLE}.incontact_contact_id ;;
+  }
 
 }
