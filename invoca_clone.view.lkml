@@ -283,6 +283,5 @@ view: invoca_clone {
 
   measure: count {
     type: count
-    drill_fields: [last_name, first_name, display_name, signal_name]
   }
 }
