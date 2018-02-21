@@ -372,7 +372,7 @@ view: visit_facts {
 
   measure: count_complete_visits {
     label: "Complete Visits Count"
-    type: count_distinct
+    type: count
     filters: {
       field: complete_visit
       value: "yes"
