@@ -214,6 +214,7 @@ view: visit_facts {
     timeframes: [
       raw,
       time,
+      hour_of_day,
       date,
       week,
       month,
@@ -372,7 +373,7 @@ view: visit_facts {
 
   measure: count_complete_visits {
     label: "Complete Visits Count"
-    type: count_distinct
+    type: count
     filters: {
       field: complete_visit
       value: "yes"
@@ -735,6 +736,19 @@ view: visit_facts {
     }
     drill_fields: [details*]
     value_format_name: decimal_1
+  }
+
+  measure: total_average_time {
+    description: "The total of the averages of queue time"
+    type: number
+    sql: ${avg_queue_mins} + ${avg_accepted_queue_mins} + ${avg_on_route_queue_mins} + ${avg_on_scene_queue_mins} ;;
+  }
+
+  measure: total_wait_time {
+    label: "Total Avg Wait Time"
+    description: "The total average time in the 'in-queue' and 'in-accepted queue' time"
+    type: number
+    sql: ${avg_queue_mins} + ${avg_accepted_queue_mins} ;;
   }
 
   dimension: bb_3_day {
