@@ -23,13 +23,19 @@ view: survey_response_facts {
   dimension: promoter {
     label: "Promoter"
     type: yesno
-    sql: ${answer_range_value} > 8 ;;
+    sql: ${question_dimensions.nps_question} IS TRUE AND  ${answer_range_value} > 8 AND ${answer_range_value} IS NOT NULL;;
   }
 
   dimension: detractor {
     label: "Detractor"
     type: yesno
-    sql: ${answer_range_value} < 7;;
+    sql: ${question_dimensions.nps_question} IS TRUE AND ${answer_range_value} < 7 AND ${answer_range_value} IS NOT NULL;;
+  }
+
+  dimension: nps_respondent {
+    label: "NPS survey respondent"
+    type: yesno
+    sql: ${question_dimensions.nps_question} IS TRUE AND ${answer_range_value} IS NOT NULL;;
   }
 
   dimension: answer_selection_value {
@@ -163,6 +169,14 @@ view: survey_response_facts {
     type: count
     filters: {
       field: detractor
+      value: "yes"
+    }
+  }
+
+  measure: nsp_total_count {
+    type: count
+    filters: {
+      field: nps_respondent
       value: "yes"
     }
   }

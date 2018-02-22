@@ -48,8 +48,7 @@ explore: visit_facts {
   join: survey_response_facts {
     relationship: many_to_one
     # change association to be the care request id instead of visit number - DH
-    sql_on: ${survey_response_facts.care_request_id} = ${visit_facts.care_request_id} ;;
-    sql_where: ${survey_response_facts.question_dim_id} = 4 ;;
+    sql_on: ${survey_response_facts.care_request_id} = ${visit_dimensions.care_request_id} ;;
   }
 
   # join: survey_response_facts {
@@ -85,6 +84,11 @@ explore: visit_facts {
           or (${visit_facts.nppa_shift_id} = ${app_shift_planning_facts.shift_id})
 
       ;;
+  }
+
+  join: question_dimensions {
+    relationship: many_to_one
+    sql_on: ${survey_response_facts.question_dim_id} = ${question_dimensions.id} ;;
   }
 
 #   join: app_shift_planning_shifts {
