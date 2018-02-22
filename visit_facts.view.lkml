@@ -754,7 +754,8 @@ view: visit_facts {
   dimension: bb_3_day {
     label: "3-Day Bounce back flag"
     type: yesno
-    sql: ${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint';;
+    sql: (${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint')
+      AND ${day_3_followup_outcome} != 'REMOVED' ;;
   }
 
   measure: bb_3_day_count {
@@ -769,7 +770,8 @@ view: visit_facts {
   dimension: bb_14_day {
     label: "14-Day Bounce back flag"
     type: yesno
-    sql: ${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint';;
+    sql: (${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint')
+      AND ${day_3_followup_outcome} != 'REMOVED';;
   }
 
   measure: bb_14_day_count {
@@ -784,7 +786,8 @@ view: visit_facts {
   dimension: bb_30_day {
     label: "30-Day Bounce back flag"
     type: yesno
-    sql: ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint';;
+    sql: (${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint')
+      AND ${day_3_followup_outcome} != 'REMOVED';;
   }
 
   measure: bb_30_day_count {
