@@ -245,6 +245,11 @@ view: invoca_clone {
     sql: ${TABLE}.total_duration ;;
   }
 
+  dimension: total_duration_seconds {
+    type: number
+    sql:EXTRACT(EPOCH FROM ${total_duration});;
+  }
+
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
@@ -280,8 +285,44 @@ view: invoca_clone {
     sql: ${TABLE}.zip_append ;;
   }
 
+  dimension: start_time_raw {
+    type: string
+    sql: ${TABLE}.start_time ;;
+  }
+
+  dimension: utm_source_and_utm_medium {
+    type: string
+    sql: concat(${utm_source}, ": ", ${utm_medium} ;;
+  }
+
+  dimension: market_id
+  {
+    type:  number
+    sql:  case when lower(${promo_number_description}) like '%den%' then 159
+     when lower(${promo_number_description}) like '%cos%' then 160
+     when lower(${promo_number_description}) like '%phoe%' then 161
+     when lower(${promo_number_description}) like '%ric%'  then 164
+     when lower(${promo_number_description})  like '%las%' then 162
+     else 0 end ;;
+  }
 
   measure: count {
-    type: count
+    label: "Distinct Invoca Calls"
+    type: number
+    sql: count(distinct ${call_record_ikd}) ;;
   }
+
+  measure: avg_invoca_duration {
+    type: number
+    sql: round(avg(${total_duration_seconds})) ;;
+  }
+  dimension: market_or_promo  {
+    type: string
+    sql: case when ${markets.name} is not null then  ${markets.name} else ${promo_number_description} end;;
+  }
+
+
+
+
+
 }
