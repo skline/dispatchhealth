@@ -1,19 +1,24 @@
 view: invoca_clone {
   sql_table_name: looker_scratch.invoca_clone ;;
 
-  dimension: address {
+  dimension: adset_name {
     type: string
-    sql: ${TABLE}.address ;;
+    sql: ${TABLE}.adset_name ;;
   }
 
-  dimension: address_type {
+  dimension: adwords_click_id {
     type: string
-    sql: ${TABLE}.address_type ;;
+    sql: ${TABLE}.adwords_click_id ;;
   }
 
-  dimension: age_range {
+  dimension: age_range_append {
     type: number
-    sql: ${TABLE}.age_range ;;
+    sql: ${TABLE}.age_range_append ;;
+  }
+
+  dimension: analytics_vistor_id {
+    type: string
+    sql: ${TABLE}.analytics_vistor_id ;;
   }
 
   dimension: call_record_ikd {
@@ -21,9 +26,9 @@ view: invoca_clone {
     sql: ${TABLE}.call_record_ikd ;;
   }
 
-  dimension: call_segment_path {
+  dimension: call_result {
     type: string
-    sql: ${TABLE}.call_segment_path ;;
+    sql: ${TABLE}.call_result ;;
   }
 
   dimension: caller_id {
@@ -31,9 +36,14 @@ view: invoca_clone {
     sql: ${TABLE}.caller_id ;;
   }
 
-  dimension: carrier {
+  dimension: carrier_append {
     type: string
-    sql: ${TABLE}.carrier ;;
+    sql: ${TABLE}.carrier_append ;;
+  }
+
+  dimension: children_append {
+    type: string
+    sql: ${TABLE}.children_append ;;
   }
 
   dimension: city {
@@ -46,105 +56,104 @@ view: invoca_clone {
     sql: ${TABLE}.city_append ;;
   }
 
-  dimension: country {
+  dimension: country_append {
     type: string
-    map_layer_name: countries
-    sql: ${TABLE}.country ;;
+    sql: ${TABLE}.country_append ;;
   }
 
-  dimension: display_name {
-    type: string
-    sql: ${TABLE}.display_name ;;
-  }
-
-  dimension: education {
-    type: string
-    sql: ${TABLE}.education ;;
-  }
-
-  dimension: email {
-    type: string
-    sql: ${TABLE}.email ;;
-  }
-
-  dimension: fees {
+  dimension: destination_phone_number {
     type: number
-    sql: ${TABLE}.fees ;;
+    sql: ${TABLE}.destination_phone_number ;;
   }
 
-  dimension: final_campaign {
+  dimension: display_name_append {
     type: string
-    sql: ${TABLE}.final_campaign ;;
+    sql: ${TABLE}.display_name_append ;;
   }
 
-  dimension: first_name {
+  dimension: education_append {
     type: string
-    sql: ${TABLE}.first_name ;;
+    sql: ${TABLE}.education_append ;;
   }
 
-  dimension: gender {
+  dimension: end_call {
     type: string
-    sql: ${TABLE}.gender ;;
+    sql: ${TABLE}.end_call ;;
   }
 
-  dimension: has_children {
+  dimension: first_name_append {
     type: string
-    sql: ${TABLE}.has_children ;;
+    sql: ${TABLE}.first_name_append ;;
   }
 
-  dimension: high_net_worth {
+  dimension: gender_append {
     type: string
-    sql: ${TABLE}.high_net_worth ;;
+    sql: ${TABLE}.gender_append ;;
   }
 
-  dimension: home_value {
+  dimension: high_net_worth_append {
     type: string
-    sql: ${TABLE}.home_value ;;
+    sql: ${TABLE}.high_net_worth_append ;;
   }
 
-  dimension: household_income {
+  dimension: home_owner_append {
     type: string
-    sql: ${TABLE}.household_income ;;
+    sql: ${TABLE}.home_owner_append ;;
   }
 
-  dimension: last_name {
+  dimension: home_value_append {
     type: string
-    sql: ${TABLE}.last_name ;;
+    sql: ${TABLE}.home_value_append ;;
   }
 
-  dimension: length_residence {
+  dimension: househould_income_append {
     type: string
-    sql: ${TABLE}.length_residence ;;
+    sql: ${TABLE}.househould_income_append ;;
   }
 
-  dimension: line_type {
+  dimension: is_prepaid_append {
     type: string
-    sql: ${TABLE}.line_type ;;
+    sql: ${TABLE}.is_prepaid_append ;;
   }
 
-  dimension: marital_status {
+  dimension: keywords {
     type: string
-    sql: ${TABLE}.marital_status ;;
+    sql: ${TABLE}.keywords ;;
   }
 
-  dimension: occupation {
+  dimension: last_name_append {
     type: string
-    sql: ${TABLE}.occupation ;;
+    sql: ${TABLE}.last_name_append ;;
   }
 
-  dimension: original_publisher {
+  dimension: length_residence_append {
     type: string
-    sql: ${TABLE}.original_publisher ;;
+    sql: ${TABLE}.length_residence_append ;;
   }
 
-  dimension: original_publisher_id {
+  dimension: line_type_append {
     type: string
-    sql: ${TABLE}.original_publisher_id ;;
+    sql: ${TABLE}.line_type_append ;;
   }
 
-  dimension: own_rent {
+  dimension: linked_email_append {
     type: string
-    sql: ${TABLE}.own_rent ;;
+    sql: ${TABLE}.linked_email_append ;;
+  }
+
+  dimension: martial_status_append {
+    type: string
+    sql: ${TABLE}.martial_status_append ;;
+  }
+
+  dimension: media_type {
+    type: string
+    sql: ${TABLE}.media_type ;;
+  }
+
+  dimension: occupation_append {
+    type: string
+    sql: ${TABLE}.occupation_append ;;
   }
 
   dimension: phone_type {
@@ -152,19 +161,29 @@ view: invoca_clone {
     sql: ${TABLE}.phone_type ;;
   }
 
-  dimension: prepaid {
+  dimension: placement {
     type: string
-    sql: ${TABLE}.prepaid ;;
+    sql: ${TABLE}.placement ;;
   }
 
-  dimension: primary_email {
+  dimension: pool_type {
     type: string
-    sql: ${TABLE}.primary_email ;;
+    sql: ${TABLE}.pool_type ;;
   }
 
-  dimension: profile_fees {
-    type: number
-    sql: ${TABLE}.profile_fees ;;
+  dimension: primary_email_append {
+    type: string
+    sql: ${TABLE}.primary_email_append ;;
+  }
+
+  dimension: profile {
+    type: string
+    sql: ${TABLE}.profile ;;
+  }
+
+  dimension: profile_campaign {
+    type: string
+    sql: ${TABLE}.profile_campaign ;;
   }
 
   dimension: promo_number_description {
@@ -172,9 +191,9 @@ view: invoca_clone {
     sql: ${TABLE}.promo_number_description ;;
   }
 
-  dimension: recording {
-    type: string
-    sql: ${TABLE}.recording ;;
+  dimension: promo_number_id {
+    type: number
+    sql: ${TABLE}.promo_number_id ;;
   }
 
   dimension: region {
@@ -182,14 +201,14 @@ view: invoca_clone {
     sql: ${TABLE}.region ;;
   }
 
-  dimension: revenue {
+  dimension: repeat_caller {
     type: string
-    sql: ${TABLE}.revenue ;;
+    sql: ${TABLE}.repeat_caller ;;
   }
 
-  dimension: signal_name {
+  dimension: search_type {
     type: string
-    sql: ${TABLE}.signal_name ;;
+    sql: ${TABLE}.search_type ;;
   }
 
   dimension: source {
@@ -210,19 +229,15 @@ view: invoca_clone {
     ]
     sql: ${TABLE}.start_time ;;
   }
-  dimension: start_time_raw {
+
+  dimension: state_append {
     type: string
-    sql: ${TABLE}.start_time ;;
+    sql: ${TABLE}.state_append ;;
   }
 
-  dimension: state {
+  dimension: street_address_append {
     type: string
-    sql: ${TABLE}.state ;;
-  }
-
-  dimension: total_connected_duration {
-    type: string
-    sql: ${TABLE}.total_connected_duration ;;
+    sql: ${TABLE}.street_address_append ;;
   }
 
   dimension: total_duration {
@@ -230,46 +245,84 @@ view: invoca_clone {
     sql: ${TABLE}.total_duration ;;
   }
 
-  dimension: total_ivr_duration {
-    type: string
-    sql: ${TABLE}.total_ivr_duration ;;
-  }
-
-  dimension: total_key_presses {
-    type: string
-    sql: ${TABLE}.total_key_presses ;;
-  }
-
-  dimension: transactions {
+  dimension: total_duration_seconds {
     type: number
-    sql: ${TABLE}.transactions ;;
+    sql:EXTRACT(EPOCH FROM ${total_duration});;
   }
 
-  dimension: zip {
-    type: zipcode
-    sql: ${TABLE}.zip ;;
-  }
-  dimension:  end_time {
+  dimension: traffic_source {
     type: string
-    sql: addtime(${start_raw}, ${total_duration});;
-
+    sql: ${TABLE}.traffic_source ;;
   }
 
-  dimension:  end_time_plus_one {
+  dimension: utm_campaign {
     type: string
-    sql: addtime(${start_raw}, ${total_duration}+1);;
-
+    sql: ${TABLE}.utm_campaign ;;
   }
 
-  dimension:  end_time_minus_one {
+  dimension: utm_content {
     type: string
-    sql: addtime(${start_raw}, ${total_duration}-1);;
-
+    sql: ${TABLE}.utm_content ;;
   }
 
+  dimension: utm_medium {
+    type: string
+    sql: ${TABLE}.utm_medium ;;
+  }
+
+  dimension: utm_source {
+    type: string
+    sql: ${TABLE}.utm_source ;;
+  }
+
+  dimension: utm_term {
+    type: string
+    sql: ${TABLE}.utm_term ;;
+  }
+
+  dimension: zip_append {
+    type: number
+    sql: ${TABLE}.zip_append ;;
+  }
+
+  dimension: start_time_raw {
+    type: string
+    sql: ${TABLE}.start_time ;;
+  }
+
+  dimension: utm_source_and_utm_medium {
+    type: string
+    sql: concat(${utm_source}, ": ", ${utm_medium} ;;
+  }
+
+  dimension: market_id
+  {
+    type:  number
+    sql:  case when lower(${promo_number_description}) like '%den%' then 159
+     when lower(${promo_number_description}) like '%cos%' then 160
+     when lower(${promo_number_description}) like '%phoe%' then 161
+     when lower(${promo_number_description}) like '%ric%'  then 164
+     when lower(${promo_number_description})  like '%las%' then 162
+     else 0 end ;;
+  }
 
   measure: count {
-    type: count
-    drill_fields: [last_name, first_name, display_name, signal_name]
+    label: "Distinct Invoca Calls"
+    type: number
+    sql: count(distinct ${call_record_ikd}) ;;
   }
+
+  measure: avg_invoca_duration {
+    type: number
+    sql: round(avg(${total_duration_seconds})) ;;
+  }
+  dimension: market_or_promo  {
+    type: string
+    sql: case when ${markets.name} is not null then  ${markets.name} else ${promo_number_description} end;;
+  }
+
+
+
+
+
 }

@@ -1,5 +1,5 @@
-view: invoca {
-  sql_table_name: looker_scratch.invoca ;;
+view: invoca_full_clone {
+  sql_table_name: looker_scratch.invoca_full_clone ;;
 
   dimension: adset_name {
     type: string
@@ -280,32 +280,8 @@ view: invoca {
     sql: ${TABLE}.zip_append ;;
   }
 
-  dimension:  start_time_raw {
-    type: string
-    sql:  ${TABLE}.start_time ;;
-
-  }
-
-  dimension:  end_time {
-    type: string
-    sql: addtime(${start_raw}, ${total_duration});;
-
-  }
-
-  dimension:  end_time_plus_one {
-    type: string
-    sql: addtime(${start_raw}, ${total_duration}+1);;
-
-  }
-
-  dimension:  end_time_minus_one {
-    type: string
-    sql: addtime(${start_raw}, ${total_duration}-1);;
-
-  }
-
-
   measure: count {
     type: count
+    drill_fields: [adset_name]
   }
 }
