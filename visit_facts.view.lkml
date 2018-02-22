@@ -526,6 +526,196 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+# Create measures by metrics of interest for use in data export for health system scorecard
+# Dan Edstrom
+# 2/22/2018
+  dimension: female_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.gender} = 'F' AND ${billable_visit} IS TRUE ;;
+  }
+
+  dimension: male_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.gender} = 'M' AND ${billable_visit} IS TRUE ;;
+  }
+
+  dimension: age_0_to_5_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_0_to_5} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_6_to_9_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_6_to_9} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_10_to_19_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_10_to_19} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_20_to_29_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_20_to_29} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_30_to_39_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_30_to_39} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_40_to_49_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_40_to_49} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_50_to_59_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_50_to_59} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_60_to_69_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_60_to_69} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_70_to_79_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_70_to_79} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_80_to_89_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_80_to_89} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+  dimension: age_90_plus_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${patient_dimensions.age_90_plus} IS TRUE AND ${billable_visit} IS TRUE ;;
+  }
+
+  measure: count_female_billable_visits {
+    label: "Billable Visit Count - Female"
+    type: count
+    filters: {
+      field: female_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_male_billable_visits {
+    label: "Billable Visit Count - Male"
+    type: count
+    filters: {
+      field: male_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_0_to_5_billable_visits {
+    label: "Billable Visit Count - Age 0 to 5"
+    type: count
+    filters: {
+      field: age_0_to_5_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_6_to_9_billable_visits {
+    label: "Billable Visit Count - Age 6 to 9"
+    type: count
+    filters: {
+      field: age_6_to_9_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_10_to_19_billable_visits {
+    label: "Billable Visit Count - 10 to 19"
+    type: count
+    filters: {
+      field: age_10_to_19_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_20_to_29_billable_visits {
+    label: "Billable Visit Count - 20 to 29"
+    type: count
+    filters: {
+      field: age_20_to_29_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_30_to_39_billable_visits {
+    label: "Billable Visit Count - 30 to 39"
+    type: count
+    filters: {
+      field: age_30_to_39_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_40_to_49_billable_visits {
+    label: "Billable Visit Count - 40 to 49"
+    type: count
+    filters: {
+      field: age_40_to_49_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_50_to_59_billable_visits {
+    label: "Billable Visit Count - 50 to 59"
+    type: count
+    filters: {
+      field: age_50_to_59_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_60_to_69_billable_visits {
+    label: "Billable Visit Count - 60 to 69"
+    type: count
+    filters: {
+      field: age_60_to_69_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_70_to_79_billable_visits {
+    label: "Billable Visit Count - 70 to 79"
+    type: count
+    filters: {
+      field: age_70_to_79_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_80_to_89_billable_visits {
+    label: "Billable Visit Count - 80 to 89"
+    type: count
+    filters: {
+      field: age_80_to_89_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_age_90_plus_billable_visits {
+    label: "Billable Visit Count - 90+"
+    type: count
+    filters: {
+      field: age_90_plus_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+# End block for health system scorecard export
+
   measure: count_of_billable_visit_with_expected_allowable {
     label: "Billable Visit with Expected Allowable Count"
     type: count
@@ -540,7 +730,6 @@ view: visit_facts {
   measure: average_expected_allowable {
     type: number
     sql: round(avg(${visit_facts.total_expected_allowable}),2) ;;
-
   }
 
   measure: count_of_non_smfr_billable_visits {

@@ -94,30 +94,79 @@ explore: care_requests {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
   }
 
-  join: adwords_combined {
-    sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
-            OR ${patients.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
-            OR ${users.mobile_number} like CONCAT('%', ${adwords_combined.adword_phone_number} ,'%')
+  join: invoca_clone {
+    sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${users.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
             ;;
 
     }
-
- }
-  explore: adwords_call_data_clone {
 
   join: incontact_clone {
-    sql_on: abs(EXTRACT(EPOCH FROM ${adwords_call_data_clone.end_time_raw})-EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})) < 3
-           and ${incontact_clone.from_number}::text like  CONCAT('%', ${adwords_call_data_clone.area_code} ,'%')
-          ;;
+    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10 and
+       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+            ;;
+  }
 
-    }
+ }
+  explore: invoca_clone {
 
-  join: invoca_clone {
-    sql_on: abs(EXTRACT(EPOCH FROM ${adwords_call_data_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 15 and
-    abs(EXTRACT(EPOCH FROM ${adwords_call_data_clone.start_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})) < 15
-       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${adwords_call_data_clone.area_code} ,'%')
+
+  join: incontact_clone {
+    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
+       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
             ;;
     }
+
+    join: patients {
+      sql_on:  ${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%') ;;
+    }
+
+    join: care_requests {
+      sql_on: ${patients.id} =${care_requests.patient_id} ;;
+
+
+      }
+
+    join: care_request_complete{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+    }
+
+    join: care_request_requested{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+    }
+
+    join: care_request_accepted{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+    }
+
+    join: care_request_archived{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+    }
+
+    join: care_request_scheduled{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    }
+
+    join: channel_items {
+      sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+    }
+
+    join: markets {
+      sql_on:  ${markets.id} =${invoca_clone.market_id} ;;
+    }
+
+
 
 }
 

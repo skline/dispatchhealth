@@ -48,9 +48,15 @@ explore: visit_facts {
   join: survey_response_facts {
     relationship: many_to_one
     # change association to be the care request id instead of visit number - DH
-    sql_on: ${survey_response_facts.care_request_id} = ${visit_facts.care_request_id} ;;
-    sql_where: ${survey_response_facts.question_dim_id} = 4 ;;
+    sql_on: ${survey_response_facts.care_request_id} = ${visit_dimensions.care_request_id} ;;
   }
+
+  # join: survey_response_facts {
+  #   relationship: many_to_one
+  #   # change association to be the care request id instead of visit number - DH
+  #   sql_on: ${survey_response_facts.care_request_id} = ${visit_facts.care_request_id} ;;
+  #   sql_where: ${survey_response_facts.question_dim_id} = 4 ;;
+  # }
 
   join: ed_diversion_survey_response {
     relationship: many_to_one
@@ -78,6 +84,11 @@ explore: visit_facts {
           or (${visit_facts.nppa_shift_id} = ${app_shift_planning_facts.shift_id})
 
       ;;
+  }
+
+  join: question_dimensions {
+    relationship: many_to_one
+    sql_on: ${survey_response_facts.question_dim_id} = ${question_dimensions.id} ;;
   }
 
 #   join: app_shift_planning_shifts {
@@ -269,34 +280,47 @@ explore: shift_planning_shifts {
   }
 }
 
-explore: dates_hours_reference {
+explore: date_hour_ref {
 
   join: visit_facts {
     type: left_outer
-    relationship: many_to_one
-    sql_on:  (${visit_facts.local_on_scene_date} = ${dates_hours_reference.datehour_date}
-      AND HOUR(${visit_facts.local_on_scene_raw}) = ${dates_hours_reference.hour_of_day}) ;;
-  }
-
-  join: shift_planning_facts {
-    type: inner
-    relationship: many_to_one
-    sql_on:  (${dates_hours_reference.datehour_raw} >= ${shift_planning_facts.local_actual_start_raw}
-             AND ${dates_hours_reference.datehour_raw} <= ${shift_planning_facts.local_actual_end_raw});;
-  }
-
-  join: market_dimensions {
-    relationship: many_to_one
-    sql_on: ${market_dimensions.id} = ${visit_facts.market_dim_id} ;;
-  }
-
-  join: visit_dimensions {
-    relationship: many_to_one
-    sql_on: ${visit_dimensions.care_request_id} = ${visit_facts.care_request_id} ;;
-  }
-
-  join: car_dimensions {
-    relationship: many_to_one
-    sql_on: ${car_dimensions.id} = ${visit_facts.car_dim_id} ;;
+    relationship: one_to_many
+    sql_on: DATE(extract_years(${visit_facts.local_on_scene_time},
+              extract_months(${visit_facts.local_on_scene_time}),
+              extract_days(${visit_facts.local_on_scene_time})) } <= ${date_hour_ref.dt}
+              AND extract_hours(${visit_facts.local_on_scene_time}) <= ${date_hour_ref.hr}
+              AND DATE(extract_years(${visit_facts.local_complete_time}),
+                    extract_months(${visit_facts.local_complete_time}),
+                    extract_days(${visit_facts.local_complete_time}))  >= ${date_hour_ref.dt}
+              AND extract_hours(${visit_facts.local_complete_time}) >= ${date_hour_ref.hr} ;;
   }
 }
+
+  # join: visit_facts {
+  #   type: left
+  #   relationship: one_to_many
+  #   sql_on:  (${visit_facts.local_on_scene_date} = ${dates_hours_reference.datehour_date}
+  #     AND HOUR(${visit_facts.local_on_scene_raw}) = ${dates_hours_reference.hour_of_day}) ;;
+  # }
+
+  # join: shift_planning_facts {
+  #   type: left
+  #   relationship: one_to_many
+  #   sql_on:  (${dates_hours_reference.datehour_raw} >= ${shift_planning_facts.local_actual_start_raw}
+  #           AND ${dates_hours_reference.datehour_raw} <= ${shift_planning_facts.local_actual_end_raw});;
+  # }
+
+  # join: market_dimensions {
+  #   relationship: many_to_one
+  #   sql_on: ${market_dimensions.id} = ${visit_facts.market_dim_id} ;;
+  # }
+
+  # join: visit_dimensions {
+  #   relationship: many_to_one
+  #   sql_on: ${visit_dimensions.care_request_id} = ${visit_facts.care_request_id} ;;
+  # }
+
+  # join: car_dimensions {
+  #   relationship: many_to_one
+  #   sql_on: ${car_dimensions.id} = ${visit_facts.car_dim_id} ;;
+  # }

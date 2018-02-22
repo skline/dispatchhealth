@@ -58,8 +58,22 @@ view: channel_dimensions {
     hidden: yes
     #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
     sql:  CASE WHEN ${organization_label} = ${organization} THEN ${sub_type}||${organization}
-               ELSE ${sub_type}||'ZZZZZZZZ' END ;;
+      ELSE ${sub_type}||'ZZZZZZZZ' END ;;
   }
+
+  ## From Looker website on the creation of subtotals and underlying sort functionality
+  # dimension: product_name {
+  #   order_by_field: product_order
+  #   # For subtotal rows: show 'SUBTOTAL'.  For nulls, show '∅' (supports intuitive sorting).  Otherwise use raw base table field's data. Note, concatenation with '${row_type_checker}' is used to concisely force subtotal rows to evaluate to null, which is then converted to 'SUBTOTAL'
+  #   sql: coalesce(cast(coalesce(cast(${products.name} as varchar),'∅')||${row_type_checker} as varchar),'SUBTOTAL');;
+  # }
+  # dimension: product_order {
+  #   hidden: yes
+  #   #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
+  #   sql: coalesce(cast(coalesce(cast(${products.name} as varchar),'          ')||${row_type_checker} as varchar),'ZZZZZZZZZZ');;
+  # }
+
+
 
   dimension: digital {
     type: yesno

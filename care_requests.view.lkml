@@ -324,9 +324,22 @@ view: care_requests {
     sql: ${TABLE}.pushed_at ;;
   }
 
-  dimension: request_type {
+  dimension: request_type_id {
     type: number
     sql: ${TABLE}.request_type ;;
+  }
+
+  dimension: request_type {
+    type: string
+    sql:  case when ${request_type_id} = 0 then 'phone'
+               when ${request_type_id} = 1 then 'manual_911'
+               when ${request_type_id} = 2 then 'mobile'
+               when ${request_type_id} = 3 then 'web'
+               when ${request_type_id} = 4 then 'mobile_android'
+               when ${request_type_id} = 5 then 'centura_connect'
+               when ${request_type_id} = 6 then 'centura_care_coordinator'
+               when ${request_type_id} = 7 then 'orderly'
+            else 'other' end;;
   }
 
   dimension: requested_by {
@@ -571,6 +584,7 @@ measure: distinct_days {
     type:  yesno
     sql:  ${care_request_patient_create_diff}< 4000 ;;
   }
+
 
 
   # ----- Sets of fields for drilling ------
