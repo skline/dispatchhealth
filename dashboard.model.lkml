@@ -123,9 +123,7 @@ explore: care_requests {
     }
 
     join: care_requests {
-      sql_on: ${patients.id} =${care_requests.patient_id} ;;
-
-
+      sql_on: ${patients.id} =${care_requests.patient_id} and ${care_requests.created_date} = ${invoca_clone.start_date} ;;
       }
 
     join: care_request_complete{
