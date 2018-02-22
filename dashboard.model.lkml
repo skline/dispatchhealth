@@ -98,6 +98,7 @@ explore: care_requests {
     sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${users.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            and ${care_requests.created_date} = ${invoca_clone.start_date}
             ;;
 
     }
@@ -123,7 +124,7 @@ explore: care_requests {
     }
 
     join: care_requests {
-      sql_on: ${patients.id} =${care_requests.patient_id} and ${care_requests.created_date} = ${invoca_clone.start_date} ;;
+      sql_on: ${patients.id} = ${care_requests.patient_id} and ${care_requests.created_date} = ${invoca_clone.start_date} ;;
       }
 
     join: care_request_complete{
