@@ -118,9 +118,14 @@ explore: care_requests {
        and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
             ;;
     }
-
+    join: patient_user_poa {
+      sql_on:  REPLACE(${patient_user_poa.poa_number}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${patient_user_poa.patient_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${patient_user_poa.user_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+             ;;
+    }
     join: patients {
-      sql_on:  ${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%') ;;
+      sql_on:  ${patients.id} = ${patient_user_poa.patient_id}  ;;
     }
 
     join: care_requests {
