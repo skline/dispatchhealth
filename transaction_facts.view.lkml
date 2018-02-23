@@ -235,4 +235,9 @@ view: transaction_facts {
     type: count
     drill_fields: [id]
   }
+
+  measure: transaction_billable_count {
+    type: count_distinct
+    sql: ${visit_dim_number} ;;
+  }
 }
