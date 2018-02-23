@@ -597,6 +597,24 @@ view: visit_facts {
     sql: ${patient_dimensions.age_90_plus} IS TRUE AND ${billable_visit} IS TRUE ;;
   }
 
+  dimension: clinical_notes_sent_billable_visit_flag {
+    type: yesno
+    hidden: yes
+    sql: ${letter_recipient_dimensions.recipient_type} IS NOT NULL AND ${billable_visit} IS TRUE ;;
+  }
+
+  dimension: referred_on_scene_flag {
+    type: yesno
+    hidden: yes
+    sql: ${resolve_reason} = 'Referred - Point of Care';;
+  }
+
+  dimension: referred_phone_flag {
+    type: yesno
+    hidden: yes
+    sql: ${resolve_reason} = 'Referred - Phone Triage';;
+  }
+
   measure: count_female_billable_visits {
     label: "Billable Visit Count - Female"
     type: count
@@ -713,6 +731,34 @@ view: visit_facts {
       value: "yes"
     }
   }
+
+  measure: clinical_notes_sent {
+    label: "Billable Visits Where Clinical Notes Sent"
+    type: count
+    filters: {
+      field: clinical_notes_sent_billable_visit_flag
+      value: "yes"
+    }
+  }
+
+  measure: referred_on_scene_count {
+    label: "Referred On Scene Count"
+    type: count
+    filters: {
+      field: referred_on_scene_flag
+      value: "yes"
+    }
+  }
+
+  measure: referred_phone_count {
+    label: "Referred Phone Count"
+    type: count
+    filters: {
+      field: referred_phone_flag
+      value: "yes"
+    }
+  }
+
 
 # End block for health system scorecard export
 

@@ -48,7 +48,7 @@ explore: visit_facts {
   join: survey_response_facts {
     relationship: many_to_one
     # change association to be the care request id instead of visit number - DH
-    sql_on: ${survey_response_facts.care_request_id} = ${visit_dimensions.care_request_id}
+    sql_on: ${survey_response_facts.care_request_id} = ${visit_facts.care_request_id}
     AND ${survey_response_facts.question_dim_id} = 4
     AND ${survey_response_facts.answer_range_value} IS NOT NULL;;
   }

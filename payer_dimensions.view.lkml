@@ -28,6 +28,19 @@ view: payer_dimensions {
     sql: ${TABLE}.custom_insurance_grouping ;;
   }
 
+  dimension: custom_insurance_label {
+    type: string
+    sql: CASE ${custom_insurance_grouping}
+         WHEN '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
+        WHEN '(MA)MEDICARE ADVANTAGE' THEN 'Medicare Advantage'
+        WHEN '(MAID)MEDICAID' OR '(MMCD)MANAGED MEDICAID' THEN 'Medicaid'
+        WHEN '(PSP)PATIENT SELF-PAY' OR 'PATIENT RESPONSIBILITY' THEN 'Patient Self Pay'
+        WHEN '(CM)COMMERCIAL' THEN 'Commercial'
+        WHEN '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
+        ELSE 'OTHER'
+        END;;
+  }
+
   dimension: insurance_package_id {
     label: "Insurance Package ID"
     type: string

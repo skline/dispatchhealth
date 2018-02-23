@@ -38,6 +38,11 @@ view: letter_recipient_dimensions {
     sql: ${TABLE}.recipient_type ;;
   }
 
+  dimension: clinical_notes_sent_flag {
+    type: yesno
+    sql: ${recipient_type} IS NOT NULL ;;
+  }
+
   dimension_group: updated {
     hidden: yes
     type: time
