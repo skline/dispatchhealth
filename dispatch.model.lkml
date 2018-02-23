@@ -237,23 +237,6 @@ explore: incontact {
         }
   }
 
-explore: adwords_call_data {
-  join: incontact {
-    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time_raw},${adwords_call_data.end_time_raw}))) < 3
-           and ${incontact.from_number} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
-          ;;
-
-    }
-  join: invoca {
-    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
-             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time_raw}, ${invoca.start_time_raw})))<15
-             and ${invoca.caller_id} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
-            ;;
-
-    }
-
-}
-
 explore: productivity_data {
   join: market_dimensions {
     sql_on: ${productivity_data.market_dim_id} = ${market_dimensions.id}

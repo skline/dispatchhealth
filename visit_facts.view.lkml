@@ -774,6 +774,7 @@ view: visit_facts {
   }
 
   measure: average_expected_allowable {
+    label: "Average Expected Allowable"
     type: number
     sql: round(avg(${visit_facts.total_expected_allowable}),2) ;;
   }

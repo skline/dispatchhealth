@@ -12,7 +12,7 @@ left join public.power_of_attorneys poa
 on poa.patient_id=p.id) ed_diversion_survey_response_rate
                ;;
 
-        sql_trigger_value: SELECT CURDATE() ;;
+        sql_trigger_value: SELECT current_date ;;
        indexes: ["patient_id"]
       }
  dimension: patient_id {

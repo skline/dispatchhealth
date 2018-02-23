@@ -49,6 +49,12 @@ view: cpt_code_dimensions {
     sql: ${TABLE}.description ;;
   }
 
+  dimension: cpt_code_and_description {
+    description: "The CPT code only (less prefixes and suffixes) with the description"
+    type: string
+    sql: CONCAT(${cpt_code}, " - ", ${description}) ;;
+  }
+
   dimension: e_and_m_code {
     label: "E&M CPT code flag"
     description: "Flag to indicate whether the CPT code is an E&M code"
