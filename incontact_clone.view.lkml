@@ -77,7 +77,7 @@ view: incontact_clone {
   }
 
   dimension: to_number {
-    type: number
+    type: string
     sql: ${TABLE}.to_number ;;
   }
 
