@@ -368,7 +368,7 @@ view: visit_facts {
   dimension: complete_visit {
     label: "Complete Visit flag"
     type: yesno
-    sql: ${complete_raw} is not null;;
+    sql: ${local_complete_raw} is not null;;
   }
 
   measure: count_complete_visits {
