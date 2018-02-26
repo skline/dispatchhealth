@@ -9,10 +9,10 @@ from public.patients p
 left join public.users u
 on u.id=p.user_id
 left join public.power_of_attorneys poa
-on poa.patient_id=p.id) ed_diversion_survey_response_rate
+on poa.patient_id=p.id) poa
                ;;
 
-        sql_trigger_value: SELECT current_date ;;
+
        indexes: ["patient_id"]
       }
  dimension: patient_id {
