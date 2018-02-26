@@ -16,6 +16,7 @@ view: dates_hours_reference {
       date,
       week,
       month,
+      day_of_month,
       quarter,
       year
     ]
