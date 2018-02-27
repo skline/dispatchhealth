@@ -435,9 +435,18 @@ view: care_requests {
     }
   }
 
+  dimension: smfr_billable {
+    type: yesno
+    sql: ${cars.name} LIKE '%SMFR%' AND ${billable_est};;
+  }
 
-
-
+  measure: count_smfr_billable {
+    type: count
+    filters: {
+      field: smfr_billable
+      value: "yes"
+    }
+  }
 
   dimension:  accepted_visit {
     type: yesno
