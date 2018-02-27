@@ -77,7 +77,9 @@ view: channel_dimensions {
 
   dimension: digital {
     type: yesno
-    sql: ${organization} in('google or other search', 'social media (facebook, linkedin, twitter, instagram)', 'social media(facebook, linkedin, twitter, instagram)') ;;
+    sql: (${organization} in('google or other search', 'social media (facebook, linkedin, twitter, instagram)', 'social media(facebook, linkedin, twitter, instagram)'))
+    OR (${invoca_clone.utm_source} like '%google%' and ${invoca_clone.utm_medium} not in ('organic', 'local', 'referral'))
+    OR (${invoca_clone.utm_source} like '%facebook%' and ${invoca_clone.utm_medium} not in ('organic', 'local', 'referral')) ;;
   }
 
   dimension_group: updated {

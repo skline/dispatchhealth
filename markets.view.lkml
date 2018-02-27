@@ -134,4 +134,12 @@ view: markets {
     type: count
     drill_fields: [id, name, provider_group_name, short_name, care_requests.count]
   }
+  measure: digital_adjusted {
+    type: number
+    sql: ${care_request_complete.count_distinct}+${incontact_spot_check_by_market.spot_check_care_requests} ;;
+  }
+  measure: non_digital_adjusted {
+    type: number
+    sql: ${care_request_complete.count_distinct} - ${incontact_spot_check_by_market.spot_check_care_requests} ;;
+  }
 }

@@ -62,7 +62,7 @@ view: invoca_clone {
   }
 
   dimension: destination_phone_number {
-    type: number
+    type: string
     sql: ${TABLE}.destination_phone_number ;;
   }
 

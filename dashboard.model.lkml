@@ -104,10 +104,19 @@ explore: care_requests {
     }
 
   join: incontact_clone {
-    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10 and
+    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
        and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
             ;;
   }
+
+  join: incontact_spot_check_by_market {
+    sql_on: ${incontact_spot_check_by_market.market_id} = ${markets.id} and ${care_request_requested.created_date}=${incontact_spot_check_by_market.date_call}
+            ;;
+  }
+
+
+
+
 
  }
   explore: invoca_clone {
