@@ -25,6 +25,11 @@ explore: care_requests {
     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
   }
 
+  join: cars {
+    relationship: many_to_one
+    sql_on: ${shift_teams.car_id} = ${cars.id} ;;
+  }
+
   join: users {
     relationship: one_to_one
     sql_on:  ${shift_team_members.user_id} = ${users.id};;
