@@ -27,12 +27,21 @@ view: productivity_data {
       raw,
       time,
       date,
+      day_of_month,
       week,
       month,
       quarter,
       year
     ]
     sql: ${TABLE}.date ;;
+  }
+
+  dimension: dynamic_month {
+    type: date
+    sql: CASE
+          WHEN ${date_day_of_month} = 1 THEN DATE_FORMAT(DATE_SUB(${date_raw}, INTERVAL 1 MONTH), "%Y-%m")
+          ELSE ${date_month}
+        END ;;
   }
 
   dimension: hours_worked {

@@ -382,6 +382,32 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  dimension: centura_mssp_request_flag {
+    type: yesno
+    sql: ${centura_mssp_eligible.group_member_id} IS NOT NULL ;;
+  }
+
+  measure: count_mssp_requests {
+    type: count
+    filters: {
+      field: centura_mssp_request_flag
+      value: "yes"
+    }
+  }
+
+  dimension: centura_mssp_complete_flag {
+    type: yesno
+    sql: ${centura_mssp_eligible.group_member_id} IS NOT NULL AND ${complete_visit};;
+  }
+
+  measure: count_mssp_completed_visits {
+    type: count
+    filters: {
+      field: centura_mssp_complete_flag
+      value: "yes"
+    }
+  }
+
   dimension: secondary_resolve_reason {
     description: "Addition information regarding the care request resolve reason"
     type: string

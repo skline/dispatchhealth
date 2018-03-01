@@ -82,6 +82,17 @@ view: channel_dimensions {
     OR (${invoca_clone.utm_source} like '%facebook%' and ${invoca_clone.utm_medium} not in ('organic', 'local', 'referral')) ;;
   }
 
+  dimension: centura_organization {
+    type: string
+    sql: CASE
+          WHEN ${centura_mssp_eligible.group_member_id} IS NOT NULL AND
+          ${organization} NOT LIKE '%centura%' THEN 'centura health - other channel'
+          WHEN (${organization} = 'centura connect' OR ${organization} = 'centura health mssp aco')
+          THEN 'centura health'
+          ELSE ${organization}
+          END;;
+  }
+
   dimension_group: updated {
     hidden: yes
     type: time
