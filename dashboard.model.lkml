@@ -185,6 +185,13 @@ explore: care_requests {
       sql_on:  ${markets.id} =${invoca_clone.market_id} ;;
     }
 
+    join: incontact_spot_check_clone {
+      sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
+        ;;
+    }
+
+
+
 
 
 }
