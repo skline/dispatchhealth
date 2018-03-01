@@ -165,6 +165,8 @@ view: visit_facts {
     timeframes: [
       raw,
       time,
+      hour_of_day,
+      time_of_day,
       date,
       week,
       month,
@@ -172,6 +174,12 @@ view: visit_facts {
       year
     ]
     sql: ${TABLE}.local_complete_time ;;
+  }
+
+  dimension: local_complete_decimal {
+    description: "Completed Time of Day as Decimal"
+    type: number
+    sql: ${local_complete_hour_of_day} + (MINUTE(${local_complete_raw}) / 60) ;;
   }
 
   dimension_group: local_on_route {
@@ -198,6 +206,9 @@ view: visit_facts {
     timeframes: [
       raw,
       time,
+      minute,
+      hour_of_day,
+      time_of_day,
       date,
       week,
       month,
@@ -205,6 +216,12 @@ view: visit_facts {
       year
     ]
     sql: ${TABLE}.local_on_scene_time ;;
+  }
+
+  dimension: local_on_scene_decimal {
+    description: "On Scene Time of Day as Decimal"
+    type: number
+    sql: ${local_on_scene_hour_of_day} + (MINUTE(${local_on_scene_raw}) / 60) ;;
   }
 
   dimension_group: local_requested {

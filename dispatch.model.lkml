@@ -103,6 +103,7 @@ explore: visit_facts {
   }
 
   join: primary_payer_dimensions {
+    relationship: many_to_one
     sql_on: ${transaction_facts.primary_payer_dim_id} = ${primary_payer_dimensions.id}  ;;
   }
 
@@ -289,9 +290,8 @@ explore: dates_hours_reference {
   }
 
   join: car_dimensions {
-    type: left_outer
     relationship: many_to_one
-    sql_on: ${car_dimensions.id} = ${shift_planning_facts.car_dim_id} ;;
+    sql_on: ${shift_planning_facts.car_dim_id} = ${car_dimensions.id} ;;
   }
 
   join: market_dimensions {
@@ -302,6 +302,16 @@ explore: dates_hours_reference {
   join: visit_dimensions {
     relationship: many_to_one
     sql_on: ${visit_dimensions.care_request_id} = ${visit_facts.care_request_id} ;;
+  }
+
+  join: transaction_facts {
+    relationship: one_to_many
+    sql_on: ${transaction_facts.visit_dim_number} = ${visit_dimensions.visit_number}  ;;
+  }
+
+  join: primary_payer_dimensions {
+    relationship: many_to_one
+    sql_on: ${transaction_facts.primary_payer_dim_id} = ${primary_payer_dimensions.id}  ;;
   }
 
 }

@@ -15,10 +15,28 @@ view: shift_planning_facts {
     sql: ${TABLE}.car_dim_id ;;
   }
 
+  dimension: car_date_id {
+    hidden: yes
+    type: string
+  sql: CONCAT(${car_dim_id}, DATE_FORMAT(${local_actual_start_date}, "%Y-%m-%d"));;
+  }
+
+  measure: count_distinct_car_date {
+    label: "Count of Distinct Cars by Date"
+    type: count_distinct
+    sql: ${car_date_id} ;;
+  }
+
   measure: count_distinct_cars {
     label: "Count of Distinct Cars"
     type: count_distinct
     sql: ${car_dim_id} ;;
+  }
+
+  measure: average_cars {
+    label: "Average Number of Cars"
+    type: number
+    sql: ${count_distinct_car_date} / COUNT(DISTINCT ${dates_hours_reference.datehour_date}) ;;
   }
 
   dimension_group: created {

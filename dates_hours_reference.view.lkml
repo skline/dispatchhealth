@@ -14,6 +14,7 @@ view: dates_hours_reference {
       time,
       hour_of_day,
       date,
+      day_of_week,
       week,
       month,
       day_of_month,
