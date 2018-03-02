@@ -257,6 +257,14 @@ view: care_request_statuses {
     sql: round(${count_distinct}/${month_percent});;
   }
 
+  dimension: rolling_30_day {
+    type: string
+    sql:
+    case when ${created_mountain_date} >= current_date - interval '30 day' then 'past 30 days'
+    when  ${created_mountain_date} between current_date - interval '60 day' and  current_date - interval '30 day' then 'previous 30 days'
+    else null end;;
+  }
+
   measure: projections_diff {
     type: number
     sql: round(${care_request_complete.monthly_visits_run_rate}-${budget_projections_by_market_clone.projected_visits}) ;;
