@@ -89,6 +89,11 @@ view: productivity_data {
     sql: ${TABLE}.billable_visits ;;
   }
 
+  measure: avg_billable_visits {
+    type: average
+    sql: ${TABLE}.billable_visits ;;
+  }
+
   measure: sum_of_goal {
     type: sum
     sql: ${TABLE}.goal ;;
