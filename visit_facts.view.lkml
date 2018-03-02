@@ -385,7 +385,7 @@ view: visit_facts {
   dimension: complete_visit {
     label: "Complete Visit flag"
     type: yesno
-    sql: ${local_complete_raw} is not null;;
+    sql: ${resolved} IS NOT TRUE;;
   }
 
   measure: count_complete_visits {
@@ -1033,8 +1033,9 @@ view: visit_facts {
   dimension: bb_3_day {
     label: "3-Day Bounce back flag"
     type: yesno
-    sql: (${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint')
-      AND ${day_3_followup_outcome} != 'REMOVED' ;;
+    sql: (${day_3_followup_outcome} != 'INACTIVE' AND ${day_3_followup_outcome} != 'patient_called_but_did_not_answer' AND
+        ${day_3_followup_outcome} != 'REMOVED') AND
+        (${day_3_followup_outcome} = 'ed_same_complaint' OR ${day_3_followup_outcome} = 'hospitalization_same_complaint');;
   }
 
   measure: bb_3_day_count {
@@ -1049,7 +1050,7 @@ view: visit_facts {
   dimension: bb_14_day {
     label: "14-Day Bounce back flag"
     type: yesno
-    sql: (${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint')
+    sql: (${bb_3_day} IS TRUE OR ${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint')
       AND ${day_3_followup_outcome} != 'REMOVED';;
   }
 
@@ -1065,7 +1066,7 @@ view: visit_facts {
   dimension: bb_30_day {
     label: "30-Day Bounce back flag"
     type: yesno
-    sql: (${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint')
+    sql: (${bb_3_day} IS TRUE OR ${bb_14_day} IS TRUE OR ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint')
       AND ${day_3_followup_outcome} != 'REMOVED';;
   }
 
@@ -1074,6 +1075,21 @@ view: visit_facts {
     type: count
     filters: {
       field: bb_30_day
+      value: "yes"
+    }
+  }
+
+  dimension: followup_removed {
+    label: "Removed from Followup Queue"
+    type: yesno
+    sql: ${day_3_followup_outcome} = 'REMOVED';;
+  }
+
+  measure: followup_removed_count {
+    label: "Removed from Followup Queue Count"
+    type: count
+    filters: {
+      field: followup_removed
       value: "yes"
     }
   }
