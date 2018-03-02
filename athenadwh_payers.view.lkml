@@ -1,15 +1,13 @@
-view: primary_payer_dimensions {
-  sql_table_name: jasperdb.primary_payer_dimensions ;;
+view: athenadwh_payers {
+  sql_table_name: jasperdb.athenadwh_payers ;;
 
   dimension: id {
-    hidden: yes
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension_group: created {
-    hidden: yes
     type: time
     timeframes: [
       raw,
@@ -28,24 +26,41 @@ view: primary_payer_dimensions {
     sql: ${TABLE}.custom_insurance_grouping ;;
   }
 
-  dimension: custom_insurance_label {
-    type: string
-    sql: CASE ${custom_insurance_grouping}
-         WHEN '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
-        WHEN '(MA)MEDICARE ADVANTAGE' THEN 'Medicare Advantage'
-        WHEN '(MAID)MEDICAID' THEN 'Medicaid'
-        WHEN '(MMCD)MANAGED MEDICAID' THEN 'Managed Medicaid'
-        WHEN '(MCARE)MEDICARE' THEN 'Medicare'
-        WHEN '(PSP)PATIENT SELF-PAY' THEN 'Patient Self Pay'
-        WHEN 'PATIENT RESPONSIBILITY' THEN 'Patient Self Pay'
-        WHEN '(CM)COMMERCIAL' THEN 'Commercial'
-        WHEN '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
-        WHEN '(TC)TRICARE' THEN 'Tricare'
-        ELSE 'Other'
-        END;;
+  dimension_group: deleted_datetime {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.deleted_datetime ;;
   }
+
+  dimension: effective_date {
+    type: string
+    sql: ${TABLE}.effective_date ;;
+  }
+
+  dimension: expiration_date {
+    type: string
+    sql: ${TABLE}.expiration_date ;;
+  }
+
+  dimension: feed_dates {
+    type: string
+    sql: ${TABLE}.feed_dates ;;
+  }
+
+  dimension: global_allowable_category {
+    type: string
+    sql: ${TABLE}.global_allowable_category ;;
+  }
+
   dimension: insurance_package_id {
-    label: "Insurance Package ID"
     type: string
     sql: ${TABLE}.insurance_package_id ;;
   }
@@ -60,19 +75,27 @@ view: primary_payer_dimensions {
     sql: ${TABLE}.insurance_package_type ;;
   }
 
+  dimension: insurance_product_type {
+    type: string
+    sql: ${TABLE}.insurance_product_type ;;
+  }
+
   dimension: insurance_reporting_category {
     type: string
     sql: ${TABLE}.insurance_reporting_category ;;
   }
 
   dimension: irc_group {
-    label: "IRC Group"
     type: string
     sql: ${TABLE}.irc_group ;;
   }
 
+  dimension: local_allowable_category {
+    type: string
+    sql: ${TABLE}.local_allowable_category ;;
+  }
+
   dimension_group: updated {
-    hidden: yes
     type: time
     timeframes: [
       raw,

@@ -119,6 +119,17 @@ explore: visit_facts {
     sql_on: ${visit_dimensions.dashboard_patient_id} = ${patient_facts.dashboard_patient_id}  ;;
   }
 
+  join: athenadwh_patient_insurances {
+    relationship: one_to_many
+    sql_on: ${patient_facts.athena_patient_id} = ${athenadwh_patient_insurances.patient_id}
+            AND ${athenadwh_patient_insurances.insurance_package_id} != 0;;
+  }
+
+  join: athenadwh_payers {
+    relationship: many_to_one
+    sql_on: ${athenadwh_patient_insurances.insurance_package_id} = ${athenadwh_payers.insurance_package_id} ;;
+  }
+
   join: centura_mssp_eligible {
     relationship: one_to_one
     sql_on: UPPER(CONCAT(${patient_facts.first_name},
