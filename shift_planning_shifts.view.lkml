@@ -159,11 +159,11 @@ view: shift_planning_shifts {
   }
   measure: distinct_cars {
     type:  number
-    sql: count(distinct ${schedule_name}) ;;
+    sql: count(distinct ${shift_id}) ;;
   }
   measure: needed_volume {
     label: "Needed Volume for .7 productivity"
     type:  number
-    sql: round(${distinct_cars}*.7*${shift_hours},0) ;;
+    sql: round(.7*${total_shift_hours},0) ;;
   }
 }
