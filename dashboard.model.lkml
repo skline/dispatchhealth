@@ -84,7 +84,7 @@ explore: care_requests {
 
   join: budget_projections_by_market_clone {
     sql_on: ${care_requests.market_id} = ${budget_projections_by_market_clone.market_dim_id}
-      AND ${care_requests.created_mountain_month}=${budget_projections_by_market_clone.month_month};;
+      AND ${care_request_complete.created_mountain_month}=${budget_projections_by_market_clone.month_month};;
   }
 
   join: patients {
@@ -117,6 +117,16 @@ explore: care_requests {
   join: incontact_spot_check_by_market {
     sql_on: ${incontact_spot_check_by_market.market_id} = ${markets.id} and ${care_request_requested.created_date}=${incontact_spot_check_by_market.date_call}
             ;;
+  }
+  join: shift_hours_by_day_market_clone {
+    sql_on:  ${markets.name} = ${shift_hours_by_day_market_clone.market_name}
+    and ${care_request_accepted.created_date} = ${shift_hours_by_day_market_clone.date_date};;
+  }
+
+  join: shift_hours_market_month {
+    from: shift_hours_by_day_market_clone
+    sql_on:  ${markets.name} = ${shift_hours_market_month.market_name}
+      and ${care_request_complete.created_mountain_month} = ${shift_hours_market_month.date_month};;
   }
 
 

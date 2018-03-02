@@ -266,8 +266,15 @@ view: care_request_statuses {
   }
 
   measure: projections_diff {
+    label: "Diff to budget"
     type: number
     sql: round(${care_request_complete.monthly_visits_run_rate}-${budget_projections_by_market_clone.projected_visits}) ;;
+  }
+
+  measure: projections_diff_target {
+    label: "Diff to productivity target"
+    type: number
+    sql: round(${care_request_complete.monthly_visits_run_rate}-${shift_hours_by_day_market_clone.productivity_target}) ;;
   }
 
 

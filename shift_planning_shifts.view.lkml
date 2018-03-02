@@ -164,6 +164,6 @@ view: shift_planning_shifts {
   measure: needed_volume {
     label: "Needed Volume for .7 productivity"
     type:  number
-    sql: round(${distinct_cars}*.7*${shift_hours},0) ;;
+    sql: round(.7*${total_shift_hours},0) ;;
   }
 }
