@@ -120,7 +120,7 @@ explore: care_requests {
   }
   join: shift_hours_by_day_market_clone {
     sql_on:  ${markets.name} = ${shift_hours_by_day_market_clone.market_name}
-    and ${care_request_accepted.created_date} = ${shift_hours_by_day_market_clone.date_date};;
+    and ${care_request_complete.created_mountain_date} = ${shift_hours_by_day_market_clone.date_date};;
   }
 
   join: shift_hours_market_month {

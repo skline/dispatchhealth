@@ -277,6 +277,11 @@ view: care_request_statuses {
     sql: round(${care_request_complete.monthly_visits_run_rate}-${shift_hours_by_day_market_clone.productivity_target}) ;;
   }
 
+  measure: productivity {
+    type: number
+    sql: round(${count_distinct}/${shift_hours_by_day_market_clone.sum_total_hours}::DECIMAL, 2) ;;
+  }
+
 
 
 
