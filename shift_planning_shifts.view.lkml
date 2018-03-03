@@ -69,6 +69,10 @@ view: shift_planning_shifts {
     type: yesno
     sql: ${TABLE}.imported_after_shift ;;
   }
+  dimension: imported_after_shift_or_future {
+    type: yesno
+    sql: ${local_shift_start_date} >= curdate() or ${imported_after_shift}   ;;
+  }
 
   dimension_group: local_shift_end {
     type: time
