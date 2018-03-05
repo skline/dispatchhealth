@@ -243,7 +243,11 @@ explore: incontact {
     }
 
 }
+explore: optumcare {
+}
 
+explore: directmail_zipcode {
+}
   explore: invoca {
     join: adwords_call_data {
       sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
