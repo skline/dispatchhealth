@@ -46,6 +46,11 @@ explore: care_requests {
 #     sql_on: ${care_requests.id} = ${care_request_providers.care_request_id} ;;
 #   }
 
+  join: risk_assessments {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} ;;
+  }
+
   join: markets {
     relationship: one_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;

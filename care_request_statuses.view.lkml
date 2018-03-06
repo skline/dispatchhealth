@@ -17,6 +17,12 @@ view: care_request_statuses {
     sql: ${TABLE}.comment ;;
   }
 
+  dimension: escalated_on_scene_ed {
+    type: yesno
+    sql: ${comment} = 'Referred - Point of Care: ED'
+        OR ${comment} = 'Referred - Point of care: ED';;
+  }
+
   dimension: commentor_id {
     type: number
     sql: ${TABLE}.commentor_id ;;
