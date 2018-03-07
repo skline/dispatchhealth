@@ -414,7 +414,7 @@ view: visit_facts {
 
   dimension: centura_mssp_complete_flag {
     type: yesno
-    sql: ${centura_mssp_eligible.group_member_id} IS NOT NULL AND ${complete_visit};;
+    sql: ${centura_mssp_eligible.group_member_id} IS NOT NULL AND NOT ${resolved};;
   }
 
   measure: count_mssp_completed_visits {

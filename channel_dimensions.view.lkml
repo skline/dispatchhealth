@@ -87,8 +87,8 @@ view: channel_dimensions {
     sql: CASE
           WHEN ${centura_mssp_eligible.group_member_id} IS NOT NULL AND
           ${organization} NOT LIKE '%centura%' THEN 'centura health - other channel'
-          WHEN (${organization} = 'centura connect' OR ${organization} = 'centura health mssp aco')
-          THEN 'centura health'
+          WHEN (${organization} = 'centura connect' OR ${organization} = 'centura health mssp aco') THEN 'centura health'
+          WHEN (${organization} = 'centura health - centura health at home' OR ${organization} = 'centura health at home') THEN 'centura health at home'
           ELSE ${organization}
           END;;
   }
