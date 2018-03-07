@@ -257,6 +257,15 @@ view: care_request_statuses {
     sql: round(${count_distinct}/${month_percent});;
   }
 
+  dimension: days_in_month {
+    type: number
+    sql:  DATE_PART('days',
+        DATE_TRUNC('month', ${created_mountain_date})
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ) ;;
+  }
+
   dimension: rolling_30_day {
     type: string
     sql:

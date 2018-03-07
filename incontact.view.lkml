@@ -85,6 +85,15 @@ view: incontact {
     type: count
     drill_fields: [skll_name]
   }
+  measure: count_distinct {
+    type: number
+    sql:count(distinct ${contact_id}) ;;
+  }
+
+  measure: count_distinct_answers {
+    type: number
+    sql:count(distinct case when ${talk_time_sec}>0  then ${contact_id} else null end) ;;
+  }
   measure:  wait_time{
     type: number
     sql: ${contact_time_sec} - ${talk_time_sec} ;;

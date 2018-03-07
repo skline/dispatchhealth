@@ -33,7 +33,8 @@ view: invoca_full_clone {
 
   dimension: caller_id {
     type: number
-    sql: ${TABLE}.caller_id ;;
+    sql: case when ${TABLE}.caller_id = 0 then 999999999999999
+      else ${TABLE}.caller_id end;;
   }
 
   dimension: carrier_append {
