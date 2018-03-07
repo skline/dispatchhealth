@@ -93,6 +93,16 @@ view: channel_dimensions {
           END;;
   }
 
+  dimension: bonsecours_organization {
+    type: string
+    sql: CASE
+          WHEN ${bonsecours_mssp_eligible.group_member_id} IS NOT NULL AND
+          ${organization} NOT LIKE '%bon secours%' THEN 'bon secours - other channel'
+          WHEN ${organization} LIKE '%bon secours%' THEN 'bon secours'
+          ELSE ${organization}
+        END;;
+  }
+
   dimension_group: updated {
     hidden: yes
     type: time

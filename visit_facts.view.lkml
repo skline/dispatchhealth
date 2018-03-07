@@ -404,7 +404,7 @@ view: visit_facts {
     sql: ${centura_mssp_eligible.group_member_id} IS NOT NULL ;;
   }
 
-  measure: count_mssp_requests {
+  measure: count_centura_mssp_requests {
     type: count
     filters: {
       field: centura_mssp_request_flag
@@ -417,10 +417,38 @@ view: visit_facts {
     sql: ${centura_mssp_eligible.group_member_id} IS NOT NULL AND NOT ${resolved};;
   }
 
-  measure: count_mssp_completed_visits {
+  measure: count_centura_mssp_completed_visits {
     type: count
     filters: {
       field: centura_mssp_complete_flag
+      value: "yes"
+    }
+  }
+
+  dimension: bonsecours_mssp_request_flag {
+    type: yesno
+    sql: ${bonsecours_mssp_eligible.group_member_id} IS NOT NULL ;;
+  }
+
+  measure: count_bonsecours_mssp_requests {
+    label: "Count of Bon Secours MSSP Requests"
+    type: count
+    filters: {
+      field: bonsecours_mssp_request_flag
+      value: "yes"
+    }
+  }
+
+  dimension: bonsecours_mssp_complete_flag {
+    type: yesno
+    sql: ${bonsecours_mssp_eligible.group_member_id} IS NOT NULL AND NOT ${resolved};;
+  }
+
+  measure: count_bonsecours_mssp_completed_visits {
+    label: "Count of Bon Secours MSSP Completed Visits"
+    type: count
+    filters: {
+      field: bonsecours_mssp_complete_flag
       value: "yes"
     }
   }

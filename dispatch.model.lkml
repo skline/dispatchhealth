@@ -142,6 +142,19 @@ explore: visit_facts {
                         END)) = ${centura_mssp_eligible.match_value};;
   }
 
+# Add match criteria for the Bon Secours MSSP Report
+  join: bonsecours_mssp_eligible {
+    relationship: one_to_one
+    sql_on: UPPER(CONCAT(${patient_facts.first_name},
+                         ${patient_facts.last_name},
+                        DATE_FORMAT(${patient_facts.dob}, '%m/%d/%y'),
+                        CASE
+                          WHEN ${patient_facts.gender} = 'Male' THEN 'M'
+                          WHEN ${patient_facts.gender} = 'Female' THEN 'F'
+                          ELSE 'X'
+                        END)) = ${bonsecours_mssp_eligible.match_value};;
+  }
+
   join: pcp_dimensions {
     sql_on: ${patient_facts.pcp_dim_id} = ${pcp_dimensions.id}  ;;
   }
