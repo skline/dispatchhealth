@@ -13,11 +13,13 @@ view: ga_adwords_cost_clone {
 
   dimension: adcost {
     type: number
+    value_format:"$#.00;($#.00)"
     sql: ${TABLE}.adcost ;;
   }
 
   measure: sum_total_adcost {
     type: sum_distinct
+    value_format:"$#.00;($#.00)"
     sql_distinct_key: concat(${date_date}, ${adwordscampaignid}, ${adwordscreativeid}, ${admatchtype}, ${keyword},  ${adwordsadgroupid}) ;;
     sql: ${TABLE}.adcost  ;;
   }
