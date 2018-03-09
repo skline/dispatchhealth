@@ -134,9 +134,31 @@ explore: care_requests {
       and ${care_request_complete.created_mountain_month} = ${shift_hours_market_month.date_month};;
   }
 
+  join: ga_adwords_stats_clone {
+    sql_on: ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
+      and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date};;
+  }
 
+  join: ga_adwords_cost_clone {
+    sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
+      and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
+      and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
+      and ${ga_adwords_stats_clone.adwordsadgroupid} =${ga_adwords_cost_clone.adwordsadgroupid}
+            and ${ga_adwords_stats_clone.page_timestamp_date} =${ga_adwords_cost_clone.date_date}
 
+      ;;
+  }
+  join: adwords_campaigns_clone {
+    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+  }
 
+  join: adwords_ad_clone {
+    sql_on:  ${ga_adwords_stats_clone.adwordscreativeid} = ${adwords_ad_clone.ad_id} ;;
+  }
+
+  join: ad_groups_clone {
+    sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
+  }
 
  }
   explore: invoca_clone {
@@ -205,9 +227,63 @@ explore: care_requests {
         ;;
     }
 
+    join: ga_adwords_stats_clone {
+      sql_on: ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
+               and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date};;
+    }
+    join: ga_adwords_cost_clone {
+      sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
+      and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
+      and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
+      and ${ga_adwords_stats_clone.adwordsadgroupid} =${ga_adwords_cost_clone.adwordsadgroupid}
+            and ${ga_adwords_stats_clone.page_timestamp_date} =${ga_adwords_cost_clone.date_date}
+
+      ;;
+      }
+
+    join: adwords_campaigns_clone {
+      sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+    }
+
+    join: adwords_ad_clone {
+      sql_on:  ${ga_adwords_stats_clone.adwordscreativeid} = ${adwords_ad_clone.ad_id} ;;
+    }
+
+    join: ad_groups_clone {
+      sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
+    }
 
 
 
+
+}
+
+explore: ga_adwords_stats_clone {
+  join: ga_adwords_cost_clone {
+    sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
+      and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
+      and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
+      and ${ga_adwords_stats_clone.adwordsadgroupid} =${ga_adwords_cost_clone.adwordsadgroupid}
+            and ${ga_adwords_stats_clone.page_timestamp_date} =${ga_adwords_cost_clone.date_date}
+
+      ;;
+  }
+
+  join: adwords_campaigns_clone {
+    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+  }
+
+  join: adwords_ad_clone {
+    sql_on:  ${ga_adwords_stats_clone.adwordscreativeid} = ${adwords_ad_clone.ad_id} ;;
+  }
+
+  join: ad_groups_clone {
+    sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
+  }
+
+  join: markets {
+    sql_on:  ${markets.id} =${adwords_campaigns_clone.market_id} ;;
+  }
 
 }
 
