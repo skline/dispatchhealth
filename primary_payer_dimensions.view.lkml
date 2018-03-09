@@ -39,7 +39,6 @@ view: primary_payer_dimensions {
         WHEN '(PSP)PATIENT SELF-PAY' THEN 'Patient Self Pay'
         WHEN 'PATIENT RESPONSIBILITY' THEN 'Patient Self Pay'
         WHEN '(CM)COMMERCIAL' THEN 'Commercial'
-        WHEN '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
         WHEN '(TC)TRICARE' THEN 'Tricare'
         ELSE 'Other'
         END;;
