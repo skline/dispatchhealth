@@ -604,6 +604,11 @@ measure: distinct_days {
     sql: (${TABLE}.marketing_meta_data->>'ga_client_id')::text ;;
   }
 
+  dimension: origin_phone {
+    type: string
+    sql:  ${TABLE}.origin_phone;;
+  }
+
 
 
   # ----- Sets of fields for drilling ------

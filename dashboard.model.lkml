@@ -105,9 +105,11 @@ explore: care_requests {
   }
 
   join: invoca_clone {
-    sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
+    sql_on: (REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${users.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            )
             and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 86400
             ;;
 
@@ -180,7 +182,7 @@ explore: care_requests {
     }
 
     join: care_requests {
-      sql_on: ${patients.id} = ${care_requests.patient_id}
+      sql_on: (${patients.id} = ${care_requests.patient_id}  OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
                  and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 86400 ;;
       }
 
@@ -309,7 +311,7 @@ explore: ga_adwords_stats_clone {
   }
 
   join: care_requests {
-    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id})
+    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id} OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
       and ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date};;
   }
 
