@@ -492,7 +492,33 @@ view: visit_facts {
   dimension: total_acct_receivable_payments {
     label: "Total Amount AR payments"
     type: number
-    sql: ${TABLE}.total_acct_receivable_payments ;;
+    sql: ${TABLE}.total_acct_receivable_payments * -1 ;;
+  }
+
+  dimension: acct_receivable_payment_exists {
+    type: yesno
+    hidden: yes
+    sql: ${total_acct_receivable_payments} IS NOT NULL ;;
+  }
+
+  measure: count_acct_receivable_payments {
+    type: count
+    filters: {
+      field: acct_receivable_payment_exists
+      value: "yes"
+    }
+  }
+
+  measure: avg_ar_payments {
+    label: "Avg. Accts Receivable Payments"
+    type: average
+    sql: ${total_acct_receivable_payments} ;;
+  }
+
+  measure: sum_ar_payments {
+    label: "Sum Accts Receivable Payments"
+    type: sum
+    sql: ${total_acct_receivable_payments} ;;
   }
 
   dimension: total_acct_receivable_transactions {

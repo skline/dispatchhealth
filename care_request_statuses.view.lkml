@@ -55,6 +55,12 @@ view: care_request_statuses {
     ]
     sql: ${TABLE}.created_at - interval '7 hour' ;;
   }
+
+  dimension: created_mtn_decimal {
+    type: number
+    sql: EXTRACT(HOUR FROM ${created_mountain_raw}) + (EXTRACT(MINUTE FROM ${created_mountain_raw})/60) ;;
+  }
+
   dimension: day_of_week_mountain {
     type: date_day_of_week
     sql: extract(dow FROM  (${created_mountain_raw})) ;;
