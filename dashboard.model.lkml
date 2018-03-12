@@ -105,9 +105,11 @@ explore: care_requests {
   }
 
   join: invoca_clone {
-    sql_on: REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
+    sql_on: (REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${users.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            )
             and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 86400
             ;;
 
@@ -135,7 +137,7 @@ explore: care_requests {
   }
 
   join: ga_adwords_stats_clone {
-    sql_on: ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
+    sql_on: (${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id})
       and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date};;
   }
 
@@ -180,7 +182,7 @@ explore: care_requests {
     }
 
     join: care_requests {
-      sql_on: ${patients.id} = ${care_requests.patient_id}
+      sql_on: (${patients.id} = ${care_requests.patient_id}  OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
                  and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 86400 ;;
       }
 
@@ -264,6 +266,7 @@ explore: ga_adwords_stats_clone {
       and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
       and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
       and ${ga_adwords_stats_clone.adwordsadgroupid} =${ga_adwords_cost_clone.adwordsadgroupid}
+      and ${ga_adwords_stats_clone.admatchtype} =${ga_adwords_cost_clone.admatchtype}
             and ${ga_adwords_stats_clone.page_timestamp_date} =${ga_adwords_cost_clone.date_date}
 
       ;;
@@ -283,6 +286,72 @@ explore: ga_adwords_stats_clone {
 
   join: markets {
     sql_on:  ${markets.id} =${adwords_campaigns_clone.market_id} ;;
+  }
+
+  join: invoca_clone {
+    sql_on: ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
+      and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date};;
+  }
+
+  join: incontact_clone {
+    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
+       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+            ;;
+  }
+
+  join: patient_user_poa {
+    sql_on:  REPLACE(${patient_user_poa.poa_number}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${patient_user_poa.patient_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            OR ${patient_user_poa.user_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+             ;;
+  }
+
+  join: patients {
+    sql_on:  ${patients.id} = ${patient_user_poa.patient_id}  ;;
+  }
+
+  join: care_requests {
+    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id} OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
+      and ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date};;
+  }
+
+  join: care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+  }
+
+  join: care_request_requested{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+  }
+
+  join: care_request_accepted{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+  }
+
+  join: care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+  }
+
+  join: care_request_scheduled{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+  }
+
+  join: channel_items {
+    sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+  }
+
+  join: incontact_spot_check_clone {
+    sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
+      ;;
   }
 
 }

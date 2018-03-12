@@ -39,7 +39,7 @@ view: shift_hours_by_day_market_clone {
 
   measure: productivity_target {
     label: ".5 productivity target"
-    sql: ${sum_total_hours}*.5 ;;
+    sql: round(${sum_total_hours}*.5) ;;
   }
 
   measure: count {

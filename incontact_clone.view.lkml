@@ -86,6 +86,7 @@ view: incontact_clone {
     drill_fields: [skll_name]
   }
   measure: count_distinct {
+    label: "distinct calls pressed IVR"
     type: number
     sql:count(distinct ${contact_id}) ;;
   }
@@ -99,7 +100,13 @@ view: incontact_clone {
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
   measure:  average_wait_time{
-    type: number
-    sql: round(avg(${wait_time}),1) ;;
+    type: average_distinct
+    sql_distinct_key: concat(${contact_id}, ${start_time}, ${skll_name}) ;;
+    sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
+
+  measure:  average_wait_time_r{
+    type: number
+    sql: round(${average_wait_time}) ;;
+    }
 }

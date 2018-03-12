@@ -33,7 +33,7 @@ view: invoca_clone {
 
   dimension: caller_id {
     type: number
-    sql: case when ${TABLE}.caller_id = 0 then 999999999999999
+    sql: case when ${TABLE}.caller_id = 0 or ${TABLE}.caller_id  is null then 999999999999999
          else ${TABLE}.caller_id end;;
   }
 
@@ -313,10 +313,25 @@ view: invoca_clone {
     sql: count(distinct ${call_record_ikd}) ;;
   }
 
-  measure: avg_invoca_duration {
+  measure: count_distinct_number {
+    label: "Distinct Invoca Calls Unique Numbers"
     type: number
-    sql: round(avg(${total_duration_seconds})) ;;
+    sql: count(distinct ${TABLE}.caller_id) ;;
   }
+
+  measure: avg_invoca_duration {
+    label: "average invoca duration seconds"
+    type: average_distinct
+    sql_distinct_key:  ${call_record_ikd};;
+    sql: round(${total_duration_seconds});;
+  }
+  measure: avg_invoca_duration_r{
+    label: "average invoca duration seconds r"
+    type: number
+    sql: round(${avg_invoca_duration}) ;;
+
+    }
+
   dimension: market_or_promo  {
     type: string
     sql: case when ${markets.name} is not null then  ${markets.name} else ${promo_number_description} end;;

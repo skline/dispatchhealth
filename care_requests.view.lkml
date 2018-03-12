@@ -595,6 +595,21 @@ measure: distinct_days {
     sql:  ${care_request_patient_create_diff}< 4000 ;;
   }
 
+  dimension: marketing_meta_data {
+    type: string
+    sql:  ${TABLE}.marketing_meta_data;;
+  }
+
+  dimension: ga_client_id {
+    type: string
+    sql: (${TABLE}.marketing_meta_data->>'ga_client_id')::text ;;
+  }
+
+  dimension: origin_phone {
+    type: string
+    sql:  ${TABLE}.origin_phone;;
+  }
+
 
 
   # ----- Sets of fields for drilling ------
