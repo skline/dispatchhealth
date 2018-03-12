@@ -240,17 +240,11 @@ explore: visit_facts {
 }
 
 explore: incontact {
-  join: adwords_call_data {
-    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time_raw},${adwords_call_data.end_time_raw}))) < 3
-     and ${incontact.from_number} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
-    ;;
-
-  }
 
   join: invoca {
-    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
-             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time_raw}, ${invoca.start_time_raw})))<15
-             and ${invoca.caller_id} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
+    sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
+             abs(TIME_TO_SEC(TIMEDIFF(${incontact.start_time_raw}, ${invoca.start_time_raw})))<15
+             and ${invoca.caller_id} like  CONCAT('%', ${incontact.from_number} ,'%')
           ;;
 
     }
@@ -262,13 +256,7 @@ explore: optumcare {
 explore: directmail_zipcode {
 }
   explore: invoca {
-    join: adwords_call_data {
-      sql_on: abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.end_time_raw}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 15 and
-             abs(TIME_TO_SEC(TIMEDIFF(${adwords_call_data.start_time_raw}, ${invoca.start_time_raw})))<15
-             and ${invoca.caller_id} like  CONCAT('%', ${adwords_call_data.area_code} ,'%')
-            ;;
 
-      }
 
       join: incontact {
         sql_on: abs(TIME_TO_SEC(TIMEDIFF(${incontact.end_time}, (addtime(${invoca.start_time_raw}, ${invoca.total_duration}))))) < 3
