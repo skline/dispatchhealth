@@ -86,6 +86,7 @@ view: care_requests {
     ]
     sql: ${TABLE}.created_at - interval '7 hour';;
   }
+
   dimension: credit_card_consent {
     type: yesno
     sql: ${TABLE}.credit_card_consent ;;
