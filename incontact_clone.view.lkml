@@ -95,6 +95,17 @@ view: incontact_clone {
     type: number
     sql:count(distinct case when ${talk_time_sec}>0  then ${contact_id} else null end) ;;
   }
+
+  measure: count_distinct_phone_number {
+    type: number
+    sql:count(distinct ${from_number}) ;;
+  }
+
+
+  measure: count_distinct_answers_phone_number {
+    type: number
+    sql:count(distinct case when ${talk_time_sec}>0  then ${from_number} else null end) ;;
+  }
   measure:  wait_time{
     type: number
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
