@@ -371,6 +371,12 @@ view: visit_facts {
     sql: ${TABLE}.resolved ;;
   }
 
+  dimension: on_scene_escalation_flag {
+    label: "On scene escalation (yes/no)"
+    type: yesno
+    sql: ${resolve_reason} = 'Referred - Point of Care';;
+  }
+
   measure: count_resolved_requests {
     label: "Resolved Requests Count"
     type: count
@@ -380,6 +386,15 @@ view: visit_facts {
     }
 
     drill_fields: [details*]
+  }
+
+  measure: count_on_scene_escalations {
+    label: "Count of on-scene care escalations"
+    type: count
+    filters: {
+      field: on_scene_escalation_flag
+      value: "yes"
+    }
   }
 
   dimension: complete_visit {
@@ -544,6 +559,12 @@ view: visit_facts {
     description: "Total RVU for the care request includes Work, Practice Expense, and Malpractice RVU, also adjusted for number of charges and units. Not adjusted for GPCI location."
     type: number
     sql: ${TABLE}.total_rvus ;;
+  }
+
+  measure: sum_rvus {
+    label: "Sum of RVUs"
+    type: sum
+    sql: ${total_rvus} ;;
   }
 
   dimension_group: updated {

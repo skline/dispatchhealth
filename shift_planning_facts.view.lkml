@@ -119,6 +119,16 @@ view: shift_planning_facts {
     sql: ${TABLE}.local_expected_start_time ;;
   }
 
+  dimension: expected_seconds {
+    type: number
+    sql: TIME_TO_SEC(TIMEDIFF(${local_expected_end_time}, ${local_expected_start_time})) ;;
+  }
+
+  measure: sum_hours_scheduled {
+    type: sum
+    sql: ${expected_seconds} / 3600 ;;
+  }
+
   dimension: schedule_location_id {
     type: string
     sql: ${TABLE}.schedule_location_id ;;
@@ -197,9 +207,10 @@ view: shift_planning_facts {
     type: count
     drill_fields: [id, employee_name]
   }
-  measure: worked_hours {
-    type: number
-    sql:  total_actual_seconds / 3600  ;;
+
+  measure: sum_hours_worked {
+    type: sum
+    sql:  ${total_actual_seconds} / 3600  ;;
   }
 
 }
