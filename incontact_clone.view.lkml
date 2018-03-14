@@ -48,7 +48,8 @@ view: incontact_clone {
 
   dimension: from_number {
     type: string
-    sql: ${TABLE}.from_number ;;
+    sql:  case when ${TABLE}.from_number = 0 or ${TABLE}.from_number  is null then 55555555555
+         else ${TABLE}.from_number end ;;
   }
 
   dimension: skll_name {
