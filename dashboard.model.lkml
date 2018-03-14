@@ -364,6 +364,9 @@ explore: zipcodes {
   }
 }
 
+explore: insurance_plans {
+}
+
 #   join: user_roles {
 #     relationship: one_to_one
 #     sql_on: ${users.id} = ${user_roles.user_id} ;;
