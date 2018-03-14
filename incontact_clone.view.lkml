@@ -48,7 +48,8 @@ view: incontact_clone {
 
   dimension: from_number {
     type: string
-    sql: ${TABLE}.from_number ;;
+    sql:  case when ${TABLE}.from_number = 0 or ${TABLE}.from_number  is null then 55555555555
+         else ${TABLE}.from_number end ;;
   }
 
   dimension: skll_name {
@@ -94,6 +95,17 @@ view: incontact_clone {
   measure: count_distinct_answers {
     type: number
     sql:count(distinct case when ${talk_time_sec}>0  then ${contact_id} else null end) ;;
+  }
+
+  measure: count_distinct_phone_number {
+    type: number
+    sql:count(distinct ${from_number}) ;;
+  }
+
+
+  measure: count_distinct_answers_phone_number {
+    type: number
+    sql:count(distinct case when ${talk_time_sec}>0  then ${from_number} else null end) ;;
   }
   measure:  wait_time{
     type: number

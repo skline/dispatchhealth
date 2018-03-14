@@ -261,7 +261,9 @@ explore: care_requests {
 }
 
 explore: ga_adwords_stats_clone {
+
   join: ga_adwords_cost_clone {
+    type: full_outer
     sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
       and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
       and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
@@ -273,7 +275,7 @@ explore: ga_adwords_stats_clone {
   }
 
   join: adwords_campaigns_clone {
-    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_cost_clone.adwordscampaignid}  ;;
   }
 
   join: adwords_ad_clone {
@@ -359,6 +361,12 @@ explore: ga_adwords_stats_clone {
 explore: zipcodes {
   join: markets {
     sql_on: ${zipcodes.market_id} = ${markets.id} ;;
+  }
+}
+
+explore: insurance_plans {
+  join: states{
+    sql_on:  ${states.id} =${insurance_plans.state_id} ;;
   }
 }
 
