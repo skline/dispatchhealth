@@ -365,6 +365,9 @@ explore: zipcodes {
 }
 
 explore: insurance_plans {
+  join: states{
+    sql_on:  ${states.id} =${insurance_plans.state_id} ;;
+  }
 }
 
 #   join: user_roles {
