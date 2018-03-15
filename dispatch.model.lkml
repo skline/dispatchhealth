@@ -35,6 +35,11 @@ explore: visit_facts {
     sql_on: ${visit_dimensions.care_request_id} = ${visit_facts.care_request_id} ;;
   }
 
+  join: predicted_on_scene_time {
+    relationship: many_to_one
+    sql_on: ${predicted_on_scene_time.care_request_id} = ${visit_facts.care_request_id} ;;
+  }
+
   join: car_dimensions {
     relationship: many_to_one
     sql_on: ${car_dimensions.id} = ${visit_facts.car_dim_id} ;;
