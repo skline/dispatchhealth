@@ -13,13 +13,13 @@ view: ga_adwords_cost_clone {
 
   dimension: adcost {
     type: number
-    value_format:"$#.00;($#.00)"
+    value_format:"$#;($#)"
     sql: ${TABLE}.adcost ;;
   }
 
   measure: sum_total_adcost {
     type: sum_distinct
-    value_format:"$#.00;($#.00)"
+    value_format:"$#;($#)"
     sql_distinct_key: concat(${date_date}, ${adwordscampaignid}, ${adwordscreativeid}, ${admatchtype}, ${keyword},  ${adwordsadgroupid}) ;;
     sql: ${TABLE}.adcost  ;;
   }
@@ -75,6 +75,24 @@ view: ga_adwords_cost_clone {
     type: string
     sql: ${TABLE}.keyword ;;
   }
+ measure: cost_per_call {
+   type: number
+   value_format:"$#;($#)"
+   sql:  round(${sum_total_adcost}/NULLIF(${invoca_clone.count},0)) ;;
+ }
+
+  measure: cost_per_care_request {
+    type: number
+    value_format:"$#;($#)"
+    sql:  round(${sum_total_adcost}/NULLIF(${care_requests.count_distinct},0)) ;;
+  }
+
+  measure: cost_per_care_complete {
+    type: number
+    value_format:"$#;($#)"
+    sql:  round(${sum_total_adcost}/NULLIF(${care_request_complete.count_distinct}, 0)) ;;
+  }
+
 
   measure: count {
     type: count
