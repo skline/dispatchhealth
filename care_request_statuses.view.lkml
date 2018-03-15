@@ -302,7 +302,10 @@ view: care_request_statuses {
     type: number
     sql: round(${count_distinct}/${shift_hours_by_day_market_clone.sum_total_hours}::DECIMAL, 2) ;;
   }
-
+  measure: cost_per_care_status {
+    type: number
+    sql:  ${ga_adwords_cost_clone.sum_total_adcost}/${count_distinct} ;;
+  }
 
 
 

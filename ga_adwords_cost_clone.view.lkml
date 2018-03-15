@@ -75,6 +75,21 @@ view: ga_adwords_cost_clone {
     type: string
     sql: ${TABLE}.keyword ;;
   }
+ measure: cost_per_call {
+   type: number
+   sql:  round(${sum_total_adcost}/NULLIF(${invoca_clone.count},0)) ;;
+ }
+
+  measure: cost_per_care_request {
+    type: number
+    sql:  round(${sum_total_adcost}/NULLIF(${care_requests.count_distinct},0)) ;;
+  }
+
+  measure: cost_per_care_complete {
+    type: number
+    sql:  round(${sum_total_adcost}/NULLIF(${care_request_complete.count_distinct}, 0)) ;;
+  }
+
 
   measure: count {
     type: count
