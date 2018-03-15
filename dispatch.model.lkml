@@ -82,7 +82,7 @@ explore: visit_facts {
   join: app_shift_planning_facts {
     from: shift_planning_facts
     type: inner
-    relationship:  many_to_one
+    relationship: many_to_one
     sql_on:(${app_shift_planning_facts.employee_name} = ${provider_dimensions.shift_app_name}
           and date(${app_shift_planning_facts.local_actual_start_time})=date(${visit_facts.local_accepted_time})
           and ${app_shift_planning_facts.schedule_role} in('NP/PA', 'Training/Admin'))
@@ -91,12 +91,19 @@ explore: visit_facts {
       ;;
   }
 
-#   join: app_shift_planning_shifts {
-#     from: shift_planning_shifts
-#     type: inner
-#     relationship: many_to_one
-#     sql_on: ${app_shift_planning_facts.shift_id} = ${app_shift_planning_facts.shift_id};;
-#   }
+  join: csc_shift_planning_facts {
+    from: shift_planning_facts
+    relationship: many_to_one
+    sql_on: ${visit_facts.csc_shift_id} = ${csc_shift_planning_facts.shift_id}
+      and ${csc_shift_planning_facts.schedule_role} LIKE '%CSC%' ;;
+  }
+
+  join: risk_assessments_bi {
+    from: risk_assessments
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${visit_facts.care_request_id} = ${risk_assessments_bi.care_request_id} ;;
+  }
 
   join: primary_payer_dimension_charge {
     sql_on: ${primary_payer_dimension_charge.visit_dim_number} = ${visit_facts.visit_dim_number}  ;;
@@ -235,13 +242,6 @@ explore: visit_facts {
     sql_on: ${visit_facts.letter_recipient_dim_id} = ${letter_recipient_dimensions.id} ;;
   }
 
-  # join: dates_hours_reference {
-  #   type: full_outer
-  #   relationship: many_to_one
-  #   sql_on:  (${visit_facts.local_on_scene_date} = ${dates_hours_reference.datehour_date}
-  #     AND HOUR(${visit_facts.local_on_scene_raw}) = ${dates_hours_reference.hour_of_day}) ;;
-  # }
-
 }
 
 explore: incontact {
@@ -294,6 +294,39 @@ explore: shift_planning_shifts {
     and ${budget_projections_by_market.market_dim_id}=${shift_planning_shifts.market_dim_id};;
   }
 }
+
+explore: risk_assessments {
+
+  join: visit_facts {
+    relationship: one_to_one
+    sql_on: ${visit_facts.care_request_id} = ${risk_assessments.care_request_id} ;;
+  }
+
+  join: visit_dimensions {
+    relationship: one_to_one
+    sql_on: ${visit_dimensions.care_request_id} = ${risk_assessments.care_request_id} ;;
+  }
+
+  join: market_dimensions {
+    relationship: many_to_one
+    sql_on: ${visit_facts.market_dim_id} = ${market_dimensions.id} ;;
+  }
+
+  join: channel_dimensions {
+    relationship: many_to_one
+    sql_on: ${visit_facts.channel_dim_id} = ${channel_dimensions.id} ;;
+  }
+
+  join: csc_shift_planning_facts {
+    from: shift_planning_facts
+    relationship: many_to_one
+    sql_on: ${visit_facts.csc_shift_id} = ${csc_shift_planning_facts.shift_id}
+      and ${csc_shift_planning_facts.schedule_role} LIKE '%CSC%' ;;
+  }
+
+}
+
+
 
 explore: dates_hours_reference {
 

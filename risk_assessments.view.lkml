@@ -1,5 +1,5 @@
 view: risk_assessments {
-  sql_table_name: public.risk_assessments ;;
+  sql_table_name: looker_scratch.risk_assessments ;;
 
   dimension: id {
     primary_key: yes
@@ -12,72 +12,9 @@ view: risk_assessments {
     sql: ${TABLE}.care_request_id ;;
   }
 
-  dimension_group: created {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.created_at ;;
-  }
-
-  dimension_group: dob {
-    type: time
-    timeframes: [
-      raw,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    convert_tz: no
-    datatype: date
-    sql: ${TABLE}.dob ;;
-  }
-
-  dimension: gender {
-    type: string
-    sql: ${TABLE}.gender ;;
-  }
-
-  dimension_group: overridden {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.overridden_at ;;
-  }
-
-  dimension: override_reason {
-    type: string
-    sql: ${TABLE}.override_reason ;;
-  }
-
-  dimension: protocol_id {
-    type: number
-    sql: ${TABLE}.protocol_id ;;
-  }
-
   dimension: protocol_name {
     type: string
     sql: ${TABLE}.protocol_name ;;
-  }
-
-  dimension: protocol_score {
-    type: number
-    sql: ${TABLE}.protocol_score ;;
   }
 
   dimension: responses {
@@ -98,25 +35,6 @@ view: risk_assessments {
           WHEN ${score} >= 11 THEN 'Red - High Risk'
           ELSE 'Unknown'
         END ;;
-  }
-
-  dimension: type {
-    type: string
-    sql: ${TABLE}.type ;;
-  }
-
-  dimension_group: updated {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.updated_at ;;
   }
 
   dimension: user_id {
