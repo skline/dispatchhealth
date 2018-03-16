@@ -44,6 +44,12 @@ view: icd_code_dimensions {
     sql: ${TABLE}.diagnosis_code ;;
   }
 
+  measure: diagnosis_codes_concat {
+    label: "ICD 10 Diagnosis Codes"
+    type: string
+    sql: GROUP_CONCAT(DISTINCT ${diagnosis_code} SEPARATOR ' | ') ;;
+  }
+
   dimension: diagnosis_code_decimal {
     type: string
     sql: ${TABLE}.diagnosis_code_decimal ;;

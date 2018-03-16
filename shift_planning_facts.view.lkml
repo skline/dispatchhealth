@@ -1,5 +1,5 @@
 view: shift_planning_facts {
-  label: "APP Shift Planning Facts"
+  # label: "APP Shift Planning Facts"
   sql_table_name: jasperdb.shift_planning_facts ;;
 
   dimension: id {
