@@ -4,10 +4,8 @@ view: patient_user_poa {
     derived_table: {
       sql: select *
         from
-        (select p.id as patient_id,  p.mobile_number as patient_number, u.mobile_number as user_number, poa.phone as poa_number
+        (select p.id as patient_id,  p.mobile_number as patient_number,  poa.phone as poa_number
 from public.patients p
-left join public.users u
-on u.id=p.user_id
 left join public.power_of_attorneys poa
 on poa.patient_id=p.id) poa
                ;;
@@ -25,10 +23,6 @@ on poa.patient_id=p.id) poa
         sql: ${TABLE}.patient_number ;;
       }
 
-    dimension: user_number {
-      type: number
-      sql: ${TABLE}.user_number ;;
-    }
 
   dimension: poa_number {
     type: number

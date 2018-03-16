@@ -105,12 +105,11 @@ explore: care_requests {
   }
 
   join: invoca_clone {
-    sql_on: (REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${users.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+    sql_on: (${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+            or  REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
             )
-            and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 86400
+            and date(${invoca_clone.start_time}) = ${care_requests.created_mountain_date}
             ;;
 
     }
@@ -174,7 +173,6 @@ explore: care_requests {
     join: patient_user_poa {
       sql_on:  REPLACE(${patient_user_poa.poa_number}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${patient_user_poa.patient_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${patient_user_poa.user_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
              ;;
     }
     join: patients {
@@ -309,7 +307,6 @@ explore: ga_adwords_stats_clone {
   join: patient_user_poa {
     sql_on:  REPLACE(${patient_user_poa.poa_number}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
             OR ${patient_user_poa.patient_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${patient_user_poa.user_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
              ;;
   }
 
