@@ -286,13 +286,14 @@ explore: ga_adwords_stats_clone {
     sql_on:  ${ga_adwords_cost_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
   }
 
-  join: markets {
-    sql_on:  ${markets.id} =${adwords_campaigns_clone.market_id} ;;
-  }
+
 
   join: invoca_clone {
+    type: full_outer
     sql_on: ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
-      and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date};;
+      and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date} and ${invoca_clone.utm_medium} in('paid search', 'cpc')
+      and  ${invoca_clone.utm_source} in('google.com', 'google')
+      ;;
   }
 
   join: incontact_clone {
@@ -315,6 +316,9 @@ explore: ga_adwords_stats_clone {
   join: care_requests {
     sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id} OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
       and ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date};;
+  }
+  join: markets {
+    sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id} ;;
   }
 
   join: care_request_complete{

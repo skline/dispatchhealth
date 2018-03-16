@@ -113,4 +113,10 @@ view: incontact {
     type: number
     sql: round(avg(${wait_time}),1) ;;
   }
+
+
+  dimension: month_to_date  {
+    type:  yesno
+    sql: DAYOFMONTH(${start_date}) <= DAYOFMONTH(curdate() - interval 1 day) ;;
+  }
 }

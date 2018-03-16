@@ -159,9 +159,18 @@ view: ga_adwords_stats_clone {
     type: string
     sql: ${TABLE}.timezone ;;
   }
+  dimension: market_id {
+    type: number
+    sql: case when ${care_requests.market_id} is not null then ${care_requests.market_id}
+              when ${adwords_campaigns_clone.market_id} is not null then ${adwords_campaigns_clone.market_id}
+              when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
+              else null end
+              ;;
+  }
 
   measure: count {
     type: count
     drill_fields: []
   }
+
 }
