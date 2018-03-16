@@ -56,6 +56,11 @@ explore: care_requests {
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
   }
 
+  join: insurances {
+    relationship: many_to_one
+    sql_on: ${care_requests.patient_id} = ${insurances.patient_id} AND ${insurances.priority} = 1 AND ${insurances.patient_id} IS NOT NULL ;;
+  }
+
   join: care_request_complete{
     relationship: one_to_many
     from: care_request_statuses
