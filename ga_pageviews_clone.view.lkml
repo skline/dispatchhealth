@@ -118,4 +118,26 @@ view: ga_pageviews_clone {
     type: count
     drill_fields: []
   }
+
+  dimension: facebook_market_id {
+    type: number
+    sql: case when lower(${campaign}) like '%den%'  then 159
+         when lower(${campaign})  like '%colo%' then 160
+         when lower(${campaign})  like '%pho%' then 161
+         when lower(${campaign})  like '%ric%' then 164
+         when lower(${campaign})  like '%las%' then 162
+         when lower(${campaign})  like '%hou%' then 165
+         when lower(${campaign})  like '%okl%' then 166
+         else null end ;;
+  }
+
+  dimension: facebook_market_id_final{
+    type: number
+    sql: case when ${care_requests.market_id} is not null and lower(${source}) in ('facebook', 'facbeook.com') then ${care_requests.market_id}
+              when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
+              when ${facebook_market_id} is not null then ${facebook_market_id}
+              when ${facebook_paid_performance_clone.market_id} is not null then ${facebook_paid_performance_clone.market_id}
+              else null end
+              ;;
+  }
 }

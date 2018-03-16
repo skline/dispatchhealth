@@ -304,7 +304,7 @@ view: invoca_clone {
      when lower(${promo_number_description}) like '%phoe%' then 161
      when lower(${promo_number_description}) like '%ric%'  then 164
      when lower(${promo_number_description})  like '%las%' then 162
-     else 0 end ;;
+     else null end ;;
   }
 
   measure: count {
