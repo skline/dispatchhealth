@@ -154,6 +154,11 @@ explore: care_requests {
 
       ;;
   }
+  join: ga_pageviews_clone {
+    sql_on:  ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
+  }
+
   join: adwords_campaigns_clone {
     sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
   }
@@ -245,6 +250,10 @@ explore: care_requests {
 
       ;;
       }
+    join: ga_pageviews_clone {
+      sql_on:  ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
+    }
 
     join: adwords_campaigns_clone {
       sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
