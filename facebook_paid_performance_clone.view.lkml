@@ -87,11 +87,13 @@ view: facebook_paid_performance_clone {
 
   dimension: cost {
     type: number
+    value_format:"$#;($#)"
     sql: ${TABLE}.cost ;;
   }
 
   measure: sum_total_cost {
     type: sum_distinct
+    value_format:"$#;($#)"
     sql_distinct_key: concat(${start_date}, ${end_date}, ${ad_id}) ;;
     sql: ${TABLE}.cost  ;;
   }
