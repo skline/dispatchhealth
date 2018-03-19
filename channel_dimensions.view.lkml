@@ -103,6 +103,16 @@ view: channel_dimensions {
         END;;
   }
 
+  dimension: ccha_organization {
+    type: string
+    sql: CASE
+          WHEN ${ccha_eligible.group_member_id} IS NOT NULL AND
+          ${organization} NOT LIKE '%ccha%' THEN 'ccha - other channel'
+          WHEN ${organization} LIKE '%ccha%' THEN 'ccha'
+          ELSE ${organization}
+        END;;
+  }
+
   dimension_group: updated {
     hidden: yes
     type: time
