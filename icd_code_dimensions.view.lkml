@@ -39,6 +39,13 @@ view: icd_code_dimensions {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension: code_and_desc  {
+    type: string
+    sql: CONCAT(${TABLE}.diagnosis_code,
+        ${TABLE}.diagnosis_description) ;;
+    hidden: yes
+  }
+
   dimension: diagnosis_code {
     type: string
     sql: ${TABLE}.diagnosis_code ;;
@@ -58,6 +65,12 @@ view: icd_code_dimensions {
   dimension: diagnosis_description {
     type: string
     sql: ${TABLE}.diagnosis_description ;;
+  }
+
+  measure: diagnosis_desc_concat {
+    label: "ICD 10 Diagnosis Descriptions"
+    type: string
+    sql: GROUP_CONCAT(DISTINCT ${diagnosis_description} SEPARATOR ' | ') ;;
   }
 
   dimension: diagnosis_group {

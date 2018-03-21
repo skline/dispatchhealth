@@ -241,6 +241,10 @@ explore: visit_facts {
     sql_on: ${icd_visit_joins.icd_dim_id} = ${icd_code_dimensions.id} ;;
   }
 
+  join: diagnosis_rank {
+    sql_on: ${icd_code_dimensions.code_and_desc} = ${diagnosis_rank.c_and_d} ;;
+  }
+
   join: icd_visit_joins {
     sql_on: ${transaction_facts.visit_dim_number} = ${icd_visit_joins.visit_dim_number} ;;
   }
