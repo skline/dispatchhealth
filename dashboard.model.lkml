@@ -124,7 +124,7 @@ explore: care_requests {
 
   join: incontact_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
-       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+       and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
             ;;
   }
 
@@ -180,7 +180,7 @@ explore: care_requests {
 
   join: incontact_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
-       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+       and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
             ;;
     }
     join: patient_user_poa {
@@ -288,7 +288,7 @@ explore: ga_pageviews_full_clone {
 
   join: incontact_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
-       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+       and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
             ;;
   }
 
@@ -375,7 +375,7 @@ explore: ga_pageviews_clone {
 
   join: incontact_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
-       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+       and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
             ;;
   }
 
@@ -485,7 +485,7 @@ explore: ga_adwords_stats_clone {
 
   join: incontact_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
-       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+       and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
             ;;
   }
 

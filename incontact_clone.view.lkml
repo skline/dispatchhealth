@@ -48,8 +48,7 @@ view: incontact_clone {
 
   dimension: from_number {
     type: string
-    sql:  case when ${TABLE}.from_number = 0 or ${TABLE}.from_number  is null then 55555555555
-         else ${TABLE}.from_number end ;;
+    sql:   concat('+1', ${TABLE}.from_number::text) ;;
   }
 
   dimension: skll_name {
