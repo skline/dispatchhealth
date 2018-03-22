@@ -32,9 +32,8 @@ view: invoca_clone {
   }
 
   dimension: caller_id {
-    type: number
-    sql: case when ${TABLE}.caller_id = 0 or ${TABLE}.caller_id  is null then 999999999999999
-         else ${TABLE}.caller_id end;;
+    type: string
+    sql: concat('+1', ${TABLE}.caller_id::text);;
   }
 
   dimension: carrier_append {

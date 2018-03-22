@@ -81,6 +81,11 @@ view: ga_pageviews_clone {
     sql: ${TABLE}.sessions ;;
   }
 
+  measure: count_distinct_sessions {
+    type: number
+    sql: count(distinct ${client_id}) ;;
+  }
+
   dimension: source {
     type: string
     sql: ${TABLE}.source ;;

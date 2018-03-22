@@ -114,9 +114,8 @@ explore: care_requests {
   }
 
   join: invoca_clone {
-    sql_on: (${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            or  REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
+    sql_on: ((${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
+            OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
             )
             and date(${invoca_clone.start_time}) = ${care_requests.created_mountain_date}
             ;;
@@ -276,6 +275,79 @@ explore: care_requests {
 
 }
 
+explore: ga_pageviews_full_clone {
+  label: "GA explore"
+
+
+  join: invoca_clone {
+    sql_on:  ${ga_pageviews_full_clone.timestamp_date} = ${invoca_clone.start_date} AND
+        ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}
+
+      ;;
+  }
+
+  join: incontact_clone {
+    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
+       and ${invoca_clone.caller_id}::text like  CONCAT('%', ${incontact_clone.from_number} ,'%')
+            ;;
+  }
+
+
+  join: patients {
+    sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
+  }
+
+  join: care_requests {
+    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
+    OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null))
+      and ${ga_pageviews_full_clone.timestamp_date} = ${care_requests.created_mountain_date};;
+  }
+
+  join: markets {
+    sql_on:  ${markets.id} = ${ga_pageviews_full_clone.market_id} ;;
+  }
+
+  join: care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+  }
+
+  join: care_request_requested{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+  }
+
+  join: care_request_accepted{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+  }
+
+  join: care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+  }
+
+  join: care_request_scheduled{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+  }
+
+  join: channel_items {
+    sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+  }
+
+  join: incontact_spot_check_clone {
+    sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
+      ;;
+  }
+}
+
+
 explore: ga_pageviews_clone {
   label: "Facebook Paid Explore"
 
@@ -307,18 +379,13 @@ explore: ga_pageviews_clone {
             ;;
   }
 
-  join: patient_user_poa {
-    sql_on:  REPLACE(${patient_user_poa.poa_number}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${patient_user_poa.patient_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
-             ;;
-  }
-
   join: patients {
-    sql_on:  ${patients.id} = ${patient_user_poa.patient_id}  ;;
+    sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
   }
 
   join: care_requests {
-    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id} OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
+    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id} OR
+    (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null))
       and ${ga_pageviews_clone.timestamp_date} = ${care_requests.created_mountain_date};;
   }
 
@@ -422,18 +489,13 @@ explore: ga_adwords_stats_clone {
             ;;
   }
 
-  join: patient_user_poa {
-    sql_on:  REPLACE(${patient_user_poa.poa_number}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${patient_user_poa.patient_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
-             ;;
-  }
-
   join: patients {
-    sql_on:  ${patients.id} = ${patient_user_poa.patient_id}  ;;
+    sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
   }
 
   join: care_requests {
-    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id} OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
+    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id} OR
+    (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null ))
       and ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date};;
   }
   join: markets {
