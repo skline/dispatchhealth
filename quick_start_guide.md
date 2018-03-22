@@ -11,6 +11,7 @@ Looker is the new DispatchHealth tool for business intelligence and reporting
 + General content that has not been assigned to a space can be found in the [shared space](https://dispatchhealth.looker.com/spaces/home)
 
 + In addition, a user can create or store content specific to them within their individual user space.  As long as someone has made their space available, it will show up in the [Users section](https://dispatchhealth.looker.com/spaces/users) of Looker
+
 + Finally, when browsing content, you can click the heart icon to mark that dashboard or look as a favorite.
 
 ### Measures and Dimensions
@@ -34,6 +35,6 @@ Looker has two basic data types that can be used to create reports: **dimensions
 
 [Calculated Fields](https://docs.looker.com/exploring-data/using-table-calculations)
 
-+ Basic Table Calculations (BB Rate)
++ Basic Table Calculations (NPS)
 + Pivot Table Calculations [sum(pivot_row(${visit_facts.count_billable_visits})](https://discourse.looker.com/t/aggregating-across-rows-row-totals-in-table-calculations-3-36/1894)
 + Top N rows (row() <= 25)
