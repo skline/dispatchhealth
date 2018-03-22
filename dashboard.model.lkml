@@ -271,20 +271,29 @@ explore: care_requests {
 
 
 }
+
 explore: ga_pageviews_clone {
-  label: "Facebook Explore"
+  label: "Facebook Paid Explore"
 
   join: facebook_paid_performance_clone {
     type:  full_outer
     sql_on:   ${facebook_paid_performance_clone.market_id} = ${ga_pageviews_clone.facebook_market_id_final} and ${ga_pageviews_clone.timestamp_date}
-           = ${facebook_paid_performance_clone.start_date}    and lower(${ga_pageviews_clone.source}) in ('facebook', 'facebook.com') ;;
+           = ${facebook_paid_performance_clone.start_date}    and lower(${ga_pageviews_clone.source}) in ('facebook', 'facebook.com', 'instagram', 'instagram.com') ;;
   }
 
   join: invoca_clone {
     type: full_outer
-    sql_on: ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id}
-      and ${ga_pageviews_clone.timestamp_date} = ${invoca_clone.start_date} and ${invoca_clone.utm_medium} in('image_carousel', 'paidsocial', 'ctr', 'static_image', 'referral', 'local')
-      and  lower(${invoca_clone.utm_source}) in('facebook', 'facebook.com')
+    sql_on:  ${ga_pageviews_clone.timestamp_date} = ${invoca_clone.start_date}
+       and
+      (
+        (
+        ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
+        ${invoca_clone.utm_medium} in('image_carousel', 'paidsocial', 'ctr', 'static_image')
+        and  lower(${invoca_clone.utm_source}) in('facebook', 'facebook.com', 'instagram', 'instagram.com')
+        )
+        OR ${invoca_clone.utm_source} like '%FB Click to Call%'
+      )
+
       ;;
   }
 
@@ -389,9 +398,17 @@ explore: ga_adwords_stats_clone {
 
   join: invoca_clone {
     type: full_outer
-    sql_on: ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
-      and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date} and ${invoca_clone.utm_medium} in('paid search', 'cpc')
-      and  ${invoca_clone.utm_source} in('google.com', 'google')
+    sql_on:
+       ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date} and
+      (
+        (
+        ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
+        ${invoca_clone.utm_medium} in('paid search', 'cpc')
+        and  ${invoca_clone.utm_source} in('google.com', 'google')
+        )
+        or
+        ${invoca_clone.utm_medium} in('Google Call Extension')
+      )
       ;;
   }
 

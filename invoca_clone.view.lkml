@@ -299,11 +299,11 @@ view: invoca_clone {
   dimension: market_id
   {
     type:  number
-    sql:  case when lower(${promo_number_description}) like '%den%' then 159
-     when lower(${promo_number_description}) like '%cos%' then 160
-     when lower(${promo_number_description}) like '%phoe%' then 161
-     when lower(${promo_number_description}) like '%ric%'  then 164
-     when lower(${promo_number_description})  like '%las%' then 162
+    sql:  case when lower(${profile_campaign}) like '%den%' then 159
+     when lower(${profile_campaign}) like '%cos%' then 160
+     when lower(${profile_campaign}) like '%phoe%' then 161
+     when lower(${profile_campaign}) like '%ric%'  then 164
+     when lower(${profile_campaign})  like '%las%' then 162
      else null end ;;
   }
 

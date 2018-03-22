@@ -76,6 +76,11 @@ view: incontact {
     type: number
     sql: coalesce(${TABLE}.talk_time_sec,0) ;;
   }
+  measure:  sum_talk_time_sec {
+    type: sum_distinct
+    sql_distinct_key:  concat(${contact_id}, ${skll_name}, ${end_time_raw});;
+    sql: ${talk_time_sec} ;;
+  }
 
   dimension: to_number {
     type: string

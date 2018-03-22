@@ -245,6 +245,18 @@ view: invoca {
     sql: ${TABLE}.total_duration ;;
   }
 
+  dimension: total_duration_seconds {
+    type: number
+    sql:time_to_sec(${total_duration}) ;;
+  }
+
+  measure: sum_total_duration {
+    type: sum_distinct
+    sql_distinct_key: ${call_record_ikd};;
+    sql: ${total_duration_seconds};;
+
+  }
+
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
