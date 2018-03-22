@@ -152,6 +152,24 @@ view: ga_pageviews_clone {
 
   }
 
+  measure: call_rate {
+    type: number
+    value_format: "0.0%"
+    sql:round((${invoca_clone.count}::float/${count_distinct_sessions}::float)::numeric,3) ;;
+  }
+
+  measure: care_request_rate {
+    type: number
+    value_format: "0.0%"
+    sql:round((${care_requests.count_distinct}::float/${count_distinct_sessions}::float)::numeric,3) ;;
+  }
+
+  measure: complete_rate {
+    type: number
+    value_format: "0.0%"
+    sql:round((${care_request_complete.count_distinct}::float/${count_distinct_sessions}::float)::numeric,3) ;;
+  }
+
   dimension: source_category
   {
     type: string
