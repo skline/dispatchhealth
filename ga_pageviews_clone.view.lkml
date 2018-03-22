@@ -145,4 +145,27 @@ view: ga_pageviews_clone {
               else null end
               ;;
   }
+
+  dimension: source_medium {
+    type: string
+    sql: concat(${source}, ': ', ${medium}) ;;
+
+  }
+
+  dimension: source_category
+  {
+    type: string
+    sql: case when ${source} in('google', 'bing', 'ask', 'yahoo') and ${medium} = 'cpc' then 'Paid Search'
+              when ${source} in('facebook', 'instagram') and ${medium} in('paidsocial', 'ctr', 'image_carousel') then 'Paid Social'
+              when ${source} in('google', 'bing', 'ask', 'yahoo') and ${medium} = 'organic' then 'Organic Search'
+              when ${source} in('(direct)')  then 'Direct Traffic'
+              when ${medium} in('local') or ${source} = 'yelp.com' then 'Local Listings'
+              when (${source} like '%facebook%' or  ${source} like '%instagram%' or  ${source} like '%linkedin%') and ${medium} = 'referral' then 'Organic Social'
+              when ${medium} in('email') then 'Email'
+              when ${medium} in('nativedisplay') then 'Native Display'
+              when ${medium} in('display') then 'Display'
+              when ${medium} in('referral') then 'Referral'
+              when ${source} in('shannon') then null
+              else ${source_medium} end;;
+  }
 }
