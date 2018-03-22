@@ -167,6 +167,19 @@ explore: visit_facts {
                         END)) = ${bonsecours_mssp_eligible.match_value};;
   }
 
+# Add match criteria for the CCHA Report
+  join: ccha_eligible {
+    relationship: one_to_one
+    sql_on: UPPER(CONCAT(${patient_facts.first_name},
+                         ${patient_facts.last_name},
+                        DATE_FORMAT(${patient_facts.dob}, '%m/%d/%y'),
+                        CASE
+                          WHEN ${patient_facts.gender} = 'Male' THEN 'M'
+                          WHEN ${patient_facts.gender} = 'Female' THEN 'F'
+                          ELSE 'X'
+                        END)) = ${ccha_eligible.match_value};;
+  }
+
   join: pcp_dimensions {
     sql_on: ${patient_facts.pcp_dim_id} = ${pcp_dimensions.id}  ;;
   }
@@ -226,6 +239,10 @@ explore: visit_facts {
 
   join: icd_code_dimensions {
     sql_on: ${icd_visit_joins.icd_dim_id} = ${icd_code_dimensions.id} ;;
+  }
+
+  join: diagnosis_rank {
+    sql_on: ${icd_code_dimensions.code_and_desc} = ${diagnosis_rank.c_and_d} ;;
   }
 
   join: icd_visit_joins {

@@ -109,6 +109,10 @@ explore: care_requests {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
   }
 
+  join: primary_payer_scratch {
+    sql_on: ${patients.id} = ${primary_payer_scratch.dashboard_patient_id} ;;
+  }
+
   join: invoca_clone {
     sql_on: (${patients.mobile_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
             or  REPLACE(${power_of_attorneys.phone}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
