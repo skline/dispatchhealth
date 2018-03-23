@@ -156,5 +156,18 @@ view: channel_items {
     drill_fields: [id, name, source_name, type_name]
   }
 
+  dimension: growth_category {
+    type: string
+    sql: case when ${type_name} in ('Provider Group') or ${name} in('Healthcare provider', 'Healthcare Provider') then 'Provider'
+   when ${type_name} in('Employer') or ${name} in('Employer') then 'Employer'
+   when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' )  then 'Senior Care'
+   when ${type_name} in('Home Health' )  then 'Home Health'
+   when ${type_name} in('Health System' )  then 'Health System'
+   when ${type_name} is null and ${name} !='Family or friend' then 'Direct to Consumer'
+   when ${name} ='Family or friend' then 'Family or Friends'
+   when ${type_name} ='Payer' then 'Payer'
+  else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
+  }
+
 
 }
