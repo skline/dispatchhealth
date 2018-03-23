@@ -35,6 +35,11 @@ explore: visit_facts {
     sql_on: ${visit_dimensions.care_request_id} = ${visit_facts.care_request_id} ;;
   }
 
+  join: productivity_data {
+    relationship: many_to_one
+    sql_on: DATE(${visit_dimensions.local_visit_date}) = DATE(${productivity_data.date_date}) AND ${visit_facts.market_dim_id} = ${productivity_data.market_dim_id} ;;
+  }
+
   join: predicted_on_scene_time {
     relationship: many_to_one
     sql_on: ${predicted_on_scene_time.care_request_id} = ${visit_facts.care_request_id} ;;
