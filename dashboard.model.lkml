@@ -122,7 +122,7 @@ explore: care_requests {
     sql_on: ((${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
             OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
             )
-            and date(${invoca_clone.start_time}) = ${care_requests.created_mountain_date}
+            and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
             ;;
 
     }
@@ -188,13 +188,9 @@ explore: care_requests {
        and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
             ;;
     }
-    join: patient_user_poa {
-      sql_on:  REPLACE(${patient_user_poa.poa_number}, '-', '') like  CONCAT('%', ${invoca_clone.caller_id} ,'%')
-            OR ${patient_user_poa.patient_number} like CONCAT('%', ${invoca_clone.caller_id} ,'%')
-             ;;
-    }
+
     join: patients {
-      sql_on:  ${patients.id} = ${patient_user_poa.patient_id}  ;;
+      sql_on:   ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null   ;;
     }
 
     join: care_requests {
@@ -285,7 +281,8 @@ explore: ga_pageviews_full_clone {
 
 
   join: invoca_clone {
-    sql_on:  ${ga_pageviews_full_clone.timestamp_date} = ${invoca_clone.start_date} AND
+    sql_on:
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})) < 172800 and
         ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}
 
       ;;
@@ -364,16 +361,18 @@ explore: ga_pageviews_clone {
 
   join: invoca_clone {
     type: full_outer
-    sql_on:  ${ga_pageviews_clone.timestamp_date} = ${invoca_clone.start_date}
-       and
-      (
+    sql_on:
+
         (
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < 172800 and
         ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
         ${invoca_clone.utm_medium} in('image_carousel', 'paidsocial', 'ctr', 'static_image')
         and  lower(${invoca_clone.utm_source}) in('facebook', 'facebook.com', 'instagram', 'instagram.com')
         )
-        OR ${invoca_clone.utm_source} like '%FB Click to Call%'
-      )
+        OR (
+        ${invoca_clone.utm_source} like '%FB Click to Call%' and ${invoca_clone.start_date} =${ga_pageviews_clone.timestamp_date}
+        )
+
 
       ;;
   }
@@ -475,16 +474,16 @@ explore: ga_adwords_stats_clone {
   join: invoca_clone {
     type: full_outer
     sql_on:
-       ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date} and
-      (
         (
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})) < 172800 and
         ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
         ${invoca_clone.utm_medium} in('paid search', 'cpc')
         and  ${invoca_clone.utm_source} in('google.com', 'google')
         )
         or
-        ${invoca_clone.utm_medium} in('Google Call Extension')
-      )
+        (
+        ${invoca_clone.utm_medium} in('Google Call Extension') and ${invoca_clone.start_date} =${ga_adwords_stats_clone.page_timestamp_date}
+        )
       ;;
   }
 

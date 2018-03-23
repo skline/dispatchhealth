@@ -33,7 +33,7 @@ view: invoca_clone {
 
   dimension: caller_id {
     type: string
-    sql: concat('+1', ${TABLE}.caller_id::text);;
+    sql: ${TABLE}.caller_id;;
   }
 
   dimension: carrier_append {
