@@ -114,8 +114,14 @@ explore: care_requests {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
   }
 
-  join: primary_payer_scratch {
-    sql_on: ${patients.id} = ${primary_payer_scratch.dashboard_patient_id} ;;
+  join: patient_payer_lookup{
+    relationship: one_to_one
+    sql_on: ${patients.id} = ${patient_payer_lookup.dashboard_patient_id}  ;;
+  }
+
+  join: primary_payer_packages {
+    relationship: one_to_many
+    sql_on: ${patient_payer_lookup.primary_payer_dim_id} = ${primary_payer_packages.primary_payer_dim_id} ;;
   }
 
   join: invoca_clone {
