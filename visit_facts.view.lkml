@@ -895,10 +895,27 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  dimension: capped_expected_allowable {
+    description: "Flag of whether or not expected allowable is greater than $350"
+    type: yesno
+    sql: ${visit_facts.total_expected_allowable} < 350 ;;
+  }
+
   measure: average_expected_allowable {
     label: "Average Expected Allowable"
     type: number
     sql: round(avg(${visit_facts.total_expected_allowable}),2) ;;
+  }
+
+  measure: average_expected_allowable_capped {
+    label: "Average Capped Expected Allowable"
+    description: "Average Expected Allowable, excluding amounts over $350"
+    type: average
+    filters: {
+      field: capped_expected_allowable
+      value: "yes"
+    }
+    sql: round(${visit_facts.total_expected_allowable},2) ;;
   }
 
   measure: count_of_non_smfr_billable_visits {
