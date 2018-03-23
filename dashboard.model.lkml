@@ -15,6 +15,11 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
   }
 
+  join: credit_card_errors {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${credit_card_errors.care_request_id} ;;
+  }
+
   join: shift_teams {
     relationship: many_to_one
     sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;

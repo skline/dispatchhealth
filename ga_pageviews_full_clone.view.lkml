@@ -1,3 +1,4 @@
+include: "ga_pageviews_clone.view.lkml"
 view: ga_pageviews_full_clone {
   extends: [ga_pageviews_clone]
 
