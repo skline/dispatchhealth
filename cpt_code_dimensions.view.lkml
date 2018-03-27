@@ -21,6 +21,12 @@ view: cpt_code_dimensions {
     sql: ${TABLE}.cpt_code ;;
   }
 
+  measure: cpt_code_concat {
+    label: "CPT Codes"
+    type: string
+    sql: GROUP_CONCAT(DISTINCT ${cpt_code} SEPARATOR ' | ') ;;
+  }
+
   dimension: cpt_edition {
     label: "CPT edition"
     description: "The verson of the CPT code used"
@@ -49,6 +55,12 @@ view: cpt_code_dimensions {
     sql: ${TABLE}.description ;;
   }
 
+  measure: cpt_descrip_concat {
+    label: "CPT Descriptions"
+    type: string
+    sql: GROUP_CONCAT(DISTINCT ${description} SEPARATOR ' | ') ;;
+  }
+
   dimension: cpt_code_and_description {
     description: "The CPT code only (less prefixes and suffixes) with the description"
     type: string
@@ -67,6 +79,12 @@ view: cpt_code_dimensions {
     description: "Indicates the level of care received by patient"
     type: string
     sql: ${TABLE}.em_care_level ;;
+  }
+
+  measure: em_care_level_concat {
+    label: "E&M Code Care Levels"
+    type: string
+    sql:  GROUP_CONCAT(DISTINCT ${em_care_level} SEPARATOR '');;
   }
 
   dimension: em_patient_type {

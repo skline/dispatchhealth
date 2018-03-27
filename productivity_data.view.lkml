@@ -1,6 +1,12 @@
 view: productivity_data {
   sql_table_name: looker_scratch.productivity_data ;;
 
+  dimension: compound_primary_key {
+    primary_key: yes
+    hidden: yes
+    sql: CONCAT(CAST(${TABLE}.date AS CHAR), CAST(${TABLE}.market_dim_id AS CHAR)) ;;
+  }
+
   dimension: billable_visits {
     type: number
     sql: ${TABLE}.billable_visits ;;
