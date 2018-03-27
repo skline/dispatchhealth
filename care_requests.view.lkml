@@ -610,6 +610,14 @@ measure: distinct_days {
     type: string
     sql:  ${TABLE}.origin_phone;;
   }
+  dimension: days_in_month {
+    type: number
+    sql:  DATE_PART('days',
+        DATE_TRUNC('month', ${created_mountain_date})
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ) ;;
+  }
 
 
 

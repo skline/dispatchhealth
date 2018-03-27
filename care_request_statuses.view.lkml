@@ -23,6 +23,7 @@ view: care_request_statuses {
         OR ${comment} = 'Referred - Point of care: ED';;
   }
 
+
   dimension: commentor_id {
     type: number
     sql: ${TABLE}.commentor_id ;;
@@ -276,6 +277,10 @@ view: care_request_statuses {
         + '1 MONTH'::INTERVAL
         - '1 DAY'::INTERVAL
     ) ;;
+  }
+  dimension: month_number {
+    type:  number
+    sql: EXTRACT(MONTH from ${created_mountain_date}) ;;
   }
 
   dimension: rolling_30_day {

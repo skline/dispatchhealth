@@ -64,6 +64,10 @@ view: cars {
     ]
     sql: ${TABLE}.updated_at ;;
   }
+  dimension: arm_car  {
+    type: yesno
+    sql: ${name} like '%SMFR_Car%' ;;
+  }
 
   measure: count {
     type: count

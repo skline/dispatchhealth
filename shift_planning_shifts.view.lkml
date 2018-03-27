@@ -99,9 +99,13 @@ view: shift_planning_shifts {
       week,
       month,
       quarter,
-      year
+      year,day_of_week_index
     ]
     sql: ${TABLE}.local_shift_start_time ;;
+  }
+  measure: count_distinct_days{
+    type: number
+    sql:count(distinct ${local_shift_start_date}) ;;
   }
 
   dimension: notes {

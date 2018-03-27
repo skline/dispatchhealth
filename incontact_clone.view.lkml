@@ -31,7 +31,8 @@ view: incontact_clone {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.end_time ;;
   }
@@ -66,7 +67,8 @@ view: incontact_clone {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.start_time ;;
   }
@@ -80,6 +82,27 @@ view: incontact_clone {
     type: string
     sql: ${TABLE}.to_number ;;
   }
+
+  dimension: market_id
+  {
+    type:  number
+    sql:  case when lower(${skll_name}) like '%den%' then 159
+           when lower(${skll_name}) like '%cos%' then 160
+           when lower(${skll_name}) like '%phx%' then 161
+           when lower(${skll_name}) like '%ric%'  then 164
+           when lower(${skll_name})  like '%las%' then 162
+           else null end ;;
+  }
+dimension: skill_category {
+  type:  string
+  sql: case when lower(${skll_name}) like '%care%' then 'Care Line'
+     when lower(${skll_name}) like '%partner%' then 'Partner Line'
+     when lower(${skll_name}) like '%backline%' then 'Backline'
+     when lower(${skll_name}) like '%medical%' then 'Medical'
+     when lower(${skll_name}) like '%outbound%' then 'Outbound'
+     when lower(${skll_name}) like '%voicemail%' or ${skll_name} like '%VM%' then 'Voicemail'
+     else 'Other' end ;;
+}
 
   measure: count {
     type: count
@@ -95,6 +118,22 @@ view: incontact_clone {
     type: number
     sql:count(distinct case when ${talk_time_sec}>0  then ${contact_id} else null end) ;;
   }
+
+  measure: count_distinct_voicemails {
+    type: number
+    sql:  count(distinct case when ${skill_category} = 'Voicemail' then ${contact_id} else null end);;
+  }
+
+  measure: count_distinct_abandoned {
+    type: number
+    sql:  count(distinct case when ${talk_time_sec}=0  then ${contact_id} else null end);;
+  }
+
+  measure: answer_rate {
+    type: number
+    sql: 1.0 -(${count_distinct_abandoned}::float/${count_distinct}::float);;
+  }
+
 
   measure: count_distinct_phone_number {
     type: number

@@ -565,6 +565,52 @@ explore: insurance_plans {
   }
 }
 
+explore: incontact_clone {
+  join: care_requests {
+    sql_on: ${care_requests.created_mountain_date} = ${incontact_clone.start_date} and ${incontact_clone.market_id} =${care_requests.market_id} ;;
+  }
+
+  join: markets {
+    sql_on:  ${markets.id} = ${incontact_clone.market_id} ;;
+  }
+
+  join: care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+  }
+
+  join: care_request_requested{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+  }
+
+  join: care_request_accepted{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+  }
+
+  join: care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+  }
+
+  join: care_request_scheduled{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+  }
+
+  join: channel_items {
+    sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+  }
+
+
+}
+
 #   join: user_roles {
 #     relationship: one_to_one
 #     sql_on: ${users.id} = ${user_roles.user_id} ;;

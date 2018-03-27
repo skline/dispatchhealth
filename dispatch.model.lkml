@@ -300,6 +300,7 @@ explore: productivity_data {
           ;;
     }
   }
+
 explore: shift_planning_shifts {
   join: shift_planning_facts {
     sql_on:  ${shift_planning_facts.shift_id}=${shift_planning_shifts.shift_id} and ${shift_planning_shifts.imported_after_shift}=0 ;;
@@ -313,6 +314,11 @@ explore: shift_planning_shifts {
     sql_on:   ${shift_planning_facts.local_expected_end_month}=${budget_projections_by_market.month_month}
     and ${budget_projections_by_market.market_dim_id}=${shift_planning_shifts.market_dim_id};;
   }
+
+  join: car_dimensions {
+    sql_on: ${shift_planning_facts.car_dim_id} = ${car_dimensions.id} ;;
+  }
+
 }
 
 explore: risk_assessments {
