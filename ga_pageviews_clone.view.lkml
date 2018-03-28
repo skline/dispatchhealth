@@ -174,7 +174,7 @@ view: ga_pageviews_clone {
   {
     type: string
     sql: case when ${source} in('google', 'bing', 'ask', 'yahoo') and ${medium} = 'cpc' then 'Paid Search'
-              when ${source} in('facebook', 'instagram') and ${medium} in('paidsocial', 'ctr', 'image_carousel') then 'Paid Social'
+              when ${source} in('facebook', 'instagram') and ${medium} in('paidsocial', 'ctr', 'image_carousel', 'static_image') then 'Paid Social'
               when ${source} in('google', 'bing', 'ask', 'yahoo') and ${medium} = 'organic' then 'Organic Search'
               when ${source} in('(direct)')  then 'Direct Traffic'
               when ${medium} in('local') or ${source} = 'yelp.com' then 'Local Listings'
@@ -185,5 +185,12 @@ view: ga_pageviews_clone {
               when ${medium} in('referral') then 'Referral'
               when ${source} in('shannon') then null
               else ${source_medium} end;;
+  }
+
+  dimension: high_low_intent
+  {
+    type: string
+    sql: case when ${source_category} in('Paid Social', 'Organic Social', 'Native Display', 'Display') then 'Low Intent'
+              else 'High Intent' end;;
   }
 }

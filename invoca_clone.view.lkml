@@ -299,7 +299,7 @@ view: invoca_clone {
   {
     type:  number
     sql:  case when lower(${profile_campaign}) like '%den%' then 159
-     when lower(${profile_campaign}) like '%cos%' then 160
+     when lower(${profile_campaign}) like '%colo%' then 160
      when lower(${profile_campaign}) like '%phoe%' then 161
      when lower(${profile_campaign}) like '%ric%'  then 164
      when lower(${profile_campaign})  like '%las%' then 162
