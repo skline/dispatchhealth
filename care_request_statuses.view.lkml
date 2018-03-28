@@ -311,6 +311,10 @@ view: care_request_statuses {
     type: number
     sql:  ${ga_adwords_cost_clone.sum_total_adcost}/${count_distinct} ;;
   }
+  measure: distinct_comments {
+    type: number
+    sql: count(distinct case when ${comment} is not null then ${care_request_id} else null end);;
+  }
 
 
 

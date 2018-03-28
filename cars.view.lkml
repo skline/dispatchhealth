@@ -68,6 +68,10 @@ view: cars {
     type: yesno
     sql: ${name} like '%SMFR_Car%' ;;
   }
+  measure: car_staff {
+    type: string
+    sql:  array_agg(distinct ${provider_profiles.position_and_name});;
+  }
 
   measure: count {
     type: count

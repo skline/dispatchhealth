@@ -109,6 +109,11 @@ view: provider_profiles {
     type: number
     sql: ${TABLE}.user_id ;;
   }
+  dimension: position_and_name{
+    type: string
+    sql:  concat(${position}, ': ', ${users.first_name}, ' ', ${users.last_name});;
+  }
+
 
   measure: count {
     type: count

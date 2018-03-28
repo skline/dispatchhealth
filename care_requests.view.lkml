@@ -618,6 +618,10 @@ measure: distinct_days {
         - '1 DAY'::INTERVAL
     ) ;;
   }
+  measure: max_on_scene_time {
+    type: date_raw
+    sql:  max(${on_scene_etc_mountain_raw}) ;;
+  }
 
 
 

@@ -481,16 +481,19 @@ explore: ga_adwords_stats_clone {
     type: full_outer
     sql_on:
         (
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})) < 172800 and
-        ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
-        ${invoca_clone.utm_medium} in('paid search', 'cpc')
-        and  ${invoca_clone.utm_source} in('google.com', 'google')
+          abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})) < 172800 and
+          ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
+          ${invoca_clone.utm_medium} in('paid search', 'cpc')
+          and  ${invoca_clone.utm_source} in('google.com', 'google')
         )
         or
         (
-        ${invoca_clone.utm_medium} in('Google Call Extension') and ${invoca_clone.start_date} =${ga_adwords_stats_clone.page_timestamp_date}
+          ${invoca_clone.utm_medium} in('Google Call Extension')
+          and ${invoca_clone.start_date} =${ga_adwords_stats_clone.page_timestamp_date}
         )
       ;;
+    sql_where:  (${invoca_clone.utm_medium} in('paid search', 'cpc')
+          and  ${invoca_clone.utm_source} in('google.com', 'google')) OR  ${invoca_clone.utm_medium} in('Google Call Extension')   ;;
   }
 
   join: incontact_clone {
@@ -509,7 +512,7 @@ explore: ga_adwords_stats_clone {
       and ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date};;
   }
   join: markets {
-    sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id} ;;
+    sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id_final} ;;
   }
 
   join: care_request_complete{

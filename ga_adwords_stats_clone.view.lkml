@@ -167,6 +167,16 @@ view: ga_adwords_stats_clone {
               else null end
               ;;
   }
+  dimension: market_id_final{
+    type: number
+    sql: case when ${care_requests.market_id} is not null then ${care_requests.market_id}
+              when ${market_id} is not null then ${market_id}
+              when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
+              when ${market_id} is not null then ${market_id}
+              else null end
+              ;;
+  }
+
 
   measure: count {
     type: count
