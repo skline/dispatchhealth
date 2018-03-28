@@ -179,17 +179,17 @@ view: care_request_statuses {
 
   measure: daily_average {
     type: number
-    sql: ${count_distinct}/(case when ${distinct_days} >0 then ${distinct_days} else 1 end)  ;;
+    sql: ${count_distinct}/(nullif(${distinct_days},0)  ;;
   }
 
   measure: weekly_average {
     type: number
-    sql: ${count_distinct}/(case when ${distinct_weeks} >0 then ${distinct_weeks} else 1 end) ;;
+    sql: ${count_distinct}/(nullif${distinct_weeks},0) ;;
   }
 
   measure: monthly_average {
     type: number
-    sql: ${count_distinct}/(case when ${distinct_months} >0 then ${distinct_months} else 1 end) ;;
+    sql: ${count_distinct}/(nullif(${distinct_months},0) ;;
   }
 
 
@@ -305,7 +305,7 @@ view: care_request_statuses {
 
   measure: productivity {
     type: number
-    sql: round(${count_distinct}/(case when ${shift_hours_by_day_market_clone.sum_total_hours}::DECIMAL > 0 then  ${shift_hours_by_day_market_clone.sum_total_hours}::DECIMAL else 1 end ), 2) ;;
+    sql: round(${count_distinct}/NULLIF(${shift_hours_by_day_market_clone.sum_total_hours}::DECIMAL,0), 2) ;;
   }
   measure: cost_per_care_status {
     type: number
