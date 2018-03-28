@@ -1,15 +1,10 @@
-view: shift_teams {
-  sql_table_name: public.shift_teams ;;
+view: shifts {
+  sql_table_name: public.shifts ;;
 
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
-  }
-
-  dimension: car_id {
-    type: number
-    sql: ${TABLE}.car_id ;;
   }
 
   dimension_group: created {
@@ -51,13 +46,13 @@ view: shift_teams {
       quarter,
       year
     ]
-    sql: ${TABLE}.end_time - interval '7 hour' ;;
+    sql: ${TABLE}.end_time  - interval '7 hour';;
   }
 
 
-  dimension: shift_id {
+  dimension: sp_id {
     type: number
-    sql: ${TABLE}.shift_id ;;
+    sql: ${TABLE}.sp_id ;;
   }
 
   dimension_group: start {
@@ -90,6 +85,6 @@ view: shift_teams {
 
   measure: count {
     type: count
-    drill_fields: [id, shift_team_members.count]
+    drill_fields: [id]
   }
 }

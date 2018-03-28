@@ -29,6 +29,11 @@ explore: care_requests {
     relationship: many_to_one
     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
   }
+  join: shifts{
+    relationship: many_to_one
+    sql_on:  ${shift_teams.shift_id}  =  ${shifts.id};;
+
+  }
 
   join: cars {
     relationship: many_to_one
@@ -482,18 +487,12 @@ explore: ga_adwords_stats_clone {
     sql_on:
         (
           abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})) < 172800 and
-          ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
-          ${invoca_clone.utm_medium} in('paid search', 'cpc')
-          and  ${invoca_clone.utm_source} in('google.com', 'google')
-        )
-        or
-        (
-          ${invoca_clone.utm_medium} in('Google Call Extension')
-          and ${invoca_clone.start_date} =${ga_adwords_stats_clone.page_timestamp_date}
+          ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
         )
       ;;
-    sql_where:  (${invoca_clone.utm_medium} in('paid search', 'cpc')
-          and  ${invoca_clone.utm_source} in('google.com', 'google')) OR  ${invoca_clone.utm_medium} in('Google Call Extension')   ;;
+    sql_where: ( (${invoca_clone.utm_medium} in('paid search', 'cpc')
+          and  ${invoca_clone.utm_source} in('google.com', 'google')) OR  ${invoca_clone.utm_medium} in('Google Call Extension') ) OR
+          ${ga_adwords_stats_clone.adwordscampaignid} != 0 or ${ga_adwords_cost_clone.adwordscampaignid} !=0;;
   }
 
   join: incontact_clone {

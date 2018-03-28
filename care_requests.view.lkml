@@ -572,6 +572,11 @@ measure: distinct_days {
   else concat(${current_day_string}, 's ', ${min_day}, ' thru ', ${max_day}) end ;;
 
   }
+  measure: max_on_scene_time_mountain {
+    type: date_time
+    sql:  max(${on_scene_etc_mountain_raw}) ;;
+  }
+
 
   measure: min_max_range_week {
     type: string
@@ -617,10 +622,6 @@ measure: distinct_days {
         + '1 MONTH'::INTERVAL
         - '1 DAY'::INTERVAL
     ) ;;
-  }
-  measure: max_on_scene_time {
-    type: date_raw
-    sql:  max(${on_scene_etc_mountain_raw}) ;;
   }
 
 
