@@ -506,9 +506,20 @@ explore: ga_adwords_stats_clone {
   }
 
   join: care_requests {
-    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id} OR
-    (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null ))
-      and ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date};;
+    sql_on:
+    (
+      ${patients.id} = ${care_requests.patient_id}
+      OR
+      care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
+      OR
+      (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+    )
+      and
+      (
+        ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date}
+        OR
+        ${invoca_clone.start_date} = ${care_requests.created_mountain_date}
+      );;
   }
   join: markets {
     sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id_final} ;;
