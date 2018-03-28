@@ -179,17 +179,17 @@ view: care_request_statuses {
 
   measure: daily_average {
     type: number
-    sql: ${count_distinct}/(nullif(${distinct_days},0)  ;;
+    sql: ${count_distinct}/(nullif(${distinct_days},0))  ;;
   }
 
   measure: weekly_average {
     type: number
-    sql: ${count_distinct}/(nullif${distinct_weeks},0) ;;
+    sql: ${count_distinct}/(nullif(${distinct_weeks},0)) ;;
   }
 
   measure: monthly_average {
     type: number
-    sql: ${count_distinct}/(nullif(${distinct_months},0) ;;
+    sql: ${count_distinct}/(nullif(${distinct_months},0)) ;;
   }
 
 
