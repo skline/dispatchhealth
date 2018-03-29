@@ -177,6 +177,19 @@ view: ga_adwords_stats_clone {
     sql: count(distinct coalesce(${care_request_complete.id}, ${web_care_request_complete.id})) ;;
   }
 
+  measure: total_resolved {
+    type: number
+    sql:  count(
+                    distinct
+                    coalesce
+                    (
+                      case when ${web_care_request_archived.comment} is not null then ${web_care_request_archived.care_request_id} else null end,
+                      case when ${care_request_archived.comment} is not null then ${care_request_archived.care_request_id} else null end
+                    )
+                 )
+        ;;
+  }
+
 
   measure: count {
     type: count
