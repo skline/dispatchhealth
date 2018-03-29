@@ -167,14 +167,14 @@ view: ga_adwords_stats_clone {
               else null end
               ;;
   }
-  dimension: market_id_final{
+  measure: total_care_requests {
     type: number
-    sql: case when ${care_requests.market_id} is not null then ${care_requests.market_id}
-              when ${market_id} is not null then ${market_id}
-              when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
-              when ${market_id} is not null then ${market_id}
-              else null end
-              ;;
+    sql: count(distinct coalesce(${care_requests.id}, ${web_care_requests.id})) ;;
+  }
+
+  measure: total_complete {
+    type: number
+    sql: count(distinct coalesce(${care_request_complete.id}, ${web_care_request_complete.id})) ;;
   }
 
 

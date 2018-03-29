@@ -49,7 +49,7 @@ view: incontact_clone {
 
   dimension: from_number {
     type: string
-    sql:   concat('+1', ${TABLE}.from_number::text) ;;
+    sql:   ${TABLE}.from_number;;
   }
 
   dimension: skll_name {

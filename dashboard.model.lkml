@@ -506,7 +506,8 @@ explore: ga_adwords_stats_clone {
                 OR
                 ${ga_adwords_stats_clone.adwordscampaignid} != 0
                 OR
-                ${ga_adwords_cost_clone.adwordscampaignid} !=0;;
+                 ${ga_adwords_cost_clone.adwordscampaignid} != 0
+                ;;
   }
 
   join: incontact_clone {
@@ -528,18 +529,25 @@ explore: ga_adwords_stats_clone {
         (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
       )
       AND
-      ${invoca_clone.start_date} = ${care_requests.created_mountain_date}
+      abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
 
-    )
-      OR
-    (
-      ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date}
-      AND
-      care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
     );;
+
   }
+  join: web_care_requests {
+    from: care_requests
+    sql_on:
+    (
+
+       abs(EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+      AND
+      web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
+    ) ;;
+
+  }
+
   join: markets {
-    sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id_final} ;;
+    sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id} ;;
   }
 
   join: care_request_complete{
@@ -547,6 +555,19 @@ explore: ga_adwords_stats_clone {
     from: care_request_statuses
     sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
   }
+
+  join: web_care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
+  }
+
+  join: web_care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
+  }
+
 
   join: care_request_requested{
     relationship: one_to_many

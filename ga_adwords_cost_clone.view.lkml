@@ -84,13 +84,13 @@ view: ga_adwords_cost_clone {
   measure: cost_per_care_request {
     type: number
     value_format:"$#;($#)"
-    sql:  round(${sum_total_adcost}/NULLIF(${care_requests.count_distinct},0)) ;;
+    sql:  round(${sum_total_adcost}/NULLIF(${ga_adwords_stats_clone.total_care_requests},0)) ;;
   }
 
   measure: cost_per_care_complete {
     type: number
     value_format:"$#;($#)"
-    sql:  round(${sum_total_adcost}/NULLIF(${care_request_complete.count_distinct}, 0)) ;;
+    sql:  round(${sum_total_adcost}/NULLIF(${ga_adwords_stats_clone.total_complete}, 0)) ;;
   }
 
 
