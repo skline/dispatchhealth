@@ -193,4 +193,36 @@ view: ga_pageviews_clone {
     sql: case when ${source_category} in('Paid Social', 'Organic Social', 'Native Display', 'Display') then 'Low Intent'
               else 'High Intent' end;;
   }
+
+  measure: total_care_requests {
+    type: number
+    sql: count(distinct coalesce(${care_requests.id}, ${web_care_requests.id})) ;;
+  }
+
+  measure: total_complete {
+    type: number
+    sql: count(distinct coalesce(${care_request_complete.id}, ${web_care_request_complete.id})) ;;
+  }
+
+  measure: total_resolved {
+    type: number
+    sql:  count(
+                    distinct
+                    coalesce
+                    (
+                      case when ${web_care_request_archived.comment} is not null then ${web_care_request_archived.care_request_id} else null end,
+                      case when ${care_request_archived.comment} is not null then ${care_request_archived.care_request_id} else null end
+                    )
+                 )
+        ;;
+  }
+
+  dimension: ga_date{
+    type: date
+    sql: case
+              when ${timestamp_date} is not null then ${timestamp_date}
+              when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
+         else null end;;
+
+    }
 }

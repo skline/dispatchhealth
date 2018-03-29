@@ -366,8 +366,13 @@ explore: ga_pageviews_clone {
 
   join: facebook_paid_performance_clone {
     type:  full_outer
-    sql_on:   ${facebook_paid_performance_clone.market_id} = ${ga_pageviews_clone.facebook_market_id_final} and ${ga_pageviews_clone.timestamp_date}
-           = ${facebook_paid_performance_clone.start_date}    and lower(${ga_pageviews_clone.source}) in ('facebook', 'facebook.com', 'instagram', 'instagram.com') ;;
+    sql_on: ${facebook_paid_performance_clone.market_id} = ${ga_pageviews_clone.facebook_market_id_final}
+            AND
+            ${ga_pageviews_clone.timestamp_date} = ${facebook_paid_performance_clone.start_date}
+            AND
+            lower(${ga_pageviews_clone.source}) in ('facebook', 'facebook.com', 'instagram', 'instagram.com')
+            AND
+            lower(${ga_pageviews_clone.medium}) in('image_carousel', 'paidsocial', 'ctr', 'static_image');;
   }
 
   join: invoca_clone {
@@ -375,17 +380,38 @@ explore: ga_pageviews_clone {
     sql_on:
 
         (
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < 172800 and
-        ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id} and
-        ${invoca_clone.utm_medium} in('image_carousel', 'paidsocial', 'ctr', 'static_image')
-        and  lower(${invoca_clone.utm_source}) in('facebook', 'facebook.com', 'instagram', 'instagram.com')
+          abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < 172800
+          and
+          ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id}
         )
-        OR (
-        ${invoca_clone.utm_source} like '%FB Click to Call%' and ${invoca_clone.start_date} =${ga_pageviews_clone.timestamp_date}
+         ;;
+
+      sql_where:
+        (
+          (
+            ${invoca_clone.utm_medium} in('image_carousel', 'paidsocial', 'ctr', 'static_image')
+            AND
+            lower(${invoca_clone.utm_source}) in('facebook', 'facebook.com', 'instagram', 'instagram.com')
+          )
+          OR
+          (
+            ${invoca_clone.utm_source} like '%FB Click to Call%'
+          )
+          AND
+          ${invoca_clone.start_date} >'2018-03-15'
         )
+        OR
+        (
+          lower(${ga_pageviews_clone.source}) in ('facebook', 'facebook.com', 'instagram', 'instagram.com')
+          AND
+          lower(${ga_pageviews_clone.medium}) in('image_carousel', 'paidsocial', 'ctr', 'static_image')
+        )
+        OR
+        ${facebook_paid_performance_clone.start_date} is not null
+        ;;
 
 
-      ;;
+
   }
 
   join: incontact_clone {
@@ -399,9 +425,26 @@ explore: ga_pageviews_clone {
   }
 
   join: care_requests {
-    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id} OR
-    (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null))
-      and ${ga_pageviews_clone.timestamp_date} = ${care_requests.created_mountain_date};;
+    sql_on:
+    (
+      (
+        ${patients.id} = ${care_requests.patient_id}
+        OR
+        (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+      )
+      AND
+      abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+    );;
+  }
+
+  join: web_care_requests {
+    from: care_requests
+    sql_on:
+    (
+      abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+      AND
+      web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id}
+    ) ;;
   }
 
   join: markets {
@@ -413,6 +456,18 @@ explore: ga_pageviews_clone {
     from: care_request_statuses
     sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
   }
+
+  join: web_care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
+  }
+  join: web_care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
+  }
+
 
   join: care_request_requested{
     relationship: one_to_many

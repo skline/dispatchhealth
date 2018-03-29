@@ -189,6 +189,15 @@ view: ga_adwords_stats_clone {
                  )
         ;;
   }
+  dimension: adwords_date{
+    type: date
+    sql: case
+              when ${ga_adwords_cost_clone.date_date} is not null then ${ga_adwords_cost_clone.date_date}
+              when ${page_timestamp_date} is not null then ${page_timestamp_date}
+              when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
+         else null end;;
+
+  }
 
 
   measure: count {
