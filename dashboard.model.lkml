@@ -205,8 +205,8 @@ explore: care_requests {
     }
 
     join: care_requests {
-      sql_on: (${patients.id} = ${care_requests.patient_id}  OR ${care_requests.origin_phone} like CONCAT('%', ${invoca_clone.caller_id} ,'%'))
-                 and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 86400 ;;
+      sql_on: (${patients.id} = ${care_requests.patient_id}  OR ${care_requests.origin_phone} = ${invoca_clone.caller_id})
+                 and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800 ;;
       }
 
     join: care_request_complete{
@@ -490,9 +490,23 @@ explore: ga_adwords_stats_clone {
           ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
         )
       ;;
-    sql_where: ( (${invoca_clone.utm_medium} in('paid search', 'cpc')
-          and  ${invoca_clone.utm_source} in('google.com', 'google')) OR  ${invoca_clone.utm_medium} in('Google Call Extension') ) OR
-          ${ga_adwords_stats_clone.adwordscampaignid} != 0 or ${ga_adwords_cost_clone.adwordscampaignid} !=0;;
+    sql_where:(
+                (
+                  (
+                    ${invoca_clone.utm_medium} in('paid search', 'cpc')
+                    AND
+                    ${invoca_clone.utm_source} in('google.com', 'google')
+                  )
+                  OR
+                  ${invoca_clone.utm_medium} in('Google Call Extension')
+                )
+                AND
+                ${invoca_clone.start_date} >'2018-03-06'
+              )
+                OR
+                ${ga_adwords_stats_clone.adwordscampaignid} != 0
+                OR
+                ${ga_adwords_cost_clone.adwordscampaignid} !=0;;
   }
 
   join: incontact_clone {
@@ -508,18 +522,21 @@ explore: ga_adwords_stats_clone {
   join: care_requests {
     sql_on:
     (
-      ${patients.id} = ${care_requests.patient_id}
-      OR
-      care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
-      OR
-      (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
-    )
-      and
       (
-        ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date}
+        ${patients.id} = ${care_requests.patient_id}
         OR
-        ${invoca_clone.start_date} = ${care_requests.created_mountain_date}
-      );;
+        (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+      )
+      AND
+      ${invoca_clone.start_date} = ${care_requests.created_mountain_date}
+
+    )
+      OR
+    (
+      ${ga_adwords_stats_clone.page_timestamp_date} = ${care_requests.created_mountain_date}
+      AND
+      care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
+    );;
   }
   join: markets {
     sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id_final} ;;
