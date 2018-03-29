@@ -573,6 +573,7 @@ measure: distinct_days {
 
   }
   measure: max_on_scene_time_mountain {
+    label: "Last Care Request Completion Time"
     type: date_time
     sql:  max(${on_scene_etc_mountain_raw}) ;;
   }

@@ -68,9 +68,14 @@ view: cars {
     type: yesno
     sql: ${name} like '%SMFR_Car%' ;;
   }
-  measure: car_staff {
+  measure: emt_car_staff {
     type: string
-    sql:  array_agg(distinct ${provider_profiles.position_and_name});;
+    sql:  max(case when provider_profiles.position ='emt' then concat(${users.first_name},' ',${users.last_name})  else null end);;
+  }
+
+  measure: app_car_staff {
+    type: string
+    sql:  max(case when provider_profiles.position ='advanced practice provider' then concat(${users.first_name},' ',${users.last_name})  else null end);;
   }
 
   measure: count {
