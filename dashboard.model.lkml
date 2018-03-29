@@ -292,11 +292,15 @@ explore: ga_pageviews_full_clone {
 
 
   join: invoca_clone {
+    type:  full_outer
     sql_on:
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})) < 172800 and
-        ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}
+        abs(
+            EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})) < 172800
+              and ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
+    sql_where:  ${invoca_clone.start_date} >'2018-03-15'
+               OR ${ga_pageviews_full_clone.timestamp_time} is not null;;
 
-      ;;
+
   }
 
   join: incontact_clone {
@@ -311,10 +315,43 @@ explore: ga_pageviews_full_clone {
   }
 
   join: care_requests {
-    sql_on: (${patients.id} = ${care_requests.patient_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
-    OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null))
-      and ${ga_pageviews_full_clone.timestamp_date} = ${care_requests.created_mountain_date};;
+    sql_on:
+    (
+      (
+        ${patients.id} = ${care_requests.patient_id}
+      OR
+      (
+        ${care_requests.origin_phone} = ${invoca_clone.caller_id}
+        and
+        ${care_requests.origin_phone} is not null
+      )
+    )
+    AND
+    abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+    );;
+    }
+
+  join: web_care_requests {
+    from: care_requests
+    sql_on:
+    (
+      abs(EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+      AND
+      web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
+     ) ;;
   }
+  join: web_care_request_complete{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
+    }
+
+  join: web_care_request_archived{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
+    }
+
 
   join: markets {
     sql_on:  ${markets.id} = ${ga_pageviews_full_clone.market_id} ;;

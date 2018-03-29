@@ -148,43 +148,43 @@ view: ga_pageviews_clone {
 
   dimension: source_medium {
     type: string
-    sql: concat(${source}, ': ', ${medium}) ;;
+    sql: concat(${source_final}, ': ', ${medium_final}) ;;
 
   }
 
   measure: call_rate {
     type: number
     value_format: "0.0%"
-    sql:round((${invoca_clone.count}::float/${count_distinct_sessions}::float)::numeric,3) ;;
+    sql:round((${invoca_clone.count}::float/nullif(${count_distinct_sessions}::float,0))::numeric,3) ;;
   }
 
   measure: care_request_rate {
     type: number
     value_format: "0.0%"
-    sql:round((${care_requests.count_distinct}::float/${count_distinct_sessions}::float)::numeric,3) ;;
+    sql:round((${total_care_requests}::float/nullif(${count_distinct_sessions}::float,0))::numeric,3) ;;
   }
 
   measure: complete_rate {
     type: number
     value_format: "0.0%"
-    sql:round((${care_request_complete.count_distinct}::float/${count_distinct_sessions}::float)::numeric,3) ;;
+    sql:round((${total_complete}::float/nullif(${count_distinct_sessions}::float,0))::numeric,3) ;;
   }
 
-  dimension: source_category
+dimension: source_category
   {
     type: string
-    sql: case when ${source} in('google', 'bing', 'ask', 'yahoo') and ${medium} = 'cpc' then 'Paid Search'
-              when ${source} in('facebook', 'instagram') and ${medium} in('paidsocial', 'ctr', 'image_carousel', 'static_image') then 'Paid Social'
-              when ${source} in('google', 'bing', 'ask', 'yahoo') and ${medium} = 'organic' then 'Organic Search'
-              when ${source} in('(direct)')  then 'Direct Traffic'
-              when ${medium} in('local') or ${source} = 'yelp.com' then 'Local Listings'
-              when (${source} like '%facebook%' or  ${source} like '%instagram%' or  ${source} like '%linkedin%') and ${medium} = 'referral' then 'Organic Social'
-              when ${medium} in('email') then 'Email'
-              when ${medium} in('nativedisplay') then 'Native Display'
-              when ${medium} in('display') then 'Display'
-              when ${medium} in('referral') then 'Referral'
-              when ${source} in('shannon') then null
-              else ${source_medium} end;;
+    sql: case when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' then 'Paid Search'
+            when (${source_final} in('facebook', 'instagram') and ${medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image')) or lower(${source_final}) like '%fb click to call%' then 'Paid Social'
+            when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
+            when ${source_final} in('(direct)')  then 'Direct Traffic'
+            when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
+            when (${source_final} like '%facebook%' or  ${source_final} like '%instagram%' or  ${source_final} like '%linkedin%') and ${medium_final} = 'referral' then 'Organic Social'
+            when lower(${medium_final}) like '%email%' then 'Email'
+            when ${medium_final} in('nativedisplay') then 'Native Display'
+            when ${medium_final} in('display') then 'Display'
+            when ${medium_final} in('referral') then 'Referral'
+            when ${source_final} in('shannon') then null
+            else ${source_medium} end;;
   }
 
   dimension: high_low_intent
@@ -225,4 +225,13 @@ view: ga_pageviews_clone {
          else null end;;
 
     }
+    dimension: source_final {
+      type: string
+      sql: coalesce(${source}, ${invoca_clone.utm_source}) ;;
+    }
+
+  dimension: medium_final {
+    type: string
+    sql: coalesce(${medium}, ${invoca_clone.utm_medium}) ;;
+  }
 }
