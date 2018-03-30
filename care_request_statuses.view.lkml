@@ -177,19 +177,27 @@ view: care_request_statuses {
     sql: count(DISTINCT ${created_mountain_week}) ;;
   }
 
+  measure: count_distinct_recent {
+    type: number
+    sql:  count(distinct
+    case when (${created_raw}::timestamp - ${care_requests.created_raw}::timestamp) < interval '2 day'
+    then ${care_request_id}
+    else null
+    end) ;;
+  }
   measure: daily_average {
     type: number
-    sql: ${count_distinct}/(nullif(${distinct_days},0))  ;;
+    sql: ${count_distinct_recent}/(nullif(${distinct_days},0))  ;;
   }
 
   measure: weekly_average {
     type: number
-    sql: ${count_distinct}/(nullif(${distinct_weeks},0)) ;;
+    sql: ${count_distinct_recent}/(nullif(${distinct_weeks},0)) ;;
   }
 
   measure: monthly_average {
     type: number
-    sql: ${count_distinct}/(nullif(${distinct_months},0)) ;;
+    sql: ${count_distinct_recent}/(nullif(${distinct_months},0)) ;;
   }
 
 
@@ -267,7 +275,7 @@ view: care_request_statuses {
 
   measure: monthly_visits_run_rate {
     type: number
-    sql: round(${count_distinct}/${month_percent});;
+    sql: round(${count_distinct_recent}/${month_percent});;
   }
 
   dimension: days_in_month {
@@ -305,7 +313,7 @@ view: care_request_statuses {
 
   measure: productivity {
     type: number
-    sql: round(${count_distinct}/NULLIF(${shift_hours_by_day_market_clone.sum_total_hours}::DECIMAL,0), 2) ;;
+    sql: round(${count_distinct_recent}/NULLIF(${shift_hours_by_day_market_clone.sum_total_hours}::DECIMAL,0), 2) ;;
   }
   measure: cost_per_care_status {
     type: number
