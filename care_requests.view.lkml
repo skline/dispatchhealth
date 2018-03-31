@@ -584,6 +584,13 @@ measure: distinct_days {
     sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time_mountain}::timestamp - ${shift_teams.end_mountain_time}::timestamp))/3600)::decimal,2);;
   }
 
+  measure: shift_end_last_cr_diff_adj{
+    label: "Hours between Last Patient Seen and Shift End Adj"
+    sql:  case when  ${shift_end_last_cr_diff} > 18.0  then ${shift_end_last_cr_diff} - 24.0
+               when  ${shift_end_last_cr_diff} < -18.0 then ${shift_end_last_cr_diff} + 24.0
+           else ${shift_end_last_cr_diff} end;;
+    }
+
 
   measure: min_max_range_week {
     type: string
