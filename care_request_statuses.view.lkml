@@ -180,7 +180,7 @@ view: care_request_statuses {
   measure: count_distinct_recent {
     type: number
     sql:  count(distinct
-    case when (${created_raw}::timestamp - ${care_requests.created_raw}::timestamp) < interval '2 day'
+    case when (${created_raw}::timestamp - ${care_requests.on_scene_etc_raw}::timestamp) < interval '2 day'
     then ${care_request_id}
     else null
     end) ;;

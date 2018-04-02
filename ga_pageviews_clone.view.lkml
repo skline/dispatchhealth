@@ -173,7 +173,7 @@ view: ga_pageviews_clone {
 dimension: source_category
   {
     type: string
-    sql: case when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' then 'Paid Search'
+    sql: case when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'Paid Search'
             when (${source_final} in('facebook', 'instagram') and ${medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image')) or lower(${source_final}) like '%fb click to call%' then 'Paid Social'
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
             when ${source_final} in('(direct)')  then 'Direct Traffic'
@@ -201,7 +201,12 @@ dimension: source_category
 
   measure: total_complete {
     type: number
-    sql: count(distinct coalesce(${care_request_complete.care_request_id}, ${web_care_request_complete.care_request_id})) ;;
+    sql: count(distinct
+                  coalesce(
+                            case when (${care_request_complete.created_raw}::timestamp - ${care_requests.on_scene_etc_raw}::timestamp) < interval '2 day' then ${care_request_complete.care_request_id} else null end,
+                            case when (${web_care_request_complete.created_raw}::timestamp - ${web_care_requests.on_scene_etc_raw}::timestamp) < interval '2 day' then ${web_care_request_complete.care_request_id} else null end
+                          )
+              ) ;;
   }
 
   measure: total_resolved {
