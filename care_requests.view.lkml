@@ -638,6 +638,15 @@ measure: distinct_days {
     ) ;;
   }
 
+  measure: resolved_reason {
+    type: string
+    sql:array_agg(distinct concat(${care_request_archived.comment}, ${care_request_complete.comment}))::text ;;
+  }
+  measure: min_complete_timestamp_mountain {
+    type: date_time
+    sql: min(${care_request_complete.created_mountain_raw}) ;;
+  }
+
 
 
   # ----- Sets of fields for drilling ------
