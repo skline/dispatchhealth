@@ -201,7 +201,7 @@ dimension: source_category
 
   measure: total_complete {
     type: number
-    sql: count(distinct coalesce(${care_request_complete.id}, ${web_care_request_complete.id})) ;;
+    sql: count(distinct coalesce(${care_request_complete.care_request_id}, ${web_care_request_complete.care_request_id})) ;;
   }
 
   measure: total_resolved {
