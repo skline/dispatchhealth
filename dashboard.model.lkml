@@ -397,7 +397,6 @@ explore: ga_pageviews_full_clone {
   }
 }
 
-
 explore: ga_pageviews_clone {
   label: "Facebook Paid Explore"
 
@@ -446,9 +445,143 @@ explore: ga_pageviews_clone {
         OR
         ${facebook_paid_performance_clone.start_date} is not null
         ;;
+    }
+
+    join: incontact_clone {
+      sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
+               and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
+                    ;;
+    }
+
+    join: patients {
+      sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
+    }
+
+    join: care_requests {
+      sql_on:
+          (
+            (
+              ${patients.id} = ${care_requests.patient_id}
+              OR
+              (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+            )
+            AND
+            abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+          );;
+    }
+
+    join: web_care_requests {
+      from: care_requests
+      sql_on:
+          (
+            abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+            AND
+            web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id}
+          ) ;;
+    }
+
+    join: markets {
+      sql_on:  ${markets.id} = ${ga_pageviews_clone.facebook_market_id_final} ;;
+    }
+
+    join: care_request_complete{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+    }
+
+    join: web_care_request_complete{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
+    }
+    join: web_care_request_archived{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
+    }
+
+
+    join: care_request_requested{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+    }
+
+    join: care_request_accepted{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+    }
+
+    join: care_request_archived{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+    }
+
+    join: care_request_scheduled{
+      relationship: one_to_many
+      from: care_request_statuses
+      sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    }
+
+    join: channel_items {
+      sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+    }
+
+    join: incontact_spot_check_clone {
+      sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
+        ;;
+    }
+  }
 
 
 
+explore: ga_pageviews_bidellect {
+  label: "Bidellect Explore"
+
+  join: bidtellect_cost_clone {
+    type:  full_outer
+    sql_on: ${bidtellect_cost_clone.market_id} = ${ga_pageviews_bidellect.market_id}
+            AND
+            ${ga_pageviews_bidellect.timestamp_date} = ${bidtellect_cost_clone.hour_date}
+            AND
+            lower(${ga_pageviews_bidellect.source}) in ('bidtellect')
+            AND
+            lower(${ga_pageviews_bidellect.medium}) in('nativedisplay');;
+  }
+
+  join: invoca_clone {
+    type: full_outer
+    sql_on:
+
+        (
+          abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.timestamp_raw})) < 172800
+          and
+          ${ga_pageviews_bidellect.client_id} = ${invoca_clone.analytics_vistor_id}
+        )
+         ;;
+
+      sql_where:
+        (
+          (
+            lower(${invoca_clone.utm_source}) in('bidtellect')
+            AND
+            lower(${invoca_clone.utm_medium}) in('nativedisplay')
+          )
+          AND
+          ${invoca_clone.start_date} >'2018-03-15'
+        )
+        OR
+        (
+          lower(${ga_pageviews_bidellect.source}) in ('bidtellect')
+          AND
+          lower(${ga_pageviews_bidellect.medium}) in('nativedisplay')
+        )
+        OR
+        ${bidtellect_cost_clone.hour_date} is not null
+        ;;
   }
 
   join: incontact_clone {
@@ -478,14 +611,14 @@ explore: ga_pageviews_clone {
     from: care_requests
     sql_on:
     (
-      abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+      abs(EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
       AND
-      web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id}
+      web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_bidellect.client_id}
     ) ;;
   }
 
   join: markets {
-    sql_on:  ${markets.id} = ${ga_pageviews_clone.facebook_market_id_final} ;;
+    sql_on:  ${markets.id} = ${ga_pageviews_bidellect.market_id_final} ;;
   }
 
   join: care_request_complete{
