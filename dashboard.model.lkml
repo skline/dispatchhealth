@@ -9,11 +9,21 @@ explore: care_requests {
     field: markets.name
     user_attribute: "market_name"
   }
+  join: addressable_items {
+    relationship: one_to_one
+    sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;
+  }
+  join: addresses {
+    relationship: one_to_one
+    sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
+  }
+
 
   join: credit_cards {
     relationship: many_to_one
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
   }
+
 
   join: credit_card_errors {
     relationship: one_to_many
