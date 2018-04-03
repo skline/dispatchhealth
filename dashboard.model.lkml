@@ -9,11 +9,21 @@ explore: care_requests {
     field: markets.name
     user_attribute: "market_name"
   }
+  join: addressable_items {
+    relationship: one_to_one
+    sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;
+  }
+  join: addresses {
+    relationship: one_to_one
+    sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
+  }
+
 
   join: credit_cards {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
   }
+
 
   join: credit_card_errors {
     relationship: one_to_many
@@ -185,6 +195,51 @@ explore: care_requests {
   }
 
  }
+explore: channel_items {
+  join: care_requests {
+    sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+  }
+
+  join: care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+  }
+
+  join: care_request_requested{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+  }
+
+  join: care_request_accepted{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+  }
+
+  join: care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+  }
+
+  join: care_request_scheduled{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+  }
+  join: channels {
+    relationship: many_to_one
+    sql_on:  ${channels.id} = ${channel_items.channel_id};;
+  }
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${channels.market_id} = ${markets.id} ;;
+  }
+
+  }
+
   explore: invoca_clone {
 
 
