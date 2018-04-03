@@ -58,6 +58,11 @@ view: visit_dimensions {
     sql: ${TABLE}.local_visit_date ;;
   }
 
+  dimension: pre_post {
+    type: yesno
+    sql: (DATE(${local_visit_raw}) BETWEEN '2018-04-02' AND '2018-04-13') ;;
+  }
+
   dimension_group: updated {
     hidden: yes
     type: time

@@ -57,6 +57,44 @@ view: care_requests {
     sql: ${TABLE}.consenter_relationship ;;
   }
 
+  dimension: credit_card_completed {
+    type: yesno
+    sql: ${credit_cards.care_request_id} IS NOT NULL ;;
+  }
+
+  measure: count_credit_card_completed {
+    type: count
+    sql: ${TABLE}.id ;;
+    filters: {
+      field: credit_card_completed
+      value: "yes"
+    }
+  }
+
+  dimension: credit_card_error {
+    type: yesno
+    sql: ${credit_card_errors.care_request_id} IS NOT NULL ;;
+  }
+
+  measure: count_credit_card_errors {
+    type: number
+    sql: COUNT(${credit_card_errors.care_request_id}) ;;
+  }
+
+  dimension: credit_card_attempted {
+    type: yesno
+    sql: ${credit_card_error} OR ${credit_card_completed} ;;
+  }
+
+  measure: count_credit_attempted {
+    type: count
+    sql: ${TABLE}.id ;;
+    filters: {
+      field: credit_card_attempted
+      value: "yes"
+    }
+  }
+
   dimension_group: created {
     type: time
     timeframes: [

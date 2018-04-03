@@ -11,7 +11,7 @@ explore: care_requests {
   }
 
   join: credit_cards {
-    relationship: many_to_one
+    relationship: one_to_one
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
   }
 
@@ -49,12 +49,6 @@ explore: care_requests {
     relationship: one_to_one
     sql_on: ${provider_profiles.user_id} = ${users.id} ;;
   }
-
-#
-#   join: care_request_providers {
-#     relationship: one_to_many
-#     sql_on: ${care_requests.id} = ${care_request_providers.care_request_id} ;;
-#   }
 
   join: risk_assessments {
     relationship: one_to_one
