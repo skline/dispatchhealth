@@ -1,3 +1,4 @@
+
 view: budget_projections_by_market {
   sql_table_name: looker_scratch.budget_projections_by_market ;;
 
@@ -21,6 +22,12 @@ view: budget_projections_by_market {
     sql: ${TABLE}.month ;;
   }
 
+  dimension: compound_primary_key {
+    primary_key: yes
+    hidden: yes
+    sql: CONCAT(${TABLE}.market_dim_id, ' ', ${TABLE}.month) ;;
+  }
+
   dimension: projected_visits {
     type: number
     sql: ${TABLE}.projected_visits ;;
@@ -41,7 +48,6 @@ view: budget_projections_by_market {
     type: number
     sql: round(${budget_projections_by_market.projected_visits}/DAY(LAST_DAY(curdate())),0) ;;
   }
-
 
   measure: count {
     type: count

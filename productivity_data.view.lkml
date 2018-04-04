@@ -80,6 +80,36 @@ view: productivity_data {
     sql: ${TABLE}.monthly_goal ;;
   }
 
+  dimension: ffs_goal {
+    label: "Fee for Service Revenue Goal"
+    type: number
+    sql: ${TABLE}.ffs_goal ;;
+  }
+
+  dimension: exp_allowable_goal {
+    label: "Expected Allowable Goal"
+    type: number
+    sql: ${TABLE}.exp_allow_goal ;;
+  }
+
+  dimension: cpr_revenue_goal {
+    label: "Clinical Partner Revenue Goal"
+    type: number
+    sql: ${TABLE}.cpr_goal ;;
+  }
+
+  measure: sum_ffs_revenue_goal {
+    label: "Total Fee for Service Revenue Goal"
+    type: sum
+    sql: ${ffs_goal};;
+  }
+
+  measure: avg_exp_allowable_goal {
+    label: "Avg Expected Allowable Goal"
+    type: average
+    sql: ${TABLE}.exp_allow_goal ;;
+  }
+
   dimension_group: updated_ts {
 
     type: time

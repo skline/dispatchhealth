@@ -190,6 +190,7 @@ explore: visit_facts {
   }
 
   join: budget_projections_by_market {
+    relationship: many_to_one
     sql_on: ${visit_facts.market_dim_id} = ${budget_projections_by_market.market_dim_id}
             AND ${visit_dimensions.local_visit_month}=${budget_projections_by_market.month_month};;
   }
