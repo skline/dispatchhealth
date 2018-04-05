@@ -17,6 +17,36 @@ view: care_request_statuses {
     sql: ${TABLE}.comment ;;
   }
 
+  dimension: lwbs_going_to_ed {
+    type: yesno
+    sql: ${comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
+  }
+
+  dimension: lwbs_going_to_urgent_care {
+    type: yesno
+    sql: ${comment} = 'Cancelled by Patient: Going to an Urgent Care' ;;
+  }
+
+  dimension: lwbs_wait_time_too_long {
+    type: yesno
+    sql: ${comment} = 'Cancelled by Patient: Wait time too long' ;;
+  }
+
+  dimension: lwbs {
+    type: yesno
+    description: "Going to ED or Urgent Care, or wait time too long"
+    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} ;;
+  }
+
+  measure: lwbs_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+  }
+
   dimension: escalated_on_scene_ed {
     type: yesno
     sql: ${comment} = 'Referred - Point of Care: ED'
