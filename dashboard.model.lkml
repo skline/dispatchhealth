@@ -39,6 +39,7 @@ explore: care_requests {
     relationship: many_to_one
     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
   }
+
   join: shifts{
     relationship: many_to_one
     sql_on:  ${shift_teams.shift_id}  =  ${shifts.id};;
@@ -53,6 +54,29 @@ explore: care_requests {
   join: users {
     relationship: one_to_one
     sql_on:  ${shift_team_members.user_id} = ${users.id};;
+  }
+
+  join: csc_user_roles {
+    relationship: one_to_many
+    from: user_roles
+    sql_on: ${bill_processors.user_id} = ${csc_user_roles.user_id} ;;
+  }
+
+  join: csc_users {
+    relationship: one_to_one
+    from: roles
+    sql_on: ${csc_user_roles.role_id} = ${csc_users.id} ;;
+  }
+
+  join: bill_processors {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${bill_processors.care_request_id} ;;
+  }
+
+  join: csc_names {
+    relationship: one_to_many
+    from: users
+    sql_on: ${bill_processors.user_id} = ${csc_names.id} ;;
   }
 
   join: provider_profiles {
@@ -936,15 +960,7 @@ explore: incontact_clone {
 
 }
 
-#   join: user_roles {
-#     relationship: one_to_one
-#     sql_on: ${users.id} = ${user_roles.user_id} ;;
-#   }
-#
-#   join: roles {
-#     relationship: one_to_one
-#     sql_on: ${user_roles.role_id} = ${roles.id} ;;
-#   }
+
 
 
   # join: shift_teams {
