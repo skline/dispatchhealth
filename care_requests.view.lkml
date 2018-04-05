@@ -217,6 +217,21 @@ view: care_requests {
     sql: ${TABLE}.on_route_eta ;;
   }
 
+  dimension_group: on_route_eta_mountain {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      time_of_day,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.on_route_eta - interval '7 hour' ;;
+  }
+
   dimension_group: on_scene_etc {
     type: time
     timeframes: [
@@ -236,6 +251,7 @@ view: care_requests {
     timeframes: [
       raw,
       time,
+      time_of_day,
       date,
       week,
       month,

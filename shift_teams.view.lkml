@@ -74,6 +74,20 @@ view: shift_teams {
     sql: ${TABLE}.start_time ;;
   }
 
+  dimension_group: start_mountain {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.start_time - interval '7 hour' ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
