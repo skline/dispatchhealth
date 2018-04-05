@@ -292,7 +292,7 @@ view: invoca_clone {
 
   dimension: utm_source_and_utm_medium {
     type: string
-    sql: concat(${utm_source}, ": ", ${utm_medium}) ;;
+    sql: concat(${utm_source}, ': ', ${utm_medium}) ;;
   }
 
   dimension: market_id
