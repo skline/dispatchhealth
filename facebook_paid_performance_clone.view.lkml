@@ -215,7 +215,7 @@ view: facebook_paid_performance_clone {
   dimension: market_id {
     type: number
     sql:  case when lower(${campaign_name}) like '%den%'  then 159
-         when lower(${campaign_name})  like '%colo%' then 160
+         when lower(${campaign_name})  like '%colo%' or lower(${campaign_name})  like '%springs%'  then 160
          when lower(${campaign_name})  like '%pho%' then 161
          when lower(${campaign_name})  like '%ric%' then 164
          when lower(${campaign_name})  like '%las%' then 162
