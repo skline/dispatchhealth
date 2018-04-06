@@ -104,8 +104,7 @@ explore: visit_facts {
   }
 
   join: risk_assessments_bi {
-    from: risk_assessments
-    type: left_outer
+    from: risk_assessments_bi
     relationship: one_to_one
     sql_on: ${visit_facts.care_request_id} = ${risk_assessments_bi.care_request_id} ;;
   }
