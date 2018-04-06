@@ -106,7 +106,7 @@ explore: visit_facts {
   join: risk_assessments_bi {
     from: risk_assessments_bi
     relationship: one_to_one
-    sql_on: ${visit_facts.care_request_id} = ${risk_assessments_bi.care_request_id} ;;
+    sql_on: ${visit_facts.care_request_id} = ${risk_assessments_bi.care_request_id} AND ${risk_assessments_bi.protocol_name} IS NOT NULL;;
   }
 
   join: primary_payer_dimension_charge {
