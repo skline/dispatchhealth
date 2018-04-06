@@ -43,6 +43,44 @@ view: csc_survey_clone {
     type:  number
     sql: round(avg(${rate_your_call_experience}),2) ;;
   }
+  measure: interaction_score {
+    type: number
+    sql:  round((avg(${rate_your_call_experience}+${recommend_to_friend}+${care_and_respect}))/3,2);;
+  }
+
+  dimension: recommend_to_friend_bool {
+    type:  yesno
+    sql: ${recommend_to_friend} in(4,5)  ;;
+  }
+
+  dimension: 1_or_2_or_3_recommend_to_friend {
+    type:  yesno
+    sql: ${recommend_to_friend} in(1,2,3)  ;;
+  }
+
+  measure: recommend_to_friend_count {
+    type: count_distinct
+    sql: ${contact_id} ;;
+    filters: {
+      field: recommend_to_friend_bool
+      value: "yes"
+    }
+  }
+  measure: not_recommend_to_friend_count {
+    type: count_distinct
+    sql: ${contact_id} ;;
+    filters: {
+      field: recommend_to_friend_bool
+      value: "no"
+    }
+  }
+
+  measure: aggregate_score {
+    type: number
+    sql: round((${recommend_to_friend_count}::numeric/${count}::numeric)-(${not_recommend_to_friend_count}::numeric/${count}::numeric),2) ;;
+  }
+
+
 
   measure: average_recommend_to_friend {
     type:number
