@@ -35,6 +35,7 @@ view: risk_assessments_bi {
           WHEN ${score} > 5 AND ${score} <=10 THEN 'yellow'
           WHEN ${score} > 10 THEN 'red'
         END ;;
+    drill_fields: [protocol_name, score]
   }
 
   dimension: green_category {
