@@ -125,6 +125,11 @@ view: care_requests {
     sql: ${TABLE}.created_at - interval '7 hour';;
   }
 
+  dimension: pre_post {
+    type: yesno
+    sql: ${created_mountain_raw} BETWEEN '2018-04-02'::TIMESTAMP AND '2018-04-13'::TIMESTAMP ;;
+  }
+
   dimension: credit_card_consent {
     type: yesno
     sql: ${TABLE}.credit_card_consent ;;
