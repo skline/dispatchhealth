@@ -1385,7 +1385,7 @@ END;;
 
   measure: expected_allowable_per_hour {
     type: number
-    sql:  round(${sum_total_expected_allowable}/${app_shift_planning_facts.worked_hours},2) ;;
+    sql:  round(${sum_total_expected_allowable}/${app_shift_planning_facts.sum_hours_worked},2) ;;
   }
 
   measure: projected_billable_difference {
