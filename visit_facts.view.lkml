@@ -1379,7 +1379,8 @@ END;;
   }
 
   measure: sum_total_expected_allowable {
-    type: sum
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
     sql:  ${total_expected_allowable} ;;
   }
 

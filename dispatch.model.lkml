@@ -89,9 +89,11 @@ explore: visit_facts {
     type: inner
     relationship: many_to_one
     sql_on:(${app_shift_planning_facts.employee_name} = ${provider_dimensions.shift_app_name}
-          and date(${app_shift_planning_facts.local_actual_start_time})=date(${visit_facts.local_accepted_time})
-          and ${app_shift_planning_facts.schedule_role} in('NP/PA', 'Training/Admin'))
-          or (${visit_facts.nppa_shift_id} = ${app_shift_planning_facts.shift_id})
+          and date(${app_shift_planning_facts.local_actual_start_time})=date(${visit_dimensions.local_visit_date})
+          and ${app_shift_planning_facts.schedule_role} in('NP/PA', 'Training / Admin COS', 'Training/Admin', 'Training/Admin COR', 'Training/Admin DEN', 'Training/Admin HOU', 'Training/Admin LAS', 'Training/Admin OKC', 'Training/Admin PHX', 'Training/Admin RIC'))
+          or (
+          ${visit_facts.nppa_shift_id} = ${app_shift_planning_facts.shift_id} and date(${app_shift_planning_facts.local_actual_start_time})=date(${visit_dimensions.local_visit_date})
+          )
 
       ;;
   }

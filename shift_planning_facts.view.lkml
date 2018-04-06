@@ -209,7 +209,8 @@ view: shift_planning_facts {
   }
 
   measure: sum_hours_worked {
-    type: sum
+    type: sum_distinct
+    sql_distinct_key: ${shift_id} ;;
     sql:  ${total_actual_seconds} / 3600  ;;
   }
 
