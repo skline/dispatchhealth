@@ -1,6 +1,5 @@
 view: ed_diversion_survey_response_rate {
   label: "ED Diversion Survey Response Rate"
-   # Or, you could make this view a derived table, like this:
   derived_table: {
      sql: select *
 from

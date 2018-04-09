@@ -49,6 +49,17 @@ view: survey_response_facts {
     sql: ${TABLE}.care_request_id ;;
   }
 
+  dimension: nps_survey_id {
+    type: number
+    hidden: yes
+    sql: IF(${answer_range_value} IS NOT NULL, ${care_request_id}, 0) ;;
+  }
+
+  measure: count_nps_respondent {
+    type: count_distinct
+    sql: ${nps_survey_id} ;;
+  }
+
   dimension_group: created {
     hidden: yes
     type: time
@@ -173,7 +184,7 @@ view: survey_response_facts {
     }
   }
 
-  measure: nsp_total_count {
+  measure: nps_total_count {
     type: count
     filters: {
       field: nps_respondent
