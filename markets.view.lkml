@@ -51,6 +51,32 @@ view: markets {
     sql: ${TABLE}.latitude ;;
   }
 
+  dimension: office_latitude {
+    type: number
+    sql: CASE
+          WHEN ${id} = 162 THEN 36.1577462
+          WHEN ${id} = 161 THEN 33.4213962
+          WHEN ${id} = 164 THEN 37.606789
+          WHEN ${id} = 159 THEN 39.7722937
+          WHEN ${id} = 160 THEN 38.8851405
+          WHEN ${id} = 166 THEN 35.5256793
+          WHEN ${id} = 165 THEN 29.73728509999999
+        END;;
+  }
+
+  dimension: office_longitude {
+    type: number
+    sql: CASE
+          WHEN ${id} = 162 THEN -115.19155599999999
+          WHEN ${id} = 161 THEN -111.96673450000003
+          WHEN ${id} = 164 THEN -77.528929
+          WHEN ${id} = 159 THEN -104.9835581
+          WHEN ${id} = 160 THEN -104.83465469999999
+          WHEN ${id} = 166 THEN -97.55798500000003
+          WHEN ${id} = 165 THEN -95.59298539999998
+        END;;
+  }
+
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
