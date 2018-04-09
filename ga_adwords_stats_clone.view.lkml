@@ -199,6 +199,20 @@ view: ga_adwords_stats_clone {
 
   }
 
+  dimension_group: adwords_time{
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${adwords_date};;
+
+    }
 
   measure: count {
     type: count
