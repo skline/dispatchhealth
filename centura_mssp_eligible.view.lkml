@@ -17,6 +17,11 @@ view: centura_mssp_eligible {
     sql: ${TABLE}.match_value ;;
   }
 
+  dimension: plan {
+    type: string
+    sql: ${TABLE}.plan ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id]
