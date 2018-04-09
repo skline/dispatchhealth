@@ -95,12 +95,13 @@ view: incontact_clone {
   }
 dimension: skill_category {
   type:  string
-  sql: case when lower(${skll_name}) like '%care%' then 'Care Line'
+  sql: case
+    when lower(${skll_name}) like '%voicemail%' or lower(${skll_name}) like '% vm%' then 'Voicemail'
+     when lower(${skll_name}) like '%care%' then 'Care Line'
      when lower(${skll_name}) like '%partner%' then 'Partner Line'
      when lower(${skll_name}) like '%backline%' then 'Backline'
      when lower(${skll_name}) like '%medical%' then 'Medical'
      when lower(${skll_name}) like '%outbound%' then 'Outbound'
-     when lower(${skll_name}) like '%voicemail%' or ${skll_name} like '%VM%' then 'Voicemail'
      else 'Other' end ;;
 }
 
@@ -109,7 +110,7 @@ dimension: skill_category {
     drill_fields: [skll_name]
   }
   measure: count_distinct {
-    label: "distinct calls pressed IVR"
+    label: "distinct Incontact contact_ids"
     type: number
     sql:count(distinct ${contact_id}) ;;
   }
