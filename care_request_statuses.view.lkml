@@ -32,10 +32,15 @@ view: care_request_statuses {
     sql: ${comment} = 'Cancelled by Patient: Wait time too long' ;;
   }
 
+  dimension: lwbs_no_show {
+    type: yesno
+    sql: ${comment} = 'No Show' ;;
+  }
+
   dimension: lwbs {
     type: yesno
-    description: "Going to ED or Urgent Care, or wait time too long"
-    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} ;;
+    description: "Going to ED/Urgent Care, Wait Time Too Long, or No Show"
+    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} OR ${lwbs_no_show} ;;
   }
 
   measure: lwbs_count {
@@ -51,6 +56,28 @@ view: care_request_statuses {
     type: yesno
     sql: ${comment} = 'Referred - Point of Care: ED'
         OR ${comment} = 'Referred - Point of care: ED';;
+  }
+
+  dimension: escalated_on_phone {
+    type: yesno
+    sql: ${comment} LIKE '%Referred - Phone Triage%' ;;
+  }
+
+  dimension: escalated_on_phone_reason {
+    type: string
+    sql: CASE
+          WHEN ${escalated_on_phone} THEN split_part(${comment}, ':', 2)
+          ELSE NULL
+        END ;;
+  }
+
+  measure: count_referred_phone {
+    type: count
+    sql: ${escalated_on_phone_reason} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "yes"
+    }
   }
 
   dimension: commentor_id {
