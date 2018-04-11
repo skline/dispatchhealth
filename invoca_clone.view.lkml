@@ -335,6 +335,11 @@ view: invoca_clone {
     type: string
     sql: case when ${markets.name} is not null then  ${markets.name} else ${promo_number_description} end;;
   }
+  dimension: direct_bool {
+    type:  yesno
+    sql:  ${profile_campaign} like '% Di%' ;;
+
+  }
 
 
 }
