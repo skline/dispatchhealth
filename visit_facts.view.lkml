@@ -640,6 +640,7 @@ view: visit_facts {
           WHEN (${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL) THEN ${care_request_id}
           ELSE NULL
         END ;;
+
 #     filters: {
 #       field: billable_visit
 #       value: "yes"
