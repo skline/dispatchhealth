@@ -223,7 +223,26 @@ dimension: source_category
   }
 
   dimension: ga_date{
+
     type: date
+    sql: case
+              when ${timestamp_date} is not null then ${timestamp_date}
+              when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
+         else null end;;
+
+    }
+
+  dimension_group: ga_time{
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    type: time
     sql: case
               when ${timestamp_date} is not null then ${timestamp_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
@@ -238,5 +257,32 @@ dimension: source_category
   dimension: medium_final {
     type: string
     sql: coalesce(${medium}, ${invoca_clone.utm_medium}) ;;
+  }
+  dimension: content {
+    type: string
+    sql: split_part(substring(${full_url} from 'utm_content=\w+'), '=', 2) ;;
+
+  }
+
+  dimension: content_final {
+    type: string
+    sql: coalesce(${content}, ${invoca_clone.utm_content}) ;;
+  }
+
+  dimension: term {
+    type: string
+    sql: split_part(substring(${full_url} from 'utm_term=\w+'), '=', 2) ;;
+
+  }
+
+  dimension: term_final {
+    type: string
+    sql: coalesce(${term}, ${invoca_clone.utm_term}) ;;
+  }
+
+
+  dimension: campaign_final {
+    type: string
+    sql: coalesce(${campaign}, ${invoca_clone.utm_campaign}) ;;
   }
 }
