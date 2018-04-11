@@ -144,7 +144,14 @@ view: channel_items {
     sql:  ${name} in('Google or other search', 'Social Media (Facebook, LinkedIn, Twitter, Instagram)', 'Social Media(Facebook, LinkedIn, Twitter, Instagram)')
            OR (${invoca_clone.utm_source} like '%google%' and ${invoca_clone.utm_medium} not in ('organic', 'local', 'referral'))
            OR (${invoca_clone.utm_source} like '%facebook%' and ${invoca_clone.utm_medium} not in ('organic', 'local', 'referral'))
-           OR (${ga_adwords_stats_clone.adwordscampaignid} is not null and ${ga_adwords_stats_clone.adwordscampaignid} != 0);;
+           OR (${invoca_clone.utm_source} like '%facebook%' and ${invoca_clone.utm_medium} not in ('organic', 'local', 'referral'))
+           OR (${ga_pageviews_clone.source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${ga_pageviews_clone.medium_final} in('cpc', 'paid search')) or lower(${ga_pageviews_clone.medium_final}) like '%google%' or lower(${ga_pageviews_clone.source_final}) like '%bing ad extension%'
+           OR (${ga_pageviews_clone.medium_final} in('nativedisplay'))
+           OR ((${ga_pageviews_clone.source_final} in('facebook', 'instagram') and ${ga_pageviews_clone.medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image')) or lower(${ga_pageviews_clone.source_final}) like '%fb click to call%')
+           OR  (${ga_pageviews_clone.medium_final} in('display'))
+
+
+;;
   }
   dimension: channel_name_fixed {
     type: string

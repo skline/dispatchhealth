@@ -165,6 +165,12 @@ explore: care_requests {
             ;;
 
     }
+  join: ga_pageviews_clone {
+    sql_on:
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < 172800
+              and ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
+
+    }
 
   join: incontact_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
@@ -201,10 +207,7 @@ explore: care_requests {
 
       ;;
   }
-  join: ga_pageviews_clone {
-    sql_on:  ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
-      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
-  }
+
 
   join: adwords_campaigns_clone {
     sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
@@ -915,6 +918,12 @@ explore: insurance_plans {
 }
 
 explore: incontact_clone {
+
+  join: invoca_clone {
+    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
+       and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
+            ;;
+  }
   join: care_requests {
     sql_on: ${care_requests.created_mountain_date} = ${incontact_clone.start_date} and ${incontact_clone.market_id} =${care_requests.market_id} ;;
   }
