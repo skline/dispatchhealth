@@ -43,20 +43,79 @@ view: care_request_local_times {
 
   dimension_group: on_route {
     type: time
-    timeframes: [date, time, week, month]
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month
+      ]
     sql: ${TABLE}.on_route_date ;;
+  }
+
+  dimension: on_route_decimal {
+    description: "On Route Time of Day as Decimal"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${on_route_raw}) AS INT)) +
+        ((CAST(EXTRACT(MINUTE FROM ${on_route_raw} ) AS FLOAT)) / 60) ;;
   }
 
   dimension_group: on_scene {
     type: time
-    timeframes: [date, time, week, month]
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month
+      ]
     sql: ${TABLE}.on_scene_date ;;
+  }
+
+  dimension: on_scene_decimal {
+    description: "On Scene Time of Day as Decimal"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${on_scene_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60) ;;
   }
 
   dimension_group: complete {
     type: time
-    timeframes: [date, time, week, month]
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month
+      ]
     sql: ${TABLE}.complete_date ;;
+  }
+
+  dimension: complete_decimal {
+    description: "Complete Time of Day as Decimal"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT)) / 60) ;;
+  }
+
+  dimension: complete_decimal_after_midnight {
+    description: "Complete Time of Day as Decimal Accounting for Time After Midnight"
+    type: number
+    sql: CASE
+          WHEN (CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) <=3 THEN 24
+          ELSE 0
+        END +
+        (CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) +
+        ((CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT)) / 60) ;;
   }
 
 }
