@@ -3,11 +3,12 @@ view: care_request_local_times {
     sql:
       WITH timezone(id, tz_desc) AS (VALUES
       (159, 'US/Mountain'),
-      (160, 'US/Arizona'),
-      (161, 'US/Pacific'),
-      (162, 'US/Eastern'),
-      (164, 'US/Central'),
-      (165, 'US/Central'))
+      (160, 'US/Mountain'),
+      (161, 'US/Arizona'),
+      (162, 'US/Pacific'),
+      (164, 'US/Eastern'),
+      (165, 'US/Central'),
+      (166, 'US/Central'))
 
   SELECT
     markets.id AS market_id,
@@ -98,6 +99,12 @@ view: care_request_local_times {
       month
       ]
     sql: ${TABLE}.complete_date ;;
+  }
+
+  measure: max_complete_time {
+    label: "Last Care Request Completion Time"
+    type: date_time
+    sql:  MAX(${complete_raw}) ;;
   }
 
   dimension: complete_decimal {
