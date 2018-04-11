@@ -126,9 +126,13 @@ explore: care_requests {
   join: care_request_scheduled{
     relationship: one_to_many
     from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
 
+  join: care_request_local_times {
+    relationship: many_to_one
+    sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+  }
 
   join: budget_projections_by_market_clone {
     sql_on: ${care_requests.market_id} = ${budget_projections_by_market_clone.market_dim_id}
