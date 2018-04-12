@@ -66,7 +66,6 @@ view: care_request_statuses {
     }
   }
 
-
   dimension: escalated_on_scene_ed {
     type: yesno
     sql: ${comment} = 'Referred - Point of Care: ED'
