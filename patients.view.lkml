@@ -12,6 +12,15 @@ view: patients {
     sql: ${TABLE}.account_id ;;
   }
 
+  dimension: dob {
+    type: date
+    sql: ${TABLE}.dob ;;
+  }
+
+  dimension: age {
+    type: number
+    sql: CAST(EXTRACT(YEAR from AGE(${care_request_requested.created_date}, ${dob})) AS INT) ;;
+  }
 
   dimension_group: created {
     type: time
