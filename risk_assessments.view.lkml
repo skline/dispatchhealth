@@ -51,6 +51,11 @@ view: risk_assessments {
     sql: ${TABLE}.score ;;
   }
 
+  measure: average_score {
+    type: average
+    sql: ${score} ;;
+  }
+
   dimension: risk_category {
     type: string
     sql: CASE
