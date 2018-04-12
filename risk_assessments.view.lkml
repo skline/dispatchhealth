@@ -93,6 +93,11 @@ view: risk_assessments {
     }
   }
 
+  measure: count_distinct {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+  }
+
   dimension: user_id {
     type: number
     sql: ${TABLE}.user_id ;;
