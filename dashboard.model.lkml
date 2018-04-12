@@ -258,7 +258,7 @@ explore: channel_items {
   join: care_request_scheduled{
     relationship: one_to_many
     from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
   join: channels {
     relationship: many_to_one
@@ -316,7 +316,7 @@ explore: channel_items {
     join: care_request_scheduled{
       relationship: one_to_many
       from: care_request_statuses
-      sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+      sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
     }
 
     join: channel_items {
@@ -464,7 +464,7 @@ explore: ga_pageviews_full_clone {
   join: care_request_scheduled{
     relationship: one_to_many
     from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
 
   join: channel_items {
@@ -603,7 +603,7 @@ explore: ga_pageviews_clone {
     join: care_request_scheduled{
       relationship: one_to_many
       from: care_request_statuses
-      sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+      sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
     }
 
     join: channel_items {
@@ -740,7 +740,7 @@ explore: ga_pageviews_bidellect {
   join: care_request_scheduled{
     relationship: one_to_many
     from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
 
   join: channel_items {
@@ -895,7 +895,7 @@ explore: ga_adwords_stats_clone {
   join: care_request_scheduled{
     relationship: one_to_many
     from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
 
   join: channel_items {
@@ -963,7 +963,7 @@ explore: incontact_clone {
   join: care_request_scheduled{
     relationship: one_to_many
     from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='scheduled';;
+    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
 
   join: channel_items {
