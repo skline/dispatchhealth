@@ -974,7 +974,13 @@ explore: incontact_clone {
 }
 
 explore: csc_survey_clone {
+  join: incontact_clone {
+    sql_on:  ${incontact_clone.contact_id} = ${csc_survey_clone.contact_id} ;;
+  }
 
+  join: markets {
+    sql_on: ${incontact_clone.market_id} = ${markets.id} ;;
+  }
 }
 
 
