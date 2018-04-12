@@ -17,6 +17,20 @@ view: risk_assessments_bi {
     sql: ${TABLE}.protocol_name ;;
   }
 
+  dimension: general_complaint {
+    type: yesno
+    sql: ${protocol_name} = 'General complaint' ;;
+  }
+
+  measure: count_general_complaint {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: general_complaint
+      value: "yes"
+    }
+  }
+
   dimension: responses {
     type: string
     sql: ${TABLE}.responses ;;
