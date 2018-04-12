@@ -140,7 +140,8 @@ dimension: abandons {
 
   measure: answer_rate {
     type: number
-    sql: 1.0 -(${count_distinct_abandoned}::float/${count_distinct}::float);;
+    value_format: "#.0\%"
+    sql: (1.0 -(${count_distinct_abandoned}::float/${count_distinct}::float))*100;;
   }
 
 

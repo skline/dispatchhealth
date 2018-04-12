@@ -77,7 +77,7 @@ view: csc_survey_clone {
 
   measure: aggregate_score {
     type: number
-    sql: round((${recommend_to_friend_count}::numeric/${count}::numeric)-(${not_recommend_to_friend_count}::numeric/${count}::numeric),2) ;;
+    sql: round((${recommend_to_friend_count}::numeric/${count}::numeric)-(${not_recommend_to_friend_count}::numeric/${count}::numeric),2)*100 ;;
   }
 
 

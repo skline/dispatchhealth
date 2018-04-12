@@ -10,25 +10,31 @@ view: care_request_local_times {
       (165, 'US/Central'),
       (166, 'US/Central'))
 
-  SELECT
+SELECT
     markets.id AS market_id,
-    onroute.care_request_id,
+    cr.id as care_request_id,
     timezone.tz_desc,
-    onroute.started_at AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_route_date,
-    onscene.started_at AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_scene_date,
+    max(request.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS requested_date,
+    max(accept.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS accept_date,
+    max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_route_date,
+    max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_scene_date,
     MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS complete_date
-  FROM care_request_statuses AS onroute
-  JOIN care_request_statuses onscene
-  ON onroute.care_request_id = onscene.care_request_id AND onroute.name = 'on_route' AND onscene.name = 'on_scene'
-  JOIN care_request_statuses comp
-  ON onscene.care_request_id = comp.care_request_id AND onscene.name = 'on_scene' AND comp.name = 'complete'
-  JOIN care_requests cr
-  ON cr.id = onroute.care_request_id
+  FROM care_requests cr
+  LEFT JOIN care_request_statuses AS request
+  ON cr.id = request.care_request_id AND request.name = 'requested'
+  LEFT JOIN care_request_statuses AS accept
+  ON cr.id = accept.care_request_id AND accept.name = 'accepted'
+  LEFT JOIN care_request_statuses AS onroute
+  ON cr.id = onroute.care_request_id AND onroute.name = 'on_route'
+  LEFT JOIN care_request_statuses onscene
+  ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene'
+  LEFT JOIN care_request_statuses comp
+  ON cr.id = comp.care_request_id AND comp.name = 'complete'
   JOIN markets
   ON cr.market_id = markets.id
   JOIN timezone
   ON markets.id = timezone.id
-  GROUP BY 1, 2, 3, 4, 5 ;;
+  GROUP BY 1, 2, 3; ;;
   }
 
   dimension: care_request_id {
@@ -77,6 +83,36 @@ view: care_request_local_times {
       month
       ]
     sql: ${TABLE}.on_scene_date ;;
+  }
+
+  dimension_group: accept {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month
+    ]
+    sql: ${TABLE}.accept_date ;;
+  }
+
+  dimension_group: request {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month
+    ]
+    sql: ${TABLE}.request_date ;;
   }
 
   dimension: on_scene_decimal {

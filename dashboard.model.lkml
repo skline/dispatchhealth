@@ -231,6 +231,11 @@ explore: channel_items {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
   }
 
+  join: care_request_local_times {
+    relationship: many_to_one
+    sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+  }
+
   join: care_request_complete{
     relationship: one_to_many
     from: care_request_statuses
@@ -288,6 +293,11 @@ explore: channel_items {
       sql_on: (${patients.id} = ${care_requests.patient_id}  OR ${care_requests.origin_phone} = ${invoca_clone.caller_id})
                  and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800 ;;
       }
+
+    join: care_request_local_times {
+      relationship: many_to_one
+      sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+    }
 
     join: care_request_complete{
       relationship: one_to_many
@@ -420,6 +430,18 @@ explore: ga_pageviews_full_clone {
       web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
      ) ;;
   }
+
+  join: care_request_local_times {
+    relationship: many_to_one
+    sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: web_care_request_local_times {
+    from: care_request_local_times
+    relationship: many_to_one
+    sql_on: ${web_care_request_local_times.care_request_id} = ${web_care_requests.id} ;;
+  }
+
   join: web_care_request_complete{
       relationship: one_to_many
       from: care_request_statuses
@@ -560,6 +582,17 @@ explore: ga_pageviews_clone {
           ) ;;
     }
 
+  join: care_request_local_times {
+    relationship: many_to_one
+    sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: web_care_request_local_times {
+    from: care_request_local_times
+    relationship: many_to_one
+    sql_on: ${web_care_request_local_times.care_request_id} = ${web_care_requests.id} ;;
+  }
+
     join: markets {
       sql_on:  ${markets.id} = ${ga_pageviews_clone.facebook_market_id_final} ;;
     }
@@ -695,6 +728,17 @@ explore: ga_pageviews_bidellect {
       AND
       web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_bidellect.client_id}
     ) ;;
+  }
+
+  join: care_request_local_times {
+    relationship: many_to_one
+    sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: web_care_request_local_times {
+    from: care_request_local_times
+    relationship: many_to_one
+    sql_on: ${web_care_request_local_times.care_request_id} = ${web_care_requests.id} ;;
   }
 
   join: markets {
@@ -851,6 +895,17 @@ explore: ga_adwords_stats_clone {
 
   }
 
+  join: care_request_local_times {
+    relationship: many_to_one
+    sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: web_care_request_local_times {
+    from: care_request_local_times
+    relationship: many_to_one
+    sql_on: ${web_care_request_local_times.care_request_id} = ${web_care_requests.id} ;;
+  }
+
   join: markets {
     sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id} ;;
   }
@@ -931,6 +986,11 @@ explore: incontact_clone {
   join: care_requests {
     sql_on: ${care_requests.created_mountain_date} = ${incontact_clone.start_date} and ${incontact_clone.market_id} =${care_requests.market_id} ;;
   }
+  join: care_request_local_times {
+    relationship: many_to_one
+    sql_on: ${care_request_local_times.care_request_id} = ${care_requests.id} ;;
+  }
+
 
   join: markets {
     sql_on:  ${markets.id} = ${incontact_clone.market_id} ;;

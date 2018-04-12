@@ -720,6 +720,12 @@ measure: distinct_days {
     sql: split_part(${resolved_reason_full}, ':', 2) ;;
   }
 
+  dimension: primary_and_secondary_resolved_reason {
+    type: string
+    sql: concat(${primary_resolved_reason},': ', ${secondary_resolved_reason}) ;;
+  }
+
+
   dimension: other_resolved_reason {
     type:  string
     sql: split_part(${resolved_reason_full}, ':', 3) ;;
