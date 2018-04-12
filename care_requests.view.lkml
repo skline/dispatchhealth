@@ -705,6 +705,97 @@ measure: distinct_days {
     type: date_time
     sql: min(${care_request_complete.created_mountain_raw}) ;;
   }
+  dimension: resolved_reason_full {
+    type: string
+    sql: coalesce(${care_request_complete.comment}, ${care_request_archived.comment}) ;;
+  }
+
+  dimension: primary_resolved_reason {
+    type:  string
+    sql: split_part(${resolved_reason_full}, ':', 1) ;;
+  }
+
+  dimension: secondary_resolved_reason {
+    type:  string
+    sql: split_part(${resolved_reason_full}, ':', 2) ;;
+  }
+
+  dimension: other_resolved_reason {
+    type:  string
+    sql: split_part(${resolved_reason_full}, ':', 3) ;;
+  }
+
+
+  dimension: escalated_on_scene {
+    type: yesno
+    sql: UPPER(${care_request_complete.comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
+  }
+
+  dimension: lwbs_going_to_ed {
+    type: yesno
+    sql: ${care_request_archived.comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
+  }
+
+  dimension: lwbs_going_to_urgent_care {
+    type: yesno
+    sql: ${care_request_archived.comment} = 'Cancelled by Patient: Going to an Urgent Care' ;;
+  }
+
+  dimension: lwbs_wait_time_too_long {
+    type: yesno
+    sql: ${care_request_archived.comment} = 'Cancelled by Patient: Wait time too long' ;;
+  }
+
+  dimension: lwbs_no_show {
+    type: yesno
+    sql: ${care_request_archived.comment} = 'No Show' ;;
+  }
+
+  dimension: lwbs {
+    type: yesno
+    description: "Going to ED/Urgent Care, Wait Time Too Long, or No Show"
+    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} OR ${lwbs_no_show} ;;
+  }
+
+  measure: lwbs_count {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+  }
+
+  measure: escalated_on_scene_count {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "yes"
+    }
+  }
+
+
+  dimension: escalated_on_scene_ed {
+    type: yesno
+    sql: ${care_request_complete.comment} = 'Referred - Point of Care: ED'
+      OR ${care_request_complete.comment} = 'Referred - Point of care: ED';;
+  }
+
+  dimension: escalated_on_phone {
+    type: yesno
+    sql: ${care_request_complete.comment} LIKE '%Referred - Phone Triage%' ;;
+  }
+
+  dimension: escalated_on_phone_reason {
+    type: string
+    sql: CASE
+          WHEN ${escalated_on_phone} THEN split_part(${care_request_complete.comment}, ':', 2)
+          ELSE NULL
+        END ;;
+  }
+
+
 
 
 
