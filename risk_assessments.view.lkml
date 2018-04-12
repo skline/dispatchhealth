@@ -14,7 +14,17 @@ view: risk_assessments {
 
   dimension: protocol_name {
     type: string
-    sql: ${TABLE}.protocol_name ;;
+    sql: CASE
+      WHEN ${TABLE}.protocol_name LIKE '%Vision/eye%' THEN 'Vision Problem'
+      WHEN ${TABLE}.protocol_name LIKE '%Extremity Injury/Pain%' THEN 'Extremity Injury'
+      WHEN ${TABLE}.protocol_name LIKE '%Upper Respiratory Infection%' THEN 'Cough/URI'
+      ELSE INITCAP(${TABLE}.protocol_name)
+    END;;
+  }
+
+  measure: protocol_count {
+    type: count_distinct
+    sql: ${protocol_name} ;;
   }
 
   dimension: general_complaint {
