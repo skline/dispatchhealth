@@ -355,6 +355,28 @@ view: care_request_statuses {
     else null end;;
   }
 
+  dimension: resolved_reason_full {
+    type: string
+    sql: coalesce(${care_request_complete.comment}, ${care_request_archived.comment}) ;;
+  }
+
+  dimension: primary_resolved_reason {
+    type:  string
+    sql: split_part(${resolved_reason_full}, ':', 1) ;;
+  }
+
+  dimension: secondary_resolved_reason {
+    type:  string
+    sql: split_part(${resolved_reason_full}, ':', 2) ;;
+  }
+
+  dimension: other_resolved_reason {
+    type:  string
+    sql: split_part(${resolved_reason_full}, ':', 3) ;;
+  }
+
+
+
   measure: projections_diff {
     label: "Diff to budget"
     type: number

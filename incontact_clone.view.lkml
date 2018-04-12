@@ -16,6 +16,11 @@ view: incontact_clone {
     sql: ${TABLE}.contact_type ;;
   }
 
+  dimension: campaign {
+    type: string
+    sql: ${TABLE}.campaign ;;
+  }
+
   dimension: duration {
     type: number
     sql: coalesce(${TABLE}.duration,0) ;;
@@ -91,18 +96,20 @@ view: incontact_clone {
            when lower(${skll_name}) like '%phx%' then 161
            when lower(${skll_name}) like '%ric%'  then 164
            when lower(${skll_name})  like '%las%' then 162
+           when lower(${skll_name})  like '%hou%' then 165
            else null end ;;
   }
 dimension: skill_category {
   type:  string
   sql: case
     when lower(${skll_name}) like '%voicemail%' or lower(${skll_name}) like '% vm%' then 'Voicemail'
-     when lower(${skll_name}) like '%care%' then 'Care Line'
-     when lower(${skll_name}) like '%partner%' then 'Partner Line'
-     when lower(${skll_name}) like '%backline%' then 'Backline'
-     when lower(${skll_name}) like '%medical%' then 'Medical'
-     when lower(${skll_name}) like '%outbound%' then 'Outbound'
-     else 'Other' end ;;
+    when lower(${skll_name}) like '%outbound%' then 'Outbound'
+    else ${campaign} end ;;
+}
+
+dimension: abandons {
+  type: number
+  sql: ${TABLE}.abandons ;;
 }
 
   measure: count {
@@ -125,9 +132,10 @@ dimension: skill_category {
     sql:  count(distinct case when ${skill_category} = 'Voicemail' then ${contact_id} else null end);;
   }
 
+
   measure: count_distinct_abandoned {
     type: number
-    sql:  count(distinct case when ${talk_time_sec}=0  then ${contact_id} else null end);;
+    sql:  count(distinct case when ${abandons}=1  then ${contact_id} else null end);;
   }
 
   measure: answer_rate {
