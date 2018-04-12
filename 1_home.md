@@ -26,24 +26,6 @@
 <div style="width: 100%; clear: both; float: left; padding-top: 40px; padding-bottom: 40px;">
   <div style="width: 85%; margin: auto;">
 
-    <div style="padding-left: 20px;float:left; width: 50%;">
-      <img style="border-radius: 50%; width: 100px; float:left;" src="https://media.licdn.com/media/AAEAAQAAAAAAAAxNAAAAJDA1ZTA0ZjExLWE3N2YtNDhlNi1hNWExLTdlNjE2ZWQyMThhYw.jpg">
-      <div style="float:left; text-align: left; padding-left: 15px; padding-top: 15px;">
-        <p><span style="font-size: 16px;">Account Executive</span><br>
-        <span style="font-weight: 300;">Joe Kremer<br>
-        joe.kremer@looker.com</span></p>
-      </div>
-    </div>
-
-    <div style="padding-left: 40px;float:left; width: 50%;">
-      <img style="border-radius: 50%; width: 100px; float:left;" src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/4/005/056/1da/0d354d1.jpg">
-      <div style="float:left; text-align: left; padding-left: 15px; padding-top: 15px;">
-        <p><span style="font-size: 16px;">Looker Analyst</span><br>
-        <span style="font-weight: 300;">George Li<br>
-        george@looker.com</span></p>
-      </div>
-    </div>
-
   </div>
 </div>
 

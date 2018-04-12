@@ -17,6 +17,11 @@ view: care_request_statuses {
     sql: ${TABLE}.comment ;;
   }
 
+  dimension: escalated_on_scene {
+    type: yesno
+    sql: UPPER(${comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
+  }
+
   dimension: lwbs_going_to_ed {
     type: yesno
     sql: ${comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
@@ -51,6 +56,16 @@ view: care_request_statuses {
       value: "yes"
     }
   }
+
+  measure: escalated_on_scene_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "yes"
+    }
+  }
+
 
   dimension: escalated_on_scene_ed {
     type: yesno
