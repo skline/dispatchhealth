@@ -31,7 +31,7 @@ view: budget_projections_by_market_clone {
   }
   measure: projection_visits_month_to_date {
     type: number
-    sql: ${projected_visits}*${care_request_complete.month_percent} ;;
+    sql: ${projected_visits}*${care_request_flat.month_percent} ;;
   }
 
   measure: projection_visits_daily_volume{
