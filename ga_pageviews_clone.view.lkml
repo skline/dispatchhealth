@@ -201,12 +201,7 @@ dimension: source_category
 
   measure: total_complete {
     type: number
-    sql: count(distinct
-                  coalesce(
-                            case when (${care_request_complete.created_raw}::timestamp - ${care_requests.on_scene_etc_raw}::timestamp) < interval '2 day' then ${care_request_complete.care_request_id} else null end,
-                            case when (${web_care_request_complete.created_raw}::timestamp - ${web_care_requests.on_scene_etc_raw}::timestamp) < interval '2 day' then ${web_care_request_complete.care_request_id} else null end
-                          )
-              ) ;;
+    sql: ${web_care_request_flat.complete_count}+${care_request_flat.complete_count} ;;
   }
 
   measure: total_resolved {
@@ -215,8 +210,8 @@ dimension: source_category
                     distinct
                     coalesce
                     (
-                      case when ${web_care_request_archived.comment} is not null then ${web_care_request_archived.care_request_id} else null end,
-                      case when ${care_request_archived.comment} is not null then ${care_request_archived.care_request_id} else null end
+                      case when ${web_care_request_flat.archive_comment} is not null then ${web_care_request_flat.care_request_id} else null end,
+                      case when ${care_request_flat.archive_comment} is not null then ${care_request_flat.care_request_id} else null end
                     )
                  )
         ;;

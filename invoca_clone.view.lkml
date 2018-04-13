@@ -303,6 +303,7 @@ view: invoca_clone {
      when lower(${profile_campaign}) like '%phoe%' then 161
      when lower(${profile_campaign}) like '%ric%'  then 164
      when lower(${profile_campaign})  like '%las%' then 162
+     when lower(${profile_campaign})  like '%hou%' then 165
      else null end ;;
   }
 
