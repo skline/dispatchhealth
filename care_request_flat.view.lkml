@@ -27,19 +27,19 @@ SELECT
     as archive_comment
   FROM care_requests cr
   LEFT JOIN care_request_statuses AS request
-  ON cr.id = request.care_request_id AND request.name = 'requested'
+  ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
   LEFT JOIN care_request_statuses AS accept
-  ON cr.id = accept.care_request_id AND accept.name = 'accepted'
+  ON cr.id = accept.care_request_id AND accept.name = 'accepted' and accept.deleted_at is null
   LEFT JOIN care_request_statuses AS onroute
-  ON cr.id = onroute.care_request_id AND onroute.name = 'on_route'
+  ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
   LEFT JOIN care_request_statuses onscene
-  ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene'
+  ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene' and onscene.deleted_at is null
   LEFT JOIN care_request_statuses comp
-  ON cr.id = comp.care_request_id AND comp.name = 'complete'
+  ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
   LEFT JOIN care_request_statuses schedule
-  ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'
+  ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
   LEFT JOIN care_request_statuses archive
-  ON cr.id = archive.care_request_id AND archive.name = 'archived'
+  ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
   JOIN markets
   ON cr.market_id = markets.id
   JOIN timezone
