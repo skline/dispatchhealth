@@ -377,6 +377,12 @@ view: visit_facts {
     sql: ${resolve_reason} = 'Referred - Point of Care';;
   }
 
+  dimension: phone_escalation_flag {
+    label: "Phone escalation (yes/no)"
+    type: yesno
+    sql: ${resolve_reason} = 'Referred - Phone Triage';;
+  }
+
   measure: count_resolved_requests {
     label: "Resolved Requests Count"
     type: count
