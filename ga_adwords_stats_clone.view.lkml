@@ -174,7 +174,14 @@ view: ga_adwords_stats_clone {
 
   measure: total_complete {
     type: number
-    sql: ${web_care_request_flat.complete_count}+${care_request_flat.complete_count} ;;
+    sql: count(
+                    distinct
+                    coalesce
+                    (
+                      case when ${care_request_flat.complete_date} is not null then ${care_request_flat.care_request_id} else null end,
+                      case when ${web_care_request_flat.complete_date} is not null then ${web_care_request_flat.care_request_id} else null end
+                    )
+                 ) ;;
   }
 
   measure: total_resolved {
@@ -183,12 +190,13 @@ view: ga_adwords_stats_clone {
                     distinct
                     coalesce
                     (
-                      case when ${web_care_request_flat.archive_comment} is not null then ${web_care_request_flat.care_request_id} else null end,
-                      case when ${care_request_flat.archive_comment} is not null then ${care_request_flat.care_request_id} else null end
+                      case when ${care_request_flat.archive_comment} is not null then ${care_request_flat.care_request_id} else null end,
+                      case when ${web_care_request_flat.archive_comment} is not null then ${web_care_request_flat.care_request_id} else null end
                     )
                  )
         ;;
   }
+
   dimension: adwords_date{
     type: date
     sql: case
