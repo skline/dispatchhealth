@@ -226,7 +226,9 @@ dimension: source_category
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week_index,
+      day_of_month
     ]
     type: time
     sql: case
@@ -270,5 +272,32 @@ dimension: source_category
   dimension: campaign_final {
     type: string
     sql: coalesce(${campaign}, ${invoca_clone.utm_campaign}) ;;
+  }
+
+  dimension_group: today_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month]
+    sql: CURRENT_DATE ;;
+  }
+
+  dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '1 day';;
+  }
+
+  dimension:  same_day_of_week_adwords {
+    type: yesno
+    sql:  ${yesterday_mountain_day_of_week_index} = ${ga_time_day_of_week_index};;
+  }
+
+  dimension: until_today_adwords {
+    type: yesno
+    sql: ${ga_time_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${ga_time_day_of_week_index} >= 0 ;;
+  }
+
+  dimension: month_to_date_adwords {
+    type:  yesno
+    sql: ${ga_time_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
   }
 }

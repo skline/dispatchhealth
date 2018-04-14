@@ -214,6 +214,11 @@ view: ga_adwords_stats_clone {
     sql: ${adwords_time_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${adwords_time_day_of_week_index} >= 0 ;;
   }
 
+  dimension: month_to_date_adwords {
+    type:  yesno
+    sql: ${adwords_time_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
+  }
+
   dimension_group: adwords_time{
     type: time
     timeframes: [
