@@ -433,12 +433,26 @@ SELECT
     sql: ${complete_date} is not null ;;
   }
 
+  dimension: resolved {
+    type: yesno
+    sql: ${archive_comment} is not null ;;
+  }
+
 
   measure: complete_count {
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
       field: complete
+      value: "yes"
+    }
+  }
+
+  measure: resolved_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: resolved
       value: "yes"
     }
   }

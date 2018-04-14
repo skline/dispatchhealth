@@ -196,42 +196,17 @@ dimension: source_category
 
   measure: total_care_requests {
     type: number
-    sql: count(distinct(${care_requests.id})) +count(distinct (${web_care_requests.id})) ;;
+    sql: ${care_requests.count_distinct} + ${web_care_requests.count_distinct}  ;;
   }
 
   measure: total_complete {
     type: number
-    sql: count(
-                    distinct
-                    (
-                      case when ${web_care_request_flat.complete_date} is not null then ${web_care_request_flat.care_request_id} else null end
-                    )
-                 )
-                +
-                count(
-                    distinct
-                    (
-                      case when ${care_request_flat.complete_date} is not null then ${care_request_flat.care_request_id} else null end
-                    )
-                 );;
+    sql:${care_request_flat.complete_count} + ${web_care_request_flat.complete_count};;
   }
 
   measure: total_resolved {
     type: number
-    sql:  count(
-                    distinct
-                    (
-                      case when ${web_care_request_flat.archive_comment} is not null then ${web_care_request_flat.care_request_id} else null end
-                    )
-                 )
-          +
-          count(
-                    distinct
-                    (
-                      case when ${care_request_flat.archive_comment} is not null then ${care_request_flat.care_request_id} else null end
-                    )
-                 )
-        ;;
+    sql:  ${care_request_flat.resolved_count} + ${web_care_request_flat.resolved_count};;
   }
   dimension: ga_date{
 
