@@ -192,6 +192,28 @@ view: ga_adwords_stats_clone {
 
   }
 
+  dimension_group: today_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month]
+    sql: CURRENT_DATE ;;
+  }
+
+  dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '1 day';;
+  }
+
+  dimension:  same_day_of_week_adwords {
+    type: yesno
+    sql:  ${yesterday_mountain_day_of_week_index} = ${adwords_time_day_of_week_index};;
+  }
+
+  dimension: until_today_adwords {
+    type: yesno
+    sql: ${adwords_time_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${adwords_time_day_of_week_index} >= 0 ;;
+  }
+
   dimension_group: adwords_time{
     type: time
     timeframes: [
@@ -201,7 +223,9 @@ view: ga_adwords_stats_clone {
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week_index,
+      day_of_month
     ]
     sql: ${adwords_date};;
 

@@ -53,6 +53,46 @@ SELECT
     sql: ${TABLE}.care_request_id ;;
   }
 
+  dimension: drive_time_seconds {
+    type: number
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}) ;;
+  }
+
+  dimension: in_queue_time_seconds {
+    type: number
+    sql: EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
+  }
+
+  dimension: assigned_time_seconds {
+    type: number
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
+  }
+
+  measure:  average_drive_time_seconds{
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_seconds} ;;
+  }
+
+  measure:  average_in_queue_time_seconds{
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${in_queue_time_seconds} ;;
+  }
+
+  measure:  average_assigned_time_seconds{
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${assigned_time_seconds} ;;
+  }
+
+
+
+
+
   dimension: market_id {
     type: number
     sql: ${TABLE}.market_id ;;
