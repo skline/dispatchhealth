@@ -500,7 +500,7 @@ SELECT
     type: number
     sql:    extract(day from ${max_day_on_scene})
           /    DATE_PART('days',
-              DATE_TRUNC('month', current_date)
+              DATE_TRUNC('month', ${max_day_on_scene})
               + '1 MONTH'::INTERVAL
               - '1 DAY'::INTERVAL
           );;
