@@ -14,6 +14,7 @@ SELECT
     markets.id AS market_id,
     cr.id as care_request_id,
     timezone.tz_desc,
+    cr.created_at AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS created_date,
     max(request.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS requested_date,
     max(accept.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS accept_date,
     max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_route_date,
@@ -123,6 +124,23 @@ SELECT
       day_of_month
       ]
     sql: ${TABLE}.on_route_date ;;
+  }
+
+  dimension_group: created {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.created_date ;;
   }
 
   dimension: on_route_decimal {
@@ -286,7 +304,8 @@ SELECT
 
   measure: daily_average_complete {
     type: number
-    sql: ${complete_count}/(nullif(${distinct_days_on_scene},0))  ;;
+    value_format: "0.0"
+    sql: ${complete_count}::float/(nullif(${distinct_days_on_scene},0))::float  ;;
   }
 
   measure: weekly_average_complete {
