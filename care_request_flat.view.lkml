@@ -15,6 +15,8 @@ SELECT
     cr.id as care_request_id,
     timezone.tz_desc,
     cr.created_at AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS created_date,
+    max(shift_teams.start_time) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS shift_start_time,
+    max(shift_teams.end_time) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS shift_end_time,
     max(request.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS requested_date,
     max(accept.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS accept_date,
     max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_route_date,
@@ -41,6 +43,8 @@ SELECT
   ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
   LEFT JOIN care_request_statuses archive
   ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
+  LEFT JOIN public.shift_teams
+  ON shift_teams.id = cr.shift_team_id
   JOIN markets
   ON cr.market_id = markets.id
   JOIN timezone
@@ -272,6 +276,40 @@ SELECT
       day_of_month
       ]
     sql: ${TABLE}.complete_date ;;
+  }
+
+  dimension_group: shift_start {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.shift_start_time ;;
+  }
+
+  dimension_group: shift_end {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.shift_end_time ;;
   }
 
   measure: max_complete_time {
