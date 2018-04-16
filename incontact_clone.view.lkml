@@ -117,7 +117,7 @@ dimension: abandons {
     drill_fields: [skll_name]
   }
   measure: count_distinct {
-    label: "distinct Incontact contact_ids"
+    label: "inbound contacts"
     type: number
     sql:count(distinct ${contact_id}) ;;
   }

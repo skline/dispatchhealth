@@ -69,6 +69,21 @@ SELECT
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
   }
 
+  dimension: drive_time_minutes {
+    type: number
+    sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}))::float/60.0 ;;
+  }
+
+  dimension: in_queue_time_minutes {
+    type: number
+    sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
+  }
+
+  dimension: assigned_time_minutes {
+    type: number
+    sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
+  }
+
   measure:  average_drive_time_seconds{
     type: average_distinct
     value_format: "0"
@@ -89,6 +104,28 @@ SELECT
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${assigned_time_seconds} ;;
   }
+
+  measure:  average_drive_time_minutes{
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_minutes} ;;
+  }
+
+  measure:  average_in_queue_time_minutes{
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${in_queue_time_minutes} ;;
+  }
+
+  measure:  average_assigned_time_minutes{
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${assigned_time_minutes} ;;
+  }
+
 
 
 
@@ -266,6 +303,11 @@ SELECT
     sql:  ${yesterday_mountain_day_of_week_index} = ${on_scene_day_of_week_index};;
   }
 
+  dimension:  same_day_of_week_created {
+    type: yesno
+    sql:  ${yesterday_mountain_day_of_week_index} = ${created_day_of_week_index};;
+  }
+
   dimension: until_today_on_scene {
     type: yesno
     sql: ${on_scene_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${on_scene_day_of_week_index} >= 0 ;;
@@ -274,6 +316,12 @@ SELECT
   dimension: this_week_on_scene {
     type:  yesno
     sql: ${yesterday_mountain_week} =  ${on_scene_week};;
+
+  }
+
+  dimension: this_week_created {
+    type:  yesno
+    sql: ${yesterday_mountain_week} =  ${created_week};;
 
   }
   dimension: this_month_on_scene {
@@ -297,6 +345,12 @@ SELECT
     sql: count(DISTINCT ${on_scene_date}) ;;
   }
 
+  measure: distinct_days_created {
+    type: number
+    sql: count(DISTINCT ${created_date}) ;;
+  }
+
+
   measure: distinct_weeks_on_scene {
     type: number
     sql: count(DISTINCT ${on_scene_week}) ;;
@@ -307,6 +361,13 @@ SELECT
     value_format: "0.0"
     sql: ${complete_count}::float/(nullif(${distinct_days_on_scene},0))::float  ;;
   }
+
+  measure: daily_average_created {
+    type: number
+    value_format: "0.0"
+    sql: ${care_request_count}::float/(nullif(${distinct_days_created},0))::float  ;;
+  }
+
 
   measure: weekly_average_complete {
     type: number
@@ -505,6 +566,11 @@ SELECT
       field: complete
       value: "yes"
     }
+  }
+
+  measure: care_request_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
   }
 
   measure: resolved_count {
