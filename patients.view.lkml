@@ -12,6 +12,16 @@ view: patients {
     sql: ${TABLE}.account_id ;;
   }
 
+  dimension: first_name {
+    type: string
+    sql: ${TABLE}.first_name ;;
+  }
+
+  dimension: last_name {
+    type: string
+    sql: ${TABLE}.last_name ;;
+  }
+
   dimension: dob {
     type: date
     sql: ${TABLE}.dob ;;
@@ -98,6 +108,11 @@ view: patients {
   dimension: patient_salesforce_id {
     type: string
     sql: ${TABLE}.patient_salesforce_id ;;
+  }
+
+  dimension: pcp_name {
+    type: string
+    sql: ${TABLE}.pcp_name ;;
   }
 
 
