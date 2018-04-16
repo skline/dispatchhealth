@@ -65,8 +65,9 @@ SELECT
   }
 
   dimension: assigned_time_seconds {
+    description: "Number of seconds between accepted and on-route times"
     type: number
-    sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
+    sql: EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
   }
 
   measure:  average_drive_time_seconds{
@@ -90,7 +91,18 @@ SELECT
     sql: ${assigned_time_seconds} ;;
   }
 
+  measure: average_wait_time_total {
+    description: "The sum of all average queue times"
+    type: number
+    value_format: "0"
+    sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
 
+  }
+
+  dimension: pre_post {
+    type: yesno
+    sql: (DATE(${requested_raw}) BETWEEN '2018-04-02' AND '2018-04-13') ;;
+  }
 
 
 
