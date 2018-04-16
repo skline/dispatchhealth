@@ -631,16 +631,16 @@ measure: distinct_days {
   else concat(${current_day_string}, 's ', ${min_day}, ' thru ', ${max_day}) end ;;
 
   }
-  measure: max_on_scene_time_mountain {
-    label: "Last Care Request Completion Time"
+  measure: max_on_scene_time {
+    label: "Last Care Request On Scene Time"
     type: date_time
-    sql:  max(${on_scene_etc_mountain_raw}) ;;
+    sql:  max(${care_request_flat.on_scene_time}::timestamp) ;;
   }
 
   measure: shift_end_last_cr_diff{
     label: "Hours between Last Patient Seen and Shift End "
     type: number
-    sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time_mountain}::timestamp - ${shift_teams.end_mountain_time}::timestamp))/3600)::decimal,2);;
+    sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time}::timestamp - ${care_request_flat.shift_end_time}::timestamp))/3600)::decimal,2);;
   }
 
   measure: shift_end_last_cr_diff_adj{
