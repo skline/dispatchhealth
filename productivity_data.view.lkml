@@ -34,12 +34,18 @@ view: productivity_data {
       time,
       date,
       day_of_month,
+      day_of_week,
       week,
       month,
       quarter,
       year
     ]
     sql: ${TABLE}.date ;;
+  }
+
+  dimension: pre_post {
+    type: yesno
+    sql:DATE(${date_raw}) >= '2018-04-02' AND DATE(${date_raw}) <= '2018-04-13' ;;
   }
 
   dimension: dynamic_month {
