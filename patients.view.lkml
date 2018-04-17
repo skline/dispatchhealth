@@ -27,6 +27,11 @@ view: patients {
     sql: ${TABLE}.dob ;;
   }
 
+  dimension: gender {
+    type: string
+    sql: ${TABLE}.gender ;;
+  }
+
   dimension: age {
     type: number
     sql: CAST(EXTRACT(YEAR from AGE(${care_request_requested.created_date}, ${dob})) AS INT) ;;

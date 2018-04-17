@@ -88,6 +88,16 @@ view: shift_teams {
     sql: ${TABLE}.start_time - interval '7 hour' ;;
   }
 
+  dimension: shift_hours {
+    type: number
+    sql: (EXTRACT(EPOCH FROM ${end_raw}) - EXTRACT(EPOCH FROM MIN(${start_raw}))) / 3600 ;;
+  }
+
+  measure: sum_shift_hours {
+    type: sum
+    sql: ${shift_hours} ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
