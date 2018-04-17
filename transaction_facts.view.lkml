@@ -154,6 +154,7 @@ view: transaction_facts {
   dimension_group: post {
     description: "The date the transaction posted in the EHR"
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,

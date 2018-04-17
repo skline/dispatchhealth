@@ -45,6 +45,15 @@ view: channel_dimensions {
     sql: ${TABLE}.organization ;;
   }
 
+  dimension: smfr_wmfr_visit {
+    type: yesno
+    sql: ${sub_type} LIKE '%911 channel%' OR
+          ${sub_type} LIKE '%south metro fire rescue%' OR
+          ${sub_type} LIKE '%west metro fire rescue%' OR
+          ${organization} LIKE '%smfr%' OR
+          ${organization} LIKE '%wmfr%' ;;
+  }
+
   dimension: organization_label {
     type: string
     order_by_field: org_label_order
