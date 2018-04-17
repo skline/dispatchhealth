@@ -143,6 +143,17 @@ explore: care_requests {
     sql_on:  ${patients.id} =${care_requests.patient_id} ;;
   }
 
+  join: eligible_patients {
+    relationship: one_to_one
+    sql_on:
+    UPPER(concat(${eligible_patients.first_name}::text, ${eligible_patients.last_name}::text, to_char(${eligible_patients.dob_raw}, 'MM/DD/YY'), ${eligible_patients.gender}::text)) =
+    UPPER(concat(${patients.first_name}::text, ${patients.last_name}::text, to_char(${patients.dob}, 'MM/DD/YY'),
+      CASE WHEN ${patients.gender} = 'Female' THEN 'F'
+      WHEN ${patients.gender} = 'Male' THEN 'M'
+      ELSE ''
+      END)) ;;
+  }
+
   join: power_of_attorneys {
     sql_on:  ${patients.id} =${power_of_attorneys.patient_id} ;;
   }

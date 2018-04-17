@@ -145,8 +145,6 @@ SELECT
     sql: (DATE(${requested_raw}) BETWEEN '2018-04-02' AND '2018-04-13') ;;
   }
 
-
-
   dimension: market_id {
     type: number
     sql: ${TABLE}.market_id ;;
