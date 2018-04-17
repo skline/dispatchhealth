@@ -86,7 +86,7 @@ explore: care_requests {
 
   join: risk_assessments {
     relationship: one_to_one
-    sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} ;;
+    sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
   join: markets {
@@ -402,6 +402,16 @@ explore: ga_pageviews_full_clone {
 
   join: patients {
     sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
+  }
+
+  join: ga_geodata_clone {
+    sql_on: ${ga_pageviews_full_clone.client_id} = ${ga_geodata_clone.client_id}
+    and ${ga_pageviews_full_clone.timestamp_raw} = ${ga_geodata_clone.timestamp_raw};;
+  }
+
+  join: ga_zips_clone {
+    sql_on: ${ga_geodata_clone.latitude} = ${ga_zips_clone.latitude}
+      and  ${ga_geodata_clone.longitude} = ${ga_zips_clone.longitude};;
   }
 
   join: care_requests {

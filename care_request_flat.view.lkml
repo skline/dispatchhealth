@@ -86,7 +86,7 @@ SELECT
 
   dimension: assigned_time_minutes {
     type: number
-    sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
+    sql: (EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
   }
 
   measure:  average_drive_time_seconds{
