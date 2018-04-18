@@ -18,7 +18,6 @@ explore: care_requests {
     sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
   }
 
-
   join: credit_cards {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
@@ -94,9 +93,19 @@ explore: care_requests {
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
   }
 
+  join: states {
+    relationship: one_to_one
+    sql_on: ${markets.state} = ${states.abbreviation} ;;
+  }
+
   join: insurances {
     relationship: many_to_one
-    sql_on: ${care_requests.patient_id} = ${insurances.patient_id} AND ${insurances.priority} = 1 AND ${insurances.patient_id} IS NOT NULL ;;
+    sql_on: ${care_requests.patient_id} = ${insurances.patient_id} AND ${insurances.priority} = '1' AND ${insurances.patient_id} IS NOT NULL ;;
+  }
+
+  join: insurance_plans {
+    relationship: many_to_one
+    sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND ${insurances.company_name} = ${insurance_plans.name} AND ${insurance_plans.state_id} = ${states.id};;
   }
 
   join: care_request_complete{
