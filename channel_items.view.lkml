@@ -191,7 +191,7 @@ view: channel_items {
 
   dimension: direct_consumer_boolean {
     type:  yesno
-    sql: (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) ;;
+    sql: (${growth_category} = 'Direct to Consumer') ;;
   }
 
   dimension: growth_order {
