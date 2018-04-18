@@ -22,6 +22,7 @@ SELECT
     max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_route_date,
     max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_scene_date,
     MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS complete_date,
+    MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS archive_date,
     case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
     else array_to_string(array_agg(distinct comp.comment), ':')end
     as complete_comment,
@@ -274,6 +275,44 @@ SELECT
       day_of_month
       ]
     sql: ${TABLE}.complete_date ;;
+  }
+
+  dimension_group: archive {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.archive_date ;;
+  }
+
+  dimension_group: complete_resolved {
+    type: time
+    description: "The complete date or archive date, depending on whether the request was complete or resolved"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: CASE
+          WHEN ${archive_comment} IS NOT NULL THEN ${archive_raw}
+          ELSE ${complete_raw}
+         END ;;
   }
 
   dimension_group: shift_start {
