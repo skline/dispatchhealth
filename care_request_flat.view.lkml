@@ -238,6 +238,7 @@ SELECT
 
   dimension_group: requested {
     type: time
+    description: "The date/time of the requested care request.  If scheduled for the next day, use 'created' date instead"
     convert_tz: no
     timeframes: [
       raw,
@@ -324,7 +325,7 @@ SELECT
     END ;;
   }
 
-  dimension: next_day_complete {
+  dimension: different_day_complete {
     description: "A flag indicating that the request date was different than completed or resolved date"
     type: yesno
     sql: ${days_to_complete} >= 1 ;;
