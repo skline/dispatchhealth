@@ -294,6 +294,18 @@ explore: optum_new{
 explore: bcbs {
 }
 
+explore: mh_full_risk {
+
+}
+
+explore: mh_partial_risk {
+
+}
+
+explore: mh_market_share {
+}
+
+
 explore: directmail_zipcode {
 }
   explore: invoca {

@@ -704,11 +704,14 @@ SELECT
 
   dimension: days_in_month {
     type: number
-    sql:  DATE_PART('days',
+    sql:
+     case when to_char(${requested_date} , 'YYYY-MM') = ${yesterday_mountain_month} then ${yesterday_mountain_day_of_month}
+    else
+      DATE_PART('days',
         DATE_TRUNC('month', ${requested_date})
         + '1 MONTH'::INTERVAL
         - '1 DAY'::INTERVAL
-    ) ;;
+    ) end ;;
   }
 
 
