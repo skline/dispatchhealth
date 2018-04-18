@@ -342,7 +342,7 @@ SELECT
 
   dimension_group: yesterday_mountain{
     type: time
-    timeframes: [day_of_week_index, week, month, day_of_month]
+    timeframes: [date, day_of_week_index, week, month, day_of_month]
     sql: current_date - interval '1 day';;
   }
 
@@ -629,14 +629,20 @@ SELECT
       value: "yes"
     }
   }
+
+
   measure: month_percent {
     type: number
-    sql:    extract(day from ${max_day_on_scene})
+    sql:
+
+        case when to_char(${max_day_on_scene} , 'YYYY-MM') != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
           /    DATE_PART('days',
-              DATE_TRUNC('month', ${max_day_on_scene})
+              DATE_TRUNC('month', ${yesterday_mountain_date})
               + '1 MONTH'::INTERVAL
               - '1 DAY'::INTERVAL
-          );;
+          ) end;;
   }
 
   measure: monthly_visits_run_rate {
@@ -650,6 +656,20 @@ SELECT
     case when ${on_scene_date} >= current_date - interval '30 day' then 'past 30 days'
     when  ${on_scene_date} between current_date - interval '60 day' and  current_date - interval '30 day' then 'previous 30 days'
     else null end;;
+  }
+
+  dimension: complete_month_number {
+    type:  number
+    sql: EXTRACT(MONTH from ${complete_raw}) ;;
+  }
+
+  dimension: days_in_month {
+    type: number
+    sql:  DATE_PART('days',
+        DATE_TRUNC('month', ${requested_date})
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ) ;;
   }
 
 

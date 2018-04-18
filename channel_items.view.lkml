@@ -188,6 +188,18 @@ view: channel_items {
    when ${type_name} ='Payer' then 'Payer'
   else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
   }
+  dimension: growth_order {
+    type: number
+    sql: case when ${growth_category} = 'Direct to Consumer' then 1
+              when ${growth_category} = 'Employer' then 2
+              when ${growth_category} = 'Family or Friends' then 3
+              when ${growth_category} = 'Health System' then 4
+              when ${growth_category} = 'Home Health' then 5
+              when ${growth_category} = 'Provider' then 6
+              when ${growth_category} = 'Senior Care' then 7
+              when ${growth_category} = 'Payer' then 8
+         else null end;;
+  }
 
 
 }
