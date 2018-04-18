@@ -315,6 +315,21 @@ SELECT
          END ;;
   }
 
+  dimension: days_to_complete {
+    type: number
+    sql: CASE
+    WHEN ${complete_raw} IS NOT NULL THEN DATE_PART('day', ${complete_raw}::timestamp) - DATE_PART('day', ${created_raw}::timestamp)
+    WHEN ${complete_raw} IS NULL AND ${archive_raw} IS NOT NULL THEN DATE_PART('day', ${archive_raw}::timestamp) - DATE_PART('day', ${created_raw}::timestamp)
+    ELSE NULL
+    END ;;
+  }
+
+  dimension: next_day_complete {
+    description: "A flag indicating that the request date was different than completed or resolved date"
+    type: yesno
+    sql: ${days_to_complete} >= 1 ;;
+  }
+
   dimension_group: shift_start {
     type: time
     convert_tz: no
