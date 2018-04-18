@@ -26,6 +26,10 @@ view: payer_dimensions {
   dimension: custom_insurance_grouping {
     type: string
     sql: ${TABLE}.custom_insurance_grouping ;;
+    drill_fields: [
+      insurance_reporting_category,
+      market_dimensions.market_name
+    ]
   }
 
   dimension: custom_insurance_label {

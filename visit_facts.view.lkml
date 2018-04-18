@@ -1073,7 +1073,10 @@ view: visit_facts {
       field: in_on_scene_queue
       value: "yes"
     }
-    drill_fields: [details*]
+    drill_fields:
+    [payer_dimensions.custom_insurance_grouping,
+     avg_on_scene_queue_mins
+    ]
   }
 
   measure: average_time_in_queue {
