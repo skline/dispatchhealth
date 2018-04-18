@@ -21,9 +21,10 @@ view: mh_partial_risk {
     drill_fields: []
   }
 
-  measure: sum_memebers {
+  measure: sum_members {
     type: number
     sql: sum(${member_count}) ;;
   }
+
 
 }

@@ -188,6 +188,12 @@ view: channel_items {
    when ${type_name} ='Payer' then 'Payer'
   else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
   }
+
+  dimension: direct_consumer_boolean {
+    type:  yesno
+    sql: (${growth_category} = 'Direct to Consumer') ;;
+  }
+
   dimension: growth_order {
     type: number
     sql: case when ${growth_category} = 'Direct to Consumer' then 1
