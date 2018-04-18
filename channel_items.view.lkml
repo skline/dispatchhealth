@@ -194,6 +194,11 @@ view: channel_items {
     sql: (${growth_category} = 'Direct to Consumer') ;;
   }
 
+  dimension: direct_consumer_boolean_self_report {
+    type:  yesno
+    sql: (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) ;;
+  }
+
   dimension: growth_order {
     type: number
     sql: case when ${growth_category} = 'Direct to Consumer' then 1
