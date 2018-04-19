@@ -11,6 +11,19 @@ view: incontact_clone {
     sql: ${TABLE}.contact_time_sec ;;
   }
 
+  dimension: inqueuetime {
+    type: number
+
+    sql: ${TABLE}.inqueuetime ;;
+  }
+
+   measure: avg_inqueuetime {
+    label: "Averaged Incontact InQueue Time"
+    type: average
+    value_format: "#.0"
+    sql: ${inqueuetime} ;;
+  }
+
   dimension: contact_type {
     type: string
     sql: ${TABLE}.contact_type ;;
