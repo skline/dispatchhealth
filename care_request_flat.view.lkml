@@ -61,37 +61,43 @@ SELECT
 
   dimension: drive_time_seconds {
     type: number
+    description: "The number of seconds between on route time and on scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}) ;;
   }
 
   dimension: in_queue_time_seconds {
     type: number
+    description: "The number of seconds between requested time and accepted time"
     sql: EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
   }
 
   dimension: assigned_time_seconds {
-    description: "Number of seconds between accepted and on-route times"
     type: number
+    description: "The number of seconds between accepted time and on-route time"
     sql: EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
   }
 
   dimension: drive_time_minutes {
     type: number
+    description: "The number of minutes between on-route time and on-scene time"
     sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}))::float/60.0 ;;
   }
 
   dimension: in_queue_time_minutes {
     type: number
+    description: "The number of minutes between requested time and accepted time"
     sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
   }
 
   dimension: assigned_time_minutes {
     type: number
+    description: "The number of minutes between accepted time and on-route time"
     sql: (EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
   }
 
   measure:  average_drive_time_seconds{
     type: average_distinct
+    description: "The average seconds between on-route time and on-scene time"
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_seconds} ;;
@@ -99,6 +105,7 @@ SELECT
 
   measure:  average_in_queue_time_seconds{
     type: average_distinct
+    description: "The average seconds between requested time and accepted time"
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${in_queue_time_seconds} ;;
@@ -106,6 +113,7 @@ SELECT
 
   measure:  average_assigned_time_seconds{
     type: average_distinct
+    description: "The average seconds between between accepted time and on-route time"
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${assigned_time_seconds} ;;
@@ -113,6 +121,7 @@ SELECT
 
   measure:  average_drive_time_minutes{
     type: average_distinct
+    description: "The average minutes between on-route time and on-scene time"
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_minutes} ;;
@@ -120,6 +129,7 @@ SELECT
 
   measure:  average_in_queue_time_minutes{
     type: average_distinct
+    description: "The average minutes between requested time and accepted time"
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${in_queue_time_minutes} ;;
@@ -127,6 +137,7 @@ SELECT
 
   measure:  average_assigned_time_minutes{
     type: average_distinct
+    description: "The average minutes between accepted time and on-route time"
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${assigned_time_minutes} ;;
@@ -134,7 +145,7 @@ SELECT
 
 
   measure: average_wait_time_total {
-    description: "The sum of all average queue times"
+    description: "Total patient wait time: the average minutes between requested time and on-scene time"
     type: number
     value_format: "0"
     sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
@@ -143,16 +154,19 @@ SELECT
 
   dimension: pre_post {
     type: yesno
+    description: "A flag indicating the Denver shift-ladder experiment (4/2/2018 - 4/13/2018)"
     sql: (DATE(${requested_raw}) BETWEEN '2018-04-02' AND '2018-04-13') ;;
   }
 
   dimension: market_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.market_id ;;
   }
 
   dimension: archive_comment {
     type: number
+    description: "The CSC comment provided when a care request is archived, usually a date of scheduled care request"
     sql: ${TABLE}.archive_comment ;;
   }
 
@@ -163,6 +177,7 @@ SELECT
 
   dimension_group: on_route {
     type: time
+    description: "The local date and time when the care request team is on-route"
     convert_tz: no
     timeframes: [
       raw,
@@ -180,6 +195,9 @@ SELECT
 
   dimension_group: created {
     type: time
+    description: "The local date/time that the care request was created.
+                  NOTE: If a care request is scheduled for the next day,
+                  this date/time is the start of the shift the following day"
     convert_tz: no
     timeframes: [
       raw,
@@ -196,7 +214,7 @@ SELECT
   }
 
   dimension: on_route_decimal {
-    description: "On Route Time of Day as Decimal"
+    description: "The local on-route time of day, represented as a decimal (e.g. 10:15 AM = 10.25"
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${on_route_raw}) AS INT)) +
         ((CAST(EXTRACT(MINUTE FROM ${on_route_raw} ) AS FLOAT)) / 60) ;;
@@ -204,6 +222,7 @@ SELECT
 
   dimension_group: on_scene {
     type: time
+    description: "The local date/time that the care request team arrived on-scene"
     convert_tz: no
     timeframes: [
       raw,
@@ -221,6 +240,8 @@ SELECT
 
   dimension_group: accept {
     type: time
+    description: "The local date/time that the care request was accepted.
+                  This is also used as a surrogate for when the care team is assigned."
     convert_tz: no
     timeframes: [
       raw,
@@ -238,7 +259,9 @@ SELECT
 
   dimension_group: requested {
     type: time
-    description: "The date/time of the requested care request.  If scheduled for the next day, use 'created' date instead"
+    description: "The date/time that the care request was requested.
+                  If scheduled for the next day, this will be the next day date/time
+                  stamp of when the office opens.  In these cases, use 'created' date instead"
     convert_tz: no
     timeframes: [
       raw,
@@ -255,7 +278,7 @@ SELECT
   }
 
   dimension: on_scene_decimal {
-    description: "On Scene Time of Day as Decimal"
+    description: "The on-scene time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${on_scene_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60) ;;
@@ -263,6 +286,8 @@ SELECT
 
   dimension_group: complete {
     type: time
+    description: "The local date/time that the care request was completed or
+                  resolved/escalated on-scene"
     convert_tz: no
     timeframes: [
       raw,
@@ -280,6 +305,7 @@ SELECT
 
   dimension_group: archive {
     type: time
+    description: "The local date/time that the care request was archived or resolved"
     convert_tz: no
     timeframes: [
       raw,
@@ -318,6 +344,8 @@ SELECT
 
   dimension: days_to_complete {
     type: number
+    description: "The number of days required to complete or resolve the care request.
+                  If null, the request may be scheduled for a day in the future"
     sql: CASE
     WHEN ${complete_raw} IS NOT NULL THEN DATE_PART('day', ${complete_raw}::timestamp) - DATE_PART('day', ${created_raw}::timestamp)
     WHEN ${complete_raw} IS NULL AND ${archive_raw} IS NOT NULL THEN DATE_PART('day', ${archive_raw}::timestamp) - DATE_PART('day', ${created_raw}::timestamp)
@@ -333,6 +361,7 @@ SELECT
 
   dimension_group: shift_start {
     type: time
+    description: "The local date/time of a shift start"
     convert_tz: no
     timeframes: [
       raw,
@@ -350,6 +379,7 @@ SELECT
 
   dimension_group: shift_end {
     type: time
+    description: "The local date/time of a shift end"
     convert_tz: no
     timeframes: [
       raw,
@@ -391,6 +421,7 @@ SELECT
 
   dimension_group: today_mountain{
     type: time
+    description: "Today's date/time, given in Mountain time"
     timeframes: [day_of_week_index, week, month, day_of_month]
     sql: CURRENT_DATE ;;
   }
