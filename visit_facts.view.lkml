@@ -272,6 +272,12 @@ view: visit_facts {
     sql: ${TABLE}.new_patient ;;
   }
 
+  measure: count_new_patients {
+    type: count
+    description: "Count of new patients"
+    sql: ${new_patient} ;;
+  }
+
   dimension: no_charge_entry_reason {
     description: "The provided reason for a no-charge claim"
     type: string
