@@ -987,6 +987,12 @@ explore: ga_pageviews_clone {
             sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
           }
 
+      join: web_channel_items {
+        from: channel_items
+        sql_on:  ${web_channel_items.id} =${web_care_requests.channel_item_id} ;;
+      }
+
+
           join: incontact_spot_check_clone {
             sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
               ;;

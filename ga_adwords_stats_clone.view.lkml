@@ -241,4 +241,9 @@ view: ga_adwords_stats_clone {
     drill_fields: []
   }
 
+  dimension: channel_combined {
+     type:string
+     sql: coalesce(${web_channel_items.name}, ${channel_items.name});;
+  }
+
 }
