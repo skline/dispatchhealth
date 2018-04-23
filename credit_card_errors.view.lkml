@@ -41,6 +41,19 @@ view: credit_card_errors {
     sql: ${TABLE}.error ;;
   }
 
+  dimension: address_error {
+    type: yesno
+    sql: ${error} LIKE '%BILLINGADDRESS%' ;;
+  }
+
+  dimension: error_type {
+    type: string
+    sql: CASE
+          WHEN ${error} LIKE '%BILLINGADDRESS%' THEN 'Billing Address'
+          ELSE 'Other'
+        END ;;
+  }
+
   dimension: patient_id {
     type: number
     sql: ${TABLE}.patient_id ;;

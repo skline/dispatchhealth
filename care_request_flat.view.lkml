@@ -149,13 +149,18 @@ SELECT
     type: number
     value_format: "0"
     sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
-
   }
 
   dimension: pre_post {
     type: yesno
     description: "A flag indicating the Denver shift-ladder experiment (4/2/2018 - 4/13/2018)"
     sql: (DATE(${requested_raw}) BETWEEN '2018-04-02' AND '2018-04-13') ;;
+  }
+
+  dimension: cc_pre_post {
+    type: yesno
+    description: "A flag indicating the credit card fix was put into production"
+    sql: (DATE(${on_scene_raw}) > '2018-04-13') ;;
   }
 
   dimension: market_id {

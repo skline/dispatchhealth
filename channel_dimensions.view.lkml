@@ -32,12 +32,19 @@ view: channel_dimensions {
   dimension: main_type {
     type: string
     sql: ${TABLE}.main_type ;;
+    drill_fields: [
+      sub_type,
+      organization
+    ]
   }
 
   dimension: sub_type {
     label: "Subtype"
     type: string
     sql: ${TABLE}.sub_type ;;
+    drill_fields: [
+      organization
+    ]
   }
 
   dimension: organization {
