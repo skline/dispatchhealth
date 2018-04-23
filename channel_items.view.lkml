@@ -165,6 +165,11 @@ view: channel_items {
            OR  (${ga_pageviews_clone.medium_final} in('display'))
 ;;
   }
+
+  dimension: website_derived {
+    type:  yesno
+    sql: ${ga_pageviews_clone.source_final} is not null;;
+  }
   dimension: channel_name_fixed {
     type: string
     sql:  case when ${name} in('Social Media (Facebook, LinkedIn, Twitter, Instagram)', 'Social Media(Facebook, LinkedIn, Twitter, Instagram)') then 'Social Media (Facebook, LinkedIn, Twitter, Instagram)'
@@ -178,7 +183,7 @@ view: channel_items {
   dimension: growth_category {
     type: string
     sql: case
-   when ${explicit_digital_bool} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
+   when ${website_derived} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
    when ${type_name} in ('Provider Group') or ${name} in('Healthcare provider', 'Healthcare Provider') then 'Provider'
    when ${type_name} in('Employer') or ${name} in('Employer') then 'Employer'
    when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' )  then 'Senior Care'
