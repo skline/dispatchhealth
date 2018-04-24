@@ -14,6 +14,7 @@ view: insurance_plans {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -38,7 +39,14 @@ view: insurance_plans {
 
   dimension: package_id {
     type: string
+    description: "Athena Package ID"
     sql: ${TABLE}.package_id ;;
+  }
+
+  dimension: insurance_classification_id {
+    type: string
+    hidden: yes
+    sql: ${TABLE}.insurance_classification_id ;;
   }
 
   dimension: plan_type {
@@ -48,7 +56,7 @@ view: insurance_plans {
 
   dimension: primary {
     type: yesno
-    sql: ${TABLE}."primary" ;;
+    sql: ${TABLE}.primary ;;
   }
 
   dimension: secondary {
@@ -68,6 +76,7 @@ view: insurance_plans {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
