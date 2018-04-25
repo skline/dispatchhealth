@@ -143,12 +143,16 @@ SELECT
     sql: ${assigned_time_minutes} ;;
   }
 
-
   measure: average_wait_time_total {
     description: "Total patient wait time: the average minutes between requested time and on-scene time"
     type: number
     value_format: "0"
     sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
+  }
+
+  dimension: last_care_request {
+    type: yesno
+    sql: MAX(${complete_raw}) ;;
   }
 
   dimension: pre_post {

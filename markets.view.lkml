@@ -77,6 +77,19 @@ view: markets {
         END;;
   }
 
+  dimension: office_location {
+    type: location
+    sql_latitude:${office_latitude} ;;
+    sql_longitude:${office_longitude} ;;
+  }
+
+  dimension: distance_home {
+    type: distance
+    start_location_field: addresses.care_request_location
+    end_location_field: office_location
+    units: miles
+  }
+
   dimension: pg_timezone {
     type: string
     sql: CASE

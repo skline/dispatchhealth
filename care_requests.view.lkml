@@ -631,10 +631,11 @@ measure: distinct_days {
   else concat(${current_day_string}, 's ', ${min_day}, ' thru ', ${max_day}) end ;;
 
   }
+
   measure: max_on_scene_time {
-    label: "Last Care Request On Scene Time"
+    label: "Last Care Request Completed Time"
     type: date_time
-    sql:  max(${care_request_flat.on_scene_time}::timestamp) ;;
+    sql:  max(${care_request_flat.complete_time}::timestamp) ;;
   }
 
   measure: shift_end_last_cr_diff{

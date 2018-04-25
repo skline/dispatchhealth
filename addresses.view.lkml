@@ -36,6 +36,12 @@ view: addresses {
     sql: ${TABLE}.longitude ;;
   }
 
+  dimension: care_request_location {
+    type: location
+    sql_latitude:${latitude} ;;
+    sql_longitude:${longitude} ;;
+  }
+
   dimension: state {
     type: string
     sql: ${TABLE}.state ;;
