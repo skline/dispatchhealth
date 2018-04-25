@@ -238,7 +238,7 @@ SELECT
       week,
       month,
       day_of_week_index,
-      day_of_month
+      day_of_month,quarter
       ]
     sql: ${TABLE}.on_scene_date ;;
   }

@@ -246,5 +246,9 @@ view: ga_adwords_stats_clone {
      type:string
      sql: coalesce(${web_channel_items.name}, ${channel_items.name});;
   }
+  dimension: channel_id_coalesce {
+    type: number
+    sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id});;
+  }
 
 }

@@ -139,36 +139,18 @@ view: channel_items {
     sql: ${TABLE}.zipcode ;;
   }
 
-  dimension: digital_bool {
+  dimension: digital_bool_self_report {
     type: yesno
     sql:  ${name} in('Google or other search', 'Social Media (Facebook, LinkedIn, Twitter, Instagram)', 'Social Media(Facebook, LinkedIn, Twitter, Instagram)')
-           OR (${ga_pageviews_clone.source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com', 'facebook', 'instagram'))
-           OR lower(${ga_pageviews_clone.medium_final}) like '%google%'
-           OR lower(${ga_pageviews_clone.source_final}) like '%bing ad extension%'
-           OR lower(${ga_pageviews_clone.source_final}) like '%fb click to call%'
-           OR (${ga_pageviews_clone.medium_final} in('nativedisplay'))
-           OR (${ga_pageviews_clone.medium_final} in('display'))
 
 
 ;;
   }
 
-  dimension: explicit_digital_bool {
-    type: yesno
-    sql:
-           (${ga_pageviews_clone.source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${ga_pageviews_clone.medium_final} in('cpc', 'paid search'))
-           OR lower(${ga_pageviews_clone.medium_final}) like '%google%'
-           OR lower(${ga_pageviews_clone.source_final}) like '%bing ad extension%'
-           OR lower(${ga_pageviews_clone.source_final}) like '%fb click to call%'
-           OR (${ga_pageviews_clone.medium_final} in('nativedisplay'))
-           OR (${ga_pageviews_clone.source_final} in('facebook', 'instagram') and ${ga_pageviews_clone.medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image'))
-           OR  (${ga_pageviews_clone.medium_final} in('display'))
-;;
-  }
 
-  dimension: website_derived {
+  dimension: digital_bool {
     type:  yesno
-    sql: ${ga_pageviews_clone.source_final} is not null;;
+    sql: ${ga_pageviews_clone.source_final} is not null or ${web_ga_pageviews_clone.source_final} is not null;;
   }
   dimension: channel_name_fixed {
     type: string
@@ -183,7 +165,7 @@ view: channel_items {
   dimension: growth_category {
     type: string
     sql: case
-   when ${website_derived} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
+   when ${digital_bool} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
    when ${type_name} in ('Provider Group') or ${name} in('Healthcare provider', 'Healthcare Provider') then 'Provider'
    when ${type_name} in('Employer') or ${name} in('Employer') then 'Employer'
    when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' )  then 'Senior Care'
@@ -193,6 +175,32 @@ view: channel_items {
    when ${type_name} ='Payer' then 'Payer'
   else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
   }
+
+  dimension: high_level_category {
+    type: string
+    sql: case
+         when ${digital_bool} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
+         when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health') or  ${name} in('Healthcare provider', 'Healthcare Provider')  then 'Senior Care'
+         when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group') or ${name} in('Employer') then 'Strategic'
+         when ${name} ='Family or friend' then 'Family or Friends'
+        else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
+  }
+
+
+  dimension: growth_category_self_report {
+    type: string
+    sql: case
+         when(${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
+         when ${type_name} in ('Provider Group') or ${name} in('Healthcare provider', 'Healthcare Provider') then 'Provider'
+         when ${type_name} in('Employer') or ${name} in('Employer') then 'Employer'
+         when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' )  then 'Senior Care'
+         when ${type_name} in('Home Health' )  then 'Home Health'
+         when ${type_name} in('Health System' )  then 'Health System'
+         when ${name} ='Family or friend' then 'Family or Friends'
+         when ${type_name} ='Payer' then 'Payer'
+        else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
+  }
+
 
   dimension: direct_consumer_boolean {
     type:  yesno

@@ -306,4 +306,9 @@ dimension: source_category
     type:  yesno
     sql: ${ga_time_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
   }
+
+  dimension: channel_id_coalesce {
+    type: number
+    sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id});;
+  }
 }
