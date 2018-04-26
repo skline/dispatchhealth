@@ -37,6 +37,11 @@ view: care_requests {
     sql: ${TABLE}.chief_complaint ;;
   }
 
+  dimension: chief_complaint_trimmed {
+    type: string
+    sql: trim(lower(${chief_complaint})) ;;
+  }
+
   dimension: chrono_visit_id {
     type: string
     sql: ${TABLE}.chrono_visit_id ;;

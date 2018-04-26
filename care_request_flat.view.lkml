@@ -59,6 +59,12 @@ SELECT
     sql: ${TABLE}.care_request_id ;;
   }
 
+  dimension: on_scene_time_seconds {
+    type: number
+    description: "The number of seconds between complete time and on scene time"
+    sql: EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}) ;;
+  }
+
   dimension: drive_time_seconds {
     type: number
     description: "The number of seconds between on route time and on scene time"
@@ -76,6 +82,13 @@ SELECT
     description: "The number of seconds between accepted time and on-route time"
     sql: EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
   }
+
+  dimension: on_scene_time_minutes {
+    type: number
+    description: "The number of minutes between complete time and on scene time"
+    sql: (EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}))::float/60.0 ;;
+  }
+
 
   dimension: drive_time_minutes {
     type: number
@@ -141,6 +154,14 @@ SELECT
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${assigned_time_minutes} ;;
+  }
+
+  measure:  average_on_scene_time_minutes{
+    type: average_distinct
+    description: "The average minutes between complete time and on scene time"
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${on_scene_time_minutes} ;;
   }
 
   measure: average_wait_time_total {

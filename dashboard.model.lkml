@@ -108,6 +108,11 @@ explore: care_requests {
     sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND ${insurances.company_name} = ${insurance_plans.name} AND ${insurance_plans.state_id} = ${states.id};;
   }
 
+  join: insurance_classifications {
+    relationship: many_to_one
+    sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
+  }
+
   join: care_request_complete{
     relationship: one_to_many
     from: care_request_statuses

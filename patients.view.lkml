@@ -32,9 +32,41 @@ view: patients {
     sql: ${TABLE}.gender ;;
   }
 
+  dimension: female {
+   type: yesno
+   sql: ${gender} = 'Female' ;;
+  }
+
+
+  measure: distinct_females {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: female
+      value: "yes"
+    }
+
+  }
+
+
+  measure: percent_female {
+    type: number
+    value_format: "0%"
+    sql: ${distinct_females}::float/${count_distinct}::float ;;
+
+  }
+
   dimension: age {
     type: number
     sql: CAST(EXTRACT(YEAR from AGE(${care_request_requested.created_date}, ${dob})) AS INT) ;;
+  }
+
+  measure: average_age {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${id} ;;
+    sql:  ${age} ;;
+
   }
 
   dimension_group: created {
@@ -171,6 +203,12 @@ view: patients {
   measure: count {
     type: count
     drill_fields: [detail*]
+  }
+
+  measure: count_distinct {
+    type: count_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${id};;
   }
 
   # ----- Sets of fields for drilling ------
