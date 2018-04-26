@@ -143,6 +143,27 @@ SELECT
     sql: ${assigned_time_minutes} ;;
   }
 
+# Need to get this working for histograms
+#   parameter: bucket_size {
+#     default_value: "10"
+#     type: number
+#   }
+#
+#   dimension: assigned_time_dynamic_sort_field {
+#     sql:
+#       ${assigned_time_minutes} - mod(CAST(${assigned_time_minutes} AS INT),{% parameter bucket_size %});;
+#     type: number
+#     hidden: yes
+#   }
+#
+#   dimension: assigned_time_dynamic_bucket  {
+#     sql:
+#         concat(${assigned_time_minutes} - mod(CAST(${assigned_time_minutes} AS INT),{% parameter bucket_size %}),
+#           '-', ${assigned_time_minutes} - mod(CAST(${assigned_time_minutes} AS INT),{% parameter bucket_size %} + {% parameter bucket_size %})
+#       ;;
+#     order_by_field: assigned_time_dynamic_sort_field
+#   }
+
   measure: average_wait_time_total {
     description: "Total patient wait time: the average minutes between requested time and on-scene time"
     type: number
