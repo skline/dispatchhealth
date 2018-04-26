@@ -64,7 +64,8 @@ explore: visit_facts {
     relationship: one_to_one
     # change association to be the care request id instead of visit number - DH
     sql_on: ${survey_response_facts.visit_dim_number} = ${visit_facts.visit_dim_number}
-    AND ${survey_response_facts.question_dim_id} = 4 ;;
+    AND ${survey_response_facts.question_dim_id} = 4
+    AND ${survey_response_facts.answer_range_value} IS NOT NULL ;;
   }
 
   join: question_dimensions {
