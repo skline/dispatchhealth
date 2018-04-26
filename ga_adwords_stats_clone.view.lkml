@@ -162,6 +162,7 @@ view: ga_adwords_stats_clone {
   dimension: market_id {
     type: number
     sql: case when ${care_requests.market_id} is not null and ${ga_pageviews_clone.adwords} then ${care_requests.market_id}
+              when ${web_care_requests.market_id} is not null and ${ga_pageviews_clone.adwords} then ${web_care_requests.market_id}
               when ${adwords_campaigns_clone.market_id} is not null then ${adwords_campaigns_clone.market_id}
               when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
               else null end
@@ -244,6 +245,10 @@ view: ga_adwords_stats_clone {
   dimension: channel_combined {
      type:string
      sql: coalesce(${web_channel_items.name}, ${channel_items.name});;
+  }
+  dimension: channel_id_coalesce {
+    type: number
+    sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id});;
   }
 
 }

@@ -139,6 +139,7 @@ view: ga_pageviews_clone {
   dimension: facebook_market_id_final{
     type: number
     sql: case when ${care_requests.market_id} is not null and lower(${source}) in ('facebook', 'facbeook.com', 'instagram', 'instagram.com') then ${care_requests.market_id}
+              when ${web_care_requests.market_id} is not null and lower(${source}) in ('facebook', 'facbeook.com', 'instagram', 'instagram.com') then ${web_care_requests.market_id}
               when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
               when ${facebook_market_id} is not null then ${facebook_market_id}
               when ${facebook_paid_performance_clone.market_id} is not null then ${facebook_paid_performance_clone.market_id}
@@ -185,6 +186,11 @@ dimension: source_category
             when ${medium_final} in('referral') then 'Referral'
             when ${source_final} in('shannon') then null
             else ${source_medium} end;;
+  }
+
+  dimension: low_intent{
+    type: yesno
+    sql:  source_category in('Native Display','Display', 'Paid Social', 'Organic Social') ;;
   }
 
   dimension: high_low_intent
@@ -299,5 +305,10 @@ dimension: source_category
   dimension: month_to_date_adwords {
     type:  yesno
     sql: ${ga_time_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
+  }
+
+  dimension: channel_id_coalesce {
+    type: number
+    sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id});;
   }
 }

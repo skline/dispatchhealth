@@ -223,8 +223,33 @@ view: facebook_paid_performance_clone {
          when lower(${campaign_name})  like '%okl%' then 166
          else  null end  ;;
   }
+
+
   dimension: facebook_date{
     type: date
+    sql: case
+              when ${start_date} is not null then ${start_date}
+              when ${ga_pageviews_clone.timestamp_date} is not null then ${ga_pageviews_clone.timestamp_date}
+              when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
+         else null end;;
+
+    }
+
+
+
+  dimension_group: facebook_time{
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      day_of_week_index,
+      day_of_month
+    ]
+    type: time
     sql: case
               when ${start_date} is not null then ${start_date}
               when ${ga_pageviews_clone.timestamp_date} is not null then ${ga_pageviews_clone.timestamp_date}

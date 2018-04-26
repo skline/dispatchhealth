@@ -196,6 +196,14 @@ join: ga_pageviews_clone {
 
   }
 
+  join: web_ga_pageviews_clone {
+    from: ga_pageviews_clone
+    sql_on:
+    abs(EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})-EXTRACT(EPOCH FROM ${web_ga_pageviews_clone.timestamp_raw})) < 172800
+      and care_requests.marketing_meta_data->>'ga_client_id' = ${web_ga_pageviews_clone.client_id}  ;;
+
+    }
+
   join: incontact_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
              and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
