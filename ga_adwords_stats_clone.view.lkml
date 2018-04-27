@@ -250,5 +250,55 @@ view: ga_adwords_stats_clone {
     type: number
     sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id});;
   }
+  measure: impression_to_adclick_rate {
+    type: number
+    value_format: "0.0%"
+    sql: ${ga_adwords_cost_clone.sum_total_adclicks} /${ga_adwords_cost_clone.sum_total_impressions} ;;
+  }
+
+  measure: adclick_to_sessions_rate {
+    type: number
+    value_format: "0%"
+    sql: ${distinct_sessions} /${ga_adwords_cost_clone.sum_total_adclicks} ;;
+  }
+
+  measure: sessions_to_calls_rate {
+    type: number
+    value_format: "0%"
+    sql: ${invoca_clone.count}::float /${distinct_sessions}::float ;;
+  }
+
+
+  measure: adclick_to_calls_rate {
+    type: number
+    value_format: "0%"
+    sql: ${invoca_clone.count}::float /${ga_adwords_cost_clone.sum_total_adclicks}::float ;;
+  }
+
+  measure: adclick_to_complete_rate {
+    type: number
+    value_format: "0%"
+    sql: ${total_complete}::float/${ga_adwords_cost_clone.sum_total_adclicks}::float;;
+  }
+
+
+  measure: calls_to_care_request_rate {
+    type: number
+    value_format: "0%"
+    sql: ${total_care_requests}::float /${invoca_clone.count}::float ;;
+  }
+
+  measure: calls_to_complete_rate {
+    type: number
+    value_format: "0%"
+    sql: ${total_complete}::float /${invoca_clone.count}::float ;;
+  }
+
+  measure: care_request_to_complete_rate {
+    type: number
+    value_format: "0%"
+    sql: ${total_complete}::float /${total_care_requests}::float ;;
+  }
+
 
 }

@@ -422,8 +422,14 @@ explore: ga_pageviews_full_clone {
           and ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
     sql_where:  ${invoca_clone.start_date} >'2018-03-15'
       OR ${ga_pageviews_full_clone.timestamp_time} is not null;;
+  }
 
+  join: marketing_cost_clone {
+    sql_on:   ${ga_pageviews_full_clone.source_final} = ${marketing_cost_clone.type}
+              and ${ga_pageviews_full_clone.timestamp_date} =${marketing_cost_clone.date_date}
+              and ${ga_pageviews_full_clone.medium_final}  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
 
+            ;;
   }
 
   join: incontact_clone {

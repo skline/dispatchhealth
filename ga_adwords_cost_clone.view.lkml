@@ -78,20 +78,39 @@ view: ga_adwords_cost_clone {
  measure: cost_per_call {
    type: number
    value_format:"$#;($#)"
-   sql:  round(${sum_total_adcost}/NULLIF(${invoca_clone.count},0)) ;;
+   sql:  ${sum_total_adcost}/NULLIF(${invoca_clone.count},0) ;;
  }
 
   measure: cost_per_care_request {
     type: number
     value_format:"$#;($#)"
-    sql:  round(${sum_total_adcost}/NULLIF(${ga_adwords_stats_clone.total_care_requests},0)) ;;
+    sql:  ${sum_total_adcost}/NULLIF(${ga_adwords_stats_clone.total_care_requests},0) ;;
   }
 
   measure: cost_per_care_complete {
     type: number
     value_format:"$#;($#)"
-    sql:  round(${sum_total_adcost}/NULLIF(${ga_adwords_stats_clone.total_complete}, 0)) ;;
+    sql:  ${sum_total_adcost}/NULLIF(${ga_adwords_stats_clone.total_complete}, 0) ;;
   }
+
+  measure: cost_per_clicks {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${sum_total_adcost}/NULLIF(${sum_total_adclicks}, 0) ;;
+  }
+
+  measure: cost_per_impressions {
+    type: number
+    value_format:"$#.00;($#).00"
+    sql:  ${sum_total_adcost}/NULLIF(${sum_total_impressions}, 5) ;;
+  }
+
+  measure: cost_per_sessions {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${sum_total_adcost}/NULLIF(${ga_adwords_stats_clone.distinct_sessions}, 0) ;;
+  }
+
 
 
   measure: count {
