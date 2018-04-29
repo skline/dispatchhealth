@@ -71,10 +71,40 @@ view: survey_responses_flat {
     type: string
     sql: ${TABLE}.overall_rating_response ;;
   }
+
+  measure: distinct_promoters{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: promoter
+      value: "yes"
+    }
+  }
+
+
+  measure: distinct_detractors{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: detractor
+      value: "yes"
+    }
+  }
+
+  measure: distinct_nps_respondent{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: nps_respondent
+      value: "yes"
+    }
+  }
+
+
   measure: nps_score {
     type: number
-    label: "0.00"
-    sql: ((${promoter} -${detractor})/${nps_respondent})*100;;
+    value_format: "0.0"
+    sql: ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100;;
   }
 
 }
