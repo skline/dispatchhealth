@@ -69,6 +69,61 @@ view: patient_facts {
     sql: ${TABLE}.gender ;;
   }
 
+  dimension: female {
+    type: yesno
+    sql: ${gender}  in ('f', 'Female') ;;
+  }
+
+  dimension: male {
+    type: yesno
+    sql: ${gender}  in('m', 'Male') ;;
+  }
+
+  dimension: gender_not_null {
+    type: yesno
+    sql: ${gender} in('m', 'f', 'Female', 'Male') ;;
+  }
+
+
+
+  measure: distinct_females {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: female
+      value: "yes"
+    }
+
+  }
+
+  measure: distinct_males {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: male
+      value: "yes"
+    }
+  }
+
+  measure: distinct_gender_not_null{
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: gender_not_null
+      value: "yes"
+    }
+
+
+  }
+
+
+  measure: percent_female {
+    type: number
+    value_format: "0%"
+    sql: CAST(${distinct_females} AS DECIMAL(10,6))/CAST(${distinct_gender_not_null} AS DECIMAL(10,6));;
+
+  }
+
   dimension: last_name {
     type: string
     sql: ${TABLE}.last_name ;;

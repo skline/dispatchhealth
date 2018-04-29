@@ -12,6 +12,12 @@ view: patient_dimensions {
     type: number
     sql: ${TABLE}.age ;;
   }
+  measure: average_age {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${visit_facts.care_request_id} ;;
+    sql: ${age} ;;
+  }
 
   dimension: age_0_to_5 {
     type: yesno

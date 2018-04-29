@@ -306,17 +306,31 @@ view: invoca_clone {
      when lower(${profile_campaign})  like '%hou%' then 165
      else null end ;;
   }
+  dimension: self_report {
+    type: yesno
+    sql: ${utm_medium} = 'self report' ;;
+  }
 
   measure: count {
     label: "Distinct Invoca Calls"
-    type: number
-    sql: count(distinct ${call_record_ikd}) ;;
+    type: count_distinct
+    sql_distinct_key:  ${call_record_ikd};;
+    sql: ${call_record_ikd} ;;
+    filters: {
+      field: self_report
+      value: "no"
+    }
   }
 
   measure: count_distinct_number {
     label: "Distinct Invoca Calls Unique Numbers"
-    type: number
-    sql: count(distinct ${TABLE}.caller_id) ;;
+    type: count_distinct
+    sql_distinct_key:  ${call_record_ikd};;
+    sql:${caller_id} ;;
+    filters: {
+      field: self_report
+      value: "no"
+    }
   }
 
   measure: avg_invoca_duration {
@@ -324,11 +338,20 @@ view: invoca_clone {
     type: average_distinct
     sql_distinct_key:  ${call_record_ikd};;
     sql: round(${total_duration_seconds});;
+    filters: {
+      field: self_report
+      value: "no"
+    }
   }
   measure: avg_invoca_duration_r{
     label: "average invoca duration seconds r"
-    type: number
+    type: average_distinct
+    sql_distinct_key:  ${call_record_ikd};;
     sql: round(${avg_invoca_duration}) ;;
+    filters: {
+      field: self_report
+      value: "no"
+    }
 
     }
 

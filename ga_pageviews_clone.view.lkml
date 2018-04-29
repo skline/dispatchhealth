@@ -185,6 +185,16 @@ dimension: source_category
             when ${medium_final} in('display') then 'Display'
             when ${medium_final} in('referral') then 'Referral'
             when ${source_final} in('shannon') then null
+            when ${source_final} in('self report') then 'Self Report Digital'
+            else ${source_medium} end;;
+  }
+
+  dimension: high_level_category
+  {
+    type: string
+    sql: case when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'Paid Search'
+            when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
+            when ${source_final} in('self report') then 'Self Report Digital'
             else ${source_medium} end;;
   }
 

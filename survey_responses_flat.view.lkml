@@ -71,5 +71,10 @@ view: survey_responses_flat {
     type: string
     sql: ${TABLE}.overall_rating_response ;;
   }
+  measure: nps_score {
+    type: number
+    label: "0.0"
+    sql: ((${promoter} -${detractor})/${nps_respondent})*100;;
+  }
 
 }
