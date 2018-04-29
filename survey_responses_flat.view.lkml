@@ -73,7 +73,7 @@ view: survey_responses_flat {
   }
   measure: nps_score {
     type: number
-    label: "0.0"
+    label: "0.00"
     sql: ((${promoter} -${detractor})/${nps_respondent})*100;;
   }
 
