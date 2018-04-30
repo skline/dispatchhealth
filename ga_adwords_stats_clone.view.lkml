@@ -253,51 +253,51 @@ view: ga_adwords_stats_clone {
   measure: impression_to_adclick_rate {
     type: number
     value_format: "0.0%"
-    sql: ${ga_adwords_cost_clone.sum_total_adclicks} /${ga_adwords_cost_clone.sum_total_impressions} ;;
+    sql: ${ga_adwords_cost_clone.sum_total_adclicks} /nullif(${ga_adwords_cost_clone.sum_total_impressions},0) ;;
   }
 
   measure: adclick_to_sessions_rate {
     type: number
     value_format: "0%"
-    sql: ${distinct_sessions} /${ga_adwords_cost_clone.sum_total_adclicks} ;;
+    sql: ${distinct_sessions} /nullif(${ga_adwords_cost_clone.sum_total_adclicks},0);;
   }
 
   measure: sessions_to_calls_rate {
     type: number
     value_format: "0%"
-    sql: ${invoca_clone.count}::float /${distinct_sessions}::float ;;
+    sql: ${invoca_clone.count}::float /nullif(${distinct_sessions}::float,0) ;;
   }
 
 
   measure: adclick_to_calls_rate {
     type: number
     value_format: "0%"
-    sql: ${invoca_clone.count}::float /${ga_adwords_cost_clone.sum_total_adclicks}::float ;;
+    sql: ${invoca_clone.count}::float /nullif(${ga_adwords_cost_clone.sum_total_adclicks}::float,0) ;;
   }
 
   measure: adclick_to_complete_rate {
     type: number
     value_format: "0%"
-    sql: ${total_complete}::float/${ga_adwords_cost_clone.sum_total_adclicks}::float;;
+    sql: ${total_complete}::float/nullif(${ga_adwords_cost_clone.sum_total_adclicks}::float,0);;
   }
 
 
   measure: calls_to_care_request_rate {
     type: number
     value_format: "0%"
-    sql: ${total_care_requests}::float /${invoca_clone.count}::float ;;
+    sql: ${total_care_requests}::float /nullif(${invoca_clone.count}::float,0);;
   }
 
   measure: calls_to_complete_rate {
     type: number
     value_format: "0%"
-    sql: ${total_complete}::float /${invoca_clone.count}::float ;;
+    sql: ${total_complete}::float /nullif(${invoca_clone.count}::float,0) ;;
   }
 
   measure: care_request_to_complete_rate {
     type: number
     value_format: "0%"
-    sql: ${total_complete}::float /${total_care_requests}::float ;;
+    sql: ${total_complete}::float /nullif(${total_care_requests}::float,0) ;;
   }
 
 

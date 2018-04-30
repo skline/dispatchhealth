@@ -498,6 +498,11 @@ SELECT
     sql: ${on_scene_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${on_scene_day_of_week_index} >= 0 ;;
   }
 
+  dimension: until_today_created {
+    type: yesno
+    sql: ${created_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${created_day_of_week_index} >= 0 ;;
+  }
+
   dimension: this_week_on_scene {
     type:  yesno
     sql: ${yesterday_mountain_week} =  ${on_scene_week};;
@@ -517,6 +522,11 @@ SELECT
   dimension: month_to_date_on_scene  {
     type:  yesno
     sql: ${on_scene_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
+  }
+
+  dimension: month_to_date_created {
+    type:  yesno
+    sql: ${created_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
   }
 
   measure: distinct_months_on_scene {
@@ -767,6 +777,11 @@ SELECT
     }
   }
 
+  measure: complete_rate {
+    type: number
+    value_format: "0%"
+    sql: ${complete_count}::float/nullif(${care_request_count}::float,0) ;;
+  }
 
   measure: month_percent {
     type: number

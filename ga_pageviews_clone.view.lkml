@@ -193,9 +193,10 @@ dimension: source_category
   {
     type: string
     sql: case when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'Paid Search'
+            when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
             when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
             when ${source_final} in('self report') then 'Self Report Digital'
-            else ${source_medium} end;;
+            else 'Other' end;;
   }
 
   dimension: low_intent{
@@ -321,4 +322,35 @@ dimension: source_category
     type: number
     sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id});;
   }
+  measure: sessions_to_calls_rate {
+    type: number
+    value_format: "0%"
+    sql: ${invoca_clone.count}::float /nullif(${count_distinct_sessions}::float,0) ;;
+  }
+
+  measure: sessions_to_complete_rate {
+    type: number
+    value_format: "0.0%"
+    sql: ${total_complete}::float /nullif(${count_distinct_sessions}::float,0) ;;
+  }
+
+  measure: calls_to_care_request_rate {
+    type: number
+    value_format: "0%"
+    sql: ${total_care_requests}::float /nullif(${invoca_clone.count}::float,0) ;;
+  }
+
+  measure: calls_to_complete{
+    type: number
+    value_format: "0%"
+    sql: ${total_complete}::float /nullif(${invoca_clone.count}::float,0);;
+  }
+
+  measure: care_requests_to_complete_rate{
+    type: number
+    value_format: "0%"
+    sql: ${total_complete}::float /nullif(${total_care_requests}::float,0) ;;
+  }
+
+
 }
