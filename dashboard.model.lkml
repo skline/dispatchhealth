@@ -3,6 +3,7 @@ connection: "dashboard"
 include: "*.view.lkml"         # include all views in this project
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
+
 explore: care_requests {
 
   access_filter: {
@@ -23,6 +24,10 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
   }
 
+  join: care_request_distances {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${care_request_distances.care_request_id} ;;
+  }
 
   join: credit_card_errors {
     relationship: one_to_many
