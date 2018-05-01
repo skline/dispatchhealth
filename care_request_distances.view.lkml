@@ -140,6 +140,7 @@ SELECT
 
   measure: distance_home {
     type: sum
+    description: "The direct-line distance between the last care request and the clinical office"
     sql: ${TABLE}.distance_to_next ;;
     filters: {
       field: last_care_request_flag

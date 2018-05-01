@@ -651,6 +651,7 @@ measure: distinct_days {
 
   measure: shift_end_last_cr_diff_adj{
     label: "Hours between Last Patient Seen and Shift End Adj"
+    description: "Hours between last completed care request and shift end.  Does not account for requests cancelled while on-route"
     sql:  case when  ${shift_end_last_cr_diff} > 18.0  then ${shift_end_last_cr_diff} - 24.0
                when  ${shift_end_last_cr_diff} < -18.0 then ${shift_end_last_cr_diff} + 24.0
            else ${shift_end_last_cr_diff} end;;
