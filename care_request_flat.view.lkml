@@ -827,6 +827,18 @@ SELECT
     ) end ;;
   }
 
+  dimension: first_half_month {
+    type: yesno
+    sql: ${complete_day_of_month} <= 15 ;;
+  }
+
+  dimension: ga_high_level_category {
+    type: string
+    sql: coalesce((case when ${ga_pageviews_clone.high_level_category} = 'Other' then null else ${ga_pageviews_clone.high_level_category} end), ${web_ga_pageviews_clone.high_level_category}) ;;
+  }
+
+
+
 
 
 }

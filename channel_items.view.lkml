@@ -179,9 +179,9 @@ view: channel_items {
   dimension: high_level_category {
     type: string
     sql: case
-         when ${digital_bool} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
-         when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health') or  ${name} in('Healthcare provider', 'Healthcare Provider')  then 'Senior Care'
-         when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group') or ${name} in('Employer') then 'Strategic'
+         when ${digital_bool} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel')) then 'Direct to Consumer'
+         when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health') or  ${name} in('Healthcare provider', 'Healthcare Provider', 'Health Insurance Company', '911 Channel')  then 'Senior Care'
+         when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group') or ${name} in('Employer', 'Employer Organization') then 'Strategic'
          when ${name} ='Family or friend' then 'Family or Friends'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
   }

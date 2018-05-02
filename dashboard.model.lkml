@@ -454,11 +454,22 @@ explore: ga_pageviews_full_clone {
       and  ${ga_geodata_clone.longitude} = ${ga_zips_clone.longitude};;
   }
 
+
+  join: web_care_requests {
+    from: care_requests
+    sql_on:
+        (
+          abs(EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+          AND
+          web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
+         ) ;;
+  }
+
   join: care_requests {
     sql_on:
         (
           (
-            ${patients.id} = ${care_requests.patient_id}
+            ${patients.id} = ${care_requests.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
           OR
           (
             ${care_requests.origin_phone} = ${invoca_clone.caller_id}
@@ -471,15 +482,7 @@ explore: ga_pageviews_full_clone {
         );;
   }
 
-  join: web_care_requests {
-    from: care_requests
-    sql_on:
-        (
-          abs(EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
-          AND
-          web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
-         ) ;;
-  }
+
 
   join: care_request_flat {
     relationship: many_to_one
@@ -609,18 +612,6 @@ explore: ga_pageviews_clone {
       sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
     }
 
-    join: care_requests {
-      sql_on:
-      (
-        (
-          ${patients.id} = ${care_requests.patient_id}
-          OR
-          (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
-        )
-        AND
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
-      );;
-    }
 
     join: web_care_requests {
       from: care_requests
@@ -631,6 +622,20 @@ explore: ga_pageviews_clone {
         web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id}
       ) ;;
     }
+
+  join: care_requests {
+    sql_on:
+      (
+        (
+          ${patients.id} = ${care_requests.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+          OR
+          (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+        )
+        AND
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+      );;
+  }
+
 
     join: care_request_flat {
       relationship: many_to_one
@@ -757,18 +762,7 @@ explore: ga_pageviews_clone {
         sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
       }
 
-      join: care_requests {
-        sql_on:
-            (
-              (
-                ${patients.id} = ${care_requests.patient_id}
-                OR
-                (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
-              )
-              AND
-              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
-            );;
-      }
+
 
       join: web_care_requests {
         from: care_requests
@@ -780,6 +774,18 @@ explore: ga_pageviews_clone {
             ) ;;
       }
 
+    join: care_requests {
+      sql_on:
+            (
+              (
+                ${patients.id} = ${care_requests.patient_id} and (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+                OR
+                (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+              )
+              AND
+              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+            );;
+    }
       join: care_request_flat {
         relationship: many_to_one
         sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
@@ -919,11 +925,23 @@ explore: ga_pageviews_clone {
         sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
       }
 
+      join: web_care_requests {
+        from: care_requests
+        sql_on:
+              (
+
+                 abs(EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+                AND
+                web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
+              ) ;;
+
+        }
+
       join: care_requests {
         sql_on:
             (
               (
-                ${patients.id} = ${care_requests.patient_id}
+                ${patients.id} = ${care_requests.patient_id} and (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
                 OR
                 (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
               )
@@ -933,17 +951,7 @@ explore: ga_pageviews_clone {
             );;
 
         }
-        join: web_care_requests {
-          from: care_requests
-          sql_on:
-              (
 
-                 abs(EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
-                AND
-                web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
-              ) ;;
-
-          }
 
           join: care_request_flat {
             relationship: many_to_one

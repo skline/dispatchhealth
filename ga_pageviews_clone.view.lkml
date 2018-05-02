@@ -195,7 +195,7 @@ dimension: source_category
     sql: case when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'Paid Search'
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
             when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
-            when ${source_final} in('self report') then 'Self Report Digital'
+            when ${medium_final} in('self report') then 'Self Report Direct to Consumer'
             else 'Other' end;;
   }
 
@@ -320,7 +320,7 @@ dimension: source_category
 
   dimension: channel_id_coalesce {
     type: number
-    sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id});;
+    sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id})::int;;
   }
   measure: sessions_to_calls_rate {
     type: number
