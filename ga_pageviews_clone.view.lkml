@@ -322,6 +322,67 @@ dimension: source_category
     type: number
     sql: coalese(${care_requests.channel_item_id}, ${web_care_requests.channel_item_id})::int;;
   }
+  measure: impressions_to_adclicks_rate {
+    type: number
+    value_format: "0.0%"
+    sql: ${marketing_cost_clone.sum_ad_clicks}::float /nullif(${marketing_cost_clone.sum_impressions}::float,0) ;;
+  }
+
+
+  measure: session_to_adclicks_rate {
+    label: "Adclick to Sessions Rate"
+    type: number
+    value_format: "0%"
+    sql:  ${count_distinct_sessions}::float/nullif(${marketing_cost_clone.sum_ad_clicks}::float ,0) ;;
+  }
+
+  measure: adclicks_to_complete_rate {
+    type: number
+    value_format: "0.0%"
+    sql: ${total_complete}::float /nullif(${marketing_cost_clone.sum_ad_clicks}::float,0) ;;
+  }
+
+
+  measure: cost_per_call {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${invoca_clone.count},0) ;;
+  }
+
+  measure: cost_per_care_request {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${total_care_requests},0) ;;
+  }
+
+  measure: cost_per_care_complete {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${total_complete}, 0) ;;
+  }
+
+  measure: cost_per_clicks {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${marketing_cost_clone.sum_ad_clicks}, 0) ;;
+  }
+
+  measure: cost_per_impressions {
+    type: number
+    value_format:"$#.00;($#).00"
+    sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${marketing_cost_clone.sum_impressions}, 0) ;;
+  }
+
+  measure: cost_per_sessions {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${count_distinct_sessions}, 0) ;;
+  }
+
+
+
+
+
   measure: sessions_to_calls_rate {
     type: number
     value_format: "0%"

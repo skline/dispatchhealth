@@ -26,6 +26,7 @@ view: marketing_cost_clone {
 
   measure: sum_cost{
     type: sum_distinct
+    value_format: "$0"
     sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}) ;;
     sql: ${cost}  ;;
   }
