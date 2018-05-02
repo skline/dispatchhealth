@@ -135,7 +135,7 @@ SELECT
   measure:  average_drive_time_minutes{
     type: average_distinct
     description: "The average minutes between on-route time and on-scene time"
-    value_format: "0"
+    value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_minutes} ;;
   }
@@ -143,7 +143,7 @@ SELECT
   measure:  average_in_queue_time_minutes{
     type: average_distinct
     description: "The average minutes between requested time and accepted time"
-    value_format: "0"
+    value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${in_queue_time_minutes} ;;
   }
@@ -151,7 +151,7 @@ SELECT
   measure:  average_assigned_time_minutes{
     type: average_distinct
     description: "The average minutes between accepted time and on-route time"
-    value_format: "0"
+    value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${assigned_time_minutes} ;;
   }
@@ -159,7 +159,7 @@ SELECT
   measure:  average_on_scene_time_minutes{
     type: average_distinct
     description: "The average minutes between complete time and on scene time"
-    value_format: "0"
+    value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${on_scene_time_minutes} ;;
 
@@ -217,7 +217,7 @@ SELECT
 
   dimension: archive_comment {
     type: number
-    description: "The CSC comment provided when a care request is archived, usually a date of scheduled care request"
+    description: "The CSC comment provided when a care request is archived"
     sql: ${TABLE}.archive_comment ;;
   }
 
@@ -743,7 +743,16 @@ SELECT
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: ${complete_comment} LIKE '%Referred - Phone Triage%' ;;
+    sql: ${archive_comment} LIKE '%Referred - Phone Triage%' ;;
+  }
+
+  measure: escalated_on_phone_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "yes"
+    }
   }
 
   dimension: escalated_on_phone_reason {
