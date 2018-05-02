@@ -86,6 +86,12 @@ view: productivity_data {
     sql: ${TABLE}.monthly_goal ;;
   }
 
+  measure: sum_monthly_goal {
+    description: "The sum of market monthly goals"
+    type: sum
+    sql: ${monthly_goal} ;;
+  }
+
   dimension: ffs_goal {
     label: "Fee for Service Revenue Goal"
     type: number

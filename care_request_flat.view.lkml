@@ -446,6 +446,17 @@ SELECT
     sql: ${TABLE}.shift_end_time ;;
   }
 
+  dimension: shift_hours  {
+    type: number
+    sql: EXTRACT(EPOCH FROM ${shift_end_raw} - ${shift_start_raw})/3600 ;;
+  }
+
+  measure: sum_shift_hours {
+    type: sum
+    description: "The sum of all scheduled shift hours"
+    sql: ${shift_hours} ;;
+  }
+
   measure: max_complete_time {
     label: "Last Care Request Completion Time"
     type: date_time

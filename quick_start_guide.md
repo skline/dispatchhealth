@@ -23,7 +23,16 @@ Looker has two basic data types that can be used to create reports: **dimensions
 + a fact or numerical value
  a derived value, computed based on the values of other fields in a single row
 
-1. measures are numeric values thatt are used to group across a collection of data
+1. measures are numeric values that are used to group across a collection of data
+
+### Finding Data
+
+An 'Explore' is a data model that compiles various related data together for comprehensive reporting.
+There are two primary explores that you will use: **care requests** and **visit facts**
+
+* Visit Facts is based on the database that currently feeds Jaspersoft.  There are timing issues for this data due to the time in which data is processed through Athena.
+* Care Requests is based on the dashboard data, so has information from as recently as the prior day.  At this point, Athena data has not been matched to Care Requests.
+* Both explores contain information about patients, channels, providers and care request details.
 
 ### Beyond viewing data
 
