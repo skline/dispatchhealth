@@ -10,6 +10,89 @@ explore: care_requests {
     field: markets.name
     user_attribute: "market_name"
   }
+
+  # Join all cloned tables from the BI database -- DE,
+  join: visit_facts_clone {
+    view_label: "Visit Facts relevant ID's used for matching"
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${visit_facts_clone.care_request_id} ;;
+  }
+
+  join: visit_dimensions_clone {
+    relationship: many_to_one
+    sql_on: ${care_requests.id} = ${visit_dimensions_clone.care_request_id} ;;
+  }
+
+  join: transaction_facts_clone {
+    relationship: one_to_many
+    sql_on: ${transaction_facts_clone.visit_dim_number} = ${visit_dimensions_clone.visit_number}  ;;
+  }
+
+#   join: charge_dimensions_clone {
+#     relationship: one_to_one
+#     sql_on: ${transaction_facts_clone.athena_charge_id} = ${charge_dimensions_clone.athena_charge_id} ;;
+#   }
+
+  join: cpt_code_dimensions_clone {
+    relationship: many_to_one
+    sql_on: ${transaction_facts_clone.cpt_code_dim_id} = ${cpt_code_dimensions_clone.id} ;;
+  }
+
+# Not much information here -- unclear if this is necessary
+#   join: cpt_em_references_clone {
+#      relationship: one_to_one
+#     sql_on: ${cpt_em_references_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
+#   }
+
+  join: icd_visit_joins_clone {
+    relationship: many_to_one
+    sql_on: ${transaction_facts_clone.visit_dim_number} = ${icd_visit_joins_clone.visit_dim_number} ;;
+  }
+
+  join: icd_code_dimensions_clone {
+    relationship: many_to_one
+    sql_on: ${icd_code_dimensions_clone.id} = ${icd_visit_joins_clone.icd_dim_id} ;;
+  }
+
+  join: letter_recipient_dimensions_clone {
+    relationship:  many_to_one
+    sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;
+  }
+
+  join: payer_dimensions_clone {
+    relationship: many_to_one
+    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id}  ;;
+  }
+
+  join: primary_payer_dimensions_clone {
+    relationship: one_to_one
+    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} ;;
+  }
+
+#   join: pcp_dimensions_clone {
+#   sql_on: ??? ;;
+#   }
+
+#   join: shift_planning_facts_clone {
+#     sql_on: ${shift_planning_facts_clone.car_dim_id} = ${visit_facts_clone.car_dim_id} ;;
+#   }
+
+  join: shift_planning_facts_clone {
+    type: inner
+    relationship: many_to_one
+    sql_on: ${visit_facts_clone.nppa_shift_id} = ${shift_planning_facts_clone.shift_id} and
+            ${shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+    }
+
+  join: survey_responses_flat_clone {
+    relationship: one_to_one
+
+    sql_on: ${survey_responses_flat_clone.visit_dim_number} = ${visit_facts_clone.visit_dim_number};;
+  }
+
+  # End cloned BI table joins
+  ############################
+
   join: addressable_items {
     relationship: one_to_one
     sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;
@@ -47,7 +130,6 @@ explore: care_requests {
   join: shifts{
     relationship: many_to_one
     sql_on:  ${shift_teams.shift_id}  =  ${shifts.id};;
-
   }
 
   join: cars {
@@ -86,6 +168,20 @@ explore: care_requests {
   join: provider_profiles {
     relationship: one_to_one
     sql_on: ${provider_profiles.user_id} = ${users.id} ;;
+  }
+
+  join: dhmt_names {
+    view_label: "DHMT Names"
+    from: users
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'emt' ;;
+  }
+
+  join: app_names {
+    view_label: "Advanced Practice Provider Names"
+    from: users
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'advanced practice provider' ;;
   }
 
   join: risk_assessments {
