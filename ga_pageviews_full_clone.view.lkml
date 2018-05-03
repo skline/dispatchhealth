@@ -7,7 +7,7 @@ view: ga_pageviews_full_clone {
     sql: case when ${care_requests.market_id} is not null then ${care_requests.market_id}
               when ${web_care_requests.market_id} is not null then ${web_care_requests.market_id}
               when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
-              when ${marketing_cost.market_id} is not null then ${marketing_cost.market_id}
+              when ${marketing_cost_clone.market_id} is not null then ${marketing_cost_clone.market_id}
               when ${ga_geodata_clone.market_id} is not null then ${ga_geodata_clone.market_id}
               else null end
               ;;

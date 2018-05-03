@@ -171,10 +171,31 @@ view: ga_pageviews_clone {
     sql:round((${total_complete}::float/nullif(${count_distinct_sessions}::float,0))::numeric,3) ;;
   }
 
+  dimension: timezone_proc {
+    type: string
+    sql: case when ${markets.id} in(159, 160) then 'US/Mountain'
+              when ${markets.id} in(161) then 'US/Arizona'
+              when ${markets.id} in(162) then 'US/Pacific'
+              when ${markets.id} in (164) then 'US/Eastern'
+              when ${markets.id} in(165, 166) then 'US/Central'
+              when ${timezone} in ('GMT-0400', '-0400 (Eastern Daylight Time)', '-0400 (EDT)') then 'US/Eastern'
+              else 'US/Mountain' end;;
+
+  }
+
+  dimension: mountain_time  {
+    type: date_raw
+    sql:   ${timestamp_raw} AT TIME ZONE ${timezone_proc} AT TIME ZONE 'US/Mountain'  ;;
+
+  }
+
+
 dimension: source_category
   {
     type: string
-    sql: case when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'Paid Search'
+    sql: case
+            when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and lower(${ad_group_final}) like '%brand%' then 'Paid Search: Brand'
+            when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'Paid Search: Non-Brand'
             when (${source_final} in('facebook', 'instagram') and ${medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image')) or lower(${source_final}) like '%fb click to call%' then 'Paid Social'
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
             when ${source_final} in('(direct)')  then 'Direct Traffic'
