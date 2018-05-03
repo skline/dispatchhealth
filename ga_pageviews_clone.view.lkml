@@ -274,6 +274,13 @@ dimension: source_category
     sql: coalesce(${content}, ${invoca_clone.utm_content}) ;;
   }
 
+  dimension: ad_group_final {
+    type: string
+    sql: coalesce(${ad_groups_clone.ad_group_name}, ${content_final}) ;;
+  }
+
+
+
   dimension: term {
     type: string
     sql: split_part(substring(${full_url} from 'utm_term=\w+'), '=', 2) ;;
