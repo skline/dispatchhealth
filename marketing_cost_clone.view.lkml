@@ -6,13 +6,18 @@ view: marketing_cost_clone {
     sql: ${TABLE}.campaign_name ;;
   }
 
+  dimension: ad_group_name {
+    type: string
+    sql: ${TABLE}.ad_group_name ;;
+  }
+
   dimension: ad_clicks {
     type: number
     sql: ${TABLE}.clicks ;;
   }
   measure: sum_ad_clicks{
     type: sum_distinct
-    sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}) ;;
+    sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}, ${ad_group_name}) ;;
     sql: ${ad_clicks}  ;;
   }
 
@@ -27,7 +32,7 @@ view: marketing_cost_clone {
   measure: sum_cost{
     type: sum_distinct
     value_format: "$0"
-    sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}) ;;
+    sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}, ${ad_group_name}) ;;
     sql: ${cost}  ;;
   }
 
@@ -54,7 +59,7 @@ view: marketing_cost_clone {
 
   measure: sum_impressions{
     type: sum_distinct
-    sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}) ;;
+    sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}, ${ad_group_name}) ;;
     sql: ${impressions}  ;;
   }
 

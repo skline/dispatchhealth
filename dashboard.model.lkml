@@ -525,6 +525,19 @@ explore: ga_pageviews_full_clone {
                   ;;
   }
 
+  join: ga_adwords_stats_clone {
+    sql_on: ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_full_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_full_clone.timestamp_raw};;
+  }
+
+  join: adwords_campaigns_clone {
+    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+  }
+
+  join: ad_groups_clone {
+    sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
+  }
+
 
   join: patients {
     sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
