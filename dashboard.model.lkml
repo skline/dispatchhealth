@@ -81,11 +81,12 @@ explore: care_requests {
     type: inner
     relationship: many_to_one
     sql_on: ${visit_facts_clone.nppa_shift_id} = ${shift_planning_facts_clone.shift_id} and
-            date(${shift_planning_facts_clone.local_actual_start_time})=date(${visit_dimensions_clone.local_visit_date}) ;;
+            ${shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
     }
 
   join: survey_responses_flat_clone {
     relationship: one_to_one
+
     sql_on: ${survey_responses_flat_clone.visit_dim_number} = ${visit_facts_clone.visit_dim_number};;
   }
 
@@ -171,14 +172,14 @@ explore: care_requests {
 
   join: dhmt_names {
     view_label: "DHMT Names"
-    from: provider_profiles
+    from: users
     relationship: one_to_one
     sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'emt' ;;
   }
 
   join: app_names {
     view_label: "Advanced Practice Provider Names"
-    from: provider_profiles
+    from: users
     relationship: one_to_one
     sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'advanced practice provider' ;;
   }
