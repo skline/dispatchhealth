@@ -854,6 +854,7 @@ SELECT
 
   dimension: ga_high_level_category {
     type: string
+    label: "Direct to Consumer Category"
     sql: coalesce((case when ${ga_pageviews_clone.high_level_category} = 'Other' then null else ${ga_pageviews_clone.high_level_category} end), ${web_ga_pageviews_clone.high_level_category}) ;;
   }
 
