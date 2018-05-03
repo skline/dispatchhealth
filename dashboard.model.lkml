@@ -206,6 +206,20 @@ join: ga_pageviews_clone {
 
   }
 
+  join: ga_adwords_stats_clone {
+    sql_on: ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
+  }
+
+  join: adwords_campaigns_clone {
+    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+  }
+
+  join: ad_groups_clone {
+    sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
+  }
+
+
   join: web_ga_pageviews_clone {
     from: ga_pageviews_clone
     sql_on:
@@ -235,11 +249,6 @@ join: ga_pageviews_clone {
       and ${care_request_flat.complete_month} = ${shift_hours_market_month.date_month};;
   }
 
-  join: ga_adwords_stats_clone {
-    sql_on: (${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id} or care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id})
-      and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date};;
-  }
-
   join: ga_adwords_cost_clone {
     sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
             and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
@@ -250,18 +259,6 @@ join: ga_pageviews_clone {
             ;;
   }
 
-
-  join: adwords_campaigns_clone {
-    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
-  }
-
-  join: adwords_ad_clone {
-    sql_on:  ${ga_adwords_stats_clone.adwordscreativeid} = ${adwords_ad_clone.ad_id} ;;
-  }
-
-  join: ad_groups_clone {
-    sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
-  }
 
 }
 explore: channel_items {
