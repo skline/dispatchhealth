@@ -169,6 +169,20 @@ explore: care_requests {
     sql_on: ${provider_profiles.user_id} = ${users.id} ;;
   }
 
+  join: dhmt_names {
+    view_label: "DHMT Names"
+    from: provider_profiles
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'emt' ;;
+  }
+
+  join: app_names {
+    view_label: "Advanced Practice Provider Names"
+    from: provider_profiles
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'advanced practice provider' ;;
+  }
+
   join: risk_assessments {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
