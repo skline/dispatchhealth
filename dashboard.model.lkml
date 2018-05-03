@@ -291,13 +291,13 @@ join: invoca_clone {
 sql_on: ((${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
         OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
         )
-        and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+        and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60)
         ;;
 
 }
 join: ga_pageviews_clone {
   sql_on:
-    abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < 172800
+    abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < (60*60)
           and ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
 
   }
@@ -319,7 +319,7 @@ join: ga_pageviews_clone {
   join: web_ga_pageviews_clone {
     from: ga_pageviews_clone
     sql_on:
-    abs(EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})-EXTRACT(EPOCH FROM ${web_ga_pageviews_clone.timestamp_raw})) < 172800
+    abs(EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})-EXTRACT(EPOCH FROM ${web_ga_pageviews_clone.timestamp_raw})) < (60*60)
       and care_requests.marketing_meta_data->>'ga_client_id' = ${web_ga_pageviews_clone.client_id}  ;;
 
     }
@@ -423,7 +423,7 @@ explore: invoca_clone {
 
   join: care_requests {
     sql_on: (${patients.id} = ${care_requests.patient_id}  OR ${care_requests.origin_phone} = ${invoca_clone.caller_id})
-      and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800 ;;
+      and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60) ;;
   }
 
   join: care_request_flat {
@@ -517,7 +517,7 @@ explore: ga_pageviews_full_clone {
     type:  full_outer
     sql_on:
     abs(
-        EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})) < 172800
+        EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})) < (60*60)
           and ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
     sql_where:  ${invoca_clone.start_date} >'2018-03-15'
       OR ${ga_pageviews_full_clone.timestamp_time} is not null;;
@@ -570,7 +570,7 @@ explore: ga_pageviews_full_clone {
     from: care_requests
     sql_on:
         (
-          abs(EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+          abs(EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60)
           AND
           web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
          ) ;;
@@ -589,7 +589,7 @@ explore: ga_pageviews_full_clone {
           )
         )
         AND
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60)
         );;
   }
 
@@ -682,7 +682,7 @@ explore: ga_pageviews_clone {
     sql_on:
 
     (
-      abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < 172800
+      abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})) < (60*60)
       and
       ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id}
     )
@@ -728,7 +728,7 @@ explore: ga_pageviews_clone {
       from: care_requests
       sql_on:
       (
-        abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+        abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60)
         AND
         web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id}
       ) ;;
@@ -743,7 +743,7 @@ explore: ga_pageviews_clone {
           (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
         )
         AND
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60)
       );;
   }
 
@@ -836,7 +836,7 @@ explore: ga_pageviews_clone {
       sql_on:
 
               (
-                abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.timestamp_raw})) < 172800
+                abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.timestamp_raw})) < (60*60)
                 and
                 ${ga_pageviews_bidellect.client_id} = ${invoca_clone.analytics_vistor_id}
               )
@@ -879,7 +879,7 @@ explore: ga_pageviews_clone {
         from: care_requests
         sql_on:
             (
-              abs(EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+              abs(EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60)
               AND
               web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_bidellect.client_id}
             ) ;;
@@ -894,7 +894,7 @@ explore: ga_pageviews_clone {
                 (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
               )
               AND
-              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60)
             );;
     }
       join: care_request_flat {
@@ -1002,7 +1002,7 @@ explore: ga_pageviews_clone {
         type: full_outer
         sql_on:
                 (
-                  abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})) < 172800 and
+                  abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})) < (60*60) and
                   ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
                 )
               ;;
@@ -1041,7 +1041,7 @@ explore: ga_pageviews_clone {
         sql_on:
               (
 
-                 abs(EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < 172800
+                 abs(EXTRACT(EPOCH FROM ${ga_adwords_stats_clone.page_timestamp_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60)
                 AND
                 web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_adwords_stats_clone.client_id}
               ) ;;
@@ -1057,7 +1057,7 @@ explore: ga_pageviews_clone {
                 (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
               )
               AND
-              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < 172800
+              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60)
 
             );;
 
