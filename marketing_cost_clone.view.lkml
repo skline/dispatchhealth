@@ -31,9 +31,15 @@ view: marketing_cost_clone {
 
   measure: sum_cost{
     type: sum_distinct
-    value_format: "$0"
+    value_format: "$#,##0"
     sql_distinct_key: concat(${campaign_name}, ${date_raw}, ${type}, ${ad_group_name}) ;;
     sql: ${cost}  ;;
+  }
+
+  measure: cost_run_rate{
+    type: number
+    value_format: "$#,##0"
+    sql: ${sum_cost}/${care_request_flat.month_percent} ;;
   }
 
 
@@ -63,6 +69,17 @@ view: marketing_cost_clone {
     sql: ${impressions}  ;;
   }
 
+  measure: impressions_run_rate{
+    type: number
+    value_format: "#,##0"
+    sql: ${sum_impressions}/${care_request_flat.month_percent} ;;
+  }
+
+  measure: ad_clicks_run_rate{
+    type: number
+    value_format: "#,##0"
+    sql: ${sum_ad_clicks}/${care_request_flat.month_percent} ;;
+  }
 
   dimension: type {
     type: string

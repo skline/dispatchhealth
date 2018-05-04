@@ -365,5 +365,11 @@ view: invoca_clone {
 
   }
 
+  measure: calls_run_rate{
+    type: number
+    value_format: "#,##0"
+    sql: ${count}/${care_request_flat.month_percent} ;;
+  }
+
 
 }
