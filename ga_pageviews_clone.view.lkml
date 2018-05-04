@@ -442,5 +442,33 @@ dimension: source_category
     sql: ${total_complete}::float /nullif(${total_care_requests}::float,0) ;;
   }
 
+  measure: sessions_run_rate{
+    type: number
+    value_format: "#,##-0"
+    sql: ${count_distinct_sessions}/${care_request_flat.month_percent} ;;
+  }
+
+  measure: care_request_run_rate{
+    type: number
+    value_format: "#,##"
+    sql: ${total_care_requests}/${care_request_flat.month_percent} ;;
+  }
+
+  measure: complete_run_rate{
+    type: number
+    value_format: "#,##"
+    sql: ${total_complete}/${care_request_flat.month_percent} ;;
+  }
+
+
+  measure: resolved_run_rate{
+    type: number
+    value_format: "#,##"
+    sql: ${total_resolved}/${care_request_flat.month_percent} ;;
+  }
+
+
+
+
 
 }
