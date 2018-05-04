@@ -51,7 +51,7 @@ view: shift_teams {
       quarter,
       year
     ]
-    sql: ${TABLE}.end_time - interval '7 hour' ;;
+    sql: ${TABLE}.end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
 
@@ -85,7 +85,7 @@ view: shift_teams {
       quarter,
       year
     ]
-    sql: ${TABLE}.start_time - interval '7 hour' ;;
+    sql:  ${TABLE}.end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension: shift_hours {
