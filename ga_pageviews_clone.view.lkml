@@ -279,12 +279,12 @@ dimension: source_category
     }
     dimension: source_final {
       type: string
-      sql: coalesce(${source}, ${invoca_clone.utm_source}) ;;
+      sql: coalesce(${invoca_clone.utm_source}, ${source}) ;;
     }
 
   dimension: medium_final {
     type: string
-    sql: coalesce(${medium}, ${invoca_clone.utm_medium}) ;;
+    sql: coalesce(${invoca_clone.utm_medium}, ${medium}) ;;
   }
   dimension: content {
     type: string
@@ -294,14 +294,13 @@ dimension: source_category
 
   dimension: content_final {
     type: string
-    sql: coalesce(${content}, ${invoca_clone.utm_content}) ;;
+    sql: coalesce(${invoca_clone.utm_content}, ${content}) ;;
   }
 
   dimension: ad_group_final {
     type: string
     sql: coalesce(${ad_groups_clone.ad_group_name}, ${content_final}) ;;
   }
-
 
 
   dimension: term {
@@ -312,13 +311,13 @@ dimension: source_category
 
   dimension: term_final {
     type: string
-    sql: coalesce(${term}, ${invoca_clone.utm_term}) ;;
+    sql: coalesce(${invoca_clone.utm_term}, ${term}) ;;
   }
 
 
   dimension: campaign_final {
     type: string
-    sql: coalesce(${campaign}, ${invoca_clone.utm_campaign}) ;;
+    sql: coalesce(${invoca_clone.utm_campaign}, ${campaign}) ;;
   }
 
   dimension_group: today_mountain{
