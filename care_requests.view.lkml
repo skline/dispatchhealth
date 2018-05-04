@@ -271,8 +271,6 @@ view: care_requests {
     sql: ${TABLE}.on_scene_etc - interval '7 hour' ;;
   }
 
-
-
   dimension: orig_city {
     type: string
     sql: ${TABLE}.orig_city ;;

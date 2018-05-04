@@ -77,16 +77,28 @@ explore: care_requests {
 #     sql_on: ${shift_planning_facts_clone.car_dim_id} = ${visit_facts_clone.car_dim_id} ;;
 #   }
 
-  join: shift_planning_facts_clone {
+  join: app_shift_planning_facts_clone {
+    view_label: "APP Shift Information"
+    from: shift_planning_facts_clone
     type: inner
     relationship: many_to_one
-    sql_on: ${visit_facts_clone.nppa_shift_id} = ${shift_planning_facts_clone.shift_id} and
-            ${shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+    sql_on: ${visit_facts_clone.nppa_shift_id} = ${app_shift_planning_facts_clone.shift_id} and
+            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
     }
+
+  join: dhmt_shift_planning_facts_clone {
+    view_label: "DHMT Shift Information"
+    from: shift_planning_facts_clone
+    type: inner
+    relationship: one_to_one
+    sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
+            UPPER(TRIM(SPLIT_PART(${users.first_name}, ' ', 1)) || ' ' || TRIM(${users.last_name})) AND
+            ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
+            ${dhmt_shift_planning_facts_clone.schedule_role} = 'DHMT';;
+  }
 
   join: survey_responses_flat_clone {
     relationship: one_to_one
-
     sql_on: ${survey_responses_flat_clone.visit_dim_number} = ${visit_facts_clone.visit_dim_number};;
   }
 
