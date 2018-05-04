@@ -404,6 +404,10 @@ explore: channel_items {
     relationship: many_to_one
     sql_on: ${channels.market_id} = ${markets.id} ;;
   }
+  join: sales_force_implementation_score_recent {
+    relationship: one_to_one
+    sql_on: ${sales_force_implementation_score_recent.channel_item_id} = ${channel_items.id} ;;
+  }
 
 }
 
