@@ -444,26 +444,26 @@ dimension: source_category
 
   measure: sessions_run_rate{
     type: number
-    value_format: "#,##-0"
+    value_format: "#,##0"
     sql: ${count_distinct_sessions}/${care_request_flat.month_percent} ;;
   }
 
   measure: care_request_run_rate{
     type: number
-    value_format: "#,##"
+    value_format: "#,##0"
     sql: ${total_care_requests}/${care_request_flat.month_percent} ;;
   }
 
   measure: complete_run_rate{
     type: number
-    value_format: "#,##"
+    value_format: "#,##0"
     sql: ${total_complete}/${care_request_flat.month_percent} ;;
   }
 
 
   measure: resolved_run_rate{
     type: number
-    value_format: "#,##"
+    value_format: "#,##0"
     sql: ${total_resolved}/${care_request_flat.month_percent} ;;
   }
 
