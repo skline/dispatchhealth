@@ -124,7 +124,7 @@ view: care_request_statuses {
       quarter,
       year, day_of_week_index, day_of_month
     ]
-    sql: ${TABLE}.created_at - interval '7 hour' ;;
+    sql:  ${TABLE}.created_at  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension: created_mtn_decimal {
