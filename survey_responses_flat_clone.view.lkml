@@ -1,7 +1,7 @@
 view: survey_responses_flat_clone {
   derived_table: {
     sql:
-      SELECT
+      SELECT DISTINCT
           srf.visit_dim_number,
           srf.care_request_id,
           srf.visit_date,
@@ -80,7 +80,6 @@ view: survey_responses_flat_clone {
     }
   }
 
-
   measure: distinct_detractors{
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -99,11 +98,15 @@ view: survey_responses_flat_clone {
     }
   }
 
-
   measure: nps_score {
     type: number
     value_format: "0.0"
     sql: ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100;;
+  }
+
+  measure: count_respondents {
+    type: count_distinct
+    sql: ${care_request_id} ;;
   }
 
 }
