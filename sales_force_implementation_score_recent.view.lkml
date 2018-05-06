@@ -54,6 +54,11 @@ dimension: complete_care_requests_last_month {
 
 
   }
+  measure: distinct_channels_mapped_in_sf  {
+    type: count_distinct
+    sql_distinct_key: ${channel_item_id} ;;
+    sql: ${channel_item_id} ;;
+  }
 
 
 
