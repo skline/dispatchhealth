@@ -98,11 +98,15 @@ view: survey_responses_flat_clone {
     }
   }
 
-  measure: nps_score {
-    type: number
-    value_format: "0.0"
-    sql: ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100;;
-  }
+# Currently doesn't work - Needs division by zero fixed
+#   measure: nps_score {
+#     type: number
+#     value_format: "0.0"
+#     sql: CASE
+#           WHEN ${distinct_nps_respondent} > 0 THEN ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100
+#           ELSE 0
+#         END ;;
+#   }
 
   measure: count_respondents {
     type: count_distinct
