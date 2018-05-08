@@ -67,6 +67,7 @@ view: shift_planning_facts_clone {
           WHEN ${employee_name} LIKE '%Gavin Pickard%' THEN 'Binky Pickard'
           WHEN ${employee_name} LIKE '%Dave Mackey%' THEN 'David Mackey'
           WHEN ${employee_name} LIKE '%Heather Rahim%' THEN 'Heather Houston Rahim'
+          WHEN ${employee_name} LIKE '%Deevaw Artis%' THEN 'Ndeevaw Artis'
           ELSE ${employee_name}
         END
           ;;

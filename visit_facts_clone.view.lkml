@@ -343,6 +343,12 @@ view: visit_facts_clone {
     sql: ${TABLE}.total_expected_allowable ;;
   }
 
+  measure: average_expected_allowable {
+    label: "Average Expected Allowable"
+    type: number
+    sql: round(avg(${visit_facts_clone.total_expected_allowable}),2) ;;
+  }
+
   dimension: total_rvus {
     type: number
     sql: ${TABLE}.total_rvus ;;

@@ -85,8 +85,8 @@ explore: care_requests {
     sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
             replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
             ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
-            ${provider_profiles.position} = 'advanced practice provider' ;;
-            # ${app_shift_planning_facts_clone.schedule_role} SIMILAR TO '%(Training|NP/PA)%' ;;
+            ${app_shift_planning_facts_clone.schedule_role} SIMILAR TO '%(Training|NP/PA)%' ;;
+            # ${provider_profiles.position} = 'advanced practice provider' ;;
     }
 
   join: dhmt_shift_planning_facts_clone {
