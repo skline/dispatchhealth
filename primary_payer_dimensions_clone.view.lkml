@@ -54,6 +54,15 @@ view: primary_payer_dimensions_clone {
     sql: ${TABLE}.insurance_package_name ;;
   }
 
+  dimension: insurance_package_name_consolidated {
+    type: string
+    sql: CASE
+          WHEN when UPPER(${insurance_package_name}) LIKE '%HEALTH PLAN OF NEVADA%' THEN 'Health Plan of Nevada'
+          WHEN when UPPER(${insurance_package_name}) LIKE '%CULINARY%' THEN 'Culinary'
+          ELSE ${insurance_package_name}
+        END ;;
+  }
+
   dimension: united_healthcare_category {
     type: string
     sql: case when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SIERRA HEALTH & LIFE - SENIOR DIMENSION (MEDICARE REPLACEMENT HMO)') then 'HPN Medicare Advantage'

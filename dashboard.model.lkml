@@ -81,9 +81,12 @@ explore: care_requests {
     view_label: "APP Shift Information"
     from: shift_planning_facts_clone
     type: inner
-    relationship: many_to_one
-    sql_on: ${visit_facts_clone.nppa_shift_id} = ${app_shift_planning_facts_clone.shift_id} and
-            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+    relationship: one_to_one
+    sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
+            replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
+            ${provider_profiles.position} = 'advanced practice provider' ;;
+            # ${app_shift_planning_facts_clone.schedule_role} SIMILAR TO '%(Training|NP/PA)%' ;;
     }
 
   join: dhmt_shift_planning_facts_clone {
@@ -92,9 +95,10 @@ explore: care_requests {
     type: inner
     relationship: one_to_one
     sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
-            UPPER(TRIM(SPLIT_PART(${users.first_name}, ' ', 1)) || ' ' || TRIM(${users.last_name})) AND
+            replace(upper(trim(regexp_replace(replace(${users.first_name},'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
             ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
-            ${dhmt_shift_planning_facts_clone.schedule_role} = 'DHMT';;
+            ${dhmt_shift_planning_facts_clone.schedule_role} IN ('DHMT', 'EMT') AND
+            ${dhmt_shift_planning_facts_clone.car_dim_id} IS NOT NULL ;;
   }
 
   join: survey_responses_flat_clone {

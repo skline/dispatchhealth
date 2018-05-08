@@ -63,8 +63,10 @@ view: shift_planning_facts_clone {
     hidden: yes
     sql: CASE
           WHEN ${employee_name} LIKE '%MoralesJr%' THEN 'Armando Morales'
-          WHEN ${employee_name} LIKE '%Deevaw Artis%' THEN 'NDeevaw Artis'
           WHEN ${employee_name} LIKE '%Vander Leest%' THEN 'Rob VanderLeest'
+          WHEN ${employee_name} LIKE '%Gavin Pickard%' THEN 'Binky Pickard'
+          WHEN ${employee_name} LIKE '%Dave Mackey%' THEN 'David Mackey'
+          WHEN ${employee_name} LIKE '%Heather Rahim%' THEN 'Heather Houston Rahim'
           ELSE ${employee_name}
         END
           ;;
@@ -150,6 +152,11 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.schedule_role ;;
   }
 
+  dimension: app_role {
+    type: yesno
+    sql: ${schedule_role} = 'NP/PA' ;;
+  }
+
   dimension_group: shift {
     type: time
     timeframes: [
@@ -219,15 +226,23 @@ view: shift_planning_facts_clone {
 #     drill_fields: [id, employee_name]
 #   }
 
-  measure: sum_hours_worked {
-    type: sum_distinct
-    sql_distinct_key: ${id} ;;
-    sql:  ${total_actual_seconds} / 3600  ;;
-  }
+  # measure: sum_hours_worked {
+  #   type: sum_distinct
+  #   sql_distinct_key: ${id} ;;
+  #   sql:  ${total_actual_seconds} / 3600  ;;
+  # }
 
-  measure: sum_hours_worked_test {
+  measure: sum_hours_worked {
     type: sum
     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
   }
 
+  measure: sum_app_hours_worked {
+    type: sum
+    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+    filters: {
+      field: app_role
+      value: "yes"
+    }
+}
 }

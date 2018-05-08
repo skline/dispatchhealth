@@ -37,6 +37,12 @@ view: visit_facts_clone {
     sql: ${TABLE}.channel_dim_id ;;
   }
 
+  dimension: billable_visit {
+    label: "Billable Visit flag"
+    type: yesno
+    sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL ;;
+  }
+
 #   dimension_group: complete {
 #     type: time
 #     timeframes: [
@@ -200,10 +206,11 @@ view: visit_facts_clone {
 #     sql: ${TABLE}.new_patient ;;
 #   }
 #
-#   dimension: no_charge_entry_reason {
-#     type: string
-#     sql: ${TABLE}.no_charge_entry_reason ;;
-#   }
+  dimension: no_charge_entry_reason {
+    type: string
+    hidden: yes
+    sql: ${TABLE}.no_charge_entry_reason ;;
+  }
 
   dimension: nppa_shift_id {
     type: string
