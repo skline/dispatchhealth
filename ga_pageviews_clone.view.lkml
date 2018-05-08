@@ -252,6 +252,10 @@ dimension: source_category
 
     type: date
     sql: case
+              when ${web_care_request_flat.on_scene_date} is not null then ${web_care_request_flat.on_scene_date}
+              when ${care_request_flat.on_scene_date} is not null then ${care_request_flat.on_scene_date}
+              when ${web_care_request_flat.created_date} is not null then ${web_care_request_flat.created_date}
+              when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
               when ${timestamp_date} is not null then ${timestamp_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
          else null end;;
@@ -272,10 +276,13 @@ dimension: source_category
     ]
     type: time
     sql: case
+              when ${web_care_request_flat.on_scene_date} is not null then ${web_care_request_flat.on_scene_date}
+              when ${care_request_flat.on_scene_date} is not null then ${care_request_flat.on_scene_date}
+              when ${web_care_request_flat.created_date} is not null then ${web_care_request_flat.created_date}
+              when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
               when ${timestamp_date} is not null then ${timestamp_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
          else null end;;
-
     }
     dimension: source_final {
       type: string
@@ -328,7 +335,7 @@ dimension: source_category
 
   dimension_group: yesterday_mountain{
     type: time
-    timeframes: [day_of_week_index, week, month, day_of_month]
+    timeframes: [day_of_week_index, week, month, day_of_month,date]
     sql: current_date - interval '1 day';;
   }
 
@@ -445,26 +452,41 @@ dimension: source_category
   measure: sessions_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${count_distinct_sessions}/${care_request_flat.month_percent} ;;
+    sql: ${count_distinct_sessions}/${month_percent} ;;
   }
 
   measure: care_request_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${total_care_requests}/${care_request_flat.month_percent} ;;
+    sql: ${total_care_requests}/${month_percent} ;;
   }
 
   measure: complete_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${total_complete}/${care_request_flat.month_percent} ;;
+    sql: ${total_complete}/${month_percent} ;;
   }
 
 
   measure: resolved_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${total_resolved}/${care_request_flat.month_percent} ;;
+    sql: ${total_resolved}/${month_percent} ;;
+  }
+
+
+  measure: month_percent {
+    type: number
+    sql:
+
+        case when ${ga_time_month} != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
   }
 
 
