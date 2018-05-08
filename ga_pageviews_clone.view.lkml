@@ -110,9 +110,23 @@ view: ga_pageviews_clone {
     sql: ${TABLE}.timestamp ;;
   }
 
+  dimension_group: timestamp_mst {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.timestamp_mst ;;
+  }
+
   dimension: timezone {
     type: string
-    sql: ${TABLE}.timezone ;;
+    sql: trim(${TABLE}.timezone) ;;
   }
   dimension: adwords {
     type: yesno
@@ -171,23 +185,8 @@ view: ga_pageviews_clone {
     sql:round((${total_complete}::float/nullif(${count_distinct_sessions}::float,0))::numeric,3) ;;
   }
 
-  dimension: timezone_proc {
-    type: string
-    sql: case when ${markets.id} in(159, 160) then 'US/Mountain'
-              when ${markets.id} in(161) then 'US/Arizona'
-              when ${markets.id} in(162) then 'US/Pacific'
-              when ${markets.id} in (164) then 'US/Eastern'
-              when ${markets.id} in(165, 166) then 'US/Central'
-              when ${timezone} in ('GMT-0400', '-0400 (Eastern Daylight Time)', '-0400 (EDT)') then 'US/Eastern'
-              else 'US/Mountain' end;;
 
-  }
 
-  dimension: mountain_time  {
-    type: date_raw
-    sql:   ${timestamp_raw} AT TIME ZONE ${timezone_proc} AT TIME ZONE 'US/Mountain'  ;;
-
-  }
 
 
 dimension: source_category
@@ -256,7 +255,7 @@ dimension: source_category
               when ${care_request_flat.on_scene_date} is not null then ${care_request_flat.on_scene_date}
               when ${web_care_request_flat.created_date} is not null then ${web_care_request_flat.created_date}
               when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
-              when ${timestamp_date} is not null then ${timestamp_date}
+              when ${timestamp_mst_date} is not null then ${timestamp_mst_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
          else null end;;
 
@@ -280,7 +279,7 @@ dimension: source_category
               when ${care_request_flat.on_scene_date} is not null then ${care_request_flat.on_scene_date}
               when ${web_care_request_flat.created_date} is not null then ${web_care_request_flat.created_date}
               when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
-              when ${timestamp_date} is not null then ${timestamp_date}
+              when ${timestamp_mst_date} is not null then ${timestamp_mst_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
          else null end;;
     }

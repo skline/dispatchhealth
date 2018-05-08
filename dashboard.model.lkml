@@ -309,7 +309,7 @@ sql_on: ((${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.m
 }
 join: ga_pageviews_clone {
   sql_on:
-    abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.mountain_time})) < (60*60*1.5)
+    abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_mst_raw})) < (60*60*1.5)
           and ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
 
   }
@@ -321,7 +321,7 @@ join: ga_pageviews_clone {
   join: web_ga_pageviews_clone {
     from: ga_pageviews_clone
     sql_on:
-    abs(EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})-EXTRACT(EPOCH FROM ${web_ga_pageviews_clone.mountain_time})) < (60*60*1.5)
+    abs(EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})-EXTRACT(EPOCH FROM ${web_ga_pageviews_clone.timestamp_mst_raw})) < (60*60*1.5)
       and care_requests.marketing_meta_data->>'ga_client_id' = ${web_ga_pageviews_clone.client_id}  ;;
 
     }
@@ -470,7 +470,7 @@ explore: ga_pageviews_full_clone {
     type:  full_outer
     sql_on:
     abs(
-        EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.mountain_time})) < (60*60*1.5)
+        EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_mst_raw})) < (60*60*1.5)
           and ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
     sql_where:  ${invoca_clone.start_date} >'2018-03-15'
       OR ${ga_pageviews_full_clone.timestamp_time} is not null;;
@@ -478,7 +478,7 @@ explore: ga_pageviews_full_clone {
 
   join: marketing_cost_clone {
     sql_on:   ${ga_pageviews_full_clone.source_final} = ${marketing_cost_clone.type}
-              and ${ga_pageviews_full_clone.timestamp_date} =${marketing_cost_clone.date_date}
+              and ${ga_pageviews_full_clone.timestamp_mst_date} =${marketing_cost_clone.date_date}
               and ${ga_pageviews_full_clone.medium_final}  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
 
             ;;
@@ -523,7 +523,7 @@ explore: ga_pageviews_full_clone {
     from: care_requests
     sql_on:
         (
-          abs(EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.mountain_time})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
+          abs(EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_mst_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
           AND
           web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_full_clone.client_id}
          ) ;;
@@ -595,7 +595,7 @@ explore: ga_pageviews_clone {
     sql_on:
 
     (
-      abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.mountain_time})) < (60*60*1.5)
+      abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_mst_raw})) < (60*60*1.5)
       and
       ${ga_pageviews_clone.client_id} = ${invoca_clone.analytics_vistor_id}
     )
@@ -641,7 +641,7 @@ explore: ga_pageviews_clone {
       from: care_requests
       sql_on:
       (
-        abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.mountain_time})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
+        abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_mst_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
         AND
         web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id}
       ) ;;
@@ -678,7 +678,8 @@ explore: ga_pageviews_clone {
 
 
     join: channel_items {
-      sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+      sql_on:  ${channel_items.id} =${care_requests.channel_item_id} OR
+                ${channel_items.id} =${web_care_requests.channel_item_id} ;;
     }
 
   }
@@ -747,7 +748,7 @@ explore: ga_pageviews_clone {
         from: care_requests
         sql_on:
             (
-              abs(EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.mountain_time})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
+              abs(EXTRACT(EPOCH FROM ${ga_pageviews_bidellect.timestamp_mst_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
               AND
               web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_bidellect.client_id}
             ) ;;
