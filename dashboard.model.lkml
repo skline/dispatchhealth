@@ -314,18 +314,8 @@ join: ga_pageviews_clone {
 
   }
 
-  join: ga_adwords_stats_clone {
-    sql_on: ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
-      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
-  }
 
-  join: adwords_campaigns_clone {
-    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
-  }
 
-  join: ad_groups_clone {
-    sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
-  }
 
 
   join: web_ga_pageviews_clone {
@@ -342,9 +332,19 @@ join: ga_pageviews_clone {
                   ;;
   }
 
-  join: incontact_spot_check_by_market {
-    sql_on: ${incontact_spot_check_by_market.market_id} = ${markets.id} and ${care_request_requested.created_date}=${incontact_spot_check_by_market.date_call}
-      ;;
+  join: ga_adwords_stats_clone {
+    sql_on: (${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw})
+      OR (${ga_adwords_stats_clone.client_id} = ${web_ga_pageviews_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${web_ga_pageviews_clone.timestamp_raw});;
+  }
+
+  join: adwords_campaigns_clone {
+    sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+  }
+
+  join: ad_groups_clone {
+    sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
   }
   join: shift_hours_by_day_market_clone {
     sql_on:  ${markets.name} = ${shift_hours_by_day_market_clone.market_name}
@@ -379,35 +379,6 @@ explore: channel_items {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
-  join: care_request_complete{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-  }
-
-  join: care_request_requested{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-  }
-
-  join: care_request_accepted{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-  }
-
-  join: care_request_archived{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-  }
-
-  join: care_request_scheduled{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
-  }
   join: channels {
     relationship: many_to_one
     sql_on:  ${channels.id} = ${channel_items.channel_id};;
@@ -447,35 +418,6 @@ explore: invoca_clone {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
-  join: care_request_complete{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-  }
-
-  join: care_request_requested{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-  }
-
-  join: care_request_accepted{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-  }
-
-  join: care_request_archived{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-  }
-
-  join: care_request_scheduled{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
-  }
 
   join: channel_items {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
@@ -483,11 +425,6 @@ explore: invoca_clone {
 
   join: markets {
     sql_on:  ${markets.id} =${invoca_clone.market_id} ;;
-  }
-
-  join: incontact_spot_check_clone {
-    sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
-      ;;
   }
 
   join: ga_adwords_stats_clone {
@@ -622,52 +559,12 @@ explore: ga_pageviews_full_clone {
     sql_on: ${web_care_request_flat.care_request_id} = ${web_care_requests.id} ;;
   }
 
-  join: web_care_request_complete{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
-  }
-
-  join: web_care_request_archived{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
-  }
 
 
   join: markets {
     sql_on:  ${markets.id} = ${ga_pageviews_full_clone.market_id} ;;
   }
 
-  join: care_request_complete{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-  }
-
-  join: care_request_requested{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-  }
-
-  join: care_request_accepted{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-  }
-
-  join: care_request_archived{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-  }
-
-  join: care_request_scheduled{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
-  }
 
   join: channel_items {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
@@ -759,7 +656,7 @@ explore: ga_pageviews_clone {
           (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
         )
         AND
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.mountain_time})) < (60*60*1.5)
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
       );;
   }
 
@@ -779,56 +676,11 @@ explore: ga_pageviews_clone {
       sql_on:  ${markets.id} = ${ga_pageviews_clone.facebook_market_id_final} ;;
     }
 
-    join: care_request_complete{
-      relationship: one_to_many
-      from: care_request_statuses
-      sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-    }
-
-    join: web_care_request_complete{
-      relationship: one_to_many
-      from: care_request_statuses
-      sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
-    }
-    join: web_care_request_archived{
-      relationship: one_to_many
-      from: care_request_statuses
-      sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
-    }
-
-
-    join: care_request_requested{
-      relationship: one_to_many
-      from: care_request_statuses
-      sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-    }
-
-    join: care_request_accepted{
-      relationship: one_to_many
-      from: care_request_statuses
-      sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-    }
-
-    join: care_request_archived{
-      relationship: one_to_many
-      from: care_request_statuses
-      sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-    }
-
-    join: care_request_scheduled{
-      relationship: one_to_many
-      from: care_request_statuses
-      sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
-    }
 
     join: channel_items {
       sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
     }
 
-    join: incontact_spot_check_clone {
-      sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
-        ;;
-    }
   }
 
 
@@ -928,55 +780,8 @@ explore: ga_pageviews_clone {
         sql_on:  ${markets.id} = ${ga_pageviews_bidellect.market_id_final} ;;
       }
 
-      join: care_request_complete{
-        relationship: one_to_many
-        from: care_request_statuses
-        sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-      }
-
-      join: web_care_request_complete{
-        relationship: one_to_many
-        from: care_request_statuses
-        sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
-      }
-      join: web_care_request_archived{
-        relationship: one_to_many
-        from: care_request_statuses
-        sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
-      }
-
-
-      join: care_request_requested{
-        relationship: one_to_many
-        from: care_request_statuses
-        sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-      }
-
-      join: care_request_accepted{
-        relationship: one_to_many
-        from: care_request_statuses
-        sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-      }
-
-      join: care_request_archived{
-        relationship: one_to_many
-        from: care_request_statuses
-        sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-      }
-
-      join: care_request_scheduled{
-        relationship: one_to_many
-        from: care_request_statuses
-        sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
-      }
-
       join: channel_items {
         sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
-      }
-
-      join: incontact_spot_check_clone {
-        sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
-          ;;
       }
     }
 
@@ -1095,48 +900,6 @@ explore: ga_pageviews_clone {
             sql_on:  ${markets.id} =${ga_adwords_stats_clone.market_id} ;;
           }
 
-          join: care_request_complete{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-          }
-
-          join: web_care_request_complete{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${web_care_request_complete.care_request_id} = ${web_care_requests.id} and ${web_care_request_complete.name}='complete';;
-          }
-
-          join: web_care_request_archived{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${web_care_request_archived.care_request_id} = ${web_care_requests.id} and ${web_care_request_archived.name}='archived';;
-          }
-
-
-          join: care_request_requested{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-          }
-
-          join: care_request_accepted{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-          }
-
-          join: care_request_archived{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-          }
-
-          join: care_request_scheduled{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
-          }
 
           join: channel_items {
             sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
@@ -1147,11 +910,6 @@ explore: ga_pageviews_clone {
         sql_on:  ${web_channel_items.id} =${web_care_requests.channel_item_id} ;;
       }
 
-
-          join: incontact_spot_check_clone {
-            sql_on: ${incontact_spot_check_clone.incontact_contact_id} = ${incontact_clone.contact_id}
-              ;;
-          }
 
         }
 
@@ -1192,36 +950,6 @@ explore: ga_pageviews_clone {
 
           join: markets {
             sql_on:  ${markets.id} = ${incontact_clone.market_id} ;;
-          }
-
-          join: care_request_complete{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-          }
-
-          join: care_request_requested{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-          }
-
-          join: care_request_accepted{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-          }
-
-          join: care_request_archived{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-          }
-
-          join: care_request_scheduled{
-            relationship: one_to_many
-            from: care_request_statuses
-            sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
           }
 
           join: channel_items {
