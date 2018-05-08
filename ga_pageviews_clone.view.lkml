@@ -110,9 +110,23 @@ view: ga_pageviews_clone {
     sql: ${TABLE}.timestamp ;;
   }
 
+  dimension_group: timestamp_mst {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.timestamp_mst ;;
+  }
+
   dimension: timezone {
     type: string
-    sql: ${TABLE}.timezone ;;
+    sql: trim(${TABLE}.timezone) ;;
   }
   dimension: adwords {
     type: yesno
@@ -171,23 +185,8 @@ view: ga_pageviews_clone {
     sql:round((${total_complete}::float/nullif(${count_distinct_sessions}::float,0))::numeric,3) ;;
   }
 
-  dimension: timezone_proc {
-    type: string
-    sql: case when ${markets.id} in(159, 160) then 'US/Mountain'
-              when ${markets.id} in(161) then 'US/Arizona'
-              when ${markets.id} in(162) then 'US/Pacific'
-              when ${markets.id} in (164) then 'US/Eastern'
-              when ${markets.id} in(165, 166) then 'US/Central'
-              when ${timezone} in ('GMT-0400', '-0400 (Eastern Daylight Time)', '-0400 (EDT)') then 'US/Eastern'
-              else 'US/Mountain' end;;
 
-  }
 
-  dimension: mountain_time  {
-    type: date_raw
-    sql:   ${timestamp_raw} AT TIME ZONE ${timezone_proc} AT TIME ZONE 'US/Mountain'  ;;
-
-  }
 
 
 dimension: source_category
@@ -252,7 +251,11 @@ dimension: source_category
 
     type: date
     sql: case
-              when ${timestamp_date} is not null then ${timestamp_date}
+              when ${web_care_request_flat.on_scene_date} is not null then ${web_care_request_flat.on_scene_date}
+              when ${care_request_flat.on_scene_date} is not null then ${care_request_flat.on_scene_date}
+              when ${web_care_request_flat.created_date} is not null then ${web_care_request_flat.created_date}
+              when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
+              when ${timestamp_mst_date} is not null then ${timestamp_mst_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
          else null end;;
 
@@ -272,10 +275,13 @@ dimension: source_category
     ]
     type: time
     sql: case
-              when ${timestamp_date} is not null then ${timestamp_date}
+              when ${web_care_request_flat.on_scene_date} is not null then ${web_care_request_flat.on_scene_date}
+              when ${care_request_flat.on_scene_date} is not null then ${care_request_flat.on_scene_date}
+              when ${web_care_request_flat.created_date} is not null then ${web_care_request_flat.created_date}
+              when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
+              when ${timestamp_mst_date} is not null then ${timestamp_mst_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
          else null end;;
-
     }
     dimension: source_final {
       type: string
@@ -328,7 +334,7 @@ dimension: source_category
 
   dimension_group: yesterday_mountain{
     type: time
-    timeframes: [day_of_week_index, week, month, day_of_month]
+    timeframes: [day_of_week_index, week, month, day_of_month,date]
     sql: current_date - interval '1 day';;
   }
 
@@ -445,26 +451,41 @@ dimension: source_category
   measure: sessions_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${count_distinct_sessions}/${care_request_flat.month_percent} ;;
+    sql: ${count_distinct_sessions}/${month_percent} ;;
   }
 
   measure: care_request_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${total_care_requests}/${care_request_flat.month_percent} ;;
+    sql: ${total_care_requests}/${month_percent} ;;
   }
 
   measure: complete_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${total_complete}/${care_request_flat.month_percent} ;;
+    sql: ${total_complete}/${month_percent} ;;
   }
 
 
   measure: resolved_run_rate{
     type: number
     value_format: "#,##0"
-    sql: ${total_resolved}/${care_request_flat.month_percent} ;;
+    sql: ${total_resolved}/${month_percent} ;;
+  }
+
+
+  measure: month_percent {
+    type: number
+    sql:
+
+        case when ${ga_time_month} != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
   }
 
 

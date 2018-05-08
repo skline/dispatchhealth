@@ -13,23 +13,7 @@ view: ga_pageviews_full_clone {
               ;;
   }
 
-  dimension: timezone_proc {
-    type: string
-    sql: case when ${ga_geodata_clone.market_id} in(159, 160) then 'US/Mountain'
-              when ${ga_geodata_clone.market_id} in(161) then 'US/Arizona'
-              when ${ga_geodata_clone.market_id} in(162) then 'US/Pacific'
-              when ${ga_geodata_clone.market_id} in (164) then 'US/Eastern'
-              when ${ga_geodata_clone.market_id} in(165, 166) then 'US/Central'
-              when ${timezone} in ('GMT-0400', '-0400 (Eastern Daylight Time)', '-0400 (EDT)') then 'US/Eastern'
-              else 'US/Mountain' end;;
 
-    }
-
-    dimension: mountain_time  {
-      type: date_raw
-      sql:   ${timestamp_raw} AT TIME ZONE ${timezone_proc} AT TIME ZONE 'US/Mountain'  ;;
-
-    }
 
   # # You can specify the table name if it's different from the view name:
   # sql_table_name: my_schema_name.tester ;;
