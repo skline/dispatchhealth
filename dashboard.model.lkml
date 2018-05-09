@@ -80,7 +80,7 @@ explore: care_requests {
   join: app_shift_planning_facts_clone {
     view_label: "APP Shift Information"
     from: shift_planning_facts_clone
-    type: inner
+    type: full_outer
     relationship: one_to_one
     sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
             replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
