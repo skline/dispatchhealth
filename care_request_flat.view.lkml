@@ -1,56 +1,47 @@
 view: care_request_flat {
   derived_table: {
     sql:
-      WITH timezone(id, tz_desc) AS (VALUES
-      (159, 'US/Mountain'),
-      (160, 'US/Mountain'),
-      (161, 'US/Arizona'),
-      (162, 'US/Pacific'),
-      (164, 'US/Eastern'),
-      (165, 'US/Central'),
-      (166, 'US/Central'))
-
-SELECT
-    markets.id AS market_id,
-    cr.id as care_request_id,
-    timezone.tz_desc,
-    cr.created_at AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS created_date,
-    max(shift_teams.start_time) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS shift_start_time,
-    max(shift_teams.end_time) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS shift_end_time,
-    max(request.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS requested_date,
-    max(accept.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS accept_date,
-    max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_route_date,
-    max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS on_scene_date,
-    MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS complete_date,
-    MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS archive_date,
-    case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
-    else array_to_string(array_agg(distinct comp.comment), ':')end
-    as complete_comment,
-    case when array_to_string(array_agg(distinct archive.comment), ':') = '' then null
-    else array_to_string(array_agg(distinct archive.comment), ':') end
-    as archive_comment
-  FROM care_requests cr
-  LEFT JOIN care_request_statuses AS request
-  ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
-  LEFT JOIN care_request_statuses AS accept
-  ON cr.id = accept.care_request_id AND accept.name = 'accepted' and accept.deleted_at is null
-  LEFT JOIN care_request_statuses AS onroute
-  ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
-  LEFT JOIN care_request_statuses onscene
-  ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene' and onscene.deleted_at is null
-  LEFT JOIN care_request_statuses comp
-  ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
-  LEFT JOIN care_request_statuses schedule
-  ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
-  LEFT JOIN care_request_statuses archive
-  ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
-  LEFT JOIN public.shift_teams
-  ON shift_teams.id = cr.shift_team_id
-  JOIN markets
-  ON cr.market_id = markets.id
-  JOIN timezone
-  ON markets.id = timezone.id
-  GROUP BY 1, 2, 3 ;;
+    SELECT
+        markets.id AS market_id,
+        cr.id as care_request_id,
+        t.pg_tz,
+        cr.created_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS created_date,
+        max(shift_teams.start_time) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS shift_start_time,
+        max(shift_teams.end_time) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS shift_end_time,
+        max(request.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS requested_date,
+        max(accept.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS accept_date,
+        max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_route_date,
+        max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_scene_date,
+        MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
+        MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
+        case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
+        else array_to_string(array_agg(distinct comp.comment), ':')end
+        as complete_comment,
+        case when array_to_string(array_agg(distinct archive.comment), ':') = '' then null
+        else array_to_string(array_agg(distinct archive.comment), ':') end
+        as archive_comment
+      FROM care_requests cr
+      LEFT JOIN care_request_statuses AS request
+      ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
+      LEFT JOIN care_request_statuses AS accept
+      ON cr.id = accept.care_request_id AND accept.name = 'accepted' and accept.deleted_at is null
+      LEFT JOIN care_request_statuses AS onroute
+      ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
+      LEFT JOIN care_request_statuses onscene
+      ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene' and onscene.deleted_at is null
+      LEFT JOIN care_request_statuses comp
+      ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
+      LEFT JOIN care_request_statuses schedule
+      ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
+      LEFT JOIN care_request_statuses archive
+      ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
+      LEFT JOIN public.shift_teams
+      ON shift_teams.id = cr.shift_team_id
+      JOIN markets
+      ON cr.market_id = markets.id
+      JOIN looker_scratch.timezones AS t
+      ON markets.sa_time_zone = t.rails_tz
+      GROUP BY 1, 2, 3;;
   }
 
   dimension: care_request_id {

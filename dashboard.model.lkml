@@ -265,6 +265,11 @@ explore: care_requests {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+
   join: budget_projections_by_market_clone {
     sql_on: ${care_requests.market_id} = ${budget_projections_by_market_clone.market_dim_id}
       AND ${care_request_flat.on_scene_month}=${budget_projections_by_market_clone.month_month};;
@@ -318,10 +323,6 @@ join: ga_pageviews_clone {
 
   }
 
-
-
-
-
   join: web_ga_pageviews_clone {
     from: ga_pageviews_clone
     sql_on:
@@ -370,9 +371,18 @@ join: ga_pageviews_clone {
 
             ;;
   }
-
-
 }
+
+explore: productivity_data_clone {
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${productivity_data_clone.market_dim_id} = ${markets.id}
+        ;;
+    }
+  }
+
+
+
 explore: channel_items {
   join: care_requests {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
