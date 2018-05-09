@@ -73,6 +73,24 @@ view: primary_payer_dimensions_clone {
               else null end;;
   }
 
+  dimension: uhc_reporting_category {
+    description: "Consolidated insurance package names for Nevada UHC payer reporting"
+    type: string
+    sql: case when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SIERRA HEALTH & LIFE - SENIOR DIMENSION (MEDICARE REPLACEMENT HMO)',
+                                                'UHC - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT PPO)',
+                                                'UHC WEST - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT HMO)')
+          then 'HPN Medicare Advantage'
+              when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SMARTCHOICE (MEDICAID HMO)')
+          then 'HPN Managed Medicaid'
+              when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - UNITED HEALTHCARE CHOICE PLUS (POS)',
+                                                'SIERRA HEALTH LIFE',
+                                                'UMR',
+                                                'UNITED HEALTHCARE',
+                                                'UNITED HEALTHCARE (PPO)')
+          then 'HPN Commercial'
+              else null end;;
+  }
+
   dimension: insurance_package_type {
     type: string
     sql: ${TABLE}.insurance_package_type ;;
