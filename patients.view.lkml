@@ -63,9 +63,28 @@ view: patients {
     sql: ${age} >= 110 ;;
   }
 
-  dimension: age_band {
+  dimension: age_band_sort {
     type: string
     alpha_sort: yes
+    sql: CASE
+          WHEN ${age} >= 0 AND ${age} <= 5 THEN 1
+          WHEN ${age} >= 6 AND ${age} <= 9 THEN 2
+          WHEN ${age} >= 10 AND ${age} <= 19 THEN 3
+          WHEN ${age} >= 20 AND ${age} <= 29 THEN 4
+          WHEN ${age} >= 30 AND ${age} <= 39 THEN 5
+          WHEN ${age} >= 40 AND ${age} <= 49 THEN 6
+          WHEN ${age} >= 50 AND ${age} <= 59 THEN 7
+          WHEN ${age} >= 60 AND ${age} <= 69 THEN 8
+          WHEN ${age} >= 70 AND ${age} <= 79 THEN 9
+          WHEN ${age} >= 80 AND ${age} <= 89 THEN 10
+          WHEN ${age} >= 90 AND ${age} <= 110 THEN 99
+          ELSE NULL
+         END ;;
+  }
+
+  dimension: age_band {
+    type: string
+    order_by_field: age_band_sort
     sql: CASE
           WHEN ${age} >= 0 AND ${age} <= 5 THEN 'age_0_to_5'
           WHEN ${age} >= 6 AND ${age} <= 9 THEN 'age_6_to_9'
