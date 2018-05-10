@@ -53,6 +53,20 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension_group: shift_date_final  {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: COALESCE(${local_actual_start_raw}, ${care_request_flat.on_scene_raw}) ;;
+  }
+
   dimension: employee_name {
     type: string
     sql: ${TABLE}.employee_name ;;

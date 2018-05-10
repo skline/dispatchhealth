@@ -81,19 +81,20 @@ explore: care_requests {
     view_label: "APP Shift Information"
     from: shift_planning_facts_clone
     type: full_outer
-    relationship: one_to_one
+    relationship: many_to_one
     sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
             replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
-            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
-            ${app_shift_planning_facts_clone.schedule_role} SIMILAR TO '%(Training|NP/PA)%' ;;
-            # ${provider_profiles.position} = 'advanced practice provider' ;;
+            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+    sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
+               ${app_shift_planning_facts_clone.schedule_role} SIMILAR TO '%NP/PA%' OR
+               ${care_requests.id} IS NOT NULL ;;
     }
 
   join: dhmt_shift_planning_facts_clone {
     view_label: "DHMT Shift Information"
     from: shift_planning_facts_clone
-    type: inner
-    relationship: one_to_one
+    type: full_outer
+    relationship: many_to_one
     sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
             replace(upper(trim(regexp_replace(replace(${users.first_name},'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
             ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND

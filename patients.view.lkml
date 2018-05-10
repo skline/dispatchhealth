@@ -83,8 +83,8 @@ view: patients {
   }
 
 
-  measure: average_age {
-    type: number
+  measure: median_age {
+    type: median
     value_format: "0.0"
     sql:  ${age} ;;
     filters: {
