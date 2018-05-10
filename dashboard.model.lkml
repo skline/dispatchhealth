@@ -80,10 +80,13 @@ explore: care_requests {
   join: app_shift_planning_facts_clone {
     view_label: "APP Shift Information"
     from: shift_planning_facts_clone
-    type: inner
-    relationship: many_to_one
-    sql_on: ${visit_facts_clone.nppa_shift_id} = ${app_shift_planning_facts_clone.shift_id} and
-            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+    type: full_outer
+    relationship: one_to_one
+    sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
+            replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
+            ${app_shift_planning_facts_clone.schedule_role} SIMILAR TO '%(Training|NP/PA)%' ;;
+            # ${provider_profiles.position} = 'advanced practice provider' ;;
     }
 
   join: dhmt_shift_planning_facts_clone {
@@ -92,9 +95,10 @@ explore: care_requests {
     type: inner
     relationship: one_to_one
     sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
-            UPPER(TRIM(SPLIT_PART(${users.first_name}, ' ', 1)) || ' ' || TRIM(${users.last_name})) AND
+            replace(upper(trim(regexp_replace(replace(${users.first_name},'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
             ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
-            ${dhmt_shift_planning_facts_clone.schedule_role} = 'DHMT';;
+            ${dhmt_shift_planning_facts_clone.schedule_role} IN ('DHMT', 'EMT') AND
+            ${dhmt_shift_planning_facts_clone.car_dim_id} IS NOT NULL ;;
   }
 
   join: survey_responses_flat_clone {
@@ -261,6 +265,11 @@ explore: care_requests {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+
   join: budget_projections_by_market_clone {
     sql_on: ${care_requests.market_id} = ${budget_projections_by_market_clone.market_dim_id}
       AND ${care_request_flat.on_scene_month}=${budget_projections_by_market_clone.month_month};;
@@ -314,10 +323,6 @@ join: ga_pageviews_clone {
 
   }
 
-
-
-
-
   join: web_ga_pageviews_clone {
     from: ga_pageviews_clone
     sql_on:
@@ -366,9 +371,18 @@ join: ga_pageviews_clone {
 
             ;;
   }
-
-
 }
+
+explore: productivity_data_clone {
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${productivity_data_clone.market_dim_id} = ${markets.id}
+        ;;
+    }
+  }
+
+
+
 explore: channel_items {
   join: care_requests {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;

@@ -54,6 +54,15 @@ view: primary_payer_dimensions_clone {
     sql: ${TABLE}.insurance_package_name ;;
   }
 
+  dimension: insurance_package_name_consolidated {
+    type: string
+    sql: CASE
+          WHEN when UPPER(${insurance_package_name}) LIKE '%HEALTH PLAN OF NEVADA%' THEN 'Health Plan of Nevada'
+          WHEN when UPPER(${insurance_package_name}) LIKE '%CULINARY%' THEN 'Culinary'
+          ELSE ${insurance_package_name}
+        END ;;
+  }
+
   dimension: united_healthcare_category {
     type: string
     sql: case when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SIERRA HEALTH & LIFE - SENIOR DIMENSION (MEDICARE REPLACEMENT HMO)') then 'HPN Medicare Advantage'
@@ -61,6 +70,24 @@ view: primary_payer_dimensions_clone {
               when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - UNITED HEALTHCARE CHOICE PLUS (POS)', 'SIERRA HEALTH LIFE') then 'HPN Commercial'
               when ${insurance_package_name} in('UHC WEST - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT HMO)', 'UHC - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT PPO) ') then 'UHC Medicare Advantage'
               when ${insurance_package_name} in('UMR', 'UNITED HEALTHCARE', 'UNITED HEALTHCARE (PPO)') then 'UHC Commercial'
+              else null end;;
+  }
+
+  dimension: uhc_reporting_category {
+    description: "Consolidated insurance package names for Nevada UHC payer reporting"
+    type: string
+    sql: case when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SIERRA HEALTH & LIFE - SENIOR DIMENSION (MEDICARE REPLACEMENT HMO)',
+                                                'UHC - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT PPO)',
+                                                'UHC WEST - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT HMO)')
+          then 'HPN Medicare Advantage'
+              when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SMARTCHOICE (MEDICAID HMO)')
+          then 'HPN Managed Medicaid'
+              when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - UNITED HEALTHCARE CHOICE PLUS (POS)',
+                                                'SIERRA HEALTH LIFE',
+                                                'UMR',
+                                                'UNITED HEALTHCARE',
+                                                'UNITED HEALTHCARE (PPO)')
+          then 'HPN Commercial'
               else null end;;
   }
 

@@ -90,19 +90,6 @@ view: markets {
     units: miles
   }
 
-  dimension: pg_timezone {
-    type: string
-    sql: CASE
-          WHEN ${id} = 162 THEN 'US/Pacific'
-          WHEN ${id} = 161 THEN 'US/Arizona'
-          WHEN ${id} = 164 THEN 'US/Eastern'
-          WHEN ${id} = 159 THEN 'US/Mountain'
-          WHEN ${id} = 160 THEN 'US/Mountain'
-          WHEN ${id} = 166 THEN 'US/Central'
-          WHEN ${id} = 165 THEN 'US/Central'
-          END;;
-  }
-
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
