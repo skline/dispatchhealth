@@ -313,12 +313,19 @@ dimension: source_category
 
   dimension: exp_id {
     type: string
-    sql: lower(split_part(substring(${full_url} from 'utm_expid=[\w.-]+'), '=', 2)) ;;
+    sql: right(left((lower(split_part(substring(${full_url} from 'utm_expid=[\w.-]+'), '=', 2))),-2),-1) ;;
 
   }
+  dimension: test_exp_condition_num {
+    type: number
+    sql: right((lower(split_part(substring(${full_url} from 'utm_expid=[\w.-]+'), '=', 2))),1)::int;;
+  }
+
   dimension: test_exp_condition {
     type: string
-    sql: regexp_matches(${exp_id}, '[^.]+$', 'g')  ;;
+    sql:  case when ${test_exp_condition_num} = 1 then 'Experimental'
+               when ${test_exp_condition_num} = 0 then 'Control'
+          else null end;;
   }
 
   dimension: content_final {
