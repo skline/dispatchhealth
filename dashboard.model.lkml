@@ -442,23 +442,28 @@ explore: invoca_clone {
     sql_on:  ${markets.id} =${invoca_clone.market_id} ;;
   }
 
-  join: ga_adwords_stats_clone {
-    sql_on: ${ga_adwords_stats_clone.client_id} = ${invoca_clone.analytics_vistor_id}
-      and ${ga_adwords_stats_clone.page_timestamp_date} = ${invoca_clone.start_date};;
+  join: ga_pageviews_clone {
+    sql_on:
+    ${invoca_clone.analytics_vistor_id} = ${ga_pageviews_clone.client_id}
+  and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_mst_raw})) < (60*60*1.5)
+    ;;
   }
+
+  join: ga_adwords_stats_clone {
+    sql_on:
+    ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
+  }
+
   join: ga_adwords_cost_clone {
     sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
             and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
             and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
             and ${ga_adwords_stats_clone.adwordsadgroupid} =${ga_adwords_cost_clone.adwordsadgroupid}
                   and ${ga_adwords_stats_clone.page_timestamp_date} =${ga_adwords_cost_clone.date_date}
-
             ;;
   }
-  join: ga_pageviews_clone {
-    sql_on:  ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
-      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
-  }
+
 
   join: adwords_campaigns_clone {
     sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;

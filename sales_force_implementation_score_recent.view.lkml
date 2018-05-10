@@ -2,15 +2,22 @@ view: sales_force_implementation_score_recent {
     derived_table: {
       sql: select *
               from
-              (select sf.channel_item_id, sf.sf_account_name, sf.sf_implementation_name, max(sf.implementation_score) as implementation_score, count(distinct cs.care_request_id) as complete_care_requests
-from looker_scratch.sales_force_implementation_score_clone sf
+              (select sf.channel_item_id, sf.sf_account_name, sf.sf_implementation_name, sf.implementation_score as implementation_score, sf.projected_volume, sf.projected_volume_2, count(distinct cs.care_request_id) as complete_care_requests
+from (
+
+   SELECT *
+   FROM looker_scratch.sales_force_implementation_score_clone a
+   where a.created_at=
+   (select max(b.created_at)
+     from looker_scratch.sales_force_implementation_score_clone b
+     WHERE a.channel_item_id = b.channel_item_id)) sf
 left join public.care_requests cr
 on cr.channel_item_id=sf.channel_item_id
 and (((cr.created_at ) >= ((SELECT (DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL)))
 AND ((cr.created_at ) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL))))))
 left join public.care_request_statuses cs
 on cs.care_request_id=cr.id and cs.name='complete' and cs.deleted_at is  null
-group by 1,2,3) sales_force_implementation_score_clone
+group by 1,2,3,4,5,6) sales_force_implementation_score_clone
                      ;;
     }
 
@@ -51,9 +58,19 @@ group by 1,2,3) sales_force_implementation_score_clone
 dimension: complete_care_requests_last_month {
   type: number
   sql:  ${TABLE}.complete_care_requests;;
-
-
   }
+
+  dimension: projected_volume {
+    type: number
+    sql:  ${TABLE}.projected_volume;;
+  }
+
+  dimension: projected_volume_2 {
+    type: number
+    sql:  ${TABLE}.projected_volume_2;;
+  }
+
+
   measure: distinct_channels_mapped_in_sf  {
     type: count_distinct
     sql_distinct_key: ${channel_item_id} ;;
