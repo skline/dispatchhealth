@@ -2,7 +2,7 @@ view: sales_force_implementation_score_recent {
     derived_table: {
       sql: select *
               from
-              (select sf.channel_item_id, sf.sf_account_name, sf.sf_implementation_name, sf.implementation_score as implementation_score, sf.projected_volume, sf.projected_volume_2, count(distinct cs.care_request_id) as complete_care_requests
+              (select sf.channel_item_id, sf.sf_account_name, sf.sf_implementation_name, sf.implementation_score as implementation_score, sf.projected_volume, sf.potential_volume, count(distinct cs.care_request_id) as complete_care_requests
 from (
 
    SELECT *
@@ -65,9 +65,9 @@ dimension: complete_care_requests_last_month {
     sql:  ${TABLE}.projected_volume;;
   }
 
-  dimension: projected_volume_2 {
+  dimension: potential_volume {
     type: number
-    sql:  ${TABLE}.projected_volume_2;;
+    sql:  ${TABLE}.potential_volume;;
   }
 
 
