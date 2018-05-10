@@ -129,6 +129,16 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${care_request_distances.care_request_id} ;;
   }
 
+  join: care_request_consents {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${care_request_consents.care_request_id} ;;
+  }
+
+  join: care_team_members {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${care_team_members.care_request_id} ;;
+  }
+
   join: credit_card_errors {
     relationship: one_to_many
     sql_on: ${care_requests.id} = ${credit_card_errors.care_request_id} ;;
