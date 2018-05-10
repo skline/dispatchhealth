@@ -9,6 +9,7 @@ view: ga_pageviews_full_clone {
               when ${invoca_clone.market_id} is not null then ${invoca_clone.market_id}
               when ${marketing_cost_clone.market_id} is not null then ${marketing_cost_clone.market_id}
               when ${ga_geodata_clone.market_id} is not null then ${ga_geodata_clone.market_id}
+              when ${pageview_market_id} is not null then ${pageview_market_id}
               else null end
               ;;
   }
