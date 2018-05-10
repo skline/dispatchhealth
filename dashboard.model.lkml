@@ -337,6 +337,11 @@ join: ga_pageviews_clone {
              and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
                   ;;
   }
+  join: ga_experiments {
+    sql_on: ${ga_pageviews_clone.exp_id} = ${ga_experiments.exp_id}
+            OR
+            ${web_ga_pageviews_clone.exp_id} = ${ga_experiments.exp_id} ;;
+  }
 
   join: ga_adwords_stats_clone {
     sql_on: (${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
@@ -449,6 +454,12 @@ explore: invoca_clone {
     ;;
   }
 
+  join: ga_experiments {
+    sql_on: ${ga_pageviews_clone.exp_id} = ${ga_experiments.exp_id};;
+
+  }
+
+
   join: ga_adwords_stats_clone {
     sql_on:
     ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
@@ -508,6 +519,11 @@ explore: ga_pageviews_full_clone {
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
              and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
                   ;;
+  }
+
+  join: ga_experiments {
+    sql_on: ${ga_pageviews_full_clone.exp_id} = ${ga_experiments.exp_id};;
+
   }
 
   join: ga_adwords_stats_clone {
@@ -697,6 +713,11 @@ explore: ga_pageviews_clone {
       sql_on:  ${channel_items.id} =${care_requests.channel_item_id} OR
                 ${channel_items.id} =${web_care_requests.channel_item_id} ;;
     }
+
+  join: ga_experiments {
+    sql_on: ${ga_pageviews_clone.exp_id} = ${ga_experiments.exp_id};;
+
+  }
 
   }
 
@@ -984,6 +1005,8 @@ explore: ga_pageviews_clone {
           join: markets {
             sql_on: ${incontact_clone.market_id} = ${markets.id} ;;
           }
+
+
         }
 
 
