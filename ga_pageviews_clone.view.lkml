@@ -150,6 +150,19 @@ view: ga_pageviews_clone {
          else null end ;;
   }
 
+
+  dimension: pageview_market_id {
+    type: number
+    sql: case when lower(${full_url}) like '%den%'  then 159
+         when lower(${full_url})  like '%colo%' then 160
+         when lower(${full_url})  like '%pho%' then 161
+         when lower(${full_url})  like '%ric%' then 164
+         when lower(${full_url})  like '%las%' then 162
+         when lower(${full_url})  like '%hou%' then 165
+         when lower(${full_url})  like '%okl%' then 166
+         else null end ;;
+  }
+
   dimension: facebook_market_id_final{
     type: number
     sql: case when ${care_requests.market_id} is not null and lower(${source}) in ('facebook', 'facbeook.com', 'instagram', 'instagram.com') then ${care_requests.market_id}
@@ -296,6 +309,16 @@ dimension: source_category
     type: string
     sql: split_part(substring(${full_url} from 'utm_content=\w+'), '=', 2) ;;
 
+  }
+
+  dimension: exp_id {
+    type: string
+    sql: lower(split_part(substring(${full_url} from 'utm_expid=[\w.-]+'), '=', 2)) ;;
+
+  }
+  dimension: test_exp_condition {
+    type: string
+    sql: regexp_matches(${exp_id}, '[^.]+$', 'g')  ;;
   }
 
   dimension: content_final {
