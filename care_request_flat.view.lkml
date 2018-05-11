@@ -226,6 +226,51 @@ view: care_request_flat {
     sql: ${TABLE}.complete_comment ;;
   }
 
+  dimension: followup_3day_result {
+    type: string
+    description: "The 3-day follow-up call result"
+    sql: ${TABLE}.followup_3day_result ;;
+  }
+
+  dimension: followup_3day {
+    type: yesno
+    description: "A flag indicating the 3-day follow-up call was completed"
+    sql: ${followup_3day_result} IS NOT NULL AND ${followup_3day_result} != 'patient_called_but_did_not_answer' ;;
+  }
+
+  dimension: bounceback_3day {
+    type: yesno
+    sql: ${followup_3day_result} LIKE '%same_complaint%' ;;
+  }
+
+  dimension: followup_14day_result {
+    type: string
+    description: "The 14-day follow-up call result"
+    sql: ${TABLE}.followup_14day_result ;;
+  }
+
+  dimension: bounceback_14day {
+    type: yesno
+    sql: ${followup_14day_result} LIKE '%same_complaint%' OR ${bounceback_3day} ;;
+  }
+
+  dimension: followup_30day_result {
+    type: string
+    description: "The 30-day follow-up call result"
+    sql: ${TABLE}.followup_30day_result ;;
+  }
+
+  dimension: followup_30day {
+    type: yesno
+    description: "A flag indicating the 14/30-day follow-up call was completed"
+    sql: ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'patient_called_but_did_not_answer' ;;
+  }
+
+  dimension: bounceback_30day {
+    type: yesno
+    sql: ${followup_30day_result} LIKE '%same_complaint%' OR ${bounceback_3day} OR ${bounceback_14day} ;;
+  }
+
   dimension_group: on_route {
     type: time
     description: "The local date and time when the care request team is on-route"
