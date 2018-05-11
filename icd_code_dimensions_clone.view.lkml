@@ -42,6 +42,20 @@ view: icd_code_dimensions_clone {
     sql: ${TABLE}.diagnosis_code ;;
   }
 
+  dimension: disease_state {
+    type: string
+    description: "Grouped disease state for post-acute reporting"
+    sql: CASE
+          WHEN ${diagnosis_code} = 'I50' THEN 'CHF'
+          WHEN ${diagnosis_code} = 'J44' THEN 'COPD'
+          WHEN ${diagnosis_code} = 'A41' THEN 'Sepsis'
+          WHEN ${diagnosis_code} IN ('J12', 'J18', 'J84', 'Z87') THEN 'Pneumonia'
+          WHEN ${diagnosis_code} IN ('L03', 'K12', 'H05', 'N48') THEN 'Celulitis'
+          WHEN ${diagnosis_code} = 'Z96' THEN 'Post-Op Total Joint'
+          ELSE 'Other'
+        END;;
+  }
+
   dimension: diagnosis_code_decimal {
     type: string
     sql: ${TABLE}.diagnosis_code_decimal ;;
