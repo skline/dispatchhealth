@@ -289,6 +289,33 @@ view: care_request_flat {
     }
   }
 
+  measure: count_14day_bb {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: bounceback_14day
+      value: "yes"
+    }
+  }
+
+  measure: count_30day_bb {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: bounceback_30day
+      value: "yes"
+    }
+  }
+
+  measure: count_30day_followups {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: followup_30day
+      value: "yes"
+    }
+  }
+
   dimension_group: on_route {
     type: time
     description: "The local date and time when the care request team is on-route"
