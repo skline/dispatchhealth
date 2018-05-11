@@ -22,9 +22,9 @@ view: care_team_members {
     sql: ${TABLE}.clinical_provider_id ;;
   }
 
-  dimension: consent_received {
+  dimension: consent_not_received {
     type: yesno
-    sql: ${TABLE}.consent_received ;;
+    sql: ${TABLE}.consent_received IS FALSE ;;
   }
 
   dimension_group: created {
