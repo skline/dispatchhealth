@@ -271,6 +271,24 @@ view: care_request_flat {
     sql: ${followup_30day_result} LIKE '%same_complaint%' OR ${bounceback_3day} OR ${bounceback_14day} ;;
   }
 
+  measure: count_3day_bb {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: bounceback_3day
+      value: "yes"
+    }
+  }
+
+  measure: count_3day_followups {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: followup_3day
+      value: "yes"
+    }
+  }
+
   dimension_group: on_route {
     type: time
     description: "The local date and time when the care request team is on-route"
