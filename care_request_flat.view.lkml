@@ -14,6 +14,9 @@ view: care_request_flat {
         max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_scene_date,
         MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
         MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
+        fu3.comment AS followup_3day_result,
+        fu14.comment AS followup_14day_result,
+        fu30.comment AS followup_30day_result,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
         else array_to_string(array_agg(distinct comp.comment), ':')end
         as complete_comment,
@@ -35,13 +38,19 @@ view: care_request_flat {
       ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
       LEFT JOIN care_request_statuses archive
       ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
+      LEFT JOIN care_request_statuses fu3
+      ON cr.id = fu3.care_request_id AND fu3.name = 'followup_3'
+      LEFT JOIN care_request_statuses fu14
+      ON cr.id = fu14.care_request_id AND fu14.name = 'followup_14'
+      LEFT JOIN care_request_statuses fu30
+      ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30'
       LEFT JOIN public.shift_teams
       ON shift_teams.id = cr.shift_team_id
       JOIN markets
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
-      GROUP BY 1, 2, 3;;
+      GROUP BY 1,2,3,13,14,15;;
   }
 
   dimension: care_request_id {
