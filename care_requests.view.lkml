@@ -42,6 +42,14 @@ view: care_requests {
     sql: trim(lower(${chief_complaint})) ;;
   }
 
+  dimension: post_acute_follow_up {
+    type: yesno
+    description: "Chief complaint, risk protocol name, or channel name is post-acute follow-up"
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
+          ${risk_assessments.protocol_name} = 'Post-Acute Patient' OR
+          ${channel_items.name} SIMILAR TO '%(pafu|post acute|post-acute)%';;
+  }
+
   dimension: chrono_visit_id {
     type: string
     sql: ${TABLE}.chrono_visit_id ;;

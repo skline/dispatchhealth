@@ -51,7 +51,7 @@ explore: care_requests {
 
   join: icd_code_dimensions_clone {
     relationship: many_to_one
-    sql_on: ${icd_code_dimensions_clone.id} = ${icd_visit_joins_clone.icd_dim_id} ;;
+    sql_on: ${icd_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) ;;
   }
 
   join: letter_recipient_dimensions_clone {
@@ -86,7 +86,7 @@ explore: care_requests {
             replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
             ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
     sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
-               ${app_shift_planning_facts_clone.schedule_role} SIMILAR TO '%NP/PA%' OR
+               ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
                ${care_requests.id} IS NOT NULL ;;
     }
 

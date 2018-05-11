@@ -52,6 +52,18 @@ view: icd_code_dimensions_clone {
     sql: ${TABLE}.diagnosis_description ;;
   }
 
+  measure: diagnosis_codes_concat {
+    label: "ICD 10 Diagnosis Codes"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${diagnosis_code}), ' | ') ;;
+  }
+
+  measure: diagnosis_desc_concat {
+    label: "ICD 10 Diagnosis Descriptions"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT  ${diagnosis_description}), ' | ') ;;
+  }
+
   dimension: diagnosis_group {
     type: string
     sql: ${TABLE}.diagnosis_group ;;
