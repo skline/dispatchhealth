@@ -50,7 +50,7 @@ view: icd_code_dimensions_clone {
           WHEN ${diagnosis_code} = 'J44' THEN 'COPD'
           WHEN ${diagnosis_code} = 'A41' THEN 'Sepsis'
           WHEN ${diagnosis_code} IN ('J12', 'J18', 'J84', 'Z87') THEN 'Pneumonia'
-          WHEN ${diagnosis_code} IN ('L03', 'K12', 'H05', 'N48') THEN 'Celulitis'
+          WHEN ${diagnosis_code} IN ('L03', 'K12', 'H05', 'N48') THEN 'Cellulitis'
           WHEN ${diagnosis_code} = 'Z96' THEN 'Post-Op Total Joint'
           ELSE 'Other'
         END;;

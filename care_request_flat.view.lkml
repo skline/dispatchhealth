@@ -263,7 +263,7 @@ view: care_request_flat {
   dimension: followup_30day {
     type: yesno
     description: "A flag indicating the 14/30-day follow-up call was completed"
-    sql: ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'patient_called_but_did_not_answer' ;;
+    sql: (${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'patient_called_but_did_not_answer') OR ${followup_3day} ;;
   }
 
   dimension: bounceback_30day {
