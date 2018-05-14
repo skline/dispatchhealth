@@ -390,14 +390,62 @@ join: ga_pageviews_clone {
 }
 
 explore: productivity_data_clone {
+
   join: markets {
     relationship: many_to_one
-    sql_on: ${productivity_data_clone.market_dim_id} = ${markets.id}
-        ;;
+    sql_on: ${productivity_data_clone.market_dim_id} = ${markets.id} ;;
     }
+
+  join: shift_planning_facts_clone {
+    relationship: one_to_many
+    sql_on: ${productivity_data_clone.date_date} = ${shift_planning_facts_clone.local_actual_start_date} AND
+            ${markets.humanity_id} = ${shift_planning_facts_clone.schedule_location_id} ;;
   }
 
+  join: cars {
+    relationship: many_to_one
+    sql_on: ${shift_planning_facts_clone.car_dim_id} = ${cars.id} ;;
+  }
 
+  # join: timezones {
+  #   relationship: many_to_one
+  #   sql: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  # }
+
+  join: shift_teams {
+    relationship: one_to_one
+    sql_on: ${shift_teams.car_id} = ${shift_planning_facts_clone.car_dim_id} AND
+            ${shift_planning_facts_clone.local_actual_start_date} = (${shift_teams.start_date}- INTERVAL '7 hour') ;;
+  }
+
+  join: shifts{
+    relationship: one_to_one
+    sql_on:  ${shift_teams.shift_id}  =  ${shifts.id};;
+  }
+
+  join: users {
+    relationship: one_to_many
+    sql_on: TRIM(UPPER(${shift_planning_facts_clone.clean_employee_name})) =
+            replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+            ${shift_planning_facts_clone.local_actual_start_date} = ${productivity_data_clone.date_date} ;;
+  }
+
+  join: shift_team_members {
+    relationship: one_to_many
+    sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+  join: care_requests {
+    relationship: many_to_one
+    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+  }
+
+  join: care_request_flat {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${care_request_flat.care_request_id} ;;
+  }
+
+}
 
 explore: channel_items {
   join: care_requests {

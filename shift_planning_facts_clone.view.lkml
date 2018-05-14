@@ -157,10 +157,10 @@ view: shift_planning_facts_clone {
     sql: ${expected_seconds} / 3600 ;;
   }
 
-#   dimension: schedule_location_id {
-#     type: string
-#     sql: ${TABLE}.schedule_location_id ;;
-#   }
+  dimension: schedule_location_id {
+    type: string
+    sql: ${TABLE}.schedule_location_id ;;
+  }
 
   dimension: schedule_role {
     type: string
@@ -196,15 +196,15 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.total_actual_seconds ;;
   }
 
-#   dimension: total_billable_visits {
-#     type: number
-#     sql: ${TABLE}.total_billable_visits ;;
-#   }
-#
-#   dimension: total_complete_visits {
-#     type: number
-#     sql: ${TABLE}.total_complete_visits ;;
-#   }
+  # dimension: total_billable_visits {
+  #   type: number
+  #   sql: ${TABLE}.total_billable_visits ;;
+  # }
+
+  # dimension: total_complete_visits {
+  #   type: number
+  #   sql: ${TABLE}.total_complete_visits ;;
+  # }
 #
 #   dimension: total_expected_seconds {
 #     type: number

@@ -66,6 +66,16 @@ view: productivity_data {
     sql: ${hours_worked} ;;
   }
 
+  dimension: smfr_hours_worked {
+    type: number
+    sql: ${TABLE}.smfr_hours_worked ;;
+  }
+
+  measure: sum_smfr_hours_worked {
+    type: sum
+    sql: ${smfr_hours_worked} ;;
+  }
+
   dimension: market_dim_id {
     type: number
     sql: ${TABLE}.market_dim_id ;;

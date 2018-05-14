@@ -480,18 +480,18 @@ view: care_requests {
 
   dimension:  complete_visit {
     type: yesno
-    sql: ${care_request_complete.care_request_id} is not null;;
+    sql: ${care_request_flat.complete_date} is not null;;
   }
 
   dimension:  archived_visit {
     type: yesno
-    sql: ${care_request_archived.care_request_id} is not null;;
+    sql: ${care_request_flat.archive_date} is not null;;
   }
 
 
   dimension:  referred_point_of_care {
     type: yesno
-    sql: ${care_request_archived.comment} like '%Referred - Point of Care%';;
+    sql: ${care_request_flat.complete_comment} like '%Referred - Point of Care%';;
   }
 
   dimension:  billable_est {
@@ -523,12 +523,12 @@ view: care_requests {
 
   dimension:  accepted_visit {
     type: yesno
-    sql: ${care_request_accepted.care_request_id} is not null;;
+    sql: ${care_request_flat.accept_date} is not null;;
   }
 
   dimension:  requested_visit {
     type: yesno
-    sql: ${care_request_requested.care_request_id} is not null;;
+    sql: ${care_request_flat.requested_date} is not null;;
   }
 
 
@@ -713,7 +713,7 @@ measure: distinct_days {
 
   measure: resolved_reason {
     type: string
-    sql:array_agg(distinct concat(${care_request_archived.comment}, ${care_request_complete.comment}))::text ;;
+    sql:array_agg(distinct concat(${care_request_flat.archive_comment}, ${care_request_flat.complete_comment}))::text ;;
   }
   measure: min_complete_timestamp_mountain {
     type: date_time
@@ -721,7 +721,7 @@ measure: distinct_days {
   }
   dimension: resolved_reason_full {
     type: string
-    sql: coalesce(${care_request_complete.comment}, ${care_request_archived.comment}) ;;
+    sql: coalesce(${care_request_flat.complete_comment}, ${care_request_flat.archive_comment}) ;;
   }
 
   dimension: primary_resolved_reason {
@@ -748,27 +748,27 @@ measure: distinct_days {
 
   dimension: escalated_on_scene {
     type: yesno
-    sql: UPPER(${care_request_complete.comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
+    sql: UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
   }
 
   dimension: lwbs_going_to_ed {
     type: yesno
-    sql: ${care_request_archived.comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
+    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
   }
 
   dimension: lwbs_going_to_urgent_care {
     type: yesno
-    sql: ${care_request_archived.comment} = 'Cancelled by Patient: Going to an Urgent Care' ;;
+    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Going to an Urgent Care' ;;
   }
 
   dimension: lwbs_wait_time_too_long {
     type: yesno
-    sql: ${care_request_archived.comment} = 'Cancelled by Patient: Wait time too long' ;;
+    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Wait time too long' ;;
   }
 
   dimension: lwbs_no_show {
     type: yesno
-    sql: ${care_request_archived.comment} = 'No Show' ;;
+    sql: ${care_request_flat.archive_comment} = 'No Show' ;;
   }
 
   dimension: lwbs {
@@ -798,13 +798,13 @@ measure: distinct_days {
 
   dimension: escalated_on_scene_ed {
     type: yesno
-    sql: ${care_request_complete.comment} = 'Referred - Point of Care: ED'
-      OR ${care_request_complete.comment} = 'Referred - Point of care: ED';;
+    sql: ${care_request_flat.complete_comment} = 'Referred - Point of Care: ED'
+      OR ${care_request_flat.complete_comment} = 'Referred - Point of care: ED';;
   }
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: ${care_request_complete.comment} LIKE '%Referred - Phone Triage%' ;;
+    sql: ${care_request_flat.complete_comment} LIKE '%Referred - Phone Triage%' ;;
   }
 
   dimension: escalated_on_phone_reason {

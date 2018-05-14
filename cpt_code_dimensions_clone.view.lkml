@@ -24,7 +24,7 @@ view: cpt_code_dimensions_clone {
   measure: cpt_code_concat {
     label: "CPT Codes"
     type: string
-    sql: GROUP_CONCAT(DISTINCT ${cpt_code} SEPARATOR ' | ') ;;
+    sql: array_to_string(array_agg(DISTINCT ${cpt_code}), ' | ') ;;
   }
 
   dimension: cpt_edition {
@@ -58,7 +58,7 @@ view: cpt_code_dimensions_clone {
   measure: cpt_descrip_concat {
     label: "CPT Descriptions"
     type: string
-    sql: GROUP_CONCAT(DISTINCT ${description} SEPARATOR ' | ') ;;
+    sql: array_to_string(array_agg(DISTINCT ${description}), ' | ') ;;
   }
 
   dimension: cpt_code_and_description {
