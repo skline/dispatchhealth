@@ -149,7 +149,7 @@ view: shift_planning_facts_clone {
 
   dimension: expected_seconds {
     type: number
-    sql: TIME_TO_SEC(TIMEDIFF(${local_expected_end_time}, ${local_expected_start_time})) ;;
+    sql: EXTRACT(EPOCH FROM ${local_expected_end_raw}) -  EXTRACT(EPOCH FROM ${local_expected_start_raw}) ;;
   }
 
   measure: sum_hours_scheduled {
@@ -170,6 +170,21 @@ view: shift_planning_facts_clone {
   dimension: app_role {
     type: yesno
     sql: ${schedule_role} = 'NP/PA' ;;
+  }
+
+  dimension: dhmt_role {
+    type: yesno
+    sql: ${schedule_role} = 'EMT' OR ${schedule_role} = 'DHMT' ;;
+  }
+
+  dimension: app_schedule {
+    type: yesno
+    sql: ${shift_planning_shifts_clone.schedule_name} LIKE '%NP/PA%' ;;
+  }
+
+  dimension: dhmt_schedule {
+    type: yesno
+    sql: ${shift_planning_shifts_clone.schedule_name} SIMILAR TO '%(EMT:|DHMT:)%' ;;
   }
 
   dimension_group: shift {
@@ -241,23 +256,56 @@ view: shift_planning_facts_clone {
 #     drill_fields: [id, employee_name]
 #   }
 
-  # measure: sum_hours_worked {
+  # measure: -_hours_worked {
   #   type: sum_distinct
   #   sql_distinct_key: ${id} ;;
   #   sql:  ${total_actual_seconds} / 3600  ;;
   # }
 
-  measure: sum_hours_worked {
+  measure: sum_all_hours_worked {
     type: sum
+    description: "The sum of all hours worked, regardless of role or schedule"
     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
   }
 
-  measure: sum_app_hours_worked {
+  measure: sum_app_role_hours_worked {
     type: sum
+    description: "The sum of hours worked where role is NP/PA (Excludes training)"
     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
     filters: {
       field: app_role
       value: "yes"
     }
-}
+  }
+
+  measure: sum_app_schedule_hours_worked {
+    type: sum
+    description: "The sum of all hours worked where schedule is NP/PA (May include training)"
+    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+    filters: {
+      field: app_schedule
+      value: "yes"
+    }
+  }
+
+  measure: sum_dhmt_role_hours_worked {
+    type: sum
+    description: "The sum of hours worked where role is EMT or DHMT (Excludes training)"
+    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+    filters: {
+      field: dhmt_role
+      value: "yes"
+    }
+  }
+
+  measure: sum_dhmt_schedule_hours_worked {
+    type: sum
+    description: "The sum of all hours worked where schedule is EMT or DHMT (May include training)"
+    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+    filters: {
+      field: dhmt_schedule
+      value: "yes"
+    }
+  }
+
 }

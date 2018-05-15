@@ -402,6 +402,11 @@ explore: productivity_data_clone {
             ${markets.humanity_id} = ${shift_planning_facts_clone.schedule_location_id} ;;
   }
 
+  join: shift_planning_shifts_clone {
+    relationship: one_to_one
+    sql_on:  ${shift_planning_facts_clone.shift_id}=${shift_planning_shifts_clone.shift_id} and ${shift_planning_shifts_clone.imported_after_shift}=1 ;;
+  }
+
   join: cars {
     relationship: many_to_one
     sql_on: ${shift_planning_facts_clone.car_dim_id} = ${cars.id} ;;
@@ -415,7 +420,7 @@ explore: productivity_data_clone {
   join: shift_teams {
     relationship: one_to_one
     sql_on: ${shift_teams.car_id} = ${shift_planning_facts_clone.car_dim_id} AND
-            ${shift_planning_facts_clone.local_actual_start_date} = (${shift_teams.start_date}- INTERVAL '7 hour') ;;
+            ${shift_planning_facts_clone.local_actual_start_date} = (${shift_teams.start_date}- INTERVAL '6 hour') ;;
   }
 
   join: shifts{
