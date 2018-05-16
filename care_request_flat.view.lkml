@@ -22,7 +22,8 @@ view: care_request_flat {
         as complete_comment,
         case when array_to_string(array_agg(distinct archive.comment), ':') = '' then null
         else array_to_string(array_agg(distinct archive.comment), ':') end
-        as archive_comment
+        as archive_comment,
+        cr.shift_team_id
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null

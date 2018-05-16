@@ -389,6 +389,27 @@ join: ga_pageviews_clone {
   }
 }
 
+explore: shift_planning_facts_clone {
+
+  join: shift_planning_shifts_clone {
+    relationship: one_to_one
+    sql_on:  ${shift_planning_facts_clone.shift_id}=${shift_planning_shifts_clone.shift_id} and ${shift_planning_shifts_clone.imported_after_shift} = 1 ;;
+  }
+
+  join: shift_team_visits {
+    relationship: one_to_many
+    sql_on: TRIM(UPPER(${shift_planning_facts_clone.clean_employee_name})) =
+    replace(upper(trim(regexp_replace(replace(trim(${shift_team_visits.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${shift_team_visits.last_name})), '''', '') AND
+    ${shift_planning_facts_clone.local_actual_start_date}= ${shift_team_visits.complete_date_date};;
+  }
+
+  join: care_request_flat {
+    relationship: one_to_many
+    sql_on: ${care_request_flat.care_request_id} = ${shift_team_visits.care_request_id};;
+  }
+
+}
+
 explore: productivity_data_clone {
 
   join: markets {
