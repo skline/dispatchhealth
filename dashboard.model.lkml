@@ -408,6 +408,21 @@ explore: shift_planning_facts_clone {
     sql_on: ${care_request_flat.care_request_id} = ${shift_team_visits.care_request_id};;
   }
 
+  join: user_roles {
+    relationship: one_to_many
+    sql_on: ${user_roles.user_id} = ${shift_team_visits.user_id} ;;
+  }
+
+  join: roles {
+    relationship: one_to_one
+    sql_on: ${roles.id} = ${user_roles.role_id} ;;
+  }
+
+  join: provider_profiles {
+    relationship: one_to_one
+    sql_on: ${provider_profiles.user_id} = ${shift_team_visits.user_id} ;;
+  }
+
 }
 
 explore: productivity_data_clone {

@@ -53,6 +53,11 @@ view: shift_team_visits {
     sql: ${TABLE}.shift_team_id ;;
   }
 
+  dimension: user_id {
+    type: number
+    sql: ${TABLE}.user_id ;;
+  }
+
   dimension: car_id {
     type: number
     sql: ${TABLE}.car_id ;;
