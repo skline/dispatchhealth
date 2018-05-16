@@ -826,12 +826,6 @@ view: care_request_flat {
     }
   }
 
-  dimension: escalated_on_scene_ed {
-    type: yesno
-    sql: ${complete_comment} = 'Referred - Point of Care: ED'
-      OR ${complete_comment} = 'Referred - Point of care: ED';;
-  }
-
   dimension: escalated_on_phone {
     type: yesno
     sql: ${archive_comment} LIKE '%Referred - Phone Triage%' ;;

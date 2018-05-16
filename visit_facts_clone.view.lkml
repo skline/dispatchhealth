@@ -112,8 +112,18 @@ view: visit_facts_clone {
   }
 
   dimension: letter_sent {
-    type: number
-    sql: ${TABLE}.letter_sent ;;
+    label: "Clinical Letter Sent flag"
+    type: yesno
+    sql: ${TABLE}.letter_sent = 1 ;;
+  }
+
+  measure: clinical_notes_sent {
+    label: "Billable Visits Where Clinical Notes Sent"
+    type: count
+    filters: {
+      field: letter_sent
+      value: "yes"
+    }
   }
 
 #   dimension_group: local_accepted {
