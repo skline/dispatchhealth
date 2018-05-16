@@ -408,6 +408,11 @@ explore: shift_planning_facts_clone {
     sql_on: ${care_request_flat.care_request_id} = ${shift_team_visits.care_request_id};;
   }
 
+  join: care_requests {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${shift_team_visits.care_request_id} ;;
+  }
+
   join: user_roles {
     relationship: one_to_many
     sql_on: ${user_roles.user_id} = ${shift_team_visits.user_id} ;;
