@@ -27,6 +27,12 @@ view: cpt_code_dimensions_clone {
     sql: array_to_string(array_agg(DISTINCT ${cpt_code}), ' | ') ;;
   }
 
+  dimension: cpt_code_flag {
+    description: "Flag indicating whether or not a CPT code exists"
+    type: yesno
+    sql:  COALESCE(${cpt_code}) IS NOT NULL;;
+  }
+
   dimension: cpt_edition {
     label: "CPT edition"
     description: "The verson of the CPT code used"
@@ -77,14 +83,29 @@ view: cpt_code_dimensions_clone {
   dimension: em_care_level {
     label: "E&M Code Care Level"
     description: "Indicates the level of care received by patient"
-    type: string
+    type: number
     sql: ${TABLE}.em_care_level ;;
+  }
+
+  dimension: non_null_em_care_level {
+    type: yesno
+    sql: ${em_care_level} IS NOT NULL ;;
+  }
+
+  measure: avg_em_care_level {
+    label: "Average E&M Code Care Level"
+    type: average
+    sql: CAST(${em_care_level} AS INT) ;;
+    filters: {
+      field: non_null_em_care_level
+      value: "yes"
+    }
   }
 
   measure: em_care_level_concat {
     label: "E&M Code Care Levels"
     type: string
-    sql:  GROUP_CONCAT(DISTINCT ${em_care_level} SEPARATOR '');;
+    sql:  array_to_string(array_agg(DISTINCT ${em_care_level}), ' ');;
   }
 
   dimension: em_patient_type {

@@ -499,11 +499,25 @@ view: care_requests {
     sql: ${referred_point_of_care} or ${care_requests.complete_visit};;
   }
 
+  dimension:  billable_with_cpt {
+    type: yesno
+    sql: ${billable_est} AND ${cpt_code_dimensions_clone.cpt_code_flag};;
+  }
+
   measure: count_billable_est {
     type: count
     description: "Count of completed care requests OR on-scene escalations"
     filters: {
       field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_billable_with_cpt {
+    type: count
+    description: "Count of completed care requests OR on-scene escalations that include a CPT code"
+    filters: {
+      field: billable_with_cpt
       value: "yes"
     }
   }
