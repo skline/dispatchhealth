@@ -95,11 +95,11 @@ view: cpt_code_dimensions_clone {
   measure: avg_em_care_level {
     label: "Average E&M Code Care Level"
     type: average
-    sql: CAST(${em_care_level} AS INT) ;;
-    filters: {
-      field: non_null_em_care_level
-      value: "yes"
-    }
+    sql: ${em_care_level} ;;
+    # filters: {
+    #   field: non_null_em_care_level
+    #   value: "yes"
+    # }
   }
 
   measure: em_care_level_concat {
