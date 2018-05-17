@@ -84,22 +84,14 @@ view: cpt_code_dimensions_clone {
     label: "E&M Code Care Level"
     description: "Indicates the level of care received by patient"
     type: number
-    sql: ${TABLE}.em_care_level ;;
-  }
-
-  dimension: non_null_em_care_level {
-    type: yesno
-    sql: ${em_care_level} IS NOT NULL ;;
+    sql: (case when cpt_code_dimensions_clone.em_care_level='' then NULL
+      else cpt_code_dimensions_clone.em_care_level  end)::int;;
   }
 
   measure: avg_em_care_level {
     label: "Average E&M Code Care Level"
     type: average
-    sql: ${em_care_level} ;;
-    # filters: {
-    #   field: non_null_em_care_level
-    #   value: "yes"
-    # }
+    sql: ${em_care_level};;
   }
 
   measure: em_care_level_concat {
