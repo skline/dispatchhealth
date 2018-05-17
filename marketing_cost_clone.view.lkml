@@ -28,6 +28,18 @@ view: marketing_cost_clone {
     sql: ${TABLE}.cost ;;
   }
 
+  dimension: ad_group_name_final {
+    type: string
+    sql: case when ${ad_groups_clone.ad_group_name} is not null then ${ad_groups_clone.ad_group_name}
+              else ${ga_pageviews_full_clone.adcontent_final} end;;
+
+  }
+
+  dimension: medium {
+    type: string
+    sql: 'cpc' ;;
+  }
+
 
   measure: sum_cost{
     type: sum_distinct

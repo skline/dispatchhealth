@@ -607,16 +607,7 @@ explore: ga_pageviews_full_clone {
     abs(
         EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_full_clone.timestamp_mst_raw})) < (60*60*1.5)
           and ${ga_pageviews_full_clone.client_id} = ${invoca_clone.analytics_vistor_id}  ;;
-    sql_where:  ${invoca_clone.start_date} >'2018-03-15'
-      OR ${ga_pageviews_full_clone.timestamp_time} is not null;;
-  }
 
-  join: marketing_cost_clone {
-    sql_on:   ${ga_pageviews_full_clone.source_final} = ${marketing_cost_clone.type}
-              and ${ga_pageviews_full_clone.timestamp_mst_date} =${marketing_cost_clone.date_date}
-              and ${ga_pageviews_full_clone.medium_final}  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
-
-            ;;
   }
 
   join: incontact_clone {
@@ -709,6 +700,21 @@ explore: ga_pageviews_full_clone {
   join: channel_items {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} or ${channel_items.id} =${web_care_requests.channel_item_id};;
   }
+
+  join: marketing_cost_clone {
+    type: full_outer
+    sql_on:   ${ga_pageviews_full_clone.source_final} = ${marketing_cost_clone.type}
+              and ${ga_pageviews_full_clone.ga_time_date} =${marketing_cost_clone.date_date}
+              and ${ga_pageviews_full_clone.medium_final}  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
+              and ${ga_pageviews_full_clone.ad_group_final} = ${marketing_cost_clone.ad_group_name}
+            and ${ga_pageviews_full_clone.campaign_final} = ${marketing_cost_clone.campaign_name}
+
+            ;;
+    sql_where:  ${invoca_clone.start_date} >'2018-03-15'
+    OR ${ga_pageviews_full_clone.timestamp_time} is not null
+    or ${marketing_cost_clone.date_date} is not null;;
+  }
+
 
 }
 
