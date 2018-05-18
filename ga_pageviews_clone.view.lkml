@@ -270,6 +270,7 @@ dimension: source_category
               when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
               when ${timestamp_mst_date} is not null then ${timestamp_mst_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
+              when ${marketing_cost_clone.date_date} is not null then ${marketing_cost_clone.date_date}
          else null end;;
 
     }
@@ -294,16 +295,17 @@ dimension: source_category
               when ${care_request_flat.created_date} is not null then ${care_request_flat.created_date}
               when ${timestamp_mst_date} is not null then ${timestamp_mst_date}
               when ${invoca_clone.start_date} is not null then ${invoca_clone.start_date}
+              when ${marketing_cost_clone.date_date} is not null then ${marketing_cost_clone.date_date}
          else null end;;
     }
     dimension: source_final {
       type: string
-      sql: coalesce(${invoca_clone.utm_source}, ${source}) ;;
+      sql: coalesce(${invoca_clone.utm_source}, ${source}, ${marketing_cost_clone.type}) ;;
     }
 
   dimension: medium_final {
     type: string
-    sql: coalesce(${invoca_clone.utm_medium}, ${medium}) ;;
+    sql: coalesce(${invoca_clone.utm_medium}, ${medium}, ${marketing_cost_clone.medium}) ;;
   }
   dimension: content {
     type: string
@@ -353,7 +355,7 @@ dimension: source_category
 
   dimension: campaign_final {
     type: string
-    sql: coalesce(${invoca_clone.utm_campaign}, ${campaign}) ;;
+    sql: coalesce(${adwords_campaigns_clone.campaign_name}, ${invoca_clone.utm_campaign}, ${campaign}) ;;
   }
 
   dimension_group: today_mountain{
