@@ -141,6 +141,7 @@ view: shift_planning_facts {
 
   dimension_group: shift {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -203,6 +204,11 @@ view: shift_planning_facts {
     sql: ${TABLE}.visit_count ;;
   }
 
+  measure: sum_visit_count {
+    type: sum
+    sql: ${visit_count} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id, employee_name]
@@ -212,6 +218,13 @@ view: shift_planning_facts {
     type: sum_distinct
     sql_distinct_key: ${shift_id} ;;
     sql:  ${total_actual_seconds} / 3600  ;;
+  }
+
+  measure: sum_seconds_worked {
+    # type: sum
+    type: sum_distinct
+    sql_distinct_key: ${shift_id} ;;
+    sql:  ${total_actual_seconds} ;;
   }
 
 }
