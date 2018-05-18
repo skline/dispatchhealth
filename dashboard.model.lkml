@@ -387,6 +387,16 @@ join: ga_pageviews_clone {
 
             ;;
   }
+  join: marketing_cost_clone {
+    type: full_outer
+    sql_on:   ${ga_pageviews_clone.source_final} = ${marketing_cost_clone.type}
+              and ${ga_pageviews_clone.timestamp_mst_date} =${marketing_cost_clone.date_date}
+              and ${ga_pageviews_clone.medium_final}  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
+              and ${ga_pageviews_clone.ad_group_final} = ${marketing_cost_clone.ad_group_name}
+            and ${ga_pageviews_clone.campaign_final} = ${marketing_cost_clone.campaign_name}
+
+            ;;
+  }
 }
 
 explore: shift_planning_facts_clone {
