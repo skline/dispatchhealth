@@ -246,20 +246,38 @@ dimension: source_category
               else 'High Intent' end;;
   }
 
+  dimension: care_request_id_final {
+    type: number
+    sql:  coalesce(${care_requests.id},${web_care_requests.id}) ;;
+  }
+
+  dimension: complete_care_request_id {
+    type: number
+    sql:  coalesce(case when ${care_request_flat.complete}  then ${care_requests.id} else null end,
+    case when ${web_care_request_flat.complete} then ${web_care_requests.id} else null end) ;;
+  }
+
+  dimension: resolved_care_request_id {
+    type: number
+    sql:  coalesce(case when ${care_request_flat.resolved}  then ${care_requests.id} else null end,
+      case when ${web_care_request_flat.resolved} then ${web_care_requests.id} else null end) ;;
+  }
+
   measure: total_care_requests {
     type: number
-    sql: ${care_requests.count_distinct} + ${web_care_requests.count_distinct}  ;;
+    sql: count(distinct ${care_request_id_final})  ;;
   }
 
   measure: total_complete {
     type: number
-    sql:${care_request_flat.complete_count} + ${web_care_request_flat.complete_count};;
+    sql:count(distinct ${complete_care_request_id});;
   }
 
   measure: total_resolved {
     type: number
-    sql:  ${care_request_flat.resolved_count} + ${web_care_request_flat.resolved_count};;
+    sql:count(distinct ${resolved_care_request_id});;
   }
+
   dimension: ga_date{
 
     type: date
@@ -430,7 +448,7 @@ dimension: source_category
 
   measure: cost_per_clicks {
     type: number
-    value_format:"$#;($#)"
+    value_format:"$#;($#).0"
     sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${marketing_cost_clone.sum_ad_clicks}, 0) ;;
   }
 
@@ -442,7 +460,7 @@ dimension: source_category
 
   measure: cost_per_sessions {
     type: number
-    value_format:"$#;($#)"
+    value_format:"$#;($#).0"
     sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${count_distinct_sessions}, 0) ;;
   }
 
