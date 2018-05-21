@@ -430,7 +430,7 @@ dimension: source_category
 
   measure: cost_per_clicks {
     type: number
-    value_format:"$#;($#)"
+    value_format:"$#;($#).0"
     sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${marketing_cost_clone.sum_ad_clicks}, 0) ;;
   }
 
@@ -442,7 +442,7 @@ dimension: source_category
 
   measure: cost_per_sessions {
     type: number
-    value_format:"$#;($#)"
+    value_format:"$#;($#).0"
     sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${count_distinct_sessions}, 0) ;;
   }
 
