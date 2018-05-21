@@ -276,6 +276,11 @@ explore: care_requests {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
+  join: dtc_categorization {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${dtc_categorization.care_request_id} ;;
+  }
+
   join: timezones {
     relationship: many_to_one
     sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
@@ -724,6 +729,11 @@ explore: ga_pageviews_full_clone {
 
   join: channel_items {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} or ${channel_items.id} =${web_care_requests.channel_item_id};;
+  }
+
+  join: dtc_categorization {
+    relationship: one_to_one
+    sql_on: ${dtc_categorization.care_request_id} =${care_requests.id} or ${dtc_categorization.care_request_id} =${web_care_requests.id};;
   }
 
   join: marketing_cost_clone {
