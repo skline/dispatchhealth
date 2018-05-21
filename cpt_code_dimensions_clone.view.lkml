@@ -70,7 +70,7 @@ view: cpt_code_dimensions_clone {
   dimension: cpt_code_and_description {
     description: "The CPT code only (less prefixes and suffixes) with the description"
     type: string
-    sql: CONCAT(${cpt_code}, " - ", ${description}) ;;
+    sql: CONCAT(${cpt_code}, ' - ', ${description}) ;;
   }
 
   dimension: e_and_m_code {
