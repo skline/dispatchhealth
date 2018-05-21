@@ -873,7 +873,7 @@ view: care_request_flat {
 
   dimension: resolved {
     type: yesno
-    sql: ${archive_comment} is not null and ${complete_date} is null ;;
+    sql: ${archive_comment} is not null or ${complete_comment} is not null  ;;
   }
 
   dimension: esclated {
