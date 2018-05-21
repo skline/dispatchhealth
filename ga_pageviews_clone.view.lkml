@@ -259,8 +259,8 @@ dimension: source_category
 
   dimension: resolved_care_request_id {
     type: number
-    sql:  coalesce(case when ${care_request_flat.resolved}  then ${care_requests.id} else null end,
-      case when ${web_care_request_flat.resolved} then ${web_care_requests.id} else null end) ;;
+    sql:  coalesce(case when ${care_request_flat.archive_comment} is not null and ${care_request_flat.complete_comment} is null  then ${care_requests.id} else null end,
+      case when ${web_care_request_flat.archive_comment} is not null and ${web_care_request_flat.complete_comment} is null  then ${web_care_requests.id} else null end) ;;
   }
 
   measure: total_care_requests {
