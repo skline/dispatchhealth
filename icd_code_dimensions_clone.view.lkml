@@ -54,6 +54,8 @@ view: icd_code_dimensions_clone {
           WHEN ${diagnosis_code} = 'Z96' THEN 'Post-Op Total Joint'
           ELSE 'Other'
         END;;
+    drill_fields: [diagnosis_code,
+                   diagnosis_description]
   }
 
   dimension: diagnosis_code_decimal {

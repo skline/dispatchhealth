@@ -279,6 +279,12 @@ view: care_request_flat {
     sql: (${followup_30day_result} != 'patient_called_but_did_not_answer' AND ${followup_30day_result} != 'no_hie_data') OR ${followup_3day} ;;
   }
 
+  dimension: followup_30day_test {
+    type: yesno
+    description: "TEST: A flag indicating the 14/30-day follow-up call was completed"
+    sql: (${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'patient_called_but_did_not_answer') OR ${followup_3day} ;;
+  }
+
   dimension: bounceback_30day {
     type: yesno
     sql: ${followup_30day_result} LIKE '%same_complaint%' OR ${bounceback_3day} OR ${bounceback_14day} ;;
@@ -324,7 +330,7 @@ view: care_request_flat {
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
-      field: followup_30day
+      field: followup_30day_test
       value: "yes"
     }
   }
