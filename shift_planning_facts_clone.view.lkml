@@ -121,6 +121,7 @@ view: shift_planning_facts_clone {
 
   dimension_group: local_expected_end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -135,6 +136,7 @@ view: shift_planning_facts_clone {
 
   dimension_group: local_expected_start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -147,15 +149,15 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.local_expected_start_time ;;
   }
 
-  dimension: expected_seconds {
-    type: number
-    sql: EXTRACT(EPOCH FROM ${local_expected_end_raw}) -  EXTRACT(EPOCH FROM ${local_expected_start_raw}) ;;
-  }
+#   dimension: expected_seconds {
+#     type: number
+#     sql: EXTRACT(EPOCH FROM ${local_expected_end_raw}) -  EXTRACT(EPOCH FROM ${local_expected_start_raw}) ;;
+#   }
 
-  measure: sum_hours_scheduled {
-    type: sum
-    sql: ${expected_seconds} / 3600 ;;
-  }
+#   measure: sum_hours_scheduled {
+#     type: sum
+#     sql: ${expected_seconds} / 3600 ;;
+#   }
 
   dimension: schedule_location_id {
     type: string
@@ -167,14 +169,31 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.schedule_role ;;
   }
 
-  dimension: app_role {
+  dimension: schedule_type {
+    description: "The schedule role type (e.g. NP/PA, Training, Ride Along, etc."
+    type: string
+    sql: CASE
+          WHEN ${schedule_role} LIKE '%Training%' THEN 'Training'
+          WHEN ${schedule_role} LIKE '%Virtual Doctor%' THEN 'Virtual Doctor'
+          WHEN ${schedule_role} IN ('EMT', 'DHMT') THEN 'DHMT'
+          WHEN ${schedule_role} LIKE '%Ride Along%' THEN 'Ride Along'
+          ELSE ${schedule_role}
+        END ;;
+  }
+
+  dimension: app_shift {
     type: yesno
     sql: ${schedule_role} = 'NP/PA' ;;
   }
 
-  dimension: dhmt_role {
+  dimension: dhmt_shift {
     type: yesno
-    sql: ${schedule_role} = 'EMT' OR ${schedule_role} = 'DHMT' ;;
+    sql: ${schedule_role} IN ('EMT','DHMT') ;;
+  }
+
+  dimension: csc_shift {
+    type: yesno
+    sql: ${schedule_role} = 'CSC Agent' ;;
   }
 
   dimension: app_schedule {
@@ -189,6 +208,7 @@ view: shift_planning_facts_clone {
 
   dimension_group: shift {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -211,101 +231,111 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.total_actual_seconds ;;
   }
 
-  # dimension: total_billable_visits {
-  #   type: number
-  #   sql: ${TABLE}.total_billable_visits ;;
-  # }
-
-  # dimension: total_complete_visits {
-  #   type: number
-  #   sql: ${TABLE}.total_complete_visits ;;
-  # }
-#
-#   dimension: total_expected_seconds {
-#     type: number
-#     sql: ${TABLE}.total_expected_seconds ;;
-#   }
-#
-#   dimension: total_resolved_on_scene_visits {
-#     type: number
-#     sql: ${TABLE}.total_resolved_on_scene_visits ;;
-#   }
-#
-#   dimension_group: updated {
-#     hidden: yes
-#     type: time
-#     timeframes: [
-#       raw,
-#       time,
-#       date,
-#       week,
-#       month,
-#       quarter,
-#       year
-#     ]
-#     sql: ${TABLE}.updated_at ;;
-#   }
-#
-#   dimension: visit_count {
-#     type: number
-#     sql: ${TABLE}.visit_count ;;
-#   }
-#
-#   measure: count {
-#     type: count
-#     drill_fields: [id, employee_name]
-#   }
-
-  # measure: -_hours_worked {
-  #   type: sum_distinct
-  #   sql_distinct_key: ${id} ;;
-  #   sql:  ${total_actual_seconds} / 3600  ;;
-  # }
-
-  measure: sum_all_hours_worked {
-    type: sum
-    description: "The sum of all hours worked, regardless of role or schedule"
-    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+  measure: sum_actual_hours {
+    type: number
+    sql: ROUND(SUM(${total_actual_seconds}) / 3600, 2) ;;
   }
 
-  measure: sum_app_role_hours_worked {
-    type: sum
-    description: "The sum of hours worked where role is NP/PA (Excludes training)"
-    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
-    filters: {
-      field: app_role
-      value: "yes"
-    }
+  dimension: total_billable_visits {
+    type: number
+     sql: ${TABLE}.total_billable_visits ;;
+   }
+
+   dimension: total_complete_visits {
+     type: number
+     sql: ${TABLE}.total_complete_visits ;;
+   }
+
+  dimension: total_expected_seconds {
+    type: number
+    sql: ${TABLE}.total_expected_seconds ;;
   }
 
-  measure: sum_app_schedule_hours_worked {
-    type: sum
-    description: "The sum of all hours worked where schedule is NP/PA (May include training)"
-    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
-    filters: {
-      field: app_schedule
-      value: "yes"
-    }
+  measure: sum_expected_hours {
+    type: number
+    sql: ROUND(SUM(${total_actual_seconds}) / 3600, 2) ;;
   }
 
-  measure: sum_dhmt_role_hours_worked {
-    type: sum
-    description: "The sum of hours worked where role is EMT or DHMT (Excludes training)"
-    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
-    filters: {
-      field: dhmt_role
-      value: "yes"
-    }
+  dimension: total_resolved_on_scene_visits {
+    type: number
+    sql: ${TABLE}.total_resolved_on_scene_visits ;;
   }
 
-  measure: sum_dhmt_schedule_hours_worked {
-    type: sum
-    description: "The sum of all hours worked where schedule is EMT or DHMT (May include training)"
-    sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
-    filters: {
-      field: dhmt_schedule
-      value: "yes"
-    }
+  dimension_group: updated {
+    hidden: yes
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.updated_at ;;
   }
+
+  dimension: visit_count {
+    type: number
+    sql: ${TABLE}.visit_count ;;
+  }
+
+  measure: count {
+    type: count
+    drill_fields: [id, employee_name]
+  }
+
+#   measure: -_hours_worked {
+#     type: sum_distinct
+#     sql_distinct_key: ${id} ;;
+#     sql:  ${total_actual_seconds} / 3600  ;;
+#   }
+
+#   measure: sum_all_hours_worked {
+#     type: sum
+#     description: "The sum of all hours worked, regardless of role or schedule"
+#     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+#   }
+#
+#   measure: sum_app_role_hours_worked {
+#     type: sum
+#     description: "The sum of hours worked where role is NP/PA (Excludes training)"
+#     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+#     filters: {
+#       field: app_role
+#       value: "yes"
+#     }
+#   }
+#
+#   measure: sum_app_schedule_hours_worked {
+#     type: sum
+#     description: "The sum of all hours worked where schedule is NP/PA (May include training)"
+#     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+#     filters: {
+#       field: app_schedule
+#       value: "yes"
+#     }
+#   }
+#
+#   measure: sum_dhmt_role_hours_worked {
+#     type: sum
+#     description: "The sum of hours worked where role is EMT or DHMT (Excludes training)"
+#     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+#     filters: {
+#       field: dhmt_role
+#       value: "yes"
+#     }
+#   }
+#
+#   measure: sum_dhmt_schedule_hours_worked {
+#     type: sum
+#     description: "The sum of all hours worked where schedule is EMT or DHMT (May include training)"
+#     sql:  CAST(${total_actual_seconds} AS FLOAT) / 3600  ;;
+#     filters: {
+#       field: dhmt_schedule
+#       value: "yes"
+#     }
+#   }
 
 }

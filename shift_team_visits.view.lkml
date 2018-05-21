@@ -36,6 +36,7 @@ view: shift_team_visits {
 
   dimension_group: complete_date {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,

@@ -29,6 +29,7 @@ view: shift_planning_shifts_clone {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -61,22 +62,9 @@ view: shift_planning_shifts_clone {
     sql: ${TABLE}.imported_after_shift ;;
   }
 
-  dimension_group: local_shift_end {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.local_shift_end_time ;;
-  }
-
   dimension_group: local_shift_start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -87,6 +75,21 @@ view: shift_planning_shifts_clone {
       year
     ]
     sql: ${TABLE}.local_shift_start_time ;;
+  }
+
+  dimension_group: local_shift_end {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.local_shift_end_time ;;
   }
 
   dimension: notes {
@@ -104,7 +107,6 @@ view: shift_planning_shifts_clone {
     sql: ${TABLE}.schedule_name ;;
   }
 
-
   dimension: shift_id {
     type: string
     sql: ${TABLE}.shift_id ;;
@@ -112,6 +114,7 @@ view: shift_planning_shifts_clone {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -131,12 +134,12 @@ view: shift_planning_shifts_clone {
 
   measure: shift_hours {
     type: number
-    sql: EXTRACT(EPOCH FROM ${local_shift_end_raw}) - EXTRACT(EPOCH FROM ${local_shift_start_raw}) / 3600 ;;
+    sql: (EXTRACT(EPOCH FROM ${local_shift_end_raw}) - EXTRACT(EPOCH FROM ${local_shift_start_raw})) / 3600 ;;
   }
 
   measure: total_shift_hours {
-    type: number
-    sql:  sum(${shift_hours}) ;;
+    type: sum
+    sql:  ${shift_hours} ;;
   }
 
 }

@@ -400,45 +400,60 @@ join: ga_pageviews_clone {
 }
 
 explore: shift_planning_facts_clone {
+  #view_label: "Shift Information"
 
   join: shift_planning_shifts_clone {
     relationship: one_to_one
     sql_on:  ${shift_planning_facts_clone.shift_id}=${shift_planning_shifts_clone.shift_id} and ${shift_planning_shifts_clone.imported_after_shift} = 1 ;;
   }
 
-  join: shift_team_visits {
-    relationship: one_to_many
-    sql_on: TRIM(UPPER(${shift_planning_facts_clone.clean_employee_name})) =
-    replace(upper(trim(regexp_replace(replace(trim(${shift_team_visits.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${shift_team_visits.last_name})), '''', '') AND
-    ${shift_planning_facts_clone.local_actual_start_date}= ${shift_team_visits.complete_date_date};;
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${shift_planning_facts_clone.schedule_location_id} = ${markets.humanity_id} ;;
   }
-
-  join: care_request_flat {
-    relationship: one_to_many
-    sql_on: ${care_request_flat.care_request_id} = ${shift_team_visits.care_request_id};;
-  }
-
-  join: care_requests {
-    relationship: one_to_many
-    sql_on: ${care_requests.id} = ${shift_team_visits.care_request_id} ;;
-  }
-
-  join: user_roles {
-    relationship: one_to_many
-    sql_on: ${user_roles.user_id} = ${shift_team_visits.user_id} ;;
-  }
-
-  join: roles {
-    relationship: one_to_one
-    sql_on: ${roles.id} = ${user_roles.role_id} ;;
-  }
-
-  join: provider_profiles {
-    relationship: one_to_one
-    sql_on: ${provider_profiles.user_id} = ${shift_team_visits.user_id} ;;
-  }
-
 }
+
+# explore: shift_planning_facts_clone {
+#   # view_label: "Shifts and Visits"
+
+#   join: shift_planning_shifts_clone {
+#     relationship: one_to_one
+#     sql_on:  ${shift_planning_facts_clone.shift_id}=${shift_planning_shifts_clone.shift_id} and ${shift_planning_shifts_clone.imported_after_shift} = 1 ;;
+#   }
+
+#   join: shift_team_visits {
+#     relationship: one_to_many
+#     sql_on: TRIM(UPPER(${shift_planning_facts_clone.clean_employee_name})) =
+#     replace(upper(trim(regexp_replace(replace(trim(${shift_team_visits.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${shift_team_visits.last_name})), '''', '') AND
+#     ${shift_planning_facts_clone.local_actual_start_date}= ${shift_team_visits.complete_date_date};;
+#   }
+
+#   join: care_request_flat {
+#     relationship: one_to_many
+#     sql_on: ${care_request_flat.care_request_id} = ${shift_team_visits.care_request_id};;
+#   }
+
+#   join: care_requests {
+#     relationship: one_to_many
+#     sql_on: ${care_requests.id} = ${shift_team_visits.care_request_id} ;;
+#   }
+
+#   join: user_roles {
+#     relationship: one_to_many
+#     sql_on: ${user_roles.user_id} = ${shift_team_visits.user_id} ;;
+#   }
+
+#   join: roles {
+#     relationship: one_to_one
+#     sql_on: ${roles.id} = ${user_roles.role_id} ;;
+#   }
+
+#   join: provider_profiles {
+#     relationship: one_to_one
+#     sql_on: ${provider_profiles.user_id} = ${shift_team_visits.user_id} ;;
+#   }
+
+# }
 
 explore: productivity_data_clone {
 
