@@ -236,15 +236,30 @@ view: shift_planning_facts_clone {
     sql: ROUND(SUM(${total_actual_seconds}) / 3600, 2) ;;
   }
 
+  measure: sum_actual_seconds {
+    type: sum
+    sql: ${total_actual_seconds} ;;
+  }
+
   dimension: total_billable_visits {
     type: number
      sql: ${TABLE}.total_billable_visits ;;
    }
 
+  measure: sum_billable_visits {
+    type: sum
+    sql: ${total_billable_visits} ;;
+  }
+
    dimension: total_complete_visits {
      type: number
      sql: ${TABLE}.total_complete_visits ;;
    }
+
+  measure: sum_complete_visits {
+    type: sum
+    sql: ${total_complete_visits} ;;
+  }
 
   dimension: total_expected_seconds {
     type: number
@@ -253,7 +268,12 @@ view: shift_planning_facts_clone {
 
   measure: sum_expected_hours {
     type: number
-    sql: ROUND(SUM(${total_actual_seconds}) / 3600, 2) ;;
+    sql: ROUND(SUM(${total_expected_seconds}) / 3600, 2) ;;
+  }
+
+  measure: sum_expected_seconds {
+    type: sum
+    sql: ${total_expected_seconds} ;;
   }
 
   dimension: total_resolved_on_scene_visits {
@@ -279,6 +299,11 @@ view: shift_planning_facts_clone {
   dimension: visit_count {
     type: number
     sql: ${TABLE}.visit_count ;;
+  }
+
+  measure: sum_visits {
+    type: sum
+    sql: ${visit_count} ;;
   }
 
   measure: count {
