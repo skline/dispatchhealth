@@ -52,6 +52,9 @@ view: care_request_flat {
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
       GROUP BY 1,2,3,13,14,15;;
+
+    sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+    indexes: ["care_request_id"]
   }
 
   dimension: care_request_id {
