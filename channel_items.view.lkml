@@ -162,68 +162,15 @@ view: channel_items {
     drill_fields: [id, name, source_name, type_name]
   }
 
-  dimension: growth_category {
-    type: string
-    sql: case
-   when ${digital_bool} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
-   when ${type_name} in ('Provider Group') or ${name} in('Healthcare provider', 'Healthcare Provider') then 'Provider'
-   when ${type_name} in('Employer') or ${name} in('Employer') then 'Employer'
-   when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' )  then 'Senior Care'
-   when ${type_name} in('Home Health' )  then 'Home Health'
-   when ${type_name} in('Health System' )  then 'Health System'
-   when ${name} ='Family or friend' then 'Family or Friends'
-   when ${type_name} ='Payer' then 'Payer'
-  else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
-  }
-
   dimension: high_level_category {
     type: string
     sql: case
-         when ${digital_bool} or (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel')) then 'Direct to Consumer'
-         when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health') or  ${name} in('Healthcare provider', 'Healthcare Provider', 'Health Insurance Company', '911 Channel')  then 'Senior Care'
-         when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group') or ${name} in('Employer', 'Employer Organization') then 'Strategic'
-         when ${name} ='Family or friend' then 'Family or Friends'
+          when (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel')) then 'Direct to Consumer'
+          when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health') or  ${name} in('Healthcare provider', 'Healthcare Provider')  then 'Senior Care'
+          when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group') or ${name} in('Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel') then 'Strategic'
+          when ${digital_bool} then 'Direct to Consumer'
+          when ${name} ='Family or friend' then 'Family or Friends'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
   }
-
-
-  dimension: growth_category_self_report {
-    type: string
-    sql: case
-         when(${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) then 'Direct to Consumer'
-         when ${type_name} in ('Provider Group') or ${name} in('Healthcare provider', 'Healthcare Provider') then 'Provider'
-         when ${type_name} in('Employer') or ${name} in('Employer') then 'Employer'
-         when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' )  then 'Senior Care'
-         when ${type_name} in('Home Health' )  then 'Home Health'
-         when ${type_name} in('Health System' )  then 'Health System'
-         when ${name} ='Family or friend' then 'Family or Friends'
-         when ${type_name} ='Payer' then 'Payer'
-        else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
-  }
-
-
-  dimension: direct_consumer_boolean {
-    type:  yesno
-    sql: (${growth_category} = 'Direct to Consumer') ;;
-  }
-
-  dimension: direct_consumer_boolean_self_report {
-    type:  yesno
-    sql: (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer')) ;;
-  }
-
-  dimension: growth_order {
-    type: number
-    sql: case when ${growth_category} = 'Direct to Consumer' then 1
-              when ${growth_category} = 'Employer' then 2
-              when ${growth_category} = 'Family or Friends' then 3
-              when ${growth_category} = 'Health System' then 4
-              when ${growth_category} = 'Home Health' then 5
-              when ${growth_category} = 'Provider' then 6
-              when ${growth_category} = 'Senior Care' then 7
-              when ${growth_category} = 'Payer' then 8
-         else null end;;
-  }
-
 
 }
