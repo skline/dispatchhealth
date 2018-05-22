@@ -236,12 +236,6 @@ view: care_request_flat {
     sql: ${TABLE}.followup_3day_result ;;
   }
 
-  dimension: followup_3day_old {
-    type: yesno
-    description: "A flag indicating the 3-day follow-up call was completed"
-    sql: ${followup_3day_result} IS NOT NULL AND ${followup_3day_result} != 'patient_called_but_did_not_answer' ;;
-  }
-
   dimension: followup_3day {
     type: yesno
     description: "A flag indicating the 3-day follow-up call was completed"
@@ -255,7 +249,7 @@ view: care_request_flat {
 
   dimension: followup_14day_result {
     type: string
-    description: "The 14-day follow-up call result"
+    description: "The 14-day follow-up result"
     sql: ${TABLE}.followup_14day_result ;;
   }
 
@@ -266,26 +260,14 @@ view: care_request_flat {
 
   dimension: followup_30day_result {
     type: string
-    description: "The 30-day follow-up call result"
+    description: "The 30-day follow-up result"
     sql: ${TABLE}.followup_30day_result ;;
-  }
-
-  dimension: followup_30day_old {
-    type: yesno
-    description: "A flag indicating the 14/30-day follow-up call was completed"
-    sql: (${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'patient_called_but_did_not_answer') OR ${followup_3day} ;;
   }
 
   dimension: followup_30day {
     type: yesno
-    description: "A flag indicating the 14/30-day follow-up call was completed"
-    sql: (${followup_30day_result} != 'patient_called_but_did_not_answer' AND ${followup_30day_result} != 'no_hie_data') OR ${followup_3day} ;;
-  }
-
-  dimension: followup_30day_test {
-    type: yesno
-    description: "TEST: A flag indicating the 14/30-day follow-up call was completed"
-    sql: (${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'patient_called_but_did_not_answer') OR ${followup_3day} ;;
+    description: "A flag indicating the 14/30-day follow-up was completed"
+    sql: ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data';;
   }
 
   dimension: bounceback_30day {
@@ -333,7 +315,7 @@ view: care_request_flat {
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
-      field: followup_30day_test
+      field: followup_30day
       value: "yes"
     }
   }
