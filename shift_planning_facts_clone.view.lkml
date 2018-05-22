@@ -183,27 +183,38 @@ view: shift_planning_facts_clone {
 
   dimension: app_shift {
     type: yesno
+    description: "A flag indicating the schedule role is NP/PA, which excludes training/ride-along, etc."
     sql: ${schedule_role} = 'NP/PA' ;;
   }
 
   dimension: dhmt_shift {
     type: yesno
+    description: "A flag indicating the schedule role is DHMT, which excludes training/ride-along, etc."
     sql: ${schedule_role} IN ('EMT','DHMT') ;;
   }
 
   dimension: csc_shift {
     type: yesno
+    description: "A flag indicating the schedule role is CSC Agent, which excludes training/ride-along, etc."
     sql: ${schedule_role} = 'CSC Agent' ;;
   }
 
   dimension: app_schedule {
     type: yesno
+    description: "A flag indicating the schedule name includes NP/PA.  This includes schedules that are for training/ride-along, etc."
     sql: ${shift_planning_shifts_clone.schedule_name} LIKE '%NP/PA%' ;;
   }
 
   dimension: dhmt_schedule {
     type: yesno
+    description: "A flag indicating the schedule name includes DHMT.  This includes schedules that are for training/ride-along, etc."
     sql: ${shift_planning_shifts_clone.schedule_name} SIMILAR TO '%(EMT:|DHMT:)%' ;;
+  }
+
+  dimension: app_dhmt_schedule {
+    type: yesno
+    description: "A flag indicating the schedule name includes either NP/PA or DHMT.  This includes schedules that are for training/ride-along, etc."
+    sql: ${app_schedule} OR ${dhmt_schedule} ;;
   }
 
   dimension_group: shift {
