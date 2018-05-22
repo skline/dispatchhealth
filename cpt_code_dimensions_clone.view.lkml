@@ -74,10 +74,15 @@ view: cpt_code_dimensions_clone {
   }
 
   dimension: e_and_m_code {
+    type: number
+    sql: ${TABLE}.e_and_m_code ;;
+  }
+
+  dimension: e_and_m_flag {
     label: "E&M CPT code flag"
     description: "Flag to indicate whether the CPT code is an E&M code"
     type: yesno
-    sql: ${TABLE}.e_and_m_code ;;
+    sql: ${e_and_m_code} = 1 ;;
   }
 
   dimension: em_care_level {
