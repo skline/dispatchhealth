@@ -109,7 +109,11 @@ view: cpt_code_dimensions_clone {
     label: "E&M Code Patient Type"
     description: "Code for Established v. New patient"
     type: string
-    sql: ${TABLE}.em_patient_type ;;
+    sql: CASE
+          WHEN ${TABLE}.em_patient_type = 'NP' THEN 'New'
+          WHEN ${TABLE}.em_patient_type = 'EP' THEN 'Established'
+          ELSE ''
+        END ;;
   }
 
   dimension: facility_type {
