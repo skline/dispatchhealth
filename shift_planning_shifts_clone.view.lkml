@@ -18,8 +18,13 @@ view: shift_planning_shifts_clone {
   }
 
   dimension: cost_hours {
-    type: string
-    sql: ${TABLE}.cost_hours ;;
+    type: number
+    sql: CAST(${TABLE}.cost_hours AS real) ;;
+  }
+
+  measure: total_cost_hours {
+    type: sum
+    sql: ${cost_hours} ;;
   }
 
   dimension: cost_staff {
