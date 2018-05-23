@@ -1141,6 +1141,12 @@ explore: ga_pageviews_clone {
 
 
         }
+explore: marketing_cost_clone {
+  join: markets {
+    sql_on: ${markets.id}=${marketing_cost_clone.market_id} ;;
+  }
+
+}
 
         explore: csc_survey_clone {
           join: incontact_clone {

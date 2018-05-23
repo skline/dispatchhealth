@@ -317,6 +317,9 @@ explore: mh_market_share {
 explore: thr_market_share {
 }
 
+explore: phx_heatmap {
+}
+
 
 explore: directmail_zipcode {
 }

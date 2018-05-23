@@ -967,6 +967,13 @@ view: care_request_flat {
   }
 
 
+  dimension: ga_projections_category {
+    type: string
+    label: "Projections Direct to Consumer Category"
+    sql: coalesce((case when ${ga_pageviews_clone.projection_category} = 'Other' then null else ${ga_pageviews_clone.projection_category} end), ${web_ga_pageviews_clone.projection_category}) ;;
+  }
+
+
 
 
 

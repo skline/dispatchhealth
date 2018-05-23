@@ -234,6 +234,17 @@ dimension: source_category
             else 'Other' end;;
   }
 
+
+  dimension: projection_category
+  {
+    type: string
+    sql: case
+            when ${high_level_category} in ('SEM: Non-Brand') then 'SEM: Non-Brand'
+            when ${high_level_category} in ('Local Listings', 'Organic Search', 'SEM: Brand') then 'Organic'
+            when ${source_category} in ('Paid Social') then 'Paid Social'
+            else 'Other' end;;
+  }
+
   dimension: low_intent{
     type: yesno
     sql:  source_category in('Native Display','Display', 'Paid Social', 'Organic Social') ;;
