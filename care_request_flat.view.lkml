@@ -267,7 +267,8 @@ view: care_request_flat {
   dimension: followup_30day {
     type: yesno
     description: "A flag indicating the 14/30-day follow-up was completed"
-    sql: ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data';;
+    # sql: ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data';;
+    sql: ${followup_30day_result} != 'no_hie_data';;
   }
 
   dimension: bounceback_30day {
