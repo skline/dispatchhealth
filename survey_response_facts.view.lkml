@@ -26,10 +26,28 @@ view: survey_response_facts {
     sql: ${answer_range_value} > 8 AND ${answer_range_value} IS NOT NULL;;
   }
 
+  measure: promoter_count {
+    type: count_distinct
+    sql: ${nps_survey_id} ;;
+    filters: {
+      field: promoter
+      value: "yes"
+    }
+  }
+
   dimension: detractor {
     label: "Detractor"
     type: yesno
     sql: ${answer_range_value} < 7 AND ${answer_range_value} IS NOT NULL;;
+  }
+
+  measure: detractor_count {
+    type: count_distinct
+    sql: ${nps_survey_id} ;;
+    filters: {
+      field: detractor
+      value: "yes"
+    }
   }
 
   dimension: nps_respondent {
@@ -52,7 +70,7 @@ view: survey_response_facts {
   dimension: nps_survey_id {
     type: number
     hidden: yes
-    sql: IF(${answer_range_value} IS NOT NULL, ${care_request_id}, 0) ;;
+    sql: IF(${answer_range_value} IS NOT NULL, ${care_request_id}, NULL) ;;
   }
 
   measure: count_nps_respondent {
@@ -166,30 +184,6 @@ view: survey_response_facts {
     label: "EHR Appointment ID"
     type: string
     sql: ${TABLE}.visit_dim_number ;;
-  }
-
-  measure: promoter_count {
-    type: count
-    filters: {
-      field: promoter
-      value: "yes"
-    }
-  }
-
-  measure: detractor_count {
-    type: count
-    filters: {
-      field: detractor
-      value: "yes"
-    }
-  }
-
-  measure: nps_total_count {
-    type: count
-    filters: {
-      field: nps_respondent
-      value: "yes"
-    }
   }
 
   measure: count {

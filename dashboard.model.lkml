@@ -416,6 +416,11 @@ explore: shift_planning_facts_clone {
     relationship: many_to_one
     sql_on: ${shift_planning_facts_clone.schedule_location_id} = ${markets.humanity_id} ;;
   }
+
+  join: subtotal_markets {
+    type: cross
+    relationship: one_to_many
+  }
 }
 
 # explore: shift_planning_facts_clone {

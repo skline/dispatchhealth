@@ -181,6 +181,7 @@ view: shift_planning_facts_clone {
         END ;;
   }
 
+
   dimension: app_shift {
     type: yesno
     description: "A flag indicating the schedule role is NP/PA, which excludes training/ride-along, etc."
