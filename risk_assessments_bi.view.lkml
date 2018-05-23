@@ -41,6 +41,12 @@ view: risk_assessments_bi {
     sql: ${TABLE}.score ;;
   }
 
+  measure: average_score {
+    description: "Average risk assessment score"
+    type: average
+    sql: ${score} ;;
+  }
+
   dimension: score_category {
     description: "Risk score category: green (0 - 5), yellow (6 - 10), or red (11+)"
     type: string
