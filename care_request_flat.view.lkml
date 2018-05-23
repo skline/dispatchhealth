@@ -764,6 +764,12 @@ view: care_request_flat {
     sql: split_part(${resolved_reason_full}, ':', 1) ;;
   }
 
+  dimension: resolved_on_scene {
+    type: yesno
+    sql: LOWER(${primary_resolved_reason}) = 'referred - point of care' ;;
+  }
+
+
   dimension: secondary_resolved_reason {
     type:  string
     sql: split_part(${resolved_reason_full}, ':', 2) ;;
