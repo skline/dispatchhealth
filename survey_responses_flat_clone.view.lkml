@@ -29,11 +29,11 @@ view: survey_responses_flat_clone {
     sql: ${TABLE}.care_request_id ;;
   }
 
-  dimension: answer_open_ended_value {
-    label: "Open End Value Answer"
-    type: string
-    sql: ${TABLE}.answer_open_ended_value ;;
-  }
+#   dimension: answer_open_ended_value {
+#     label: "Open End Value Answer"
+#     type: string
+#     sql: ${TABLE}.answer_open_ended_value ;;
+#   }
 
   dimension: answer_range_value {
     label: "NPS Selected Range Value"
@@ -57,6 +57,17 @@ view: survey_responses_flat_clone {
     label: "NPS survey respondent"
     type: yesno
     sql: ${answer_range_value} IS NOT NULL;;
+  }
+
+#   dimension: nps_survey_id {
+#     type: number
+#     hidden: yes
+#     sql: IF(${answer_range_value} IS NOT NULL, ${care_request_id}, NULL) ;;
+#   }
+
+  measure: count_nps_respondent {
+    type: count_distinct
+    sql: ${care_request_id} ;;
   }
 
   dimension: answer_selection_dh_alternative {
