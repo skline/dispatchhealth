@@ -65,7 +65,7 @@ explore: care_requests {
   }
 
   join: primary_payer_dimensions_clone {
-    relationship: one_to_one
+    relationship: many_to_one
     sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} ;;
   }
 
