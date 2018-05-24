@@ -877,6 +877,24 @@ view: care_request_flat {
     }
   }
 
+
+
+  dimension: new_care_request_complete_bool {
+    type:  yesno
+    sql:  ${care_requests.care_request_patient_create_diff}< 4000  and  ${complete_date} is not null;;
+  }
+
+
+
+  measure: complete_count_new {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: new_care_request_complete_bool
+      value: "yes"
+    }
+  }
+
   measure: care_request_count {
     type: count_distinct
     sql: ${care_request_id} ;;

@@ -155,7 +155,7 @@ view: patients {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at - interval '7 hour' ;;
+    sql: ${TABLE}.created_at  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain'  ;;
   }
 
   dimension_group: deleted {
