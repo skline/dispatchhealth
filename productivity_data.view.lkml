@@ -12,6 +12,16 @@ view: productivity_data {
     sql: ${TABLE}.billable_visits ;;
   }
 
+  dimension: smfr_visits {
+    type: number
+    sql: ${TABLE}.smfr_visits ;;
+  }
+
+  dimension: wmfr_visits {
+    type: number
+    sql: ${TABLE}.wmfr_visits ;;
+  }
+
   dimension_group: created_ts {
     type: time
     timeframes: [
@@ -71,19 +81,24 @@ view: productivity_data {
     sql: ${TABLE}.smfr_hours_worked ;;
   }
 
+  dimension: wmfr_hours_worked {
+    type: number
+    sql: ${TABLE}.wmfr_hours_worked ;;
+  }
+
   measure: sum_smfr_hours_worked {
     type: sum
     sql: ${smfr_hours_worked} ;;
   }
 
+  measure: sum_wmfr_hours_worked {
+    type: sum
+    sql: ${wmfr_hours_worked} ;;
+  }
+
   dimension: market_dim_id {
     type: number
     sql: ${TABLE}.market_dim_id ;;
-  }
-
-  dimension: smfr_visits {
-    type: number
-    sql: ${TABLE}.smfr_visits ;;
   }
 
   dimension: goal {
