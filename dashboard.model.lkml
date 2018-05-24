@@ -326,7 +326,7 @@ explore: care_requests {
 
 join: invoca_clone {
 sql_on: ((${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
-        OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
+        OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null)
         )
         and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
         ;;
@@ -1150,6 +1150,30 @@ explore: marketing_cost_clone {
   join: markets {
     sql_on: ${markets.id}=${marketing_cost_clone.market_id} ;;
   }
+
+}
+
+explore: cost_projections {
+  join: markets {
+    sql_on: ${markets.name}=${cost_projections.market} ;;
+  }
+
+  join: care_request_flat {
+    relationship: many_to_one
+    sql_on: ${care_request_flat.on_scene_month} = ${cost_projections.month_month} and ${markets.id} =${care_request_flat.market_id} ;;
+
+  }
+  join: care_requests {
+    sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+
+  }
+
+
+  join: patients {
+    sql_on: ${patients.id}=${care_requests.patient_id} ;;
+  }
+
+
 
 }
 
