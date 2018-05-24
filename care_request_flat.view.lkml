@@ -10,6 +10,7 @@ view: care_request_flat {
         max(shift_teams.end_time) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS shift_end_time,
         max(request.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS requested_date,
         max(accept.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS accept_date,
+        max(schedule.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS scheduled_date,
         max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_route_date,
         max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_scene_date,
         MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
@@ -27,6 +28,8 @@ view: care_request_flat {
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
+      LEFT JOIN care_request_statuses schedule
+      ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
       LEFT JOIN care_request_statuses AS accept
       ON cr.id = accept.care_request_id AND accept.name = 'accepted' and accept.deleted_at is null
       LEFT JOIN care_request_statuses AS onroute
@@ -35,8 +38,6 @@ view: care_request_flat {
       ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene' and onscene.deleted_at is null
       LEFT JOIN care_request_statuses comp
       ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
-      LEFT JOIN care_request_statuses schedule
-      ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
       LEFT JOIN care_request_statuses archive
       ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
       LEFT JOIN care_request_statuses fu3
@@ -51,7 +52,7 @@ view: care_request_flat {
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
-      GROUP BY 1,2,3,13,14,15;;
+      GROUP BY 1,2,3,14,15,16 ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -341,9 +342,7 @@ view: care_request_flat {
 
   dimension_group: created {
     type: time
-    description: "The local date/time that the care request was created.
-                  NOTE: If a care request is scheduled for the next day,
-                  this date/time is the start of the shift the following day"
+    description: "The local date/time that the care request was created."
     convert_tz: no
     timeframes: [
       raw,
@@ -357,6 +356,29 @@ view: care_request_flat {
       day_of_month
     ]
     sql: ${TABLE}.created_date ;;
+  }
+
+  dimension: requested_after_6_pm  {
+    type: yesno
+    sql: ${created_hour_of_day} >= 18 ;;
+  }
+
+  dimension_group: scheduled {
+    type: time
+    description: "The local date/time that the care request was scheduled."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.scheduled_date ;;
   }
 
   dimension: on_route_decimal {
@@ -465,6 +487,20 @@ view: care_request_flat {
       day_of_month
     ]
     sql: ${TABLE}.archive_date ;;
+  }
+
+  dimension: scheduled_visit {
+    type: yesno
+    sql: ${scheduled_date} IS NOT NULL ;;
+  }
+
+  measure: scheduled_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: scheduled_visit
+      value: "yes"
+    }
   }
 
   dimension_group: complete_resolved {
