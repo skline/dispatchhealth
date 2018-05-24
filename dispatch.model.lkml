@@ -117,7 +117,8 @@ explore: visit_facts {
   }
 
   join: primary_payer_dimension_charge {
-    sql_on: ${primary_payer_dimension_charge.visit_dim_number} = ${visit_facts.visit_dim_number}  ;;
+    sql_on: ${primary_payer_dimension_charge.visit_dim_number} = ${visit_facts.visit_dim_number} AND
+            ${transaction_facts.voided_date} IS NULL ;;
   }
 
   join: transaction_facts {
