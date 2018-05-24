@@ -67,9 +67,11 @@ view: marketing_cost_clone {
               - '1 DAY'::INTERVAL
           ) end;;
   }
+
   measure: cost_run_rate{
     type: number
-    sql: ${sum_cost}/${month_percent} ;;
+    value_format: "$0"
+    sql: ${sum_cost}/${care_request_flat.month_percent} ;;
   }
 
 
