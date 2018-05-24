@@ -102,6 +102,22 @@ view: patients {
          END ;;
   }
 
+  dimension: age_band_wide {
+    type: string
+    description: "Age bands, grouped into wider buckets"
+    sql: CASE
+          WHEN ${age} >= 0 AND ${age} <= 24 THEN 'age_0_to_24'
+          WHEN ${age} >= 25 AND ${age} <= 39 THEN 'age_25_to_39'
+          WHEN ${age} >= 40 AND ${age} <= 54 THEN 'age_40_to_54'
+          WHEN ${age} >= 55 AND ${age} <= 64 THEN 'age_55_to_64'
+          WHEN ${age} >= 65 AND ${age} <= 74 THEN 'age_65_to_74'
+          WHEN ${age} >= 75 AND ${age} <= 84 THEN 'age_75_to_84'
+          WHEN ${age} >= 85 AND ${age} <= 94 THEN 'age_85_to_94'
+          WHEN ${age} >= 95 AND ${age} <= 110 THEN 'age_95_plus'
+          ELSE NULL
+         END ;;
+  }
+
 
   measure: median_age {
     type: median

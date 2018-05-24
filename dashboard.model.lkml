@@ -66,7 +66,8 @@ explore: care_requests {
 
   join: primary_payer_dimensions_clone {
     relationship: many_to_one
-    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} ;;
+    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} AND
+            ${transaction_facts_clone.voided_date} IS NULL ;;
   }
 
 #   join: pcp_dimensions_clone {
