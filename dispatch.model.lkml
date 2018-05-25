@@ -272,6 +272,34 @@ explore: visit_facts {
     sql_on: ${visit_facts.letter_recipient_dim_id} = ${letter_recipient_dimensions.id} ;;
   }
 
+  join: athenadwh_clinical_encounters {
+    relationship:  one_to_many
+    sql_on: ${patient_facts.athena_patient_id} = ${athenadwh_clinical_encounters.patient_id} AND
+            ${athenadwh_clinical_encounters.appointment_id} = ${visit_facts.visit_dim_number};;
+  }
+
+  join: athenadwh_documents {
+    relationship:  many_to_one
+    sql_on:  ${athenadwh_documents.clinical_encounter_id} = ${athenadwh_clinical_encounters.clinical_encounter_id} AND
+            ${athenadwh_documents.document_class} = 'LETTER' AND
+            (${athenadwh_documents.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_documents.document_subclass} IS NULL) ;;
+  }
+
+  join: athenadwh_clinical_letters {
+    relationship:  one_to_one
+    sql_on: ${athenadwh_clinical_letters.document_id} = ${athenadwh_documents.document_id} ;;
+  }
+
+  join: athenadwh_clinical_providers {
+    relationship:  one_to_many
+    sql_on: ${athenadwh_clinical_providers.clinical_provider_id} = ${athenadwh_clinical_letters.clinical_provider_recipient_id} ;;
+  }
+
+  join: athenadwh_patients {
+    relationship:  one_to_many
+    sql_on: ${athenadwh_patients.patient_id} = ${athenadwh_clinical_encounters.patient_id} ;;
+  }
+
 }
 
 explore: incontact {
