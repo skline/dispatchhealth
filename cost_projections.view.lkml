@@ -42,6 +42,21 @@ view: cost_projections {
     sql_distinct_key: concat(${campaign_objective}, ${month_month}, ${partner}, ${media_tactic}, ${market}) ;;
     sql: ${planned_budget}  ;;
   }
+  dimension: digital {
+    type: yesno
+    sql: ${media_tactic} = 'digital' ;;
+  }
+
+  measure: sum_planned_budget_no_digital{
+    type: sum_distinct
+    value_format: "$#,##0"
+    sql_distinct_key: concat(${campaign_objective}, ${month_month}, ${partner}, ${media_tactic}, ${market}) ;;
+    sql: ${planned_budget} ;;
+    filters: {
+     field: digital
+      value: "no"
+    }
+  }
 
   dimension_group: month {
     type: time
@@ -100,6 +115,12 @@ view: cost_projections {
     type: number
     value_format: "$0"
     sql: ${sum_planned_budget}/nullif(${complete_visits_new_run_rate},0) ;;
+  }
+
+  measure: cac_new_no_digital{
+    type: number
+    value_format: "$0"
+    sql: ${sum_planned_budget_no_digital}/nullif(${complete_visits_new_run_rate},0) ;;
   }
 
 

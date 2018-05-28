@@ -1171,6 +1171,9 @@ explore: cost_projections {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
 
   }
+  join: visit_facts_clone {
+    sql_on: ${care_requests.id} = ${visit_facts_clone.care_request_id} ;;
+  }
 
 
   join: patients {

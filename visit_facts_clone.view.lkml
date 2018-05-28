@@ -211,11 +211,11 @@ view: visit_facts_clone {
 #     sql: ${TABLE}.market_dim_id ;;
 #   }
 #
-#   dimension: new_patient {
-#     type: number
-#     sql: ${TABLE}.new_patient ;;
-#   }
-#
+   dimension: new_patient {
+     type: number
+     sql: ${TABLE}.new_patient ;;
+   }
+
   dimension: no_charge_entry_reason {
     type: string
     hidden: yes

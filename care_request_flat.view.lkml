@@ -917,7 +917,7 @@ view: care_request_flat {
 
   dimension: new_care_request_complete_bool {
     type:  yesno
-    sql:  ${care_requests.care_request_patient_create_diff}< 4000  and  ${complete_date} is not null;;
+    sql:  (${care_requests.care_request_patient_create_diff}< (60*60) or ${visit_facts_clone.new_patient}=1)  and  ${complete_date} is not null;;
   }
 
 

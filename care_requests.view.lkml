@@ -700,7 +700,7 @@ measure: distinct_days {
 
   dimension: new_care_request_bool {
     type:  yesno
-    sql:  ${care_request_patient_create_diff}< 4000 ;;
+    sql:  (${care_request_patient_create_diff}< (60*60) or ${visit_facts_clone.new_patient}=1) ;;
   }
 
   dimension: marketing_meta_data {
