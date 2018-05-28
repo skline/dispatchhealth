@@ -296,6 +296,10 @@ explore: care_requests {
     sql_on:  ${patients.id} =${care_requests.patient_id} ;;
   }
 
+  join: dtc_ff_patients {
+    sql_on: ${patients.id} = ${dtc_ff_patients.patient_id} ;;
+  }
+
   join: eligible_patients {
     relationship: one_to_one
     sql_on:
@@ -676,6 +680,10 @@ explore: ga_pageviews_full_clone {
 
   join: patients {
     sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
+  }
+
+  join: dtc_ff_patients {
+    sql_on: ${patients.id} = ${dtc_ff_patients.patient_id} ;;
   }
 
   join: ga_geodata_clone {

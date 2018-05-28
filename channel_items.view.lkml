@@ -169,6 +169,7 @@ view: channel_items {
           when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health') or  ${name} in('Healthcare provider', 'Healthcare Provider')  then 'Senior Care'
           when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group') or ${name} in('Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel', 'West Metro Fire Rescue', 'South Metro Fire Rescue') then 'Strategic'
           when ${digital_bool} then 'Direct to Consumer'
+          when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
           when ${name} ='Family or friend' then 'Family or Friends'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
   }
