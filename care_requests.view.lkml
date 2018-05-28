@@ -505,8 +505,9 @@ view: care_requests {
   }
 
   measure: count_billable_est {
-    type: count
+    type: count_distinct
     description: "Count of completed care requests OR on-scene escalations"
+    sql: ${id} ;;
     filters: {
       field: billable_est
       value: "yes"
