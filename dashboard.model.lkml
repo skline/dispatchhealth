@@ -288,7 +288,7 @@ explore: care_requests {
   }
 
   join: budget_projections_by_market_clone {
-    sql_on: ${care_requests.market_id} = ${budget_projections_by_market_clone.market_dim_id}
+    sql_on: ${markets.id_adj} = ${budget_projections_by_market_clone.market_dim_id}
       AND ${care_request_flat.on_scene_month}=${budget_projections_by_market_clone.month_month};;
   }
 

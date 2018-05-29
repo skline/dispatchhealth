@@ -7,6 +7,14 @@ view: markets {
     sql: ${TABLE}.id ;;
   }
 
+
+  dimension: id_adj {
+    type: string
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 159
+      else ${id} end;;
+  }
+
+
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
@@ -103,6 +111,12 @@ view: markets {
   dimension: name {
     type: string
     sql: ${TABLE}.name ;;
+  }
+
+  dimension: name_adj {
+    type: string
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
+    else ${name} end;;
   }
 
   dimension: old_close_at {
