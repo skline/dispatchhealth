@@ -34,13 +34,14 @@ group by 1,2,3,4,5,6,7) sales_force_implementation_score_clone
 
   measure: sum_implementation_score {
     type: sum_distinct
-    sql_distinct_key: ${channel_item_id} ;;
+    sql_distinct_key: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
     sql: ${implementation_score} ;;
   }
 
   measure: average_implementation_score {
     type: average_distinct
-    sql_distinct_key: ${channel_item_id} ;;
+    value_format: "0"
+    sql_distinct_key: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
     sql: ${implementation_score} ;;
   }
 
@@ -75,6 +76,12 @@ dimension: complete_care_requests_last_month {
     type: count_distinct
     sql_distinct_key: ${channel_item_id} ;;
     sql: ${channel_item_id} ;;
+  }
+
+  measure: distinct_sf_accounts  {
+    type: count_distinct
+    sql_distinct_key: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
+    sql: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
   }
   dimension: market {
     type: string
