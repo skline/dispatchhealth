@@ -41,6 +41,12 @@ view: risk_assessments {
     }
   }
 
+  measure: general_complaint_percent{
+    type: number
+    value_format: "0.0%"
+    sql: (${count_general_complaint}::float/${count_distinct}::float) ;;
+  }
+
   dimension: responses {
     type: string
     sql: ${TABLE}.responses ;;

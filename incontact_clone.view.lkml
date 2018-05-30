@@ -18,7 +18,7 @@ view: incontact_clone {
   }
 
    measure: avg_inqueuetime {
-    label: "Averaged Incontact InQueue Time"
+    label: "Average InQueue Time (s)"
     type: average
     value_format: "#.0"
     sql: ${inqueuetime} ;;
@@ -29,7 +29,7 @@ view: incontact_clone {
   }
 
   measure: avg_abandontime {
-    label: "Averaged Incontact Abandon Time"
+    label: "Average Abandon Time (s)"
     type: average
     value_format: "#.0"
     sql: ${abandon_time} ;;
@@ -163,18 +163,20 @@ dimension: abandons {
     drill_fields: [skll_name]
   }
   measure: count_distinct {
-    label: "inbound contacts"
+    label: "Inbound Contacts"
     type: number
     sql:count(distinct ${master_contact_id}) ;;
   }
 
   measure: count_distinct_live_answers {
+    label: "Live Answers"
     type: number
     sql:  count(distinct case when (${answered}=1 and ${campaign} != 'VM')  then ${master_contact_id} else null end);;
 
   }
 
   measure: count_distinct_handled {
+    label: "Handles"
     type: number
     sql:  count(distinct case when (${answered}=1 or ${call_back}=1 or ${campaign} = 'VM') then ${master_contact_id} else null end);;
 
@@ -182,13 +184,21 @@ dimension: abandons {
 
   measure: count_distinct_voicemails {
     type: number
+    label: "Voicemails"
     sql:  count(distinct case when ${campaign} = 'VM' then ${master_contact_id} else null end);;
   }
 
 
   measure: count_distinct_abandoned {
     type: number
+    label: "Total Abandons Rate"
     sql:  count(distinct case when (${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM'  then ${master_contact_id} else null end);;
+  }
+
+  measure: count_distinct_long_abandoned {
+    type: number
+    label: "Long Abandons (>20s)"
+    sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${abandon_time} > 20  then ${master_contact_id} else null end);;
   }
 
   measure: live_answer_rate {
@@ -205,9 +215,18 @@ dimension: abandons {
 
   measure: abandoned_rate {
     type: number
+    label: "Total Abandon Rate"
     value_format: "#.0\%"
     sql: ((${count_distinct_abandoned}::float/${count_distinct}::float))*100;;
   }
+
+  measure: long_abandoned_rate {
+    type: number
+    label: "Long Abandon Rate (>20s)"
+    value_format: "#.0\%"
+    sql: ((${count_distinct_long_abandoned}::float/${count_distinct}::float))*100;;
+  }
+
 
 
   measure: count_distinct_phone_number {
@@ -226,6 +245,7 @@ dimension: abandons {
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
   measure:  average_wait_time{
+    label: "Average Wait Time (s)"
     type: average_distinct
     sql_distinct_key: concat(${master_contact_id}, ${start_time}, ${skll_name}) ;;
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
