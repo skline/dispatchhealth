@@ -352,10 +352,16 @@ view: care_request_flat {
       time,
       week,
       month,
+      day_of_week,
       day_of_week_index,
       day_of_month
     ]
     sql: ${TABLE}.created_date ;;
+  }
+
+  measure: distinct_day_of_week {
+    type: count_distinct
+    sql: ${complete_date};;
   }
 
   dimension: requested_after_6_pm  {
@@ -465,8 +471,10 @@ view: care_request_flat {
       time,
       week,
       month,
+      day_of_week,
       day_of_week_index,
-      day_of_month,quarter
+      day_of_month,
+      quarter
       ]
     sql: ${TABLE}.complete_date ;;
   }

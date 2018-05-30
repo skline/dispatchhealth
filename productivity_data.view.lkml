@@ -45,12 +45,18 @@ view: productivity_data {
       date,
       day_of_month,
       day_of_week,
+      day_of_week_index,
       week,
       month,
       quarter,
       year
     ]
     sql: ${TABLE}.date ;;
+  }
+
+  measure: distinct_day_of_week {
+    type: count_distinct
+    sql: ${date_date} ;;
   }
 
   dimension: pre_post {
