@@ -1067,7 +1067,7 @@ view: visit_facts {
   dimension: in_on_scene_queue_mins {
     label: "On-Scene Time (mins)"
     type: number
-    sql: TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) / 60 ;;
+    sql: ROUND(TIMESTAMPDIFF(SECOND, ${local_on_scene_raw}, ${local_complete_raw}) / 60, 2) ;;
   }
 
   measure: avg_on_scene_queue_mins {
