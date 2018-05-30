@@ -221,13 +221,13 @@ view: care_request_flat {
   }
 
   dimension: archive_comment {
-    type: number
+    type: string
     description: "The CSC comment provided when a care request is archived"
     sql: ${TABLE}.archive_comment ;;
   }
 
   dimension: complete_comment {
-    type: number
+    type: string
     sql: ${TABLE}.complete_comment ;;
   }
 
@@ -832,22 +832,27 @@ view: care_request_flat {
 
   dimension: lwbs_going_to_ed {
     type: yesno
-    sql: ${archive_comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
+    sql: ${archive_comment} LIKE '%Cancelled by Patient: Going to an Emergency Department%' ;;
   }
 
   dimension: lwbs_going_to_urgent_care {
     type: yesno
-    sql: ${archive_comment} = 'Cancelled by Patient: Going to an Urgent Care' ;;
+    sql: ${archive_comment} LIKE '%Cancelled by Patient: Going to an Urgent Care%' ;;
   }
 
   dimension: lwbs_wait_time_too_long {
     type: yesno
-    sql: ${archive_comment} = 'Cancelled by Patient: Wait time too long' ;;
+    sql: ${archive_comment} LIKE '%Cancelled by Patient: Wait time too long%' ;;
   }
 
   dimension: lwbs_no_show {
     type: yesno
-    sql: ${archive_comment} = 'No Show' ;;
+    sql: ${archive_comment} LIKE '%No Show%' ;;
+  }
+
+  dimension: lwbs_no_longer_need_care {
+    type: yesno
+    sql: ${archive_comment} LIKE '%Cancelled by Patient: No longer need care%' ;;
   }
 
   dimension: lwbs {
@@ -861,6 +866,16 @@ view: care_request_flat {
     sql: ${care_request_id} ;;
     filters: {
       field: lwbs
+      value: "yes"
+    }
+  }
+
+  measure: lwbs_no_longer_need_count {
+    type: count_distinct
+    description: "Count of care requests where resolve reason is 'No longer need care'"
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs_no_longer_need_care
       value: "yes"
     }
   }
