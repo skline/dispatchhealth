@@ -765,6 +765,12 @@ measure: distinct_day_of_week {
     sql: split_part(${resolved_reason_full}, ':', 3) ;;
   }
 
+  dimension: other_resolved_booked {
+    type: yesno
+    description: "A flag indicating resolved - booked for the day"
+    sql: LOWER(${other_resolved_reason}) LIKE '%booked%' ;;
+  }
+
 
   dimension: escalated_on_scene {
     type: yesno
