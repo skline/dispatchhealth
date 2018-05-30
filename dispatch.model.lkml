@@ -235,7 +235,8 @@ explore: visit_facts {
   }
 
   join: cpt_code_dimensions {
-    sql_on: ${transaction_facts.cpt_code_dim_id} = ${cpt_code_dimensions.id} ;;
+    relationship: one_to_many
+    sql_on: ${cpt_code_dimensions.id} = ${transaction_facts.cpt_code_dim_id} ;;
   }
 
   join: cpt_em_references {
@@ -298,6 +299,12 @@ explore: visit_facts {
   join: athenadwh_patients {
     relationship:  one_to_many
     sql_on: ${athenadwh_patients.patient_id} = ${athenadwh_clinical_encounters.patient_id} ;;
+  }
+
+  join: athenadwh_procedure_codes {
+    relationship: one_to_one
+    sql_on: ${athenadwh_procedure_codes.procedure_code} = ${cpt_code_dimensions.cpt_code} AND
+            ${athenadwh_procedure_codes.deleted_datetime_raw} IS NULL ;;
   }
 
 }

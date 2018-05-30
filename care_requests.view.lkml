@@ -586,6 +586,11 @@ measure: distinct_days {
   sql: count(DISTINCT ${created_mountain_date}) ;;
 }
 
+measure: distinct_day_of_week {
+  type: count_distinct
+  sql: ${created_mountain_day_of_week_index} ;;
+}
+
   dimension: month_to_date  {
     type:  yesno
     sql: ${created_mountain_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
@@ -799,6 +804,7 @@ measure: distinct_days {
       field: lwbs
       value: "yes"
     }
+    drill_fields: [care_request_flat.archive_comment]
   }
 
   measure: escalated_on_scene_count {
