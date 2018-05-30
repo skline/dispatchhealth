@@ -43,6 +43,19 @@ view: primary_payer_dimensions_clone {
         ELSE 'Other'
         END;;
   }
+
+  dimension: payer_type {
+    type: string
+    description: "Payer type grouped into a concise number of groups"
+    sql: CASE
+          WHEN ${custom_insurance_grouping} IN ('(CM)COMMERCIAL', '(MA)MEDICARE ADVANTAGE') THEN 'Commercial/Medicare Advantage'
+          WHEN ${custom_insurance_grouping} IN ('(MAID)MEDICAID', '(MMCD)MANAGED MEDICAID', '(MCARE)MEDICARE', '(TC)TRICARE') THEN 'Medicare/Medicaid/Tricare'
+          WHEN ${custom_insurance_grouping} IN ('(PSP)PATIENT SELF-PAY', 'PATIENT RESPONSIBILITY') THEN 'Patient Self Pay'
+          WHEN ${custom_insurance_grouping} = '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
+          ELSE 'Other'
+          END;;
+  }
+
   dimension: insurance_package_id {
     label: "Insurance Package ID"
     type: string
