@@ -23,6 +23,17 @@ view: incontact_clone {
     value_format: "#.0"
     sql: ${inqueuetime} ;;
   }
+  dimension: abandon_time {
+    type: number
+    sql: ${TABLE}.abandon_time ;;
+  }
+
+  measure: avg_abandontime {
+    label: "Averaged Incontact Abandon Time"
+    type: average
+    value_format: "#.0"
+    sql: ${abandon_time} ;;
+  }
 
   dimension: contact_type {
     type: string
@@ -125,6 +136,28 @@ dimension: abandons {
   sql: ${TABLE}.abandons ;;
 }
 
+  dimension: answered {
+    type: number
+    sql: ${TABLE}.answered ;;
+  }
+  dimension: call_back {
+    type: number
+    sql: ${TABLE}.call_backs ;;
+  }
+  dimension: handled {
+    type: number
+    sql: ${answered} + ${call_back} ;;
+  }
+  dimension: master_contact_id {
+    type: number
+    sql: ${TABLE}.master_contact_id ;;
+  }
+  dimension: prequeue_abandons {
+    type: number
+    sql: ${TABLE}.prequeue_abandons ;;
+  }
+
+
   measure: count {
     type: count
     drill_fields: [skll_name]
@@ -132,29 +165,48 @@ dimension: abandons {
   measure: count_distinct {
     label: "inbound contacts"
     type: number
-    sql:count(distinct ${contact_id}) ;;
+    sql:count(distinct ${master_contact_id}) ;;
   }
 
-  measure: count_distinct_answers {
+  measure: count_distinct_live_answers {
     type: number
-    sql:count(distinct case when ${talk_time_sec}>0  then ${contact_id} else null end) ;;
+    sql:  count(distinct case when (${answered}=1 and ${campaign} != 'VM')  then ${master_contact_id} else null end);;
+
+  }
+
+  measure: count_distinct_handled {
+    type: number
+    sql:  count(distinct case when (${answered}=1 or ${call_back}=1 or ${campaign} = 'VM') then ${master_contact_id} else null end);;
+
   }
 
   measure: count_distinct_voicemails {
     type: number
-    sql:  count(distinct case when ${skill_category} = 'Voicemail' then ${contact_id} else null end);;
+    sql:  count(distinct case when ${campaign} = 'VM' then ${master_contact_id} else null end);;
   }
 
 
   measure: count_distinct_abandoned {
     type: number
-    sql:  count(distinct case when ${abandons}=1  then ${contact_id} else null end);;
+    sql:  count(distinct case when (${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM'  then ${master_contact_id} else null end);;
   }
 
-  measure: answer_rate {
+  measure: live_answer_rate {
     type: number
     value_format: "#.0\%"
-    sql: (1.0 -(${count_distinct_abandoned}::float/${count_distinct}::float))*100;;
+    sql: ((${count_distinct_live_answers}::float/${count_distinct}::float))*100;;
+  }
+
+  measure: handled_rate {
+    type: number
+    value_format: "#.0\%"
+    sql: ((${count_distinct_handled}::float/${count_distinct}::float))*100;;
+  }
+
+  measure: abandoned_rate {
+    type: number
+    value_format: "#.0\%"
+    sql: ((${count_distinct_abandoned}::float/${count_distinct}::float))*100;;
   }
 
 
@@ -168,13 +220,14 @@ dimension: abandons {
     type: number
     sql:count(distinct case when ${talk_time_sec}>0  then ${from_number} else null end) ;;
   }
+
   measure:  wait_time{
     type: number
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
   measure:  average_wait_time{
     type: average_distinct
-    sql_distinct_key: concat(${contact_id}, ${start_time}, ${skll_name}) ;;
+    sql_distinct_key: concat(${master_contact_id}, ${start_time}, ${skll_name}) ;;
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
 
