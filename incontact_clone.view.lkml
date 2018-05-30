@@ -167,6 +167,17 @@ dimension: abandons {
     type: number
     sql:count(distinct ${master_contact_id}) ;;
   }
+  dimension: phone_call  {
+    type: yesno
+    sql: ${campaign} not in ('Care Electronic') ;;
+  }
+
+  measure: count_distinct_calls {
+    label: "Inbound Calls"
+    type: number
+    sql:count(distinct case when (${campaign} != 'Care Electronic')  then ${master_contact_id} else null end);;
+
+  }
 
   measure: count_distinct_live_answers {
     label: "Live Answers"
