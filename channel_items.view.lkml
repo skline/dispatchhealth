@@ -139,6 +139,11 @@ view: channel_items {
     sql: ${TABLE}.zipcode ;;
   }
 
+  dimension: zipcode_short {
+    type: zipcode
+    sql: left(${zipcode},5) ;;
+  }
+
   dimension: digital_bool_self_report {
     type: yesno
     sql:  ${name} in('Google or other search', 'Social Media (Facebook, LinkedIn, Twitter, Instagram)', 'Social Media(Facebook, LinkedIn, Twitter, Instagram)')

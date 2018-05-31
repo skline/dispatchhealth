@@ -25,13 +25,20 @@ view: budget_projections_by_market_clone {
     sql: ${TABLE}.projected_visits ;;
   }
 
+  measure: sum_projected_visits {
+    type: sum_distinct
+    sql_distinct_key: concat(${market_dim_id}, ${month_raw})  ;;
+    sql: ${projected_visits} ;;
+
+  }
+
   measure: count {
     type: count
     drill_fields: []
   }
   measure: projection_visits_month_to_date {
     type: number
-    sql: ${projected_visits}*${care_request_flat.month_percent} ;;
+    sql: ${sum_projected_visits}*${care_request_flat.month_percent} ;;
   }
 
   measure: projection_visits_daily_volume{

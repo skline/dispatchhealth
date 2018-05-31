@@ -779,7 +779,7 @@ view: care_request_flat {
   measure: projections_diff {
     label: "Diff to budget"
     type: number
-    sql: round(${monthly_visits_run_rate}-${budget_projections_by_market_clone.projected_visits}) ;;
+    sql: round(${monthly_visits_run_rate}-${budget_projections_by_market_clone.sum_projected_visits}) ;;
   }
 
   measure: projections_diff_target {

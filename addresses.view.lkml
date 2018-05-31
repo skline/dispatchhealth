@@ -76,6 +76,11 @@ view: addresses {
     sql: ${TABLE}.zipcode ;;
   }
 
+  dimension: zipcode_short {
+    type: zipcode
+    sql: left(${zipcode}, 5) ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id]

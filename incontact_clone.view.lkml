@@ -239,6 +239,15 @@ dimension: abandons {
   }
 
 
+  measure: close_rate {
+    type: number
+    label: "Close Rate (Complete/Calls)"
+    value_format: "#.0\%"
+    sql: ((${care_request_flat_calls.complete_count}::float/${count_distinct}::float))*100;;
+  }
+
+
+
 
   measure: count_distinct_phone_number {
     type: number
