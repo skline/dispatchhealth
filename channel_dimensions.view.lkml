@@ -52,13 +52,20 @@ view: channel_dimensions {
     sql: ${TABLE}.organization ;;
   }
 
-  dimension: smfr_wmfr_visit {
+  dimension: smfr_visit {
     type: yesno
-    sql: ${sub_type} LIKE '%911 channel%' OR
+    sql:  ${market_dimensions.market_name} = 'Denver' AND (
+          ${sub_type} LIKE '%911 channel%' OR
           ${sub_type} LIKE '%south metro fire rescue%' OR
+          ${organization} LIKE '%smfr%') ;;
+  }
+
+  dimension: wmfr_visit {
+    type: yesno
+    sql:  ${market_dimensions.market_name} = 'West Metro Fire Rescue' AND (
+          ${sub_type} LIKE '%911 channel%' OR
           ${sub_type} LIKE '%west metro fire rescue%' OR
-          ${organization} LIKE '%smfr%' OR
-          ${organization} LIKE '%wmfr%' ;;
+          ${organization} LIKE '%wmfr%') ;;
   }
 
   dimension: organization_label {
