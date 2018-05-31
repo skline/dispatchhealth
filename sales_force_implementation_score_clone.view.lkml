@@ -101,7 +101,7 @@ view: sales_force_implementation_score_clone {
 
   dimension: type {
     type: string
-    sql:  ${TABLE}.string ;;
+    sql:  ${TABLE}.type ;;
   }
 
   dimension: zipcode {

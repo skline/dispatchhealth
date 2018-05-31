@@ -121,7 +121,7 @@ dimension: complete_care_requests_last_month {
 
   dimension: type {
     type: string
-    sql:  ${TABLE}.string ;;
+    sql:  ${TABLE}.type ;;
   }
 
   dimension: zipcode {
