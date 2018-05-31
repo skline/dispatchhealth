@@ -98,4 +98,18 @@ view: sales_force_implementation_score_clone {
     type: number
     sql: coalesce(${channels.market_id}, ${market_id}) ;;
   }
+
+  dimension: type {
+    type: string
+    sql:  ${TABLE}.string ;;
+  }
+
+  dimension: zipcode {
+    type: zipcode
+    sql:  ${TABLE}.zipcode ;;
+  }
+  dimension: zipcode_final {
+    type: zipcode
+    sql:  coalesce(${zipcode}, ${channel_items.zipcode}) ;;
+  }
 }

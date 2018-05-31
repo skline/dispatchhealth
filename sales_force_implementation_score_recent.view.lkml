@@ -2,7 +2,7 @@ view: sales_force_implementation_score_recent {
     derived_table: {
       sql: select *
               from
-              (select sf.created_at, sf.channel_item_id, sf.sf_account_name, sf.sf_implementation_name, sf.implementation_score as implementation_score, sf.projected_volume, sf.potential_volume, market, count(distinct cs.care_request_id) as complete_care_requests
+              (select sf.created_at, sf.channel_item_id, sf.sf_account_name, sf.sf_implementation_name, sf.implementation_score as implementation_score, sf.projected_volume, sf.potential_volume, market,sf.zipcode, sf.type, count(distinct cs.care_request_id) as complete_care_requests
 from (
 
    SELECT *
@@ -17,7 +17,7 @@ and (((cr.created_at ) >= ((SELECT (DATE_TRUNC('month', DATE_TRUNC('day', CURREN
 AND ((cr.created_at ) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL))))))
 left join public.care_request_statuses cs
 on cs.care_request_id=cr.id and cs.name='complete' and cs.deleted_at is  null
-group by 1,2,3,4,5,6,7,8) sales_force_implementation_score_clone
+group by 1,2,3,4,5,6,7,8,9,10) sales_force_implementation_score_clone
                      ;;
     }
 
@@ -117,6 +117,21 @@ dimension: complete_care_requests_last_month {
   dimension: market_id_final {
     type: number
     sql: coalesce(${channels.market_id}, ${market_id}) ;;
+  }
+
+  dimension: type {
+    type: string
+    sql:  ${TABLE}.string ;;
+  }
+
+  dimension: zipcode {
+    type: zipcode
+    sql:  ${TABLE}.zipcode ;;
+  }
+
+  dimension: zipcode_final {
+    type: zipcode
+    sql:  coalesce(${zipcode}, ${channel_items.zipcode}) ;;
   }
 
 
