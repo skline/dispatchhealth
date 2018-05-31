@@ -554,6 +554,20 @@ explore: channel_items {
     sql_on: ${sales_force_implementation_score_recent.channel_item_id} = ${channel_items.id} ;;
   }
 
+  join: sales_force_implementation_score_one_week {
+    from: sales_force_implementation_score_clone
+    sql_on: ${sales_force_implementation_score_one_week.sf_account_name} = ${sales_force_implementation_score_recent.sf_account_name}
+   and  ${sales_force_implementation_score_one_week.sf_implementation_name} = ${sales_force_implementation_score_recent.sf_implementation_name}
+    and ${sales_force_implementation_score_one_week.created_date}=current_date - interval '7 day';;
+  }
+
+  join: sales_force_implementation_score_one_month {
+    from: sales_force_implementation_score_clone
+    sql_on: ${sales_force_implementation_score_one_month.sf_account_name} = ${sales_force_implementation_score_recent.sf_account_name}
+        and  ${sales_force_implementation_score_one_month.sf_implementation_name} = ${sales_force_implementation_score_recent.sf_implementation_name}
+          and ${sales_force_implementation_score_one_month.created_date}=current_date - interval '30 day';;
+  }
+
   join: markets {
     relationship: many_to_one
     sql_on: ${sales_force_implementation_score_recent.market_id_final} = ${markets.id} ;;
