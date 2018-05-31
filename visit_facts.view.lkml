@@ -661,6 +661,19 @@ view: visit_facts {
     drill_fields: [details*]
   }
 
+  measure: count_of_touchworks_letters_sent {
+    label: "Touchworks Notes Sent Count"
+    type: count_distinct
+    sql: CASE
+          WHEN (${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL) THEN ${care_request_id}
+          ELSE NULL
+        END ;;
+    filters: {
+     field: athenadwh_clinical_providers.touchworks_flag
+    value: "yes"
+    }
+  }
+
 # Create measures by metrics of interest for use in data export for health system scorecard
 # Dan Edstrom
 # 2/22/2018
