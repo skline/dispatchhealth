@@ -61,6 +61,11 @@ view: athenadwh_clinical_providers {
     sql: ${TABLE}.name ;;
   }
 
+  dimension: touchworks_flag {
+    type: yesno
+    sql: ${name} = 'SOUTHWEST MEDICAL TOUCHWORKS' ;;
+  }
+
   dimension: touchworks_name {
     type: string
     sql: ${name} ;;
