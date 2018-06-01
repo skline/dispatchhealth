@@ -61,9 +61,18 @@ view: provider_profiles {
     sql: ${TABLE}.position ;;
   }
 
-  dimension: provider_image {
+  dimension: provider_image_url {
     type: string
     sql: ${TABLE}.provider_image ;;
+  }
+
+  dimension: image_file {
+  sql: ('https://s3-us-west-2.amazonaws.com/dispatchhealthimages/uploads/provider_profile/provider_image/'||${id}||${provider_image_url}) ;;
+  }
+
+  dimension: provider_image {
+    sql: ${image_file};;
+    html: <img src="{{ value }}" width="80" height="100"/> ;;
   }
 
   dimension: provider_image_processing {
