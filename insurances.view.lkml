@@ -20,8 +20,8 @@ view: insurances {
   }
 
   dimension: card_front_image_file {
-#   sql: ('https://s3-us-west-2.amazonaws.com/dispatchhealthimages/uploads/insurance/card_front/'||${id}||${card_front}) ;;
-    sql: ('https://s3-us-west-2.amazonaws.com/dispatchhealth-web-qa/uploads/testimonial/image/18/builtincoloradotop50startups.jpg') ;;
+  sql: ('https://s3-us-west-2.amazonaws.com/dispatchhealthimages/uploads/insurance/card_front/'||${id}||'/'||${card_front}) ;;
+    # sql: ('https://s3-us-west-2.amazonaws.com/dispatchhealth-web-qa/uploads/testimonial/image/18/builtincoloradotop50startups.jpg') ;;
   }
 
   dimension: insurance_card_front {
