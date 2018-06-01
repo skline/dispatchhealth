@@ -21,7 +21,7 @@ view: subtotals_clone {
     }
 
     dimension: cpt_type_order {
-      hidden: no
+      hidden: yes
       #For order by fields, use a similar calculation, but use values that correctly put nulls at min and subtotals at max of sort order positioning
       sql: coalesce(cast(coalesce(cast(${cpt_code_types_clone.cpt_code_type} as varchar),'          ')||${row_type_checker} as varchar),'ZZZZZZZZZZ');;
     }
