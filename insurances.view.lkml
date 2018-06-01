@@ -9,12 +9,24 @@ view: insurances {
 
   dimension: card_back {
     type: string
+    hidden: yes
     sql: ${TABLE}.card_back ;;
   }
 
   dimension: card_front {
     type: string
+    hidden: yes
     sql: ${TABLE}.card_front ;;
+  }
+
+  dimension: card_front_image_file {
+#   sql: ('https://s3-us-west-2.amazonaws.com/dispatchhealthimages/uploads/insurance/card_front/'||${id}||${card_front}) ;;
+    sql: ('https://s3-us-west-2.amazonaws.com/dispatchhealth-web-qa/uploads/testimonial/image/18/builtincoloradotop50startups.jpg') ;;
+  }
+
+  dimension: insurance_card_front {
+    sql: ${card_front_image_file};;
+    html: <img src="{{ value }}" width="120" height="100"/> ;;
   }
 
   dimension: company_name {
