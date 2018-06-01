@@ -38,6 +38,11 @@ explore: care_requests {
     sql_on: ${transaction_facts_clone.cpt_code_dim_id} = ${cpt_code_dimensions_clone.id} ;;
   }
 
+  join: cpt_code_types_clone {
+    relationship: one_to_one
+    sql_on: ${cpt_code_types_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
+  }
+
 # Not much information here -- unclear if this is necessary
 #   join: cpt_em_references_clone {
 #      relationship: one_to_one

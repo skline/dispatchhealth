@@ -236,6 +236,20 @@ view: transaction_facts_clone {
     drill_fields: [id]
   }
 
+  dimension: voided_flag {
+    type: yesno
+    sql: ${voided_date} IS NOT NULL ;;
+  }
+
+  measure: procedures_count {
+    type: count_distinct
+    sql: CONCAT(${visit_dim_number}, ${cpt_code_dim_id}) ;;
+    filters: {
+      field: voided_flag
+      value: "no"
+    }
+  }
+
   measure: transaction_billable_count {
     type: count_distinct
     sql: ${visit_dim_number} ;;
