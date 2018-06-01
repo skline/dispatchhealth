@@ -722,6 +722,31 @@ measure: distinct_day_of_week {
     type: string
     sql:  ${TABLE}.origin_phone;;
   }
+
+  dimension: origin_phone_not_populated {
+    type: yesno
+    sql: care_requests.origin_phone IS NULL
+         OR LENGTH(care_requests.origin_phone) = 0
+        OR (care_requests.origin_phone) = '';;
+  }
+
+  measure: origin_phone_populated_count {
+    type: count_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${id} ;;
+    filters: {
+      field: origin_phone_not_populated
+      value: "no"
+    }
+  }
+  measure: percent_origin_phone_populated {
+    type: number
+    value_format: "0%"
+    sql: ${origin_phone_populated_count}::float/${count}::float ;;
+
+  }
+
+
   dimension: days_in_month {
     type: number
     sql:  DATE_PART('days',
