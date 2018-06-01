@@ -412,6 +412,19 @@ join: ga_pageviews_clone {
 
             ;;
   }
+
+  join: subtotals_clone {
+    type: cross
+    relationship: one_to_many
+  }
+
+  join: subtotal_over_level2 {
+    from: subtotals_clone
+    type: cross
+    relationship: one_to_many
+    #when adding a level of nested subtotals, need to add this sql_where to exclude the generated row which would subtotal over the higher level, but not over this lower level.
+    sql_where: not (${subtotals_clone.row_type_description}='SUBTOTAL' and not ${subtotal_over_level2.row_type_description}='SUBTOTAL') ;;
+  }
 }
 
 explore: shift_planning_facts_clone {
