@@ -104,7 +104,8 @@ view: csc_survey_clone {
   }
 
   measure: count {
-    type: count
-    drill_fields: []
+    type: number
+    sql: count(distinct ${contact_id}) ;;
+
   }
 }
