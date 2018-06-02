@@ -167,6 +167,13 @@ dimension: abandons {
     type: number
     sql:count(distinct ${master_contact_id}) ;;
   }
+
+  measure: close_rate {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat.complete_count}::float/${count_distinct}::float));;
+
+  }
   dimension: phone_call  {
     type: yesno
     sql: ${campaign} not in ('Care Electronic') ;;
@@ -239,12 +246,6 @@ dimension: abandons {
   }
 
 
-  measure: close_rate {
-    type: number
-    label: "Close Rate (Complete/Calls)"
-    value_format: "#.0\%"
-    sql: ((${care_request_flat_calls.complete_count}::float/${count_distinct}::float))*100;;
-  }
 
 
 
