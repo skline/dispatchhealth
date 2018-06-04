@@ -125,6 +125,7 @@ view: care_requests {
 
   dimension_group: created_mountain {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -238,6 +239,7 @@ view: care_requests {
 
   dimension_group: on_route_eta_mountain {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -248,7 +250,7 @@ view: care_requests {
       quarter,
       year
     ]
-    sql: ${TABLE}.on_route_eta - interval '7 hour' ;;
+    sql: ${TABLE}.on_route_eta AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension_group: on_scene_etc {
@@ -267,6 +269,7 @@ view: care_requests {
 
   dimension_group: on_scene_etc_mountain {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -277,7 +280,40 @@ view: care_requests {
       quarter,
       year
     ]
-    sql: ${TABLE}.on_scene_etc - interval '7 hour' ;;
+    sql: ${TABLE}.on_scene_etc AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
+  }
+
+  dimension_group: on_scene_etc_local {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      time,
+      time_of_day,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.on_scene_etc AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
+  }
+
+  dimension: actual_minus_etc {
+    type: number
+    sql: CASE
+          WHEN (EXTRACT(EPOCH FROM ${on_scene_etc_local_raw}) - EXTRACT(EPOCH FROM ${care_request_flat.complete_raw}))::float/60.0 < 720
+          THEN (EXTRACT(EPOCH FROM ${on_scene_etc_local_raw}) - EXTRACT(EPOCH FROM ${care_request_flat.complete_raw}))::float/60.0
+          ELSE NULL
+        END
+          ;;
+    value_format: "0.00"
+  }
+
+  measure: avg_actual_minus_etc {
+    type: average
+    sql: ${actual_minus_etc} ;;
+    value_format: "0.00"
   }
 
   dimension: orig_city {

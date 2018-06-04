@@ -361,6 +361,11 @@ view: care_request_flat {
     sql: ${TABLE}.created_date ;;
   }
 
+  dimension: etc_model_in_place {
+    type: yesno
+    sql: ${created_raw} >= '2018-03-29'::TIMESTAMP ;;
+  }
+
   measure: distinct_day_of_week {
     type: count_distinct
     sql: ${complete_date};;
