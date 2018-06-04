@@ -98,6 +98,45 @@ view: toc_predictions {
     sql: ${TABLE}.updated_at ;;
   }
 
+  dimension: toc_actual_minus_pred {
+    type: number
+    description: "Actual on-scene time minus predicted on-scene time"
+    # sql: ${care_requests.on_scene_etc_mountain_time_of_day} -  ;;
+    sql: ${care_request_flat.on_scene_time_minutes} - ${mins_on_scene_predicted} ;;
+  }
+
+  dimension: toc_actual_minus_50 {
+    type: number
+    description: "Actual on-scene time minus predicted on-scene time"
+    # sql: ${care_requests.on_scene_etc_mountain_time_of_day} -  ;;
+    sql: ${care_request_flat.on_scene_time_minutes} - 50 ;;
+  }
+
+  parameter: toc_tier_bucket_size {
+    default_value: "20"
+    type: number
+  }
+
+  dimension: dynamic_time_diff_tier {
+    type: number
+    sql: FLOOR(${toc_actual_minus_pred} / {% parameter toc_tier_bucket_size %})
+      * {% parameter toc_tier_bucket_size %} ;;
+  }
+
+  dimension: real_minus_pred_tier {
+    type: tier
+    tiers: [-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60]
+    style: integer
+    sql: ${toc_actual_minus_pred} ;;
+  }
+
+  dimension: real_minus_50_tier {
+    type: tier
+    tiers: [-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60]
+    style: integer
+    sql: ${toc_actual_minus_50} ;;
+  }
+
   measure: avg_mins_on_scene_predicted {
     type: average
     value_format: "0.00"
