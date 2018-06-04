@@ -302,8 +302,8 @@ view: care_requests {
   dimension: actual_minus_etc {
     type: number
     sql: CASE
-          WHEN (EXTRACT(EPOCH FROM ${on_scene_etc_local_raw}) - EXTRACT(EPOCH FROM ${care_request_flat.complete_raw}))::float/60.0 < 720
-          THEN (EXTRACT(EPOCH FROM ${on_scene_etc_local_raw}) - EXTRACT(EPOCH FROM ${care_request_flat.complete_raw}))::float/60.0
+          WHEN ABS((EXTRACT(EPOCH FROM ${care_request_flat.complete_raw}) - EXTRACT(EPOCH FROM ${on_scene_etc_local_raw}))::float/60.0) < 720
+          THEN (EXTRACT(EPOCH FROM ${care_request_flat.complete_raw}) - EXTRACT(EPOCH FROM ${on_scene_etc_local_raw}))::float/60.0
           ELSE NULL
         END
           ;;

@@ -91,9 +91,12 @@ view: care_request_flat {
   dimension: on_scene_time_minutes {
     type: number
     description: "The number of minutes between complete time and on scene time"
-    sql: (EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}))::float/60.0 ;;
+    sql: CASE
+          WHEN ABS((EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}))::float/60.0) < 241
+          THEN (EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}))::float/60.0
+          ELSE NULL
+        END ;;
   }
-
 
   dimension: drive_time_minutes {
     type: number
