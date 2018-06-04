@@ -75,6 +75,16 @@ explore: care_requests {
             ${transaction_facts_clone.voided_date} IS NULL ;;
   }
 
+  join: care_request_toc_predictions {
+    relationship: one_to_one
+    sql_on: ${care_request_toc_predictions.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: toc_predictions {
+    relationship: one_to_many
+    sql_on: ${toc_predictions.id} = ${care_request_toc_predictions.toc_prediction_id} ;;
+  }
+
 #   join: pcp_dimensions_clone {
 #   sql_on: ??? ;;
 #   }
