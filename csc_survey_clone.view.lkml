@@ -39,13 +39,20 @@ view: csc_survey_clone {
     type: number
     sql: ${TABLE}.rate_your_call_experience ;;
   }
+
   measure: average_rate_your_call_experience {
-    type:  number
-    sql: round(avg(${rate_your_call_experience}),2) ;;
+    type:  average_distinct
+    value_format: "0.000"
+    sql_distinct_key: ${contact_id};;
+    sql: ${rate_your_call_experience} ;;
   }
+
+
   measure: interaction_score {
-    type: number
-    sql:  round((avg(${rate_your_call_experience}+${recommend_to_friend}+${care_and_respect}))/3,2);;
+    type:  average_distinct
+    value_format: "0.000"
+    sql_distinct_key: ${contact_id};;
+    sql:  (${rate_your_call_experience}+${recommend_to_friend}+${care_and_respect})::float/3;;
   }
 
   dimension: recommend_to_friend_bool {
@@ -83,13 +90,17 @@ view: csc_survey_clone {
 
 
   measure: average_recommend_to_friend {
-    type:number
-    sql: round(avg(${recommend_to_friend}),2) ;;
+    type:average_distinct
+    value_format: "0.000"
+    sql_distinct_key: ${contact_id} ;;
+    sql: ${recommend_to_friend} ;;
   }
 
   measure: average_care_and_respect {
-    type:  number
-    sql: round(avg(${care_and_respect}),2) ;;
+    type:  average_distinct
+    value_format: "0.000"
+    sql_distinct_key: ${contact_id} ;;
+    sql: ${care_and_respect} ;;
   }
 
 
