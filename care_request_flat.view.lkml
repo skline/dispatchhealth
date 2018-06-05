@@ -1046,6 +1046,13 @@ view: care_request_flat {
     sql: coalesce((case when ${ga_pageviews_clone.projection_category} = 'Other' then null else ${ga_pageviews_clone.projection_category} end), ${web_ga_pageviews_clone.projection_category}) ;;
   }
 
+  dimension: ga_intent {
+    type: string
+    label: "High/Low Intent"
+    sql: coalesce(${ga_pageviews_clone.high_low_intent}, ${web_ga_pageviews_clone.high_low_intent}) ;;
+  }
+
+
 
 
 

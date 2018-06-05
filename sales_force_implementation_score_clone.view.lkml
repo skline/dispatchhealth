@@ -15,6 +15,20 @@ view: sales_force_implementation_score_clone {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension_group: sf_created {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.sf_created_at ;;
+  }
+
   dimension: implementation_score {
     type: number
     sql: ${TABLE}.implementation_score ;;
@@ -73,8 +87,8 @@ view: sales_force_implementation_score_clone {
 
   measure: distinct_sf_accounts  {
     type: count_distinct
-    sql_distinct_key: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
-    sql: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
+    sql_distinct_key: concat(${sf_account_name}, ${sf_implementation_name}) ;;
+    sql: concat(${sf_account_name}, ${sf_implementation_name}) ;;
   }
   dimension: market {
     type: string
