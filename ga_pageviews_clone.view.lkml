@@ -248,13 +248,13 @@ dimension: source_category
 
   dimension: low_intent{
     type: yesno
-    sql:  source_category in('Native Display','Display', 'Paid Social', 'Organic Social') ;;
+    sql:  source_category in('Native Display','Display', 'Paid Social', 'Organic Social', 'Direct Traffic') ;;
   }
 
   dimension: high_low_intent
   {
     type: string
-    sql: case when ${source_category} in('Paid Social', 'Organic Social', 'Native Display', 'Display') then 'Low Intent'
+    sql: case when ${source_category} in('Paid Social', 'Organic Social', 'Native Display', 'Display', 'Direct Traffic') then 'Low Intent'
               else 'High Intent' end;;
   }
 

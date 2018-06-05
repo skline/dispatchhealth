@@ -149,6 +149,8 @@ view: shift_planning_shifts {
      when ${schedule_name} like "%phx%" then 3
      when ${schedule_name} like "%ric%" then 4
      when ${schedule_name} like "%las%" then 5
+    when ${schedule_name} like "%hou%" then 6
+    when ${schedule_name} like "%okc%" then 7
      else 0 end ;;
   }
 
