@@ -282,7 +282,7 @@ explore: visit_facts {
   join: athenadwh_documents {
     relationship:  many_to_one
     sql_on:  ${athenadwh_documents.clinical_encounter_id} = ${athenadwh_clinical_encounters.clinical_encounter_id} AND
-            (${athenadwh_documents.document_class} = 'PRESCRIPTION' OR (${athenadwh_documents.document_class} = 'LETTER' AND
+            ((${athenadwh_documents.document_class} = 'PRESCRIPTION' AND ${athenadwh_documents.deleted_datetime} IS NULL) OR (${athenadwh_documents.document_class} = 'LETTER' AND
             (${athenadwh_documents.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_documents.document_subclass} IS NULL))) ;;
   }
 
