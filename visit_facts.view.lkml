@@ -58,6 +58,14 @@ view: visit_facts {
     sql: ${TABLE}.chief_complaint ;;
   }
 
+  dimension: post_acute_follow_up {
+    type: yesno
+    description: "Chief complaint, risk protocol name, or channel name is post-acute follow-up"
+    sql:  TRIM(LOWER(${chief_complaint})) REGEXP 'pafu|post acute|post-acute' OR
+          ${risk_assessments_bi.protocol_name} = 'Post-Acute Patient' OR
+          ${channel_dimensions.organization} REGEXP 'pafu|post acute|post-acute' ;;
+  }
+
   dimension_group: complete {
     description: "The timestamp the care request was completed by the Provider in UTC"
     type: time
@@ -424,6 +432,15 @@ view: visit_facts {
     }
 
     drill_fields: [details*]
+  }
+
+  measure: count_prescriptions_written {
+    label: "Prescriptions Written Count"
+    type: count
+    filters: {
+      field: athenadwh_documents.prescriptions_flag
+      value: "yes"
+    }
   }
 
   dimension: centura_mssp_request_flag {
