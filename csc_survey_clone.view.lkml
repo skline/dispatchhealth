@@ -42,7 +42,7 @@ view: csc_survey_clone {
 
   measure: average_rate_your_call_experience {
     type:  average_distinct
-    value_format: "0.000"
+    value_format: "0.00"
     sql_distinct_key: ${contact_id};;
     sql: ${rate_your_call_experience} ;;
   }
@@ -50,7 +50,7 @@ view: csc_survey_clone {
 
   measure: interaction_score {
     type:  average_distinct
-    value_format: "0.000"
+    value_format: "0.00"
     sql_distinct_key: ${contact_id};;
     sql:  (${rate_your_call_experience}+${recommend_to_friend}+${care_and_respect})::float/3;;
   }
@@ -91,14 +91,14 @@ view: csc_survey_clone {
 
   measure: average_recommend_to_friend {
     type:average_distinct
-    value_format: "0.000"
+    value_format: "0.00"
     sql_distinct_key: ${contact_id} ;;
     sql: ${recommend_to_friend} ;;
   }
 
   measure: average_care_and_respect {
     type:  average_distinct
-    value_format: "0.000"
+    value_format: "0.00"
     sql_distinct_key: ${contact_id} ;;
     sql: ${care_and_respect} ;;
   }
