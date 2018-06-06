@@ -307,6 +307,11 @@ explore: visit_facts {
             ${athenadwh_procedure_codes.deleted_datetime_raw} IS NULL ;;
   }
 
+  join: athenadwh_transactions {
+    relationship: many_to_one
+    sql_on: ${athenadwh_transactions.claim_id} = ${athena_encounter_claims.claim_id} ;;
+  }
+
 }
 
 explore: incontact {
