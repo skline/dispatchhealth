@@ -12,12 +12,48 @@ view: athenadwh_transactions {
     sql: ${TABLE}.amount ;;
   }
 
+  dimension: payment_amount {
+    type: number
+    sql: ${amount} * -1 ;;
+  }
+
   measure: total_amount {
     type: sum
     sql: ${amount} ;;
+    value_format: "0.00"
     filters: {
       field: voided_flag
       value: "no"
+    }
+  }
+
+  dimension: patient_payment {
+    type: yesno
+    sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'PAYMENT' ;;
+  }
+
+  dimension: patient_responsibility {
+    type: yesno
+    sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'TRANSFERIN' ;;
+  }
+
+  measure: total_oop_paid {
+    type: sum
+    sql: ${payment_amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_payment
+      value: "yes"
+    }
+  }
+
+  measure: total_patient_responsibility {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility
+      value: "yes"
     }
   }
 
@@ -29,6 +65,11 @@ view: athenadwh_transactions {
   dimension: claim_id {
     type: number
     sql: ${TABLE}.claim_id ;;
+  }
+
+  measure: count_claims {
+    type: count_distinct
+    sql: ${claim_id} ;;
   }
 
   dimension_group: created {
