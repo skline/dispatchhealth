@@ -140,6 +140,16 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
   }
 
+  join: care_request_network_referrals {
+    relationship: one_to_many
+    sql_on: ${care_request_network_referrals.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: network_referrals {
+    relationship: one_to_one
+    sql_on: ${network_referrals.id} = ${care_request_network_referrals.network_referral_id} ;;
+  }
+
   join: care_request_distances {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${care_request_distances.care_request_id} ;;
