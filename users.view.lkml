@@ -112,6 +112,14 @@ view: users {
     sql: ${TABLE}.last_name ;;
   }
 
+  dimension: chart_scrubbing_name {
+    type: string
+    sql: CASE
+          WHEN ${last_name} = 'Riddleberger' THEN 'Dashboard'
+          ELSE ${first_name} || ' ' || ${last_name}
+        END  ;;
+  }
+
   dimension_group: last_sign_in {
     type: time
     timeframes: [

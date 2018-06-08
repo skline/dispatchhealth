@@ -456,6 +456,32 @@ explore: shift_planning_facts_clone {
   }
 }
 
+explore: care_request_3day_bb {
+  from: care_request_statuses
+  sql_always_where: ${care_request_3day_bb.name} = 'followup_3' AND ${care_request_3day_bb.commentor_id} IS NOT NULL ;;
+
+  join: care_requests {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${care_request_3day_bb.care_request_id} ;;
+  }
+
+  join: users{
+    relationship: one_to_many
+    sql_on: ${users.id} = ${care_request_3day_bb.commentor_id};;
+  }
+
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.id} = ${care_requests.market_id} ;;
+  }
+
+  join: timezones {
+    relationship: one_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+
+}
+
 # explore: shift_planning_facts_clone {
 #   # view_label: "Shifts and Visits"
 
