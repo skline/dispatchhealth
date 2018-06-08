@@ -595,8 +595,14 @@ dimension_group: yesterday_mountain{
     sql: current_date - interval '1 day';;
   }
 
+dimension: dashboard_image {
+  sql: ('https://s3.amazonaws.com/dispatchhealth-analytics/Dispatch-Desktop-Dashboard-R3-Blank.png')  ;;
+}
 
-
+dimension: client_overview_image {
+  sql: ${dashboard_image} ;;
+  html:<img src={{value}} width="1200" height="672" alt="DispatchHealth"> ;;
+}
 
 dimension:  same_day_of_week {
   type: yesno
