@@ -330,12 +330,12 @@ dimension: source_category
     }
     dimension: source_final {
       type: string
-      sql: coalesce(${invoca_clone.utm_source}, ${source}, ${marketing_cost_clone.type}) ;;
+      sql: lower(coalesce(${invoca_clone.utm_source}, ${source}, ${marketing_cost_clone.type})) ;;
     }
 
   dimension: medium_final {
     type: string
-    sql: coalesce(${invoca_clone.utm_medium}, ${medium}, ${marketing_cost_clone.medium}) ;;
+    sql: lower(coalesce(${invoca_clone.utm_medium}, ${medium}, ${marketing_cost_clone.medium})) ;;
   }
   dimension: content {
     type: string
@@ -385,13 +385,22 @@ dimension: source_category
 
   dimension: campaign_final {
     type: string
-    sql: coalesce(${adwords_campaigns_clone.campaign_name}, ${invoca_clone.utm_campaign}, ${campaign}) ;;
+    sql: lower(coalesce(${adwords_campaigns_clone.campaign_name},  ${marketing_cost_clone.campaign_name}, ${invoca_clone.utm_campaign}, ${campaign})) ;;
   }
 
   dimension_group: today_mountain{
     type: time
     timeframes: [day_of_week_index, week, month, day_of_month]
     sql: CURRENT_DATE ;;
+  }
+
+  dimension: sem_category {
+    type: string
+    sql: case when ${source_final} = 'google' and ${medium_final} = 'cpc' and ${campaign_final} like '%call only%' then 'Call Only'
+              when ${source_final} = 'google' and ${medium_final} = 'cpc' and ${campaign_final} not like '%call only%' then 'Regular'
+              when ${medium_final} = 'google call extension' and ${source_final} like '%new%' then 'Call Only'
+              when ${medium_final} = 'google call extension' and ${source_final} not like '%new%' then 'Regular'
+          else null end;;
   }
 
   dimension_group: yesterday_mountain{
