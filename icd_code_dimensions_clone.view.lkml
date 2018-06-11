@@ -74,6 +74,12 @@ view: icd_code_dimensions_clone {
     sql: array_to_string(array_agg(DISTINCT ${diagnosis_code}), ' | ') ;;
   }
 
+  measure: disease_state_concat {
+    label: "Disease State(s)"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT  ${disease_state}), ', ') ;;
+  }
+
   measure: diagnosis_desc_concat {
     label: "ICD 10 Diagnosis Descriptions"
     type: string
