@@ -37,9 +37,12 @@ view: athenadwh_transactions {
     sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'TRANSFERIN' ;;
   }
 
-  dimension: patient_responsibility_without_coinsurance {
+  dimension: patient_responsibility_without_secondary {
+    description: "Patient responsibility when not taking secondary payers into account"
     type: yesno
-    sql: ${patient_responsibility} OR (${transaction_transfer_type} = 'Secondary' AND ${transaction_type} = 'TRANSFERIN') ;;
+    sql: ${patient_responsibility} OR
+        (${transaction_transfer_type} = 'Secondary' AND ${transaction_type} = 'TRANSFERIN') OR
+        (${transaction_transfer_type} = 'Secondary' AND ${transaction_type} = 'TRANSFEROUT') ;;
   }
 
   measure: total_oop_paid {
