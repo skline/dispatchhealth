@@ -310,8 +310,21 @@ view: care_requests {
     value_format: "0.00"
   }
 
+  dimension: actual_minus_etc_tier {
+    type: tier
+    tiers: [-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60]
+    style: integer
+    sql: ${actual_minus_etc} ;;
+  }
+
   measure: avg_actual_minus_etc {
     type: average
+    sql: ${actual_minus_etc} ;;
+    value_format: "0.00"
+  }
+
+  measure: median_actual_minus_etc {
+    type: median
     sql: ${actual_minus_etc} ;;
     value_format: "0.00"
   }
