@@ -65,12 +65,12 @@ view: athenadwh_transactions {
     }
   }
 
-  measure: total_patient_responsibility_without_coinsurance {
+  measure: total_patient_responsibility_without_secondary {
     type: sum
     sql: ${amount} ;;
     value_format: "0.00"
     filters: {
-      field: patient_responsibility_without_coinsurance
+      field: patient_responsibility_without_secondary
       value: "yes"
     }
   }
