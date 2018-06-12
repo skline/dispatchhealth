@@ -1189,6 +1189,22 @@ view: visit_facts {
     }
   }
 
+  dimension: followup_3day {
+    type: yesno
+    description: "A flag indicating the 3-day follow-up was completed"
+    sql: ${billable_visit} AND
+      (${day_3_followup_outcome} NOT IN ('PENDING', 'REMOVED', 'patient_called_but_did_not_answer')) ;;
+  }
+
+  measure: count_3day_followups {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: followup_3day
+      value: "yes"
+    }
+  }
+
   dimension: bb_14_day {
     label: "14-Day Bounce back flag"
     type: yesno
@@ -1217,6 +1233,22 @@ view: visit_facts {
     type: count
     filters: {
       field: bb_30_day
+      value: "yes"
+    }
+  }
+
+  dimension: followup_30day {
+    type: yesno
+    description: "A flag indicating the 3-day follow-up was completed"
+    sql: ${billable_visit} AND
+      (${day_3_followup_outcome} NOT IN ('REMOVED', 'PENDING', 'no_hie_data')) ;;
+  }
+
+  measure: count_30day_followups {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: followup_3day
       value: "yes"
     }
   }
