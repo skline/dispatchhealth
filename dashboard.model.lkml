@@ -424,11 +424,11 @@ join: ga_pageviews_clone {
   }
   join: marketing_cost_clone {
     type: full_outer
-    sql_on:   ${ga_pageviews_clone.source_final} = ${marketing_cost_clone.type}
+    sql_on:   lower(${ga_pageviews_clone.source_final}) = lower(${marketing_cost_clone.type})
               and ${ga_pageviews_clone.timestamp_mst_date} =${marketing_cost_clone.date_date}
-              and ${ga_pageviews_clone.medium_final}  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
-              and ${ga_pageviews_clone.ad_group_final} = ${marketing_cost_clone.ad_group_name}
-            and ${ga_pageviews_clone.campaign_final} = ${marketing_cost_clone.campaign_name}
+              and lower(${ga_pageviews_clone.medium_final})  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
+              and lower(${ga_pageviews_clone.ad_group_final}) = lower(${marketing_cost_clone.ad_group_name})
+            and lower(${ga_pageviews_clone.campaign_final}) = lower(${marketing_cost_clone.campaign_name})
 
             ;;
   }
@@ -833,13 +833,13 @@ explore: ga_pageviews_full_clone {
 
   join: marketing_cost_clone {
     type: full_outer
-    sql_on:   ${ga_pageviews_full_clone.source_final} = ${marketing_cost_clone.type}
-              and ${ga_pageviews_full_clone.ga_time_date} =${marketing_cost_clone.date_date}
-              and ${ga_pageviews_full_clone.medium_final}  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
-              and ${ga_pageviews_full_clone.ad_group_final} = ${marketing_cost_clone.ad_group_name}
-            and ${ga_pageviews_full_clone.campaign_final} = ${marketing_cost_clone.campaign_name}
+    sql_on:   lower(${ga_pageviews_full_clone.source_final}) = lower(${marketing_cost_clone.type})
+    and ${ga_pageviews_full_clone.timestamp_mst_date} =${marketing_cost_clone.date_date}
+    and lower(${ga_pageviews_full_clone.medium_final})  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
+    and lower(${ga_pageviews_full_clone.ad_group_final}) = lower(${marketing_cost_clone.ad_group_name})
+    and lower(${ga_pageviews_full_clone.campaign_final}) = lower(${marketing_cost_clone.campaign_name})
 
-            ;;
+    ;;
     sql_where:  ${invoca_clone.start_date} >'2018-03-15'
     OR ${ga_pageviews_full_clone.timestamp_time} is not null
     or ${marketing_cost_clone.date_date} is not null;;
