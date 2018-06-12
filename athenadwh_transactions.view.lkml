@@ -12,12 +12,66 @@ view: athenadwh_transactions {
     sql: ${TABLE}.amount ;;
   }
 
+  dimension: payment_amount {
+    type: number
+    sql: ${amount} * -1 ;;
+  }
+
   measure: total_amount {
     type: sum
     sql: ${amount} ;;
+    value_format: "0.00"
     filters: {
       field: voided_flag
       value: "no"
+    }
+  }
+
+  dimension: patient_payment {
+    type: yesno
+    sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'PAYMENT' ;;
+  }
+
+  dimension: patient_responsibility {
+    type: yesno
+    sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'TRANSFERIN' ;;
+  }
+
+  dimension: patient_responsibility_without_secondary {
+    description: "Patient responsibility when not taking secondary payers into account"
+    type: yesno
+    sql: ${patient_responsibility} OR
+        (${transaction_transfer_type} = 'Secondary' AND ${transaction_type} = 'TRANSFERIN') OR
+        (${transaction_transfer_type} = 'Secondary' AND ${transaction_type} = 'TRANSFEROUT') ;;
+  }
+
+  measure: total_oop_paid {
+    type: sum
+    sql: ${payment_amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_payment
+      value: "yes"
+    }
+  }
+
+  measure: total_patient_responsibility {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility
+      value: "yes"
+    }
+  }
+
+  measure: total_patient_responsibility_without_secondary {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility_without_secondary
+      value: "yes"
     }
   }
 
@@ -29,6 +83,11 @@ view: athenadwh_transactions {
   dimension: claim_id {
     type: number
     sql: ${TABLE}.claim_id ;;
+  }
+
+  measure: count_claims {
+    type: count_distinct
+    sql: ${claim_id} ;;
   }
 
   dimension_group: created {
