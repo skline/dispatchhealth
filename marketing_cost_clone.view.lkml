@@ -8,7 +8,7 @@ view: marketing_cost_clone {
 
   dimension: ad_group_name {
     type: string
-    sql: ${TABLE}.ad_group_name ;;
+    sql: lower(${TABLE}.ad_group_name) ;;
   }
 
   dimension: ad_clicks {
