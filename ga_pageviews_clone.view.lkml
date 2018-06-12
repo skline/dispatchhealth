@@ -206,7 +206,7 @@ dimension: source_category
   {
     type: string
     sql: case
-            when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and lower(${ad_group_final}) like '%brand%' then 'SEM: Brand'
+            when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and (lower(${ad_group_final}) like '%brand%' or lower(${invoca_clone.promo_number_description}) like '%brand%') then 'SEM: Brand'
             when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'SEM: Non-Brand'
             when (${source_final} in('facebook', 'instagram') and ${medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image', 'cpc')) or lower(${source_final}) like '%fb click to call%' then 'Paid Social'
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
@@ -226,7 +226,7 @@ dimension: source_category
   {
     type: string
     sql: case
-            when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and lower(${ad_group_final}) like '%brand%' then 'SEM: Brand or Organic Search'
+            when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and (lower(${ad_group_final}) like '%brand%' or lower(${invoca_clone.promo_number_description}) like '%brand%') then 'SEM: Brand or Organic Search'
             when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'SEM: Non-Brand'
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'SEM: Brand or Organic Search'
             when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
