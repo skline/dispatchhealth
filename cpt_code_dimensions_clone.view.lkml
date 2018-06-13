@@ -88,6 +88,11 @@ view: cpt_code_dimensions_clone {
     sql: ${e_and_m_code} = 1 ;;
   }
 
+  dimension: non_em_cpt_flag {
+    type: yesno
+    sql: ${cpt_code_flag} AND NOT ${e_and_m_flag} ;;
+  }
+
   dimension: em_care_level {
     label: "E&M Code Care Level"
     description: "Indicates the level of care received by patient"
