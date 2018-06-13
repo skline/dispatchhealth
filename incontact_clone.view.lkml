@@ -121,7 +121,7 @@ view: incontact_clone {
            when lower(${skll_name}) like '%ric%'  then 164
            when lower(${skll_name})  like '%las%' then 162
            when lower(${skll_name})  like '%hou%' then 165
-          when lower(${skll_name})  like '%okla%' then 166
+          when lower(${skll_name})  like '%okla%' or lower(${skll_name})  like '%okc%' then 166
            else null end ;;
   }
 dimension: skill_category {
