@@ -29,7 +29,7 @@ view: transaction_facts {
   }
 
   dimension: athena_transaction_id {
-    hidden: yes
+    hidden: no
     type: number
     sql: ${TABLE}.athena_transaction_id ;;
   }

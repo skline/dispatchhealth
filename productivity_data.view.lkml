@@ -17,9 +17,19 @@ view: productivity_data {
     sql: ${TABLE}.smfr_visits ;;
   }
 
+  measure: sum_smfr_visits {
+    type: sum
+    sql: ${smfr_visits} ;;
+  }
+
   dimension: wmfr_visits {
     type: number
     sql: ${TABLE}.wmfr_visits ;;
+  }
+
+  measure: sum_wmfr_visits {
+    type: sum
+    sql: ${wmfr_visits} ;;
   }
 
   dimension_group: created_ts {

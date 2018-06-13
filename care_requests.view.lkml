@@ -537,6 +537,19 @@ view: care_requests {
     sql: ${care_request_flat.archive_date} is not null;;
   }
 
+  dimension: complete_visit_with_procedure {
+    type: yesno
+    sql: ${complete_visit} AND ${cpt_code_dimensions_clone.non_em_cpt_flag} ;;
+  }
+
+  measure: count_complete_visit_with_procedures {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: complete_visit_with_procedure
+      value: "yes"
+    }
+  }
 
   dimension:  referred_point_of_care {
     type: yesno

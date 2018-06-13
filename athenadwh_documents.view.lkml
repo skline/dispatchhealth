@@ -30,7 +30,7 @@ view: athenadwh_documents {
 
   dimension: prescriptions_flag {
     type: yesno
-    sql: ${clinical_order_type} IS NOT NULL ;;
+    sql: ${document_class} = 'PRESCRIPTION' ;;
   }
 
   dimension: clinical_provider_id {

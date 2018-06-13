@@ -630,6 +630,21 @@ view: visit_facts {
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL ;;
   }
 
+  dimension: billable_visit_with_cpt_flag {
+    type: yesno
+    sql: ${cpt_code_dimensions_clone.non_em_cpt_flag} AND ${billable_visit} ;;
+  }
+
+  measure: count_billable_visit_with_cpt {
+    description: "Count of billable visits with non E&M CPT codes"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: billable_visit_with_cpt_flag
+      value: "yes"
+    }
+  }
+
   dimension: billable_visit_with_expected_allowable {
     label: "Billable Visits with Expected Allowable flag"
     type: yesno
@@ -642,6 +657,7 @@ view: visit_facts {
     type: yesno
     sql: ${visit_dim_number} IS NOT NULL AND ${no_charge_entry_reason} IS NULL AND ${car_dimensions.car_name} != 'SMFR_Car';;
   }
+
   dimension: season {
     type: string
     sql: Case when MONTH(${local_requested_time}) between 3 and 5 then 'Spring'
@@ -765,7 +781,8 @@ view: visit_facts {
   dimension: clinical_notes_sent_billable_visit_flag {
     type: yesno
     hidden: yes
-    sql: ${letter_recipient_dimensions.recipient_type} IS NOT NULL AND ${billable_visit} IS TRUE ;;
+    sql: ${athenadwh_documents.document_class} IN ('LETTER', 'ENCOUNTERDOCUMENT') AND
+         ${athenadwh_documents.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' AND ${billable_visit} IS TRUE ;;
   }
 
   dimension: referred_on_scene_flag {
@@ -1189,6 +1206,22 @@ view: visit_facts {
     }
   }
 
+  dimension: followup_3day {
+    type: yesno
+    description: "A flag indicating the 3-day follow-up was completed"
+    sql: ${billable_visit} AND
+      (${day_3_followup_outcome} NOT IN ('PENDING', 'REMOVED', 'patient_called_but_did_not_answer')) ;;
+  }
+
+  measure: count_3day_followups {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: followup_3day
+      value: "yes"
+    }
+  }
+
   dimension: bb_14_day {
     label: "14-Day Bounce back flag"
     type: yesno
@@ -1217,6 +1250,22 @@ view: visit_facts {
     type: count
     filters: {
       field: bb_30_day
+      value: "yes"
+    }
+  }
+
+  dimension: followup_30day {
+    type: yesno
+    description: "A flag indicating the 3-day follow-up was completed"
+    sql: ${billable_visit} AND
+      (${day_3_followup_outcome} NOT IN ('REMOVED', 'PENDING', 'no_hie_data')) ;;
+  }
+
+  measure: count_30day_followups {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: followup_3day
       value: "yes"
     }
   }
