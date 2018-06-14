@@ -67,55 +67,6 @@
     col: 0
     width: 24
     height: 6
-  - title: Inbound Contacts / Care Requests / Complete Visits
-    name: Inbound Contacts / Care Requests / Complete Visits
-    model: dashboard
-    explore: incontact_clone
-    type: looker_column
-    fields:
-    - incontact_clone.start_date
-    - incontact_clone.count_distinct
-    - care_request_flat.care_request_count
-    - care_request_flat.complete_count
-    - care_request_flat_complete.complete_count
-    fill_fields:
-    - incontact_clone.start_date
-    filters:
-      incontact_clone.campaign: Care Phone,Care Electronic
-    sorts:
-    - incontact_clone.start_date
-    limit: 500
-    query_timezone: America/Denver
-    stacking: ''
-    show_value_labels: true
-    label_density: 25
-    legend_position: center
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_view_names: false
-    limit_displayed_rows: false
-    y_axis_combined: true
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: true
-    show_x_axis_ticks: true
-    x_axis_scale: auto
-    y_axis_scale_mode: linear
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
-    hidden_fields: []
-    listen:
-      market name: markets.name
-      time: incontact_clone.start_date
-    row: 6
-    col: 0
-    width: 15
-    height: 6
   - title: Call Survey Results
     name: Call Survey Results
     model: dashboard
@@ -170,9 +121,9 @@
     listen:
       market name: markets.name
       time: csc_survey_clone.date_date
-    row: 12
-    col: 8
-    width: 16
+    row: 6
+    col: 13
+    width: 11
     height: 6
   - title: General Risk Protocol
     name: General Risk Protocol
@@ -227,7 +178,7 @@
       market name: markets.name
       time: care_request_flat.created_date
     row: 12
-    col: 0
+    col: 8
     width: 8
     height: 6
   - title: Call Distribution
@@ -277,8 +228,8 @@
     listen:
       market name: markets.name
       time: incontact_clone.start_date
-    row: 24
-    col: 5
+    row: 12
+    col: 0
     width: 8
     height: 6
   - title: Close Rate
@@ -343,8 +294,8 @@
     listen:
       market name: markets.name
       time: incontact_clone.start_date
-    row: 24
-    col: 13
+    row: 12
+    col: 16
     width: 8
     height: 6
   - title: Left Without Being Seen (LWBS)
@@ -654,65 +605,19 @@
     listen:
       market name: markets.name
       time: incontact_clone.start_date
-    row: 30
+    row: 24
     col: 0
     width: 24
     height: 6
-  - title: Complete by Date of Completion
-    name: Complete by Date of Completion
-    model: dashboard
-    explore: care_requests
-    type: looker_column
-    fields:
-    - care_request_flat.complete_count
-    - care_request_flat.complete_date
-    fill_fields:
-    - care_request_flat.complete_date
-    filters:
-      care_request_flat.complete_date: NOT NULL
-    sorts:
-    - care_request_flat.complete_date desc
-    limit: 500
-    query_timezone: America/Denver
-    stacking: ''
-    show_value_labels: true
-    label_density: 25
-    legend_position: center
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_view_names: true
-    limit_displayed_rows: false
-    y_axis_combined: true
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: true
-    show_x_axis_ticks: true
-    x_axis_scale: auto
-    y_axis_scale_mode: linear
-    x_axis_reversed: false
-    y_axis_reversed: false
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
-    show_row_numbers: true
-    truncate_column_names: false
-    hide_totals: false
-    hide_row_totals: false
-    table_theme: editable
-    enable_conditional_formatting: false
-    conditional_formatting_include_totals: false
-    conditional_formatting_include_nulls: false
-    series_types: {}
-    listen:
-      market name: markets.name
-      time: care_request_flat.on_scene_date
+  - name: merge-IlgUzikVW9DCpBUwnT0V58-728
+    type: text
+    title_text: Inbound Contacts / Care Requests / Complete Visits
+    subtitle_text: This item contains data that can no longer be displayed.
+    body_text: This item contains results merged from two or more queries. This is
+      currently not supported in LookML dashboards.
     row: 6
-    col: 15
-    width: 9
+    col: 0
+    width: 13
     height: 6
   filters:
   - name: market name
@@ -728,7 +633,7 @@
   - name: time
     title: time
     type: field_filter
-    default_value: 3 days ago for 3 day
+    default_value: 3 days ago for 3 days
     allow_multiple_values: true
     required: false
     model: dashboard

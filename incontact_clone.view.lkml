@@ -11,6 +11,29 @@ view: incontact_clone {
     sql: ${TABLE}.contact_time_sec ;;
   }
 
+
+  dimension_group: today_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month]
+    sql: current_date;;
+  }
+
+  dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '1 day';;
+  }
+
+  dimension: month_to_date  {
+    type:  yesno
+    sql: ${start_day_of_month} <=${today_mountain_day_of_month}  ;;
+  }
+
+  dimension: until_today {
+    type: yesno
+    sql: ${start_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${start_day_of_week_index} >= 0 ;;
+  }
+
   dimension: inqueuetime {
     type: number
 
@@ -97,7 +120,9 @@ view: incontact_clone {
       month,
       quarter,
       year,
-      hour_of_day
+      hour_of_day,
+      day_of_month,
+      day_of_week_index
     ]
     sql: ${TABLE}.start_time ;;
   }
@@ -210,7 +235,7 @@ dimension: abandons {
 
   measure: count_distinct_abandoned {
     type: number
-    label: "Total Abandons Rate"
+    label: "Total Abandons"
     sql:  count(distinct case when (${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM'  then ${master_contact_id} else null end);;
   }
 
@@ -223,27 +248,27 @@ dimension: abandons {
   measure: live_answer_rate {
     type: number
     value_format: "#.0\%"
-    sql: ((${count_distinct_live_answers}::float/${count_distinct}::float))*100;;
+    sql: ((${count_distinct_live_answers}::float/${count_distinct_calls}::float))*100;;
   }
 
   measure: handled_rate {
     type: number
     value_format: "#.0\%"
-    sql: ((${count_distinct_handled}::float/${count_distinct}::float))*100;;
+    sql: ((${count_distinct_handled}::float/${count_distinct_calls}::float))*100;;
   }
 
   measure: abandoned_rate {
     type: number
     label: "Total Abandon Rate"
     value_format: "#.0\%"
-    sql: ((${count_distinct_abandoned}::float/${count_distinct}::float))*100;;
+    sql: ((${count_distinct_abandoned}::float/${count_distinct_calls}::float))*100;;
   }
 
   measure: long_abandoned_rate {
     type: number
     label: "Long Abandon Rate (>20s)"
     value_format: "#.0\%"
-    sql: ((${count_distinct_long_abandoned}::float/${count_distinct}::float))*100;;
+    sql: ((${count_distinct_long_abandoned}::float/${count_distinct_calls}::float))*100;;
   }
 
 
