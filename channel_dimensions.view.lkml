@@ -54,9 +54,7 @@ view: channel_dimensions {
 
   dimension: smfr_visit {
     type: yesno
-    sql:  ${market_dimensions.market_name} = 'Denver' AND (
-          ${sub_type} LIKE '%911 channel%' OR
-          ${sub_type} LIKE '%south metro fire rescue%' OR
+    sql:  (${main_type} LIKE '%emergency%' OR
           ${organization} LIKE '%smfr%') ;;
   }
 
