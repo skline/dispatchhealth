@@ -364,6 +364,39 @@ view: care_request_flat {
     sql: ${TABLE}.created_date ;;
   }
 
+  dimension: time_group_sort {
+    type: number
+    hidden: yes
+    sql: CASE
+          WHEN ${created_hour_of_day} BETWEEN 0 AND 8 THEN 1
+          WHEN ${created_hour_of_day} BETWEEN 9 AND 10 THEN 2
+          WHEN ${created_hour_of_day} BETWEEN 11 AND 12 THEN 3
+          WHEN ${created_hour_of_day} BETWEEN 13 AND 14 THEN 4
+          WHEN ${created_hour_of_day} BETWEEN 15 AND 16 THEN 5
+          WHEN ${created_hour_of_day} BETWEEN 17 AND 18 THEN 6
+          WHEN ${created_hour_of_day} BETWEEN 19 AND 24 THEN 7
+    ELSE NULL
+    END
+    ;;
+  }
+
+  dimension: created_time_group {
+    type: string
+    order_by_field: time_group_sort
+    description: "Created time of day split into 4 broad groups"
+    sql: CASE
+          WHEN ${created_hour_of_day} BETWEEN 0 AND 8 THEN '8:59 or Earlier'
+          WHEN ${created_hour_of_day} BETWEEN 9 AND 10 THEN '9:00 - 10:59'
+          WHEN ${created_hour_of_day} BETWEEN 11 AND 12 THEN '11:00 - 12:59'
+          WHEN ${created_hour_of_day} BETWEEN 13 AND 14 THEN '13:00 - 14:59'
+          WHEN ${created_hour_of_day} BETWEEN 15 AND 16 THEN '15:00 - 16:59'
+          WHEN ${created_hour_of_day} BETWEEN 17 AND 18 THEN '17:00 - 18:59'
+          WHEN ${created_hour_of_day} BETWEEN 19 AND 24 THEN '19:00 or Later'
+          ELSE NULL
+        END
+          ;;
+  }
+
   dimension: etc_model_in_place {
     type: yesno
     sql: ${created_raw} >= '2018-03-29'::TIMESTAMP ;;
