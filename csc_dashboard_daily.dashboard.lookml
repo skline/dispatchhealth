@@ -658,8 +658,8 @@
     col: 0
     width: 24
     height: 6
-  - title: Complete by Month of Completion
-    name: Complete by Month of Completion
+  - title: Complete by Date of Completion
+    name: Complete by Date of Completion
     model: dashboard
     explore: care_requests
     type: looker_column
