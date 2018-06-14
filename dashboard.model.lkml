@@ -11,6 +11,66 @@ explore: care_requests {
     user_attribute: "market_name"
   }
 
+# Join all Athena data warehouse feed tables -- DE
+  join: athenadwh_patient_insurances_clone {
+    relationship: one_to_many
+    sql_on: ${patients.ehr_id} = ${athenadwh_patient_insurances_clone.patient_id}
+      AND ${athenadwh_patient_insurances_clone.insurance_package_id} != 0;;
+  }
+
+  join: athenadwh_payers_clone {
+    relationship: many_to_one
+    sql_on: ${athenadwh_patient_insurances_clone.insurance_package_id} = ${athenadwh_payers_clone.insurance_package_id} ;;
+  }
+
+  join: athenadwh_clinical_encounters_clone {
+    relationship:  one_to_many
+    sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id} AND
+      ${athenadwh_clinical_encounters_clone.appointment_id} = ${care_requests.ehr_id};;
+  }
+
+  join: athenadwh_claims_clone {
+    relationship: one_to_one
+    sql_on: ${athenadwh_claims_clone.claim_appointment_id} = ${athenadwh_clinical_encounters_clone.appointment_id} ;;
+  }
+
+  join: athenadwh_documents_clone {
+    relationship:  many_to_one
+    sql_on:  ${athenadwh_documents_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone.clinical_encounter_id} AND
+            ((${athenadwh_documents_clone.document_class} = 'PRESCRIPTION' AND ${athenadwh_documents_clone.deleted_datetime} IS NULL) OR
+            (${athenadwh_documents_clone.document_class} = 'LETTER' AND
+            (${athenadwh_documents_clone.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_documents_clone.document_subclass} IS NULL)) OR
+            (${athenadwh_documents_clone.document_class} = 'ENCOUNTERDOCUMENT')) ;;
+  }
+
+  join: athenadwh_clinical_letters_clone {
+    relationship:  one_to_one
+    sql_on: ${athenadwh_clinical_letters_clone.document_id} = ${athenadwh_documents_clone.document_id} ;;
+  }
+
+  join: athenadwh_clinical_providers_clone {
+    relationship:  one_to_many
+    sql_on: ${athenadwh_clinical_providers_clone.clinical_provider_id} = ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} ;;
+  }
+
+  join: athenadwh_patients_clone {
+    relationship:  one_to_many
+    sql_on: ${athenadwh_patients_clone.patient_id} = ${athenadwh_clinical_encounters_clone.patient_id} ;;
+  }
+
+  join: athenadwh_procedure_codes_clone {
+    relationship: one_to_one
+    sql_on: ${athenadwh_procedure_codes_clone.procedure_code} = ${cpt_code_dimensions_clone.cpt_code} AND
+      ${athenadwh_procedure_codes_clone.deleted_datetime_raw} IS NULL ;;
+  }
+
+  join: athenadwh_transactions_clone {
+    relationship: many_to_one
+    sql_on: ${athenadwh_transactions_clone.claim_id} = ${athenadwh_claims_clone.claim_id} ;;
+  }
+
+# End Athena data warehouse tables
+
   # Join all cloned tables from the BI database -- DE,
   join: visit_facts_clone {
     view_label: "Visit Facts relevant ID's used for matching"
