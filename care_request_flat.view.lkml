@@ -244,7 +244,7 @@ view: care_request_flat {
     type: yesno
     description: "A flag indicating the 3-day follow-up call was completed"
     sql: ${complete_date} IS NOT NULL AND
-    (${followup_3day_result} is null OR ${followup_3day_result} != 'patient_called_but_did_not_answer') ;;
+    ${followup_3day_result} is NOT NULL AND ${followup_3day_result} != 'patient_called_but_did_not_answer' ;;
   }
 
   dimension: bounceback_3day {
@@ -274,7 +274,7 @@ view: care_request_flat {
     description: "A flag indicating the 14/30-day follow-up was completed"
     # sql: ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data';;
     sql: ${complete_date} IS NOT NULL AND
-    (${followup_30day_result} is null OR ${followup_30day_result} != 'no_hie_data') ;;
+    ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data' ;;
   }
 
   dimension: bounceback_30day {
