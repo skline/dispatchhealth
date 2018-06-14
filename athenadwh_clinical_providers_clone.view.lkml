@@ -61,6 +61,17 @@ view: athenadwh_clinical_providers_clone {
     sql: ${TABLE}.name ;;
   }
 
+  dimension: touchworks_flag {
+    type: yesno
+    sql: ${name} = 'SOUTHWEST MEDICAL TOUCHWORKS' ;;
+  }
+
+  dimension: touchworks_name {
+    type: string
+    sql: ${name} ;;
+    html:{% if value == 'SOUTHWEST MEDICAL TOUCHWORKS' %}<b><span style="color: black;">SOUTHWEST MEDICAL TOUCHWORKS</span></b>{% else %} {{ linked_value }}{% endif %};;
+  }
+
   dimension: npi {
     type: string
     sql: ${TABLE}.npi ;;
