@@ -50,6 +50,11 @@ view: care_requests {
           ${channel_items.name} SIMILAR TO '%(pafu|post acute|post-acute)%';;
   }
 
+  measure: placeholder1 {
+    type: number
+    sql: NULL ;;
+  }
+
 
   dimension: chrono_visit_id {
     type: string

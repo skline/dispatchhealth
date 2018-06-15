@@ -128,6 +128,10 @@ view: care_request_flat {
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_seconds} ;;
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
   }
 
   measure:  average_in_queue_time_seconds{
@@ -282,9 +286,22 @@ view: care_request_flat {
   dimension: followup_30day {
     type: yesno
     description: "A flag indicating the 14/30-day follow-up was completed"
-    # sql: ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data';;
     sql: ${complete_date} IS NOT NULL AND
     ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data' ;;
+  }
+
+  dimension: no_hie_data {
+    type: yesno
+    sql: ${followup_14day_result} != 'no_hie_data' OR ${followup_30day_result} != 'no_hie_data' ;;
+  }
+
+  measure: count_no_hie_data {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: no_hie_data
+      value: "yes"
+    }
   }
 
   dimension: bounceback_30day {

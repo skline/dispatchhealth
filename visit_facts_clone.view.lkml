@@ -216,6 +216,20 @@ view: visit_facts_clone {
      sql: ${TABLE}.new_patient ;;
    }
 
+  dimension: billable_new_patient {
+    type: yesno
+    sql: ${new_patient} = 1 AND ${billable_visit} ;;
+  }
+
+  measure: count_new_patients {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: billable_new_patient
+      value: "yes"
+    }
+  }
+
   dimension: no_charge_entry_reason {
     type: string
     hidden: yes
