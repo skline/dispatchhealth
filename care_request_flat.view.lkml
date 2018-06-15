@@ -104,6 +104,12 @@ view: care_request_flat {
     sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}))::float/60.0 ;;
   }
 
+  dimension: is_reasonable_drive_time {
+    type: yesno
+    hidden: yes
+    sql: ${drive_time_seconds} > 299 AND ${drive_time_seconds} < 14401;;
+  }
+
   dimension: in_queue_time_minutes {
     type: number
     description: "The number of minutes between requested time and accepted time"
@@ -146,6 +152,10 @@ view: care_request_flat {
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_minutes} ;;
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
   }
 
   measure:  average_in_queue_time_minutes{
