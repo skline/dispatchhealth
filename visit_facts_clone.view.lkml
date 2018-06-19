@@ -206,11 +206,11 @@ view: visit_facts_clone {
 #     sql: ${TABLE}.longitude ;;
 #   }
 #
-#   dimension: market_dim_id {
-#     type: number
-#     sql: ${TABLE}.market_dim_id ;;
-#   }
-#
+   dimension: market_dim_id {
+     type: number
+     sql: ${TABLE}.market_dim_id ;;
+   }
+
    dimension: new_patient {
      type: number
      sql: ${TABLE}.new_patient ;;

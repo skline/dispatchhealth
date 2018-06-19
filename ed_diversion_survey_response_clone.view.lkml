@@ -1,12 +1,12 @@
-view: ed_diversion_survey_response {
+view: ed_diversion_survey_response_clone {
   label: "ED Diversion Survey Response"
   derived_table: {
     sql: select *
       from
-      (select  survey_response_facts.visit_dim_number, survey_response_facts.care_request_id, survey_response_facts.question_dim_id, survey_response_facts.respondent_dim_id, survey_response_facts.patient_dim_id, survey_response_facts.provider_dim_id, survey_response_facts.survey_name, survey_response_facts.answer_selection_value
-from survey_response_facts
-where survey_response_facts.question_dim_id=3
-group by 1 ) ed_diversion_survey_response
+      (select  max(visit_dim_number) visit_dim_number, care_request_id, max(question_dim_id) question_dim_id, max(respondent_dim_id) respondent_dim_id, max(patient_dim_id) patient_dim_id, max(provider_dim_id) provider_dim_id, max(survey_name) survey_name, max(answer_selection_value) answer_selection_value
+from looker_scratch.survey_response_facts_clone
+where survey_response_facts_clone.question_dim_id=3
+group by 2 ) ed_diversion_survey_response
              ;;
     sql_trigger_value: SELECT max(visit_dim_number) ;;
     indexes: ["visit_dim_number", "care_request_id"]

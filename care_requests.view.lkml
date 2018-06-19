@@ -936,9 +936,6 @@ measure: distinct_day_of_week {
   }
 
 
-
-
-
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [

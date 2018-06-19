@@ -450,7 +450,8 @@ view: care_request_flat {
       week,
       month,
       day_of_week_index,
-      day_of_month,quarter
+      day_of_month,quarter,
+      hour
       ]
     sql: ${TABLE}.on_scene_date ;;
   }
@@ -1085,6 +1086,116 @@ view: care_request_flat {
     sql: coalesce(${ga_pageviews_clone.high_low_intent}, ${web_ga_pageviews_clone.high_low_intent}) ;;
   }
 
+  dimension: diversion_category {
+    type: string
+    sql: CASE
+      WHEN ${complete_time} IS NULL THEN 'not completed'
+      WHEN ${visit_facts_clone.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
+        OR
+        ${visit_facts_clone.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
+        OR
+        ${visit_facts_clone.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
+      WHEN lower(${cars.name}) = lower('SMFR_Car') THEN
+        'smfr'
+      WHEN lower(${channel_items.type_name}) IN( 'home health',
+                          'snf',
+                          'provider group' ) THEN lower(${channel_items.type_name})
+      WHEN lower(${channel_items.type_name}) = 'senior care'
+        AND
+        ${on_scene_hour_of_day} < 15
+        AND
+       ${on_scene_day_of_week_index} NOT IN ( 1,
+                                               7 ) THEN 'senior care - weekdays before 3pm'
+      WHEN lower(${channel_items.type_name})  = 'senior care'
+        AND
+        (
+          ${on_scene_hour_of_day} > 15
+          OR
+            ${on_scene_day_of_week_index} IN ( 1,7 )
+        )
+        THEN 'senior care - weekdays after 3pm and weekends'
+      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
+      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} != 'Emergency Room'
+        AND
+        ${ed_diversion_survey_response_clone.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
+      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} IS NULL THEN
+        'no survey'
+      ELSE 'other'
+      END;;
+  }
+
+  dimension: ed_diversion {
+    label: "ED Diversion"
+    type: number
+    sql:  CASE
+      WHEN ${diversion_category} = 'ed_same_complaint' THEN  0.0
+      WHEN ${diversion_category} = 'not completed' THEN 0.0
+      WHEN ${diversion_category} = 'smfr' THEN  1.0
+      WHEN ${diversion_category} = 'home health' THEN  .9
+      WHEN ${diversion_category} = 'snf' THEN 1.0
+      WHEN ${diversion_category} = 'provider group' THEN .5
+      WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN .5
+      WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
+      WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
+      WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0.0
+      WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate_clone.er_percent}
+        ELSE 0.0
+      END ;;
+  }
+
+  dimension: 911_diversion {
+    type: number
+    sql:  CASE
+      WHEN ${diversion_category} = 'smfr' THEN 1.0
+      WHEN ${diversion_category} = 'home health' THEN .5
+      WHEN ${diversion_category} = 'snf' THEN 1.0
+      WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN  .5
+      WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
+        ELSE 0.0
+      END;;
+  }
+
+
+  measure: est_vol_ed_diversion {
+    type: sum_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    value_format: "#,##0"
+    sql: ${ed_diversion};;
+
+  }
+
+
+  measure: est_vol_911_diversion {
+    type: sum_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    value_format: "#,##0"
+    sql: ${911_diversion};;
+
+  }
+
+  measure: est_ed_diversion_savings {
+    type: sum_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    value_format: "$#,##0"
+    sql: ${ed_diversion} * 2000;;
+
+  }
+
+  measure: est_911_diversion_savings {
+    type: sum_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    value_format: "$#,##0"
+    sql: ${911_diversion} * 750;;
+
+  }
+
+  measure: est_diversion_savings {
+    type: sum_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    value_format: "$#,##0"
+    sql: ${911_diversion} * 750 + ${ed_diversion} * 2000;;
+
+  }
 
 
 

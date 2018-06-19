@@ -505,6 +505,16 @@ join: ga_pageviews_clone {
     #when adding a level of nested subtotals, need to add this sql_where to exclude the generated row which would subtotal over the higher level, but not over this lower level.
     sql_where: not (${subtotals_clone.row_type_description}='SUBTOTAL' and not ${subtotal_over_level2.row_type_description}='SUBTOTAL') ;;
   }
+
+  join: ed_diversion_survey_response_rate_clone {
+    relationship: many_to_one
+    sql_on: ${ed_diversion_survey_response_rate_clone.market_dim_id} = ${visit_facts_clone.market_dim_id} ;;
+  }
+
+  join: ed_diversion_survey_response_clone {
+    relationship: many_to_one
+    sql_on: ${ed_diversion_survey_response_clone.care_request_id} = ${visit_facts_clone.care_request_id} ;;
+  }
 }
 
 explore: shift_planning_facts_clone {
@@ -820,9 +830,7 @@ explore: ga_pageviews_full_clone {
     sql_on:  ${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null  ;;
   }
 
-  join: dtc_ff_patients {
-    sql_on: ${patients.id} = ${dtc_ff_patients.patient_id} ;;
-  }
+
 
   join: ga_geodata_clone {
     sql_on: ${ga_pageviews_full_clone.client_id} = ${ga_geodata_clone.client_id}
@@ -860,6 +868,11 @@ explore: ga_pageviews_full_clone {
         AND
         abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
         );;
+  }
+
+  join: dtc_ff_patients {
+    sql_on: ${patients.id} = ${care_requests.patient_id}
+         OR ${patients.id} = ${web_care_requests.patient_id} ;;
   }
 
 

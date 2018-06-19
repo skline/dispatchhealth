@@ -167,6 +167,14 @@ view: channel_items {
     drill_fields: [id, name, source_name, type_name]
   }
 
+  dimension: non_dtc_self_report {
+    type: yesno
+    sql:${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health', 'Health System', 'Employer', 'Payer', 'Provider Group')
+    OR ${name} in('Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel', 'West Metro Fire Rescue', 'South Metro Fire Rescue', 'Healthcare provider', 'Healthcare Provider')
+    OR (${name} = 'Family or friend' and  ${dtc_ff_patients.patient_id} is null and ${ga_pageviews_full_clone.high_level_category} is null)  ;;
+
+  }
+
   dimension: high_level_category {
     type: string
     sql: case
