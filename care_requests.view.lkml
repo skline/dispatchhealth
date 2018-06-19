@@ -50,6 +50,11 @@ view: care_requests {
           ${channel_items.name} SIMILAR TO '%(pafu|post acute|post-acute)%';;
   }
 
+  measure: placeholder1 {
+    type: number
+    sql: NULL ;;
+  }
+
 
   dimension: chrono_visit_id {
     type: string
@@ -839,12 +844,12 @@ measure: distinct_day_of_week {
 
   dimension: primary_resolved_reason {
     type:  string
-    sql: split_part(${resolved_reason_full}, ':', 1) ;;
+    sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
   }
 
   dimension: secondary_resolved_reason {
     type:  string
-    sql: split_part(${resolved_reason_full}, ':', 2) ;;
+    sql: trim(split_part(${resolved_reason_full}, ':', 2)) ;;
   }
 
   dimension: primary_and_secondary_resolved_reason {
@@ -852,10 +857,9 @@ measure: distinct_day_of_week {
     sql: concat(${primary_resolved_reason},': ', ${secondary_resolved_reason}) ;;
   }
 
-
   dimension: other_resolved_reason {
     type:  string
-    sql: split_part(${resolved_reason_full}, ':', 3) ;;
+    sql: trim(split_part(${resolved_reason_full}, ':', 3)) ;;
   }
 
   dimension: other_resolved_booked {
