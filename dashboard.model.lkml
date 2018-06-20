@@ -74,7 +74,7 @@ explore: care_requests {
 
   join: athenadwh_social_history_clone {
     relationship: many_to_one
-    sql_on: ${athenadwh_social_history_clone.patient_id} = ${athenadwh_patient_insurances_clone.patient_id} ;;
+    sql_on: ${athenadwh_social_history_clone.patient_id} = ${athenadwh_clinical_encounters_clone.patient_id} ;;
   }
 
   join: athenadwh_medical_history_clone {
