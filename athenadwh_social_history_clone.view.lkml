@@ -70,6 +70,34 @@ view: athenadwh_social_history_clone {
     sql: ${TABLE}.social_history_key ;;
   }
 
+  dimension: healthy_food_no_access {
+    type: yesno
+    sql: ${social_history_key} = 'SOCIALHISTORY.LOCAL.143' AND ${answer} LIKE 'No:%' ;;
+  }
+
+  measure: count_no_healthy_food_access {
+    type: count_distinct
+    sql: ${patient_id} ;;
+    filters: {
+      field: healthy_food_no_access
+      value: "yes"
+    }
+  }
+
+  dimension: transportation_no_access {
+    type: yesno
+    sql: ${social_history_key} = 'SOCIALHISTORY.LOCAL.141' AND ${answer} LIKE 'No:%' ;;
+  }
+
+  measure: count_no_transportation_access {
+    type: count_distinct
+    sql: ${patient_id} ;;
+    filters: {
+      field: transportation_no_access
+      value: "yes"
+    }
+  }
+
   dimension: social_history_category {
     type: string
     sql: CASE
@@ -127,4 +155,15 @@ view: athenadwh_social_history_clone {
     type: count
     drill_fields: [id]
   }
+
+  measure: count_charts {
+    type: count_distinct
+    sql: ${chart_id} ;;
+  }
+
+  measure: count_patients {
+    type: count_distinct
+    sql: ${patient_id} ;;
+  }
+
 }
