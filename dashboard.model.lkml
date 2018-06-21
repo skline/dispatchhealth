@@ -17,8 +17,8 @@ explore: care_requests {
 # Join all Athena data warehouse feed tables -- DE
   join: athenadwh_patient_insurances_clone {
     relationship: one_to_many
-    sql_on: ${patients.ehr_id} = ${athenadwh_patient_insurances_clone.patient_id}
-      AND ${athenadwh_patient_insurances_clone.insurance_package_id} != 0;;
+    sql_on: ${patients.ehr_id} = ${athenadwh_patient_insurances_clone.patient_id}::varchar
+      AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0;;
   }
 
   join: athenadwh_payers_clone {
@@ -28,8 +28,8 @@ explore: care_requests {
 
   join: athenadwh_clinical_encounters_clone {
     relationship:  one_to_many
-    sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id} AND
-      ${athenadwh_clinical_encounters_clone.appointment_id} = ${care_requests.ehr_id};;
+    sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
+      ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id};;
   }
 
   join: athenadwh_claims_clone {
@@ -70,6 +70,16 @@ explore: care_requests {
   join: athenadwh_transactions_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_transactions_clone.claim_id} = ${athenadwh_claims_clone.claim_id} ;;
+  }
+
+  join: athenadwh_social_history_clone {
+    relationship: many_to_one
+    sql_on: ${athenadwh_social_history_clone.patient_id} = ${athenadwh_clinical_encounters_clone.patient_id} ;;
+  }
+
+  join: athenadwh_medical_history_clone {
+    relationship: many_to_one
+    sql_on: ${athenadwh_medical_history_clone.chart_id} = ${athenadwh_clinical_encounters_clone.chart_id} ;;
   }
 
 # End Athena data warehouse tables
