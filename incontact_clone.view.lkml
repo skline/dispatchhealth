@@ -138,9 +138,9 @@ view: incontact_clone {
     sql: coalesce(${TABLE}.talk_time_sec,0) ;;
   }
 
-  dimension: to_number {
+  dimension: agent_name {
     type: string
-    sql: ${TABLE}.to_number ;;
+    sql: ${TABLE}.agent_name ;;
   }
 
   dimension: market_id
