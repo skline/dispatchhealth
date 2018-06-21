@@ -230,6 +230,21 @@ view: invoca_clone {
     sql: ${TABLE}.start_time ;;
   }
 
+  dimension_group: start_coalese {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: coalesce(${start_raw}, ${incontact_clone.start_raw})  ;;
+  }
+
+
   dimension: state_append {
     type: string
     sql: ${TABLE}.state_append ;;
@@ -311,11 +326,38 @@ view: invoca_clone {
     sql: ${utm_medium} = 'self report' ;;
   }
 
+  dimension: incontact_only {
+    type: yesno
+    sql: ${incontact_clone.contact_id} is not null and ${call_record_ikd} is null ;;
+  }
+
+  dimension: mvp {
+    type: yesno
+    sql: (${incontact_clone.mvp})
+         OR lower(${profile_campaign}) like '%direct%';;
+  }
+
   measure: count {
     label: "Distinct Invoca Calls"
     type: count_distinct
     sql_distinct_key:  ${call_record_ikd};;
     sql: ${call_record_ikd} ;;
+    filters: {
+      field: self_report
+      value: "no"
+    }
+  }
+
+  dimension: incontact_invoca_concat {
+    type: string
+    sql: concat(${call_record_ikd}, ${incontact_clone.master_contact_id}) ;;
+  }
+
+  measure: count_calls {
+    label: "Distinct Calls"
+    type: count_distinct
+    sql_distinct_key:  ${incontact_invoca_concat};;
+    sql: ${incontact_invoca_concat} ;;
     filters: {
       field: self_report
       value: "no"
@@ -332,6 +374,8 @@ view: invoca_clone {
       value: "no"
     }
   }
+
+
 
   measure: avg_invoca_duration {
     label: "average invoca duration seconds"
@@ -369,6 +413,11 @@ view: invoca_clone {
     type: number
     value_format: "#,##0"
     sql: ${count}/${care_request_flat.month_percent} ;;
+  }
+  dimension: sem {
+    type: yesno
+    sql: (${utm_source} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${utm_medium} in('cpc', 'paid search')) or lower(${utm_medium}) like '%google%' or lower(${utm_medium}) like '%bing ad extension%'
+ ;;
   }
 
 

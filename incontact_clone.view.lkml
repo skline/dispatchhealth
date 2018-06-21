@@ -109,6 +109,12 @@ view: incontact_clone {
     sql: ${TABLE}.skll_name ;;
   }
 
+
+  dimension: mvp {
+    type: yesno
+    sql: ${campaign}='Care Phone' and lower(${skll_name}) like '%mvp%'  ;;
+  }
+
   dimension_group: start {
     convert_tz: no
     type: time
@@ -200,6 +206,29 @@ dimension: abandons {
     sql: ((${care_request_flat.complete_count}::float/${count_distinct}::float));;
 
   }
+
+  measure: cr_create_rate {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat.care_request_count}::float/${count_distinct}::float));;
+
+  }
+
+  measure: cr_create_rate_exact {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct}::float));;
+
+  }
+
+  measure: close_rate_exact {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_exact.complete_count}::float/${count_distinct}::float));;
+
+  }
+
+
   dimension: phone_call  {
     type: yesno
     sql: ${campaign} not in ('Care Electronic') ;;
@@ -273,7 +302,10 @@ dimension: abandons {
 
 
 
-
+dimension: care_line {
+  type: yesno
+  sql: (${campaign} in('Care Phone', 'VM') and ${contact_type} != 'Transfer to Agent') or ${invoca_clone.call_record_ikd} is not null;;
+}
 
 
   measure: count_distinct_phone_number {
