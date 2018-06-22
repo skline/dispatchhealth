@@ -28,6 +28,21 @@ view: request_type_dimensions {
     sql: ${TABLE}.request_type ;;
   }
 
+  dimension: phone_requests {
+    type: yesno
+    sql: ${request_type} = 'phone' ;;
+  }
+
+  dimension: web_requests {
+    type: yesno
+    sql: ${request_type} = 'web' ;;
+  }
+
+  dimension: mobile_requests {
+    type: yesno
+    sql: ${request_type} LIKE 'mobile' ;;
+  }
+
   dimension_group: updated {
     hidden: yes
     type: time

@@ -46,6 +46,36 @@ view: visit_facts {
     sql: ${care_request_id} ;;
   }
 
+  measure: count_mobile_care_requests {
+    description: "The number of unique care request ID's from mobile"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: request_type_dimensions.mobile_requests
+      value: "yes"
+    }
+  }
+
+  measure: count_phone_care_requests {
+    description: "The number of unique care request ID's from phone"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: request_type_dimensions.phone_requests
+      value: "yes"
+    }
+  }
+
+  measure: count_web_care_requests {
+    description: "The number of unique care request ID's from web"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: request_type_dimensions.web_requests
+      value: "yes"
+    }
+  }
+
   dimension: channel_dim_id {
     hidden: yes
     type: number
