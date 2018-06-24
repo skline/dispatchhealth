@@ -15,8 +15,11 @@ view: survey_responses_flat {
             ON srf.visit_dim_number  = alt.visit_dim_number  AND alt.question_dim_id = 3
           LEFT JOIN survey_response_facts ovr
             ON srf.visit_dim_number  = ovr.visit_dim_number  AND ovr.question_dim_id = 5 ;;
-  }
 
+  sql_trigger_value: SELECT MAX(visit_date) FROM survey_response_facts ;;
+  indexes: ["visit_dim_number", "care_request_id"]
+
+  }
 
   dimension: visit_dim_number {
     type: number
