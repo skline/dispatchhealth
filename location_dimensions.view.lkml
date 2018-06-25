@@ -50,7 +50,7 @@ view: location_dimensions {
 
   dimension: zipcode {
     type: zipcode
-    sql: ${TABLE}.zipcode ;;
+    sql: SUBSTRING(LTRIM(${TABLE}.zipcode), 1, 5) ;;
   }
 
   measure: count {
