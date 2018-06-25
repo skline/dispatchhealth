@@ -28,6 +28,15 @@ view: request_type_dimensions {
     sql: ${TABLE}.request_type ;;
   }
 
+  dimension: request_type_grouped {
+    description: "The request type, where mobile and android are combined"
+    type: string
+    sql: CASE
+          WHEN ${request_type} LIKE '%mobile%' THEN 'mobile'
+          ELSE ${request_type}
+        END;;
+  }
+
   dimension: phone_requests {
     type: yesno
     sql: ${request_type} = 'phone' ;;
