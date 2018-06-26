@@ -178,14 +178,32 @@ view: productivity_data {
     sql: ${TABLE}.updated_ts ;;
   }
 
+  dimension: total_billable_visits {
+    label: "Billable Visits Including SMFR/WMFR"
+    type: number
+    sql: ${billable_visits} + ${wmfr_visits} + ${smfr_visits} ;;
+  }
+
   measure: sum_billable_visits {
     type: sum
     sql: ${TABLE}.billable_visits ;;
   }
 
+  measure: sum_total_billable_visits {
+    label: "Sum Billable Visits Including SMFR/WMFR"
+    type: sum
+    sql: ${total_billable_visits} ;;
+  }
+
   measure: avg_billable_visits {
     type: average
     sql: ${TABLE}.billable_visits ;;
+  }
+
+  measure: avg_total_billable_visits {
+    label: "Avg Billable Visits Including SMFR/WMFR"
+    type: average
+    sql: ${total_billable_visits} ;;
   }
 
   measure: sum_of_goal {
