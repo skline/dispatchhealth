@@ -476,6 +476,7 @@ view: care_request_flat {
       time,
       week,
       month,
+      month_num,
       day_of_week_index,
       day_of_month,quarter,
       hour

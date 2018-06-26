@@ -375,6 +375,12 @@ explore: care_requests {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
+  join: google_trend_data {
+    sql_on: ${care_request_flat.on_scene_month_num} = ${google_trend_data.month}
+            and
+            ${markets.name_adj} = ${google_trend_data.market};;
+  }
+
   join: dtc_categorization {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${dtc_categorization.care_request_id} ;;
