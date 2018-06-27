@@ -22,16 +22,18 @@ view: athenadwh_documents {
     sql: ${TABLE}.clinical_order_type ;;
   }
 
+  dimension: prescriptions_flag {
+    type: yesno
+    sql: ${document_class} = 'PRESCRIPTION' ;;
+  }
+
+
   measure: prescriptions_concat {
     label: "Prescriptions Ordered"
     type: string
     sql: GROUP_CONCAT(DISTINCT ${clinical_order_type} SEPARATOR ' | ') ;;
   }
 
-  dimension: prescriptions_flag {
-    type: yesno
-    sql: ${document_class} = 'PRESCRIPTION' ;;
-  }
 
   dimension: clinical_provider_id {
     type: number

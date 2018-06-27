@@ -55,7 +55,6 @@ view: care_requests {
     sql: NULL ;;
   }
 
-
   dimension: chrono_visit_id {
     type: string
     sql: ${TABLE}.chrono_visit_id ;;
@@ -575,6 +574,62 @@ view: care_requests {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations"
     sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_visits_prescriptions {
+    type: count_distinct
+    description: "Count of completed care requests where 1 or more prescriptions were written"
+    sql: ${id} ;;
+    filters: {
+     field: athenadwh_prescriptions.prescriptions_flag
+    value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_visits_labs {
+    type: count_distinct
+    description: "Count of completed care requests where 1 or more labs were ordered"
+    sql: ${id} ;;
+    filters: {
+      field: athenadwh_labs_imaging.labs_flag
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_visits_imaging {
+    type: count_distinct
+    description: "Count of completed care requests where imaging was ordered"
+    sql: ${id} ;;
+    filters: {
+      field: athenadwh_labs_imaging.imaging_flag
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_visits_dme {
+    type: count_distinct
+    description: "Count of completed care requests where durable medical equipment was ordered"
+    sql: ${id} ;;
+    filters: {
+      field: athenadwh_dme.dme_flag
+      value: "yes"
+    }
     filters: {
       field: billable_est
       value: "yes"

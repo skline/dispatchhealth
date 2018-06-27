@@ -22,15 +22,36 @@ view: athenadwh_documents_clone {
     sql: ${TABLE}.clinical_order_type ;;
   }
 
-  measure: prescriptions_concat {
-    label: "Prescriptions Ordered"
+  measure: order_type_concat {
+    label: "Description Of Items Ordered"
     type: string
-    sql: GROUP_CONCAT(DISTINCT ${clinical_order_type} SEPARATOR ' | ') ;;
+    sql: string_agg(DISTINCT ${clinical_order_type}, ' | ') ;;
+  }
+
+  measure: genus_type_concat {
+    label: "Genus Of Items Ordered"
+    type: string
+    sql: string_agg(DISTINCT ${clinical_order_genus}, ' | ') ;;
   }
 
   dimension: prescriptions_flag {
     type: yesno
     sql: ${document_class} = 'PRESCRIPTION' ;;
+  }
+
+  dimension: labs_flag {
+    type: yesno
+    sql: ${document_class} = 'LABRESULT' ;;
+  }
+
+  dimension: imaging_flag {
+    type: yesno
+    sql: ${document_class} = 'IMAGINGRESULT' ;;
+  }
+
+  dimension: dme_flag {
+    type: yesno
+    sql: ${document_class} = 'DME' ;;
   }
 
   dimension: clinical_provider_id {
@@ -115,4 +136,10 @@ view: athenadwh_documents_clone {
     type: count
     drill_fields: [id]
   }
+
+  measure: count_documents {
+    type: count_distinct
+    sql: ${document_id} ;;
+  }
+
 }

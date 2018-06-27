@@ -33,22 +33,60 @@ explore: care_requests {
   }
 
   join: athenadwh_claims_clone {
-    relationship: one_to_one
-    sql_on: ${athenadwh_claims_clone.claim_appointment_id} = ${athenadwh_clinical_encounters_clone.appointment_id} ;;
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id} ;;
   }
 
-  join: athenadwh_documents_clone {
-    relationship:  many_to_one
-    sql_on:  ${athenadwh_documents_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone.clinical_encounter_id} AND
-            ((${athenadwh_documents_clone.document_class} = 'PRESCRIPTION' AND ${athenadwh_documents_clone.deleted_datetime} IS NULL) OR
-            (${athenadwh_documents_clone.document_class} = 'LETTER' AND
-            (${athenadwh_documents_clone.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_documents_clone.document_subclass} IS NULL)) OR
-            (${athenadwh_documents_clone.document_class} = 'ENCOUNTERDOCUMENT')) ;;
+  join: athenadwh_document_crosswalk_clone {
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_document_crosswalk_clone.patient_id} AND
+            ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_document_crosswalk_clone.chart_id} ;;
+  }
+
+  join: athenadwh_letters_encounters {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
+            ${athenadwh_letters_encounters.document_class} IN ('LETTER', 'ENCOUNTERDOCUMENT') AND
+            (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
+            ${athenadwh_letters_encounters.status} != 'DELETED';;
+  }
+
+  join: athenadwh_prescriptions {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_prescriptions.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone.clinical_encounter_id} AND
+            ${athenadwh_prescriptions.document_class} = 'PRESCRIPTION' AND
+            ${athenadwh_prescriptions.status} != 'DELETED';;
+  }
+
+  join: athenadwh_dme {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_dme.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone.clinical_encounter_id} AND
+      ${athenadwh_dme.document_class} = 'DME' AND
+      ${athenadwh_dme.status} != 'DELETED' ;;
+  }
+
+  join: athenadwh_labs_imaging {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_labs_imaging.document_id} = ${athenadwh_document_crosswalk_clone.document_id} AND
+      ${athenadwh_labs_imaging.document_class} IN ('IMAGINGRESULT', 'LABRESULT') AND
+      ${athenadwh_labs_imaging.status} != 'DELETED' ;;
+  }
+
+  join: athenadwh_orders {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_orders.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone.clinical_encounter_id} AND
+      ${athenadwh_orders.document_class} = 'ORDER' AND
+      ${athenadwh_orders.status} != 'DELETED' ;;
   }
 
   join: athenadwh_clinical_letters_clone {
     relationship:  one_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.document_id} = ${athenadwh_documents_clone.document_id} ;;
+    sql_on: ${athenadwh_clinical_letters_clone.document_id} = ${athenadwh_letters_encounters.document_id} ;;
   }
 
   join: athenadwh_clinical_providers_clone {
