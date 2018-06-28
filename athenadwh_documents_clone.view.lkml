@@ -59,6 +59,16 @@ view: athenadwh_documents_clone {
     sql: ${document_class} = 'ORDER' ;;
   }
 
+  dimension: provider_referrals_flag {
+    type: yesno
+    sql: ${clinical_order_type} LIKE '%REFERRAL%' AND ${clinical_order_type} NOT LIKE 'HOME HEALTH%' ;;
+  }
+
+  dimension: home_health_referrals_flag {
+    type: yesno
+    sql: ${clinical_order_type} LIKE 'HOME HEALTH%REFERRAL' ;;
+  }
+
   dimension: clinical_provider_id {
     type: number
     sql: ${TABLE}.clinical_provider_id ;;

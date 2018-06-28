@@ -636,6 +636,35 @@ view: care_requests {
     }
   }
 
+  measure: count_home_health_referrals {
+    type: count_distinct
+    description: "Count of completed care requests where a home health referral was made"
+    sql: ${id} ;;
+    filters: {
+      field: athenadwh_orders.home_health_referrals_flag
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_provider_referrals {
+    type: count_distinct
+    description: "Count of completed care requests where a referral to a provider was made"
+    sql: ${id} ;;
+    filters: {
+      field: athenadwh_orders.provider_referrals_flag
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+
   measure: count_billable_with_cpt {
     type: count
     description: "Count of completed care requests OR on-scene escalations that include a CPT code"
