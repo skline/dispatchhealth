@@ -54,6 +54,11 @@ view: athenadwh_documents_clone {
     sql: ${document_class} = 'DME' ;;
   }
 
+  dimension: orders_flag {
+    type: yesno
+    sql: ${document_class} = 'ORDER' ;;
+  }
+
   dimension: clinical_provider_id {
     type: number
     sql: ${TABLE}.clinical_provider_id ;;

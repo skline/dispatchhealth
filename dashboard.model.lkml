@@ -79,45 +79,52 @@ explore: care_requests {
   join: athenadwh_orders {
     from:  athenadwh_documents_clone
     relationship:  one_to_many
-    sql_on:  ${athenadwh_orders.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone.clinical_encounter_id} AND
+    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_orders.clinical_encounter_id} AND
       ${athenadwh_orders.document_class} = 'ORDER' AND
       ${athenadwh_orders.status} != 'DELETED' ;;
   }
 
   join: athenadwh_clinical_letters_clone {
     relationship:  one_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.document_id} = ${athenadwh_letters_encounters.document_id} ;;
+    sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
   }
 
-  join: athenadwh_clinical_providers_clone {
-    relationship:  one_to_many
-    sql_on: ${athenadwh_clinical_providers_clone.clinical_provider_id} = ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} ;;
+  join: athenadwh_letter_recipient_provider {
+    from: athenadwh_clinical_providers_clone
+    relationship:  many_to_one
+    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
+  }
+
+  join: athenadwh_orders_provider {
+    from: athenadwh_clinical_providers_clone
+    relationship:  many_to_one
+    sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_orders_provider.clinical_provider_id} ;;
   }
 
   join: athenadwh_patients_clone {
-    relationship:  one_to_many
-    sql_on: ${athenadwh_patients_clone.patient_id} = ${athenadwh_clinical_encounters_clone.patient_id} ;;
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patients_clone.patient_id} ;;
   }
 
   join: athenadwh_procedure_codes_clone {
     relationship: one_to_one
-    sql_on: ${athenadwh_procedure_codes_clone.procedure_code} = ${cpt_code_dimensions_clone.cpt_code} AND
+    sql_on: ${cpt_code_dimensions_clone.cpt_code} = ${athenadwh_procedure_codes_clone.procedure_code} AND
       ${athenadwh_procedure_codes_clone.deleted_datetime_raw} IS NULL ;;
   }
 
   join: athenadwh_transactions_clone {
-    relationship: many_to_one
-    sql_on: ${athenadwh_transactions_clone.claim_id} = ${athenadwh_claims_clone.claim_id} ;;
+    relationship: one_to_many
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_transactions_clone.claim_id} ;;
   }
 
   join: athenadwh_social_history_clone {
-    relationship: many_to_one
-    sql_on: ${athenadwh_social_history_clone.patient_id} = ${athenadwh_clinical_encounters_clone.patient_id} ;;
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_social_history_clone.patient_id} ;;
   }
 
   join: athenadwh_medical_history_clone {
-    relationship: many_to_one
-    sql_on: ${athenadwh_medical_history_clone.chart_id} = ${athenadwh_clinical_encounters_clone.chart_id} ;;
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_medical_history_clone.chart_id} ;;
   }
 
 # End Athena data warehouse tables
