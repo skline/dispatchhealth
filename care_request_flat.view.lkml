@@ -98,6 +98,12 @@ view: care_request_flat {
         END ;;
   }
 
+  dimension: post_logistics_date {
+    type: yesno
+    description: "A flag indicating the logistics platform was put into production (06/27/2018)"
+    sql: ${accept_date} >= '2018-06-27' ;;
+  }
+
   dimension: drive_time_minutes {
     type: number
     description: "The number of minutes between on-route time and on-scene time"
