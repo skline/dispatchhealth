@@ -104,6 +104,12 @@ view: care_request_flat {
     sql: ${accept_date} >= '2018-06-27' ;;
   }
 
+  dimension: post_cc_fix_date {
+    type: yesno
+    description: "A flag indicating a credit card fix was put into production (06/22/2018)"
+    sql: ${complete_date} >= '2018-06-22' ;;
+  }
+
   dimension: drive_time_minutes {
     type: number
     description: "The number of minutes between on-route time and on-scene time"
