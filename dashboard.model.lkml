@@ -1462,6 +1462,28 @@ explore: cost_projections {
 
 
         }
+  explore: phx_crime_zips {
+    join:  zipcodes {
+      sql_on: ${phx_crime_zips.zipcode}::text=${zipcodes.zip}::text ;;
+    }
+  }
+
+explore: phx_crime_census {
+  join:  census_zipcode {
+    sql_on: ${phx_crime_census.census_tract}=${census_zipcode.census_tract};;
+  }
+  join:  zipcodes {
+    sql_on: ${census_zipcode.zipcode}::text=${zipcodes.zip}::text ;;
+  }
+  join:  phx_crime_zips {
+    sql_on: ${census_zipcode.zipcode}::text=${phx_crime_zips.zipcode}::text ;;
+  }
+  join: census_tract_clone {
+    sql_on: ${census_tract_clone.census_tract}=${phx_crime_census.census_tract} ;;
+  }
+
+}
+
 
 
 
