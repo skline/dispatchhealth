@@ -6,7 +6,7 @@ include: "*.dashboard.lookml"  # include all dashboards in this project
 
 explore: care_requests {
 
-  sql_always_where: ${deleted_date} IS NULL AND
+  sql_always_where: ${deleted_raw} IS NULL AND
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate') OR ${care_request_flat.secondary_resolved_reason} IS NULL) ;;
 
   access_filter: {
@@ -79,12 +79,30 @@ explore: care_requests {
       ${athenadwh_dme.status} != 'DELETED' ;;
   }
 
-  join: athenadwh_labs_imaging {
+  join: athenadwh_lab_imaging_results {
     from:  athenadwh_documents_clone
     relationship:  one_to_many
-    sql_on:  ${athenadwh_labs_imaging.document_id} = ${athenadwh_document_crosswalk_clone.document_id} AND
-      ${athenadwh_labs_imaging.document_class} IN ('IMAGINGRESULT', 'LABRESULT') AND
-      ${athenadwh_labs_imaging.status} != 'DELETED' ;;
+    sql_on:  ${athenadwh_lab_imaging_results.document_id} = ${athenadwh_document_crosswalk_clone.document_id} AND
+      ${athenadwh_lab_imaging_results.document_class} IN ('IMAGINGRESULT', 'LABRESULT') AND
+      ${athenadwh_lab_imaging_results.status} != 'DELETED' ;;
+  }
+
+  join: athenadwh_labs {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_labs.clinical_encounter_id} AND
+    ${athenadwh_labs.document_class} = 'ORDER' AND
+    ${athenadwh_labs.status} != 'DELETED' AND
+    ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB';;
+  }
+
+  join: athenadwh_imaging {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_imaging.clinical_encounter_id} AND
+          ${athenadwh_imaging.document_class} = 'ORDER' AND
+          ${athenadwh_imaging.status} != 'DELETED' AND
+          ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'IMAGING';;
   }
 
   join: athenadwh_orders {
@@ -93,6 +111,32 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_orders.clinical_encounter_id} AND
       ${athenadwh_orders.document_class} = 'ORDER' AND
       ${athenadwh_orders.status} != 'DELETED' ;;
+  }
+
+  join: athenadwh_clinical_referrals {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_referrals.clinical_encounter_id} AND
+      ${athenadwh_clinical_referrals.clinical_order_type} LIKE '%REFERRAL%' AND ${athenadwh_clinical_referrals.clinical_order_type} NOT LIKE 'HOME HEALTH%' AND
+      ${athenadwh_clinical_referrals.status} != 'DELETED' ;;
+  }
+
+  join: athenadwh_homehealth_referrals {
+    from:  athenadwh_documents_clone
+    relationship:  one_to_many
+    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_homehealth_referrals.clinical_encounter_id} AND
+      ${athenadwh_homehealth_referrals.clinical_order_type} LIKE 'HOME HEALTH%REFERRAL' AND
+      ${athenadwh_homehealth_referrals.status} != 'DELETED' ;;
+  }
+
+  join: athenadwh_documents_clone {
+    relationship: one_to_many
+    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_documents_clone.clinical_encounter_id};;
+  }
+
+  join: athenadwh_clinical_results_clone {
+    relationship: one_to_one
+    sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_clinical_results_clone.document_id} ;;
   }
 
   join: athenadwh_clinical_letters_clone {
