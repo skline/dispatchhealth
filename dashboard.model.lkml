@@ -156,6 +156,12 @@ explore: care_requests {
     sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_orders_provider.clinical_provider_id} ;;
   }
 
+  join: athenadwh_clinical_results_provider {
+    from: athenadwh_clinical_providers_clone
+    relationship:  many_to_one
+    sql_on: ${athenadwh_clinical_results_clone.clinical_provider_id} = ${athenadwh_clinical_results_provider.clinical_provider_id} ;;
+  }
+
   join: athenadwh_patients_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patients_clone.patient_id} ;;
