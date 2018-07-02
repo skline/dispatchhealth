@@ -81,8 +81,8 @@ explore: care_requests {
 
   join: athenadwh_lab_imaging_results {
     from:  athenadwh_documents_clone
-    relationship:  one_to_many
-    sql_on:  ${athenadwh_lab_imaging_results.document_id} = ${athenadwh_document_crosswalk_clone.document_id} AND
+    relationship:  one_to_one
+    sql_on: ${athenadwh_document_crosswalk_clone.document_id} = ${athenadwh_lab_imaging_results.document_id} AND
       ${athenadwh_lab_imaging_results.document_class} IN ('IMAGINGRESULT', 'LABRESULT') AND
       ${athenadwh_lab_imaging_results.status} != 'DELETED' ;;
   }
@@ -94,15 +94,6 @@ explore: care_requests {
     ${athenadwh_labs.document_class} = 'ORDER' AND
     ${athenadwh_labs.status} != 'DELETED' AND
     ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB';;
-  }
-
-  join: athenadwh_imaging {
-    from:  athenadwh_documents_clone
-    relationship:  one_to_many
-    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_imaging.clinical_encounter_id} AND
-          ${athenadwh_imaging.document_class} = 'ORDER' AND
-          ${athenadwh_imaging.status} != 'DELETED' AND
-          ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'IMAGING';;
   }
 
   join: athenadwh_orders {

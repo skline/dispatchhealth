@@ -17,6 +17,11 @@ view: athenadwh_clinical_results_clone {
     sql: ${TABLE}.clinical_order_type_group ;;
   }
 
+  dimension: labs_flag {
+    type: yesno
+    sql: ${clinical_order_type_group} = 'LAB' ;;
+  }
+
   dimension: clinical_provider_id {
     type: number
     sql: ${TABLE}.clinical_provider_id ;;

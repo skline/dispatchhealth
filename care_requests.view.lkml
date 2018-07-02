@@ -599,7 +599,7 @@ view: care_requests {
     description: "Count of completed care requests where 1 or more labs were ordered"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_labs_imaging.labs_flag
+      field: athenadwh_clinical_results_clone.labs_flag
       value: "yes"
     }
     filters: {
@@ -613,7 +613,7 @@ view: care_requests {
     description: "Count of completed care requests where imaging was ordered"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_labs_imaging.imaging_flag
+      field: athenadwh_lab_imaging_results.imaging_flag
       value: "yes"
     }
     filters: {
