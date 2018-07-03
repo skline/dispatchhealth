@@ -125,6 +125,12 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_documents_clone.clinical_encounter_id};;
   }
 
+  join: athenadwh_documents_provider {
+    from: athenadwh_clinical_providers_clone
+    relationship: many_to_one
+    sql_on: ${athenadwh_documents_clone.clinical_provider_id} = ${athenadwh_documents_provider.clinical_provider_id} ;;
+  }
+
   join: athenadwh_clinical_results_clone {
     relationship: one_to_one
     sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_clinical_results_clone.document_id} ;;
@@ -141,17 +147,17 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
-  join: athenadwh_orders_provider {
-    from: athenadwh_clinical_providers_clone
-    relationship:  many_to_one
-    sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_orders_provider.clinical_provider_id} ;;
-  }
-
-  join: athenadwh_clinical_results_provider {
-    from: athenadwh_clinical_providers_clone
-    relationship:  many_to_one
-    sql_on: ${athenadwh_clinical_results_clone.clinical_provider_id} = ${athenadwh_clinical_results_provider.clinical_provider_id} ;;
-  }
+#   join: athenadwh_orders_provider {
+#     from: athenadwh_clinical_providers_clone
+#     relationship:  many_to_one
+#     sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_orders_provider.clinical_provider_id} ;;
+#   }
+#
+#   join: athenadwh_clinical_results_provider {
+#     from: athenadwh_clinical_providers_clone
+#     relationship:  many_to_one
+#     sql_on: ${athenadwh_clinical_results_clone.clinical_provider_id} = ${athenadwh_clinical_results_provider.clinical_provider_id} ;;
+#   }
 
   join: athenadwh_patients_clone {
     relationship: many_to_one
