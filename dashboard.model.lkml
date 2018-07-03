@@ -500,7 +500,13 @@ explore: care_requests {
   }
 
   join: patients {
-    sql_on:  ${patients.id} =${care_requests.patient_id} ;;
+    relationship: many_to_one
+    sql_on:  ${care_requests.patient_id} = ${patients.id} ;;
+  }
+
+  join: driver_licenses {
+    relationship: one_to_one
+    sql_on: ${patients.id} = ${driver_licenses.patient_id} ;;
   }
 
   join: dtc_ff_patients {
