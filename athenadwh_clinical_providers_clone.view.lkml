@@ -61,6 +61,17 @@ view: athenadwh_clinical_providers_clone {
     sql: ${TABLE}.name ;;
   }
 
+  dimension: dispatchhealth_provider {
+    description: "A flag indicating that the provider is DispatchHealth"
+    type: string
+    sql:
+      CASE
+        WHEN ${name} IS NULL THEN 'Provider Unknown'
+        WHEN ${name} LIKE '%'|| TRIM(${markets.short_name}) ||' -%' OR ${name}  = 'SOUTH METRO FIRE AND RESCUE' THEN 'Performed On-Scene'
+        ELSE 'Performed by Third Party'
+    END;;
+  }
+
   dimension: touchworks_flag {
     type: yesno
     sql: ${name} = 'SOUTHWEST MEDICAL TOUCHWORKS' ;;
