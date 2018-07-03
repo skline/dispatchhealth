@@ -373,6 +373,11 @@ view: care_requests {
     sql: ${TABLE}.patient_id ;;
   }
 
+  measure: count_distinct_patients {
+    type: count_distinct
+    sql: ${patient_id} ;;
+  }
+
   dimension: place_of_service {
     type: string
     sql: ${TABLE}.place_of_service ;;
