@@ -61,7 +61,7 @@ view: athenadwh_clinical_providers_clone {
     sql: ${TABLE}.name ;;
   }
 
-  dimension: dispatchhealth_provider {
+  dimension: provider_category {
     description: "A flag indicating that the provider is DispatchHealth"
     type: string
     sql:

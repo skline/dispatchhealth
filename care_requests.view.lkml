@@ -583,6 +583,10 @@ view: care_requests {
       field: billable_est
       value: "yes"
     }
+    drill_fields: [
+      athenadwh_documents_provider.name,
+      athenadwh_documents_provider.provider_category
+    ]
   }
 
   measure: count_visits_prescriptions {

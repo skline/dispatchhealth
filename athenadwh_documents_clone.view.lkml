@@ -20,6 +20,23 @@ view: athenadwh_documents_clone {
   dimension: clinical_order_type {
     type: string
     sql: ${TABLE}.clinical_order_type ;;
+    drill_fields: [
+      athenadwh_documents_provider.name,
+      athenadwh_documents_provider.provider_category
+    ]
+  }
+
+  dimension: referral_type {
+    type: string
+    sql: CASE
+          WHEN ${clinical_order_type} LIKE '%REFERRAL%' THEN INITCAP(SUBSTRING(${clinical_order_type}, 1, POSITION('REFERRAL' in ${clinical_order_type})-1))
+          ELSE INITCAP(${clinical_order_type})
+        END
+          ;;
+    drill_fields: [
+      athenadwh_documents_provider.name,
+      athenadwh_documents_provider.provider_category
+    ]
   }
 
   measure: order_type_concat {
