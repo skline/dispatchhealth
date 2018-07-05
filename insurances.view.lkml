@@ -60,7 +60,7 @@ view: insurances {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at ;;
+    sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
   dimension: ehr_id {
@@ -272,7 +272,21 @@ view: insurances {
       quarter,
       year
     ]
-    sql: ${TABLE}.updated_at ;;
+    sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
+  }
+
+  dimension: insurance_card_captured_flag {
+    type: yesno
+    sql: ${updated_date} = ${care_request_flat.complete_date}::date;;
+  }
+
+  measure: count_insurances_captured {
+    type: count_distinct
+    sql: ${patient_id} ;;
+    filters: {
+      field: insurance_card_captured_flag
+      value: "yes"
+    }
   }
 
   dimension: web_address {
