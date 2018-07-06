@@ -70,6 +70,9 @@ view: athenadwh_clinical_providers_clone {
         WHEN ${name} LIKE '%'|| TRIM(${markets.short_name}) ||' -%' OR ${name}  = 'SOUTH METRO FIRE AND RESCUE' THEN 'Performed On-Scene'
         ELSE 'Performed by Third Party'
     END;;
+    drill_fields: [
+      athenadwh_lab_imaging_providers.name
+    ]
   }
 
   dimension: touchworks_flag {

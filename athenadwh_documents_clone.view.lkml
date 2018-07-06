@@ -20,10 +20,6 @@ view: athenadwh_documents_clone {
   dimension: clinical_order_type {
     type: string
     sql: ${TABLE}.clinical_order_type ;;
-    drill_fields: [
-      athenadwh_documents_provider.name,
-      athenadwh_documents_provider.provider_category
-    ]
   }
 
   dimension: referral_type {
@@ -34,8 +30,8 @@ view: athenadwh_documents_clone {
         END
           ;;
     drill_fields: [
-      athenadwh_documents_provider.name,
-      athenadwh_documents_provider.provider_category
+      athenadwh_clinical_referral_providers.name,
+      athenadwh_clinical_referral_providers.provider_category
     ]
   }
 

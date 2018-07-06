@@ -87,6 +87,12 @@ explore: care_requests {
       ${athenadwh_lab_imaging_results.status} != 'DELETED' ;;
   }
 
+  join: athenadwh_lab_imaging_providers {
+    from: athenadwh_clinical_providers_clone
+    relationship: one_to_one
+    sql_on: ${athenadwh_lab_imaging_results.clinical_provider_id} = ${athenadwh_lab_imaging_providers.clinical_provider_id} ;;
+  }
+
   join: athenadwh_labs {
     from:  athenadwh_documents_clone
     relationship:  one_to_many
@@ -125,9 +131,15 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_documents_clone.clinical_encounter_id};;
   }
 
+  join: athenadwh_clinical_referral_providers {
+    from: athenadwh_clinical_providers_clone
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinical_referrals.clinical_provider_id} = ${athenadwh_clinical_referral_providers.clinical_provider_id} ;;
+  }
+
   join: athenadwh_documents_provider {
     from: athenadwh_clinical_providers_clone
-    relationship: many_to_one
+    relationship: one_to_one
     sql_on: ${athenadwh_documents_clone.clinical_provider_id} = ${athenadwh_documents_provider.clinical_provider_id} ;;
   }
 
