@@ -71,7 +71,8 @@ view: athenadwh_clinical_providers_clone {
         ELSE 'Performed by Third Party'
     END;;
     drill_fields: [
-      athenadwh_lab_imaging_providers.name
+      athenadwh_lab_imaging_providers.name,
+      athenadwh_lab_imaging_results.clinical_order_type
     ]
   }
 
