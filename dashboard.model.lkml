@@ -110,12 +110,12 @@ explore: care_requests {
       ${athenadwh_orders.status} != 'DELETED' ;;
   }
 
-  join: athenadwh_clinical_referrals {
+  join: athenadwh_referrals {
     from:  athenadwh_documents_clone
     relationship:  one_to_many
-    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_referrals.clinical_encounter_id} AND
-      ${athenadwh_clinical_referrals.clinical_order_type} LIKE '%REFERRAL%' AND ${athenadwh_clinical_referrals.clinical_order_type} NOT LIKE 'HOME HEALTH%' AND
-      ${athenadwh_clinical_referrals.status} != 'DELETED' ;;
+    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
+      ${athenadwh_referrals.clinical_order_type} LIKE '%REFERRAL%' AND
+      ${athenadwh_referrals.status} != 'DELETED' ;;
   }
 
   join: athenadwh_homehealth_referrals {
@@ -131,10 +131,10 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_documents_clone.clinical_encounter_id};;
   }
 
-  join: athenadwh_clinical_referral_providers {
+  join: athenadwh_referral_providers {
     from: athenadwh_clinical_providers_clone
     relationship: one_to_one
-    sql_on: ${athenadwh_clinical_referrals.clinical_provider_id} = ${athenadwh_clinical_referral_providers.clinical_provider_id} ;;
+    sql_on: ${athenadwh_referrals.clinical_provider_id} = ${athenadwh_referral_providers.clinical_provider_id} ;;
   }
 
   join: athenadwh_documents_provider {
