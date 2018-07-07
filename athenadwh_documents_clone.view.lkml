@@ -30,8 +30,8 @@ view: athenadwh_documents_clone {
         END
           ;;
     drill_fields: [
-      athenadwh_clinical_referral_providers.name,
-      athenadwh_clinical_referral_providers.provider_category
+      athenadwh_referral_providers.name,
+      athenadwh_referral_providers.provider_category
     ]
   }
 
