@@ -584,8 +584,9 @@ view: care_requests {
       value: "yes"
     }
     drill_fields: [
-      athenadwh_clinical_referral_providers.name,
-      athenadwh_clinical_referral_providers.provider_category
+      athenadwh_referral_providers.name,
+      athenadwh_referral_providers.provider_category,
+      count_billable_est
     ]
   }
 
