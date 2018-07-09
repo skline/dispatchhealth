@@ -1059,7 +1059,7 @@ measure: distinct_day_of_week {
     type: number
     sql: case
           when ${TABLE}.contact_id ='' then null
-          else ${TABLE}.contact_id::int
+          else ${TABLE}.contact_id::bigint
          end;;
   }
 
