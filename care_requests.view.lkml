@@ -1057,7 +1057,10 @@ measure: distinct_day_of_week {
   }
   dimension: contact_id {
     type: number
-    sql: ${TABLE}.contact_id ;;
+    sql: case
+          when ${TABLE}.contact_id ='' then null
+          else ${TABLE}.contact_id::int
+         end;;
   }
 
 
