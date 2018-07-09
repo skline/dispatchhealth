@@ -913,6 +913,29 @@ measure: distinct_day_of_week {
 
   }
 
+  dimension: contact_id_not_populated {
+    type: yesno
+    sql: care_requests.contact_id IS NULL
+         OR LENGTH(care_requests.contact_id) = 0
+        OR (care_requests.contact_id) = '';;
+  }
+
+  measure: contact_id_populated_count {
+    type: count_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${id} ;;
+    filters: {
+      field: origin_phone_not_populated
+      value: "no"
+    }
+  }
+  measure: percent_contact_id_populated {
+    type: number
+    value_format: "0%"
+    sql: ${contact_id_populated_count}::float/${count}::float ;;
+
+  }
+
 
   dimension: days_in_month {
     type: number
@@ -1032,6 +1055,11 @@ measure: distinct_day_of_week {
           ELSE NULL
         END ;;
   }
+  dimension: contact_id {
+    type: number
+    sql: ${TABLE}.contact_id ;;
+  }
+
 
 
   # ----- Sets of fields for drilling ------
