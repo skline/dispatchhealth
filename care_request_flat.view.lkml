@@ -142,6 +142,42 @@ view: care_request_flat {
     sql: ${complete_date} >= '2018-06-22' ;;
   }
 
+  dimension: auto_assigned_initial {
+    type: yesno
+    description: "A flag indicating the care request was initially auto-assigned"
+    sql: ${TABLE}.auto_assigned_initial is True ;;
+  }
+
+  dimension: reassignment_reason_initial {
+    type: string
+    description: "The initial reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_initial ;;
+  }
+
+  dimension: reassignment_reason_other_initial {
+    type: string
+    description: "The secondary initial reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_other_initial ;;
+  }
+
+  dimension: auto_assigned_final {
+    type: yesno
+    description: "A flag indicating the care request was auto-assigned"
+    sql: ${TABLE}.auto_assigned_final is True ;;
+  }
+
+  dimension: reassignment_reason_final {
+    type: string
+    description: "The reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_final ;;
+  }
+
+  dimension: reassignment_reason_other_final {
+    type: string
+    description: "The reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_other_final ;;
+  }
+
   dimension: drive_time_minutes {
     type: number
     description: "The number of minutes between on-route time and on-scene time"
@@ -545,6 +581,25 @@ view: care_request_flat {
       day_of_month
     ]
     sql: ${TABLE}.accept_date ;;
+  }
+
+  dimension_group: accept_initial {
+    type: time
+    description: "The local date/time that the care request was first accepted.
+                  If an auto assignment is overridden this will be different than accept date."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.accept_date_initial ;;
   }
 
   dimension_group: requested {
