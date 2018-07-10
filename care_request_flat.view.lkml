@@ -143,15 +143,20 @@ view: care_request_flat {
   }
 
   dimension: auto_assigned_initial {
-    type: yesno
+    type: string
     description: "A flag indicating the care request was initially auto-assigned"
-    sql: ${TABLE}.auto_assigned_initial is True ;;
+    sql: ${TABLE}.auto_assigned_initial ;;
   }
 
   dimension: reassignment_reason_initial {
     type: string
     description: "The initial reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_initial ;;
+  }
+
+  dimension: auto_assignment_overridden {
+    type: yesno
+    sql: ${auto_assigned_initial} = 'true' AND ${auto_assigned_final} = 'false' ;;
   }
 
   dimension: reassignment_reason_other_initial {
@@ -161,9 +166,9 @@ view: care_request_flat {
   }
 
   dimension: auto_assigned_final {
-    type: yesno
+    type: string
     description: "A flag indicating the care request was auto-assigned"
-    sql: ${TABLE}.auto_assigned_final is True ;;
+    sql: ${TABLE}.auto_assigned_final ;;
   }
 
   dimension: reassignment_reason_final {
