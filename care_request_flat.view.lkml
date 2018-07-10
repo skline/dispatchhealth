@@ -247,6 +247,14 @@ view: care_request_flat {
     }
   }
 
+  measure:  median_drive_time_minutes{
+    type: median_distinct
+    description: "The median number of minutes between on-route time and on-scene time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_minutes} ;;
+  }
+
   measure:  average_in_queue_time_minutes{
     type: average_distinct
     description: "The average minutes between requested time and accepted time"
