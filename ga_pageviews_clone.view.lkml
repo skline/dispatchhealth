@@ -218,7 +218,7 @@ dimension: source_category
             when ${medium_final} in('display') then 'Display'
             when ${medium_final} in('referral') then 'Referral'
             when ${source_final} in('shannon') then null
-            when ${source_final} in('self report') then 'Self Report Digital'
+            when ${medium_final} in('self report') then 'Self Report Digital'
             else ${source_medium} end;;
   }
 
