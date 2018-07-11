@@ -9,6 +9,7 @@ view: care_request_flat {
         max(shift_teams.start_time) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS shift_start_time,
         max(shift_teams.end_time) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS shift_end_time,
         max(request.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS requested_date,
+        min(accept1.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS accept_date_initial,
         max(accept.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS accept_date,
         max(schedule.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS scheduled_date,
         max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_route_date,
@@ -18,6 +19,12 @@ view: care_request_flat {
         fu3.comment AS followup_3day_result,
         fu14.comment AS followup_14day_result,
         fu30.comment AS followup_30day_result,
+        accept1.auto_assigned AS auto_assigned_initial,
+        accept1.reassignment_reason AS reassignment_reason_initial,
+        accept1.reassignment_reason_other AS reassignment_reason_other_initial,
+        accept.auto_assigned AS auto_assigned_final,
+        accept.reassignment_reason AS reassignment_reason_final,
+        accept.reassignment_reason_other AS reassignment_reason_other_final,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
         else array_to_string(array_agg(distinct comp.comment), ':')end
         as complete_comment,
@@ -30,8 +37,33 @@ view: care_request_flat {
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
       LEFT JOIN care_request_statuses schedule
       ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
-      LEFT JOIN care_request_statuses AS accept
-      ON cr.id = accept.care_request_id AND accept.name = 'accepted' and accept.deleted_at is null
+
+      LEFT JOIN
+        (SELECT care_request_id,
+        name,
+        started_at,
+        meta_data::json->> 'auto_assigned' AS auto_assigned,
+        reassignment_reason,
+        reassignment_reason_other,
+        ROW_NUMBER() OVER(PARTITION BY care_request_id
+                                ORDER BY started_at) AS rn
+        FROM care_request_statuses
+
+        WHERE name = 'accepted' AND deleted_at IS NULL) AS accept1
+      ON cr.id = accept1.care_request_id AND accept1.rn = 1
+
+      LEFT JOIN (SELECT care_request_id,
+        name,
+        started_at,
+        meta_data::json->> 'auto_assigned' AS auto_assigned,
+        reassignment_reason,
+        reassignment_reason_other,
+        ROW_NUMBER() OVER(PARTITION BY care_request_id
+                                ORDER BY started_at DESC) AS rn
+        FROM care_request_statuses
+        WHERE name = 'accepted' AND deleted_at IS NULL) AS accept
+      ON cr.id = accept.care_request_id AND accept.rn = 1
+
       LEFT JOIN care_request_statuses AS onroute
       ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
       LEFT JOIN care_request_statuses onscene
@@ -52,7 +84,7 @@ view: care_request_flat {
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
-      GROUP BY 1,2,3,14,15,16 ;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23 ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -108,6 +140,47 @@ view: care_request_flat {
     type: yesno
     description: "A flag indicating a credit card fix was put into production (06/22/2018)"
     sql: ${complete_date} >= '2018-06-22' ;;
+  }
+
+  dimension: auto_assigned_initial {
+    type: string
+    description: "A flag indicating the care request was initially auto-assigned"
+    sql: ${TABLE}.auto_assigned_initial ;;
+  }
+
+  dimension: reassignment_reason_initial {
+    type: string
+    description: "The initial reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_initial ;;
+  }
+
+  dimension: auto_assignment_overridden {
+    type: yesno
+    sql: ${auto_assigned_initial} = 'true' AND ${auto_assigned_final} = 'false' ;;
+  }
+
+  dimension: reassignment_reason_other_initial {
+    type: string
+    description: "The secondary initial reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_other_initial ;;
+  }
+
+  dimension: auto_assigned_final {
+    type: string
+    description: "A flag indicating the care request was auto-assigned"
+    sql: ${TABLE}.auto_assigned_final ;;
+  }
+
+  dimension: reassignment_reason_final {
+    type: string
+    description: "The reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_final ;;
+  }
+
+  dimension: reassignment_reason_other_final {
+    type: string
+    description: "The reassignment reason logged by the CSC"
+    sql: ${TABLE}.reassignment_reason_other_final ;;
   }
 
   dimension: drive_time_minutes {
@@ -172,6 +245,14 @@ view: care_request_flat {
       field: is_reasonable_drive_time
       value: "yes"
     }
+  }
+
+  measure:  median_drive_time_minutes{
+    type: median_distinct
+    description: "The median number of minutes between on-route time and on-scene time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_minutes} ;;
   }
 
   measure:  average_in_queue_time_minutes{
@@ -513,6 +594,25 @@ view: care_request_flat {
       day_of_month
     ]
     sql: ${TABLE}.accept_date ;;
+  }
+
+  dimension_group: accept_initial {
+    type: time
+    description: "The local date/time that the care request was first accepted.
+                  If an auto assignment is overridden this will be different than accept date."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.accept_date_initial ;;
   }
 
   dimension_group: requested {
