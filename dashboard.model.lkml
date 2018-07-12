@@ -931,6 +931,17 @@ explore: invoca_clone {
   join: ad_groups_clone {
     sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
   }
+  join: marketing_cost_clone {
+    type: full_outer
+    sql_on:   lower(${ga_pageviews_clone.source_final}) = lower(${marketing_cost_clone.type})
+              and ${ga_pageviews_clone.timestamp_mst_date} =${marketing_cost_clone.date_date}
+              and lower(${ga_pageviews_clone.medium_final})  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
+              and lower(${ga_pageviews_clone.ad_group_final}) = lower(${marketing_cost_clone.ad_group_name})
+            and lower(${ga_pageviews_clone.campaign_final}) = lower(${marketing_cost_clone.campaign_name})
+
+            ;;
+  }
+
 
 
 
