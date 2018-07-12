@@ -590,6 +590,20 @@ view: care_requests {
     ]
   }
 
+  measure: count_auto_assigned {
+    type: count_distinct
+    description: "Count of auto-assigned care requests"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.auto_assigned_final
+      value: "true"
+    }
+  }
+
   measure: count_visits_prescriptions {
     type: count_distinct
     description: "Count of completed care requests where 1 or more prescriptions were written"
