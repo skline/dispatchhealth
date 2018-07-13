@@ -141,13 +141,13 @@ view: visit_facts {
   dimension: day_30_followup_outcome {
     description: "The outcome of the provider visit 30 days after seeing patient"
     type: string
-    sql: ${TABLE}.day_30_followup_outcome ;;
+    sql: TRIM(${TABLE}.day_30_followup_outcome) ;;
   }
 
   dimension: day_3_followup_outcome {
     description: "The outcome of the provider visit 3 days after seeing patient"
     type: string
-    sql: ${TABLE}.day_3_followup_outcome ;;
+    sql: TRIM(${TABLE}.day_3_followup_outcome) ;;
   }
 
   dimension: emt_shift_id {
@@ -1271,7 +1271,7 @@ view: visit_facts {
   dimension: bb_30_day {
     label: "30-Day Bounce back flag"
     type: yesno
-    sql: (${bb_3_day} IS TRUE OR ${bb_14_day} IS TRUE OR ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint')
+    sql: (${bb_3_day} OR ${bb_14_day} OR ${day_30_followup_outcome} = 'ed_same_complaint' OR ${day_30_followup_outcome} = 'hospitalization_same_complaint')
       AND ${day_3_followup_outcome} != 'REMOVED';;
   }
 
@@ -1286,16 +1286,17 @@ view: visit_facts {
 
   dimension: followup_30day {
     type: yesno
-    description: "A flag indicating the 3-day follow-up was completed"
-    sql: ${billable_visit} AND
-      (${day_3_followup_outcome} NOT IN ('REMOVED', 'PENDING', 'no_hie_data')) ;;
+    description: "A flag indicating the 30-day follow-up was completed"
+    sql: ${billable_visit} AND ${resolve_reason} LIKE '%NOT APPLICABLE%' AND
+      (${day_30_followup_outcome} NOT IN ('REMOVED', 'PENDING', 'no_hie_data') OR
+      ${bb_3_day} OR ${bb_14_day}) ;;
   }
 
   measure: count_30day_followups {
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
-      field: followup_3day
+      field: followup_30day
       value: "yes"
     }
   }
