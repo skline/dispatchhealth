@@ -231,7 +231,7 @@ dimension: source_category
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'SEM: Brand or Organic Search'
             when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
             when ${medium_final} in('self report') then 'Self Report Direct to Consumer'
-            when ${dtc_ff_patients.patient_id} is not null then 'Other
+            when ${dtc_ff_patients.patient_id} is not null then 'Other'
             else 'Other' end;;
   }
 
