@@ -1239,7 +1239,7 @@ view: visit_facts {
   dimension: followup_3day {
     type: yesno
     description: "A flag indicating the 3-day follow-up was completed"
-    sql: ${billable_visit} AND
+    sql: ${billable_visit} AND ${resolve_reason} LIKE '%NOT APPLICABLE%' AND
       (${day_3_followup_outcome} NOT IN ('PENDING', 'REMOVED', 'patient_called_but_did_not_answer')) ;;
   }
 
