@@ -380,7 +380,8 @@ view: care_request_flat {
     type: yesno
     description: "A flag indicating the 14/30-day follow-up was completed"
     sql: ${complete_date} IS NOT NULL AND
-    ${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data' ;;
+    ((${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data') OR
+    ${bounceback_3day} OR ${bounceback_14day}) ;;
   }
 
   dimension: no_hie_data {
@@ -989,12 +990,12 @@ view: care_request_flat {
 
   dimension: primary_resolved_reason {
     type:  string
-    sql: split_part(${resolved_reason_full}, ':', 1) ;;
+    sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
   }
 
   dimension: secondary_resolved_reason {
     type:  string
-    sql: split_part(${resolved_reason_full}, ':', 2) ;;
+    sql: trim(split_part(${resolved_reason_full}, ':', 2)) ;;
   }
 
   dimension: primary_and_secondary_resolved_reason {
@@ -1005,7 +1006,7 @@ view: care_request_flat {
 
   dimension: other_resolved_reason {
     type:  string
-    sql: split_part(${resolved_reason_full}, ':', 3) ;;
+    sql: trim(split_part(${resolved_reason_full}, ':', 3)) ;;
   }
 
 
