@@ -100,6 +100,26 @@ view: risk_assessments {
     }
   }
 
+  measure: count_yellow_eslcated_phone {
+    type: count_distinct
+    sql: case when ${care_request_flat_exact.escalated_on_phone} and ${yellow_category}  then ${care_request_id}  else null end ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
+  measure: count_red_eslcated_phone {
+    type: count_distinct
+    sql: case when ${care_request_flat_exact.escalated_on_phone} and ${red_category}  then ${care_request_id}  else null end ;;
+    sql_distinct_key: ${care_request_id} ;;
+
+  }
+
+  measure: count_green_esclated_phone {
+    type: count_distinct
+    sql: case when ${care_request_flat_exact.escalated_on_phone} and ${green_category}  then ${care_request_id}  else null end ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
+
   dimension: red_category {
     type: yesno
     sql: ${risk_category} = 'Red - High Risk' ;;
