@@ -54,14 +54,15 @@ view: patients {
 
   dimension: age {
     type: number
-    sql: CAST(EXTRACT(YEAR from AGE(${care_request_requested.created_date}, ${dob})) AS INT) ;;
+    sql: CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT) ;;
   }
 
   dimension: bad_age_filter {
     type: yesno
     hidden: yes
-    sql: ${age} >= 110 ;;
+    sql: ${age} >= 110 or ${age}<0;;
   }
+
 
   dimension: age_band_sort {
     type: string
@@ -120,7 +121,8 @@ view: patients {
 
 
   measure: median_age {
-    type: median
+    type: median_distinct
+    sql_distinct_key: ${care_requests.id} ;;
     value_format: "0.0"
     sql:  ${age} ;;
     filters: {

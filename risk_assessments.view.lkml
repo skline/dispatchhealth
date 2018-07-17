@@ -100,22 +100,42 @@ view: risk_assessments {
     }
   }
 
-  measure: count_yellow_eslcated_phone {
+  measure: count_yellow_escalated_phone_incontact {
     type: count_distinct
     sql: case when ${care_request_flat_exact.escalated_on_phone} and ${yellow_category}  then ${care_request_id}  else null end ;;
     sql_distinct_key: ${care_request_id} ;;
   }
 
-  measure: count_red_eslcated_phone {
+  measure: count_red_escalated_phone_incontact {
     type: count_distinct
     sql: case when ${care_request_flat_exact.escalated_on_phone} and ${red_category}  then ${care_request_id}  else null end ;;
     sql_distinct_key: ${care_request_id} ;;
 
   }
 
-  measure: count_green_esclated_phone {
+  measure: count_green_escalated_phone_incontact {
     type: count_distinct
     sql: case when ${care_request_flat_exact.escalated_on_phone} and ${green_category}  then ${care_request_id}  else null end ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
+
+  measure: count_yellow_escalated_phone {
+    type: count_distinct
+    sql: case when ${care_request_flat.escalated_on_phone} and ${yellow_category}  then ${care_request_id}  else null end ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
+  measure: count_red_escalated_phone {
+    type: count_distinct
+    sql: case when ${care_request_flat.escalated_on_phone} and ${red_category}  then ${care_request_id}  else null end ;;
+    sql_distinct_key: ${care_request_id} ;;
+
+  }
+
+  measure: count_green_escalated_phone {
+    type: count_distinct
+    sql: case when ${care_request_flat.escalated_on_phone} and ${green_category}  then ${care_request_id}  else null end ;;
     sql_distinct_key: ${care_request_id} ;;
   }
 
