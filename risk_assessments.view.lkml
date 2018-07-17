@@ -66,8 +66,8 @@ view: risk_assessments {
     type: string
     sql: CASE
           WHEN ${score} >= 0 AND ${score} <= 5 THEN 'Green - Low Risk'
-          WHEN ${score} > 5 AND ${score} < 11 THEN 'Yellow - Medium Risk'
-          WHEN ${score} >= 11 THEN 'Red - High Risk'
+          WHEN ${score} > 5 AND ${score} < 10 THEN 'Yellow - Medium Risk'
+          WHEN ${score} >= 10 THEN 'Red - High Risk'
           ELSE 'Unknown'
         END ;;
   }
