@@ -1079,11 +1079,26 @@ view: care_request_flat {
     sql: ${archive_comment} LIKE '%Referred - Phone Triage%' ;;
   }
 
+  dimension: escalated_on_phone_ed {
+    type: yesno
+    sql: ${archive_comment} LIKE '%Referred - Phone Triage: ED%' ;;
+  }
+
+
   measure: escalated_on_phone_count {
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
       field: escalated_on_phone
+      value: "yes"
+    }
+  }
+
+  measure: escalated_on_phone_ed_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone_ed
       value: "yes"
     }
   }

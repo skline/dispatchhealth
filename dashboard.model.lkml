@@ -1481,6 +1481,11 @@ explore: ga_pageviews_clone {
             sql_on: ${care_request_flat_exact.care_request_id} = ${care_requests_exact.id} ;;
           }
 
+          join: risk_assessments {
+            relationship: one_to_one
+            sql_on: ${care_requests_exact.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
+          }
+
 
 
           join: markets {
