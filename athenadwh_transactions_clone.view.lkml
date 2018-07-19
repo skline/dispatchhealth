@@ -9,7 +9,7 @@ view: athenadwh_transactions_clone {
 
   dimension: amount {
     type: number
-    sql: ${TABLE}.amount ;;
+    sql: ${TABLE}.amount::numeric ;;
   }
 
   dimension: payment_amount {
