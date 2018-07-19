@@ -1022,12 +1022,12 @@ view: care_request_flat {
 
   dimension: lwbs_going_to_urgent_care {
     type: yesno
-    sql: ${archive_comment} LIKE '%Cancelled by Patient: Going to an Urgent Care%' ;;
+    sql: LOWER(${archive_comment}) LIKE '%going to an urgent care%' ;;
   }
 
   dimension: lwbs_wait_time_too_long {
     type: yesno
-    sql: ${archive_comment} LIKE '%Cancelled by Patient: Wait time too long%' ;;
+    sql: ${archive_comment} LIKE '%Wait time too long%' ;;
   }
 
   dimension: lwbs_no_show {
