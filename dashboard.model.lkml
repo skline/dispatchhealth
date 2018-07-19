@@ -1450,6 +1450,9 @@ explore: ga_pageviews_clone {
                      and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
                           ;;
           }
+          join: csc_agent_location {
+            sql_on: ${csc_agent_location.agent_name} = ${incontact_clone.agent_name} ;;
+          }
 
           join: patients {
             sql_on:   (
