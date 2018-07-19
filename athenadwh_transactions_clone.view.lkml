@@ -65,40 +65,6 @@ view: athenadwh_transactions_clone {
     }
   }
 
-  measure: patient_responsibility_q3 {
-    type: percentile
-    percentile: 75
-    description: "The 75th percentile of patient responsibility"
-    sql: ${amount} ;;
-    value_format: "0.00"
-    filters: {
-      field: patient_responsibility
-      value: "yes"
-    }
-  }
-
-  measure: patient_responsibility_q2 {
-    type: percentile
-    percentile: 25
-    description: "The 25th percentile of patient responsibility"
-    sql: ${amount} ;;
-    value_format: "0.00"
-    filters: {
-      field: patient_responsibility
-      value: "yes"
-    }
-  }
-
-  measure: max_patient_responsibility {
-    type: max
-    sql: ${amount} ;;
-    value_format: "0.00"
-    filters: {
-      field: patient_responsibility
-      value: "yes"
-    }
-  }
-
   measure: total_patient_responsibility_without_secondary {
     type: sum
     sql: ${amount} ;;
