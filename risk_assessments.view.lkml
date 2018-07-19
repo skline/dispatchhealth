@@ -32,6 +32,12 @@ view: risk_assessments {
     sql: UPPER(${protocol_name}) = 'GENERAL COMPLAINT' ;;
   }
 
+  dimension: age_impacted_protocol {
+    type: yesno
+    sql: lower(${TABLE}.protocol_name) in('extremity swelling', 'extremity injury', 'weakness', 'uti/blood in urine', 'diarrhea', 'n/v', 'constipation', 'lethargic', 'fall', 'chest pain', 'syncope', 'abdominal pain', 'allergic reaction', 'palpitations', 'numbness', 'head injury', 'blood in stool', 'confusion', 'fever', 'wound eval', 'back pain', 'neck/spine pain', 'dehydration', 'cough/uri', 'dizziness', 'blood sugar issues', 'general complaint', 'blood sugar concerns', 'nausea/vomiting', 'syncope (passing out)', 'urinary tract infection', 'urinary tract infection and blood in urine', 'wound evaluation')
+ ;;
+  }
+
   measure: count_general_complaint {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -57,6 +63,19 @@ view: risk_assessments {
     sql: ${TABLE}.score ;;
   }
 
+  dimension: score_old {
+    type: number
+    sql: case
+              when not ${age_impacted_protocol} then ${score}
+              when ${age_impacted_protocol} and ${patients.age} < 60 then ${score}-.5
+              when ${age_impacted_protocol} and ${patients.age} between 60 and 69 then ${score}-1
+              when ${age_impacted_protocol} and ${patients.age} between 70 and 79 then ${score}-1.5
+              when ${age_impacted_protocol} and ${patients.age} >=80 then ${score}-2
+              else ${score} end
+
+    ;;
+  }
+
   measure: average_score {
     type: average
     sql: ${score} ;;
@@ -68,6 +87,16 @@ view: risk_assessments {
           WHEN ${score} >= 0 AND ${score} <= 5 THEN 'Green - Low Risk'
           WHEN ${score} > 5 AND ${score} < 10 THEN 'Yellow - Medium Risk'
           WHEN ${score} >= 10 THEN 'Red - High Risk'
+          ELSE 'Unknown'
+        END ;;
+  }
+
+  dimension: risk_category_old {
+    type: string
+    sql: CASE
+          WHEN ${score_old} >= 0 AND ${score_old} <= 5 THEN 'Green - Low Risk'
+          WHEN ${score_old} > 5 AND ${score_old} < 10 THEN 'Yellow - Medium Risk'
+          WHEN ${score_old} >= 10 THEN 'Red - High Risk'
           ELSE 'Unknown'
         END ;;
   }
@@ -86,9 +115,28 @@ view: risk_assessments {
     }
   }
 
+  dimension: green_category_old {
+    type: yesno
+    sql: ${risk_category_old} = 'Green - Low Risk' ;;
+  }
+
+  measure: count_green_old {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: green_category_old
+      value: "yes"
+    }
+  }
+
   dimension: yellow_category {
     type: yesno
     sql: ${risk_category} = 'Yellow - Medium Risk' ;;
+  }
+
+  dimension: yellow_category_old {
+    type: yesno
+    sql: ${risk_category_old} = 'Yellow - Medium Risk' ;;
   }
 
   measure: count_yellow {
@@ -99,6 +147,17 @@ view: risk_assessments {
       value: "yes"
     }
   }
+
+  measure: count_yellow_old {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: yellow_category_old
+      value: "yes"
+    }
+  }
+
+
 
   measure: count_yellow_escalated_phone_incontact {
     type: count_distinct
@@ -144,12 +203,25 @@ view: risk_assessments {
     type: yesno
     sql: ${risk_category} = 'Red - High Risk' ;;
   }
+  dimension: red_category_old {
+    type: yesno
+    sql: ${risk_category_old} = 'Red - High Risk' ;;
+  }
 
   measure: count_red {
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
       field: red_category
+      value: "yes"
+    }
+  }
+
+  measure: count_red_old {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: red_category_old
       value: "yes"
     }
   }
