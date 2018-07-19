@@ -3,7 +3,7 @@ view: insurance_classifications {
 
   dimension: id {
     primary_key: yes
-    hidden: yes
+    hidden: no
     type: number
     sql: ${TABLE}.id ;;
   }
