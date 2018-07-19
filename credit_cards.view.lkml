@@ -57,6 +57,12 @@ view: credit_cards {
     sql: ${TABLE}.email ;;
   }
 
+  dimension: dispatch_email {
+    type: yesno
+    sql: ${email} =  'Payments@dispatchhealth.com' ;;
+  }
+
+
   dimension: epaymentid {
     type: string
     sql: ${TABLE}.epaymentid ;;
@@ -114,5 +120,25 @@ view: credit_cards {
   measure: credit_card_count {
     type: count_distinct
     sql: ${care_request_id} ;;
+  }
+
+  measure: dh_credit_card_count {
+    label: "Dispatch Health Credit Card Count"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: dispatch_email
+      value: "yes"
+    }
+  }
+
+    measure: non_dh_credit_card_count {
+      label: "Non-Dispatch Health Credit Card Count"
+      type: count_distinct
+      sql: ${care_request_id} ;;
+      filters: {
+        field: dispatch_email
+        value: "no"
+      }
   }
 }

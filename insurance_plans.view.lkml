@@ -45,7 +45,7 @@ view: insurance_plans {
 
   dimension: insurance_classification_id {
     type: string
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.insurance_classification_id ;;
   }
 
