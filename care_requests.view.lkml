@@ -575,12 +575,32 @@ view: care_requests {
     sql: ${billable_est} AND ${cpt_code_dimensions_clone.cpt_code_flag};;
   }
 
+  dimension: billable_actual {
+    type: yesno
+    sql: ${billable_est} AND ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL ;;
+  }
+
   measure: count_billable_est {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations"
     sql: ${id} ;;
     filters: {
       field: billable_est
+      value: "yes"
+    }
+    drill_fields: [
+      athenadwh_referral_providers.name,
+      athenadwh_referral_providers.provider_category,
+      count_billable_est
+    ]
+  }
+
+  measure: count_billable_actual {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations where Athena no charge entry reason is NULL"
+    sql: ${id} ;;
+    filters: {
+      field: billable_actual
       value: "yes"
     }
     drill_fields: [
