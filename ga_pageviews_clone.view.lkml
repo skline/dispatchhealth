@@ -254,7 +254,7 @@ dimension: source_category
   dimension: high_low_intent
   {
     type: string
-    sql: case when ${source_category} in('Paid Social', 'Organic Social', 'Native Display', 'Display', 'Direct Traffic') then 'Low Intent'
+    sql: case when ${source_category} in('Paid Social', 'Organic Social', 'Native Display', 'Display', 'Direct Traffic', 'Local Listings') or lower(${medium_final}) like '%google%' or  lower(${source_final}) like '%bing ad extension%'  then 'Low Intent'
               else 'High Intent' end;;
   }
 
