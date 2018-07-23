@@ -25,6 +25,8 @@ view: care_request_flat {
         accept.auto_assigned AS auto_assigned_final,
         accept.reassignment_reason AS reassignment_reason_final,
         accept.reassignment_reason_other AS reassignment_reason_other_final,
+        accept.first_name AS accept_employee_first_name,
+        accept.last_name AS accept_employee_last_name,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
         else array_to_string(array_agg(distinct comp.comment), ':')end
         as complete_comment,
@@ -54,14 +56,18 @@ view: care_request_flat {
 
       LEFT JOIN (SELECT care_request_id,
         name,
-        started_at,
+        crs.started_at,
         meta_data::json->> 'auto_assigned' AS auto_assigned,
         reassignment_reason,
         reassignment_reason_other,
         ROW_NUMBER() OVER(PARTITION BY care_request_id
-                                ORDER BY started_at DESC) AS rn
-        FROM care_request_statuses
-        WHERE name = 'accepted' AND deleted_at IS NULL) AS accept
+                                ORDER BY crs.started_at DESC) AS rn,
+        first_name,
+        last_name
+        FROM care_request_statuses crs
+        LEFT JOIN users
+        ON crs.user_id = users.id
+        WHERE name = 'accepted' AND crs.deleted_at IS NULL) AS accept
       ON cr.id = accept.care_request_id AND accept.rn = 1
 
       LEFT JOIN care_request_statuses AS onroute
@@ -84,7 +90,7 @@ view: care_request_flat {
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23 ;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25 ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -205,6 +211,18 @@ view: care_request_flat {
     type: number
     description: "The number of minutes between accepted time and on-route time"
     sql: (EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
+  }
+
+  dimension: accept_employee_first_name {
+    description: "The first name of the user who accepted the patient"
+    type: string
+    sql: ${TABLE}.accept_employee_first_name ;;
+  }
+
+  dimension: accept_employee_last_name {
+    description: "The last name of the user who accepted the patient"
+    type: string
+    sql: ${TABLE}.accept_employee_last_name ;;
   }
 
   measure:  average_drive_time_seconds{
