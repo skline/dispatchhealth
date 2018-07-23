@@ -1236,6 +1236,18 @@ view: care_request_flat {
     ) end ;;
   }
 
+  dimension: days_in_month_on_scene {
+    type: number
+    sql:
+     case when to_char(${on_scene_date} , 'YYYY-MM') = ${yesterday_mountain_month} then ${yesterday_mountain_day_of_month}
+    else
+      DATE_PART('days',
+        DATE_TRUNC('month', ${on_scene_date})
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ) end ;;
+  }
+
   dimension: first_half_month {
     type: yesno
     sql: ${complete_day_of_month} <= 15 ;;
