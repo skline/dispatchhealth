@@ -33,6 +33,9 @@ view: care_request_flat {
         case when array_to_string(array_agg(distinct archive.comment), ':') = '' then null
         else array_to_string(array_agg(distinct archive.comment), ':') end
         as archive_comment,
+        case when array_to_string(array_agg(distinct notes.note), ':') = '' then null
+        else array_to_string(array_agg(distinct notes.note), ':')end
+        as reorder_reason,
         cr.shift_team_id
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
@@ -53,6 +56,9 @@ view: care_request_flat {
 
         WHERE name = 'accepted' AND deleted_at IS NULL) AS accept1
       ON cr.id = accept1.care_request_id AND accept1.rn = 1
+      LEFT JOIN public.notes
+      ON notes.care_request_id = cr.id
+      AND notes.note_type = 'reorder_reason'
 
       LEFT JOIN (SELECT care_request_id,
         name,
@@ -353,6 +359,13 @@ view: care_request_flat {
     description: "The CSC comment provided when a care request is archived"
     sql: ${TABLE}.archive_comment ;;
   }
+
+  dimension: reorder_reason {
+    type: string
+    description: "The reorder reason"
+    sql: ${TABLE}.reorder_reason ;;
+  }
+
 
   dimension: complete_comment {
     type: string
