@@ -1285,6 +1285,17 @@ view: care_request_flat {
     sql: coalesce(${ga_pageviews_clone.high_low_intent}, ${web_ga_pageviews_clone.high_low_intent}) ;;
   }
 
+  measure: min_complete_timestamp {
+    type: date_time
+    sql: min(${complete_raw}) ;;
+  }
+
+  measure: max_complete_timestamp {
+    type: date_time
+    sql: max(${complete_raw}) ;;
+  }
+
+
   dimension: diversion_category {
     type: string
     sql: CASE
