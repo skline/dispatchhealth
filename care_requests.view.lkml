@@ -1097,6 +1097,15 @@ measure: distinct_day_of_week {
          end;;
   }
 
+  dimension: no_credit_card_reason {
+    type: string
+    sql:${TABLE}.no_credit_card_reason ;;
+  }
+  dimension: no_credit_card_reason_other {
+    type: string
+    sql:${TABLE}.no_credit_card_reason_other ;;
+  }
+
 
 
   # ----- Sets of fields for drilling ------

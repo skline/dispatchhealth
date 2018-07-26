@@ -434,6 +434,9 @@ explore: care_requests {
     relationship: one_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
   }
+  join: market_start_date{
+    sql_on: ${markets.id}=${market_start_date.market_id} ;;
+  }
 
   join: states {
     relationship: one_to_one

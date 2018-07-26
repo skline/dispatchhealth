@@ -1,24 +1,24 @@
 view: market_start_date {
   sql_table_name: looker_scratch.market_start_date ;;
 
-  dimension_group: first_accepted {
+  dimension: market_id {
+    type: number
+    sql: ${TABLE}.market_id ;;
+  }
+
+  dimension_group: market_start {
     type: time
-    convert_tz: no
     timeframes: [
       raw,
-      time,
       date,
       week,
       month,
       quarter,
       year
     ]
-    sql: ${TABLE}.first_accepted_time ;;
-  }
-
-  dimension: market_dim_id {
-    type: number
-    sql: ${TABLE}.market_dim_id ;;
+    convert_tz: no
+    datatype: date
+    sql: ${TABLE}.market_start ;;
   }
 
   measure: count {
