@@ -25,4 +25,8 @@ view: market_start_date {
     type: count
     drill_fields: []
   }
+  dimension: market_age {
+    type:  number
+    sql: extract(year from age( ${care_request_flat.complete_raw}, ${market_start_raw}))*12 + extract(month from age(${care_request_flat.complete_raw}, ${market_start_raw})) ;;
+  }
 }
