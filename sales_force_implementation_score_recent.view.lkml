@@ -148,7 +148,19 @@ dimension: complete_care_requests_last_month {
     type: zipcode
     sql:  coalesce(${zipcode}, ${channel_items.zipcode}) ;;
   }
+  dimension: account_age_days {
+    type: number
+    sql: DATE_PART('day', current_date::timestamp - ${sf_created_date}::timestamp) ;;
+  }
 
+  dimension: account_age_cat {
+    type: string
+    sql: case when ${account_age_days} <= 30 then '0-30'
+              when ${account_age_days} between 30 and 60 then '31-60'
+              when ${account_age_days} between 60 and 90 then '61-90'
+              when ${account_age_days}>=90 then '91+'
+              else null end;;
+  }
 
 
   }
