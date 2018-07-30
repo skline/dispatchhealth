@@ -63,6 +63,11 @@ view: patients {
     sql: ${age} >= 110 or ${age}<0;;
   }
 
+  dimension: pediatric_patient {
+    description: "A flag indicating patients age < 13"
+    type: yesno
+    sql: ${age} < 13 AND NOT ${bad_age_filter} ;;
+  }
 
   dimension: age_band_sort {
     type: string
