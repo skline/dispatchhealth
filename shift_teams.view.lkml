@@ -37,7 +37,7 @@ view: shift_teams {
       quarter,
       year
     ]
-    sql: ${TABLE}.end_time ;;
+    sql: ${TABLE}.end_time AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz}  ;;
   }
 
   dimension_group: end_mountain {
@@ -71,7 +71,7 @@ view: shift_teams {
       quarter,
       year
     ]
-    sql: ${TABLE}.start_time ;;
+    sql: ${TABLE}.start_time AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
   dimension_group: start_mountain {
