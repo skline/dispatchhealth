@@ -140,6 +140,7 @@ view: care_request_flat {
           THEN (EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}))::float/60.0
           ELSE NULL
         END ;;
+    value_format: "0.00"
   }
 
   dimension: post_logistics_date {
@@ -211,12 +212,14 @@ view: care_request_flat {
     type: number
     description: "The number of minutes between requested time and accepted time"
     sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
+    value_format: "0.00"
   }
 
   dimension: assigned_time_minutes {
     type: number
     description: "The number of minutes between accepted time and on-route time"
     sql: (EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
+    value_format: "0.00"
   }
 
   dimension: accept_employee_first_name {

@@ -50,6 +50,7 @@ view: toc_predictions {
   dimension: mins_on_scene_predicted {
     type: number
     sql: ${TABLE}.mins_on_scene_predicted ;;
+    value_format: "0.00"
   }
 
   dimension: new_patient {
