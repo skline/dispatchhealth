@@ -4,11 +4,13 @@ view: shift_routes {
       SELECT
         mkt.id AS market_id,
         stm.car_id,
-        a.created_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
+        crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
         a.latitude,
         a.longitude,
         1 AS care_request_location
         FROM care_requests cr
+        JOIN care_request_statuses crs
+          ON cr.id = crs.care_request_id AND crs.name = 'on_scene'
         JOIN addressable_items ai
           ON cr.id = ai.addressable_id AND ai.addressable_type = 'CareRequest'
         JOIN addresses a
@@ -19,6 +21,7 @@ view: shift_routes {
           ON cr.market_id = mkt.id
         LEFT JOIN looker_scratch.timezones tzs
           ON mkt.sa_time_zone = tzs.rails_tz
+        WHERE mkt.id IS NOT NULL
         UNION
         SELECT
           m.id AS market_id,
@@ -36,7 +39,7 @@ view: shift_routes {
           ON cars.market_id = m.id
         LEFT JOIN looker_scratch.timezones tz
           ON m.sa_time_zone = tz.rails_tz
-        WHERE random() <= 0.167 ;;
+        WHERE random() <= 0.25 ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["market_id", "car_id"]
