@@ -100,6 +100,18 @@ view: shift_routes {
     sql_longitude: ${longitude} ;;
   }
 
+  dimension: time_difference {
+    type: number
+    sql: ${TABLE}.time_difference ;;
+  }
+
+  dimension: time_difference_mins {
+    type: number
+    sql: ${time_difference}::float/60.0 ;;
+    value_format: "0.00"
+
+  }
+
   dimension: distance_to_office {
     type: distance
     start_location_field: car_location
