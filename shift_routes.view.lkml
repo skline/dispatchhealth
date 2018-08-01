@@ -51,6 +51,12 @@ view: shift_routes {
     indexes: ["market_id", "car_id"]
   }
 
+  dimension: compound_primary_key {
+    primary_key: yes
+    hidden: yes
+    sql: CAST(${market_id} AS text)||CAST(${car_id} AS text)||CAST(DATE(${update_time}) AS text) ;;
+  }
+
   dimension: market_id {
     type: number
     sql: ${TABLE}.market_id ;;
@@ -109,7 +115,11 @@ view: shift_routes {
     type: number
     sql: ${time_difference}::float/60.0 ;;
     value_format: "0.00"
+  }
 
+  measure: avg_time_difference {
+    type: average
+    sql: ${time_difference_mins} ;;
   }
 
   dimension: distance_to_office {
