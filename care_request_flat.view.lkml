@@ -234,6 +234,21 @@ view: care_request_flat {
     sql: ${TABLE}.accept_employee_last_name ;;
   }
 
+  dimension: accepted_patient {
+    type: yesno
+    hidden: yes
+    sql: ${accept_date} IS NOT NULL ;;
+  }
+
+  measure: count_accepted_patients {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: accepted_patient
+      value: "yes"
+    }
+  }
+
   measure:  average_drive_time_seconds{
     type: average_distinct
     description: "The average seconds between on-route time and on-scene time"
