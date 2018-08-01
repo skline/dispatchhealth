@@ -170,4 +170,9 @@ view: athenadwh_documents_clone {
     sql: ${document_id} ;;
   }
 
+  measure: count_encounters {
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+  }
+
 }
