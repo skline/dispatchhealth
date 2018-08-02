@@ -33,7 +33,7 @@ view: geo_locations {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at ;;
+    sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz}  ;;
   }
 
   dimension: latitude {
@@ -44,6 +44,12 @@ view: geo_locations {
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
+  }
+
+  dimension: geo_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
   }
 
   dimension_group: updated {
@@ -57,12 +63,13 @@ view: geo_locations {
       quarter,
       year
     ]
-    sql: ${TABLE}.updated_at ;;
+    sql: ${TABLE}.updated_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
   dimension: velocity {
     type: number
     sql: ${TABLE}.velocity ;;
+    hidden: yes
   }
 
   measure: count {
