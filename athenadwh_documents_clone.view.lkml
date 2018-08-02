@@ -22,6 +22,12 @@ view: athenadwh_documents_clone {
     sql: ${TABLE}.clinical_order_type ;;
   }
 
+  dimension: rapid_strep_test {
+    type: yesno
+    description: "A flag indicating a rapid strep test"
+    sql: ${clinical_order_type} LIKE '%RAPID STREP GROUP A%' ;;
+  }
+
   dimension: referral_type {
     type: string
     sql: CASE
