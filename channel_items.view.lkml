@@ -180,7 +180,7 @@ view: channel_items {
     sql: case
           when (${type_name} is null and ${name} not in('Family or friend', 'Healthcare provider', 'Healthcare Provider', 'Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel', 'West Metro Fire Rescue', 'South Metro Fire Rescue')) then 'Direct to Consumer'
           when ${type_name} in('Senior Care', 'Hospice & Palliative Care', 'SNF' , 'Home Health') or  ${name} in('Healthcare provider', 'Healthcare Provider')  then 'Senior Care'
-          when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group') or ${name} in('Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel', 'West Metro Fire Rescue', 'South Metro Fire Rescue') then 'Strategic'
+          when ${type_name} in('Health System', 'Employer', 'Payer', 'Provider Group', 'Injury Finance') or ${name} in('Employer', 'Employer Organization', 'Health Insurance Company', '911 Channel', 'West Metro Fire Rescue', 'South Metro Fire Rescue') then 'Strategic'
           when ${digital_bool} then 'Direct to Consumer'
           when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
           when ${name} ='Family or friend' then 'Family or Friends'

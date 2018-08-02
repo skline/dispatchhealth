@@ -511,7 +511,8 @@ view: care_request_flat {
       month,
       day_of_week,
       day_of_week_index,
-      day_of_month
+      day_of_month,
+      month_num
     ]
     sql: ${TABLE}.created_date ;;
   }

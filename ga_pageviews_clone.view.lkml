@@ -485,10 +485,6 @@ dimension: source_category
     sql:  ${marketing_cost_clone.sum_cost}/NULLIF(${count_distinct_sessions}, 0) ;;
   }
 
-
-
-
-
   measure: sessions_to_calls_rate {
     type: number
     value_format: "0%"
