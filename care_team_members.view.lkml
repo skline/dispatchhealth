@@ -53,7 +53,7 @@ view: care_team_members {
 
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: INITCAP(${TABLE}.name) ;;
   }
 
   dimension: phone {
@@ -69,6 +69,11 @@ view: care_team_members {
   dimension: source {
     type: string
     sql: ${TABLE}.source ;;
+  }
+
+  dimension: send_automatically {
+    type: yesno
+    sql: ${TABLE}.send_automatically IS TRUE ;;
   }
 
   dimension_group: updated {

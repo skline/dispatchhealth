@@ -143,6 +143,12 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  dimension: on_scene_time_30min_or_less {
+    type: yesno
+    description: "A flag indicating the on scene time was less than 30 minutes"
+    sql: ${on_scene_time_minutes} < 30.0 ;;
+  }
+
   dimension: post_logistics_date {
     type: yesno
     description: "A flag indicating the logistics platform was put into production (06/27/2018)"

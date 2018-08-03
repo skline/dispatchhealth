@@ -4,19 +4,28 @@ view: shift_routes {
       SELECT
         f.*,
         EXTRACT(EPOCH FROM (
-            (lead((update_time), 1) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time))
-            - (update_time))) AS time_difference
+            (lead(update_time, 1, update_time) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time))
+            - (update_time)))::float/60.0 AS time_difference,
+        CAST(market_id AS text)||CAST(car_id AS text)||CAST(DATE(update_time) AS text) AS p_key
       FROM
       (SELECT
          mkt.id AS market_id,
          stm.car_id,
-         crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
+         MAX(crs.started_at) AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
+         MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS complete_time,
+         CASE
+           WHEN ABS((EXTRACT(EPOCH FROM comp.started_at)-EXTRACT(EPOCH FROM crs.started_at))::float/60.0) < 241
+           THEN (EXTRACT(EPOCH FROM comp.started_at)-EXTRACT(EPOCH FROM crs.started_at))::float/60.0
+           ELSE NULL
+         END AS mins_on_scene,
          a.latitude,
          a.longitude,
          1 AS care_request_location
          FROM care_requests cr
          JOIN care_request_statuses crs
            ON cr.id = crs.care_request_id AND crs.name = 'on_scene'
+         JOIN care_request_statuses comp
+           ON cr.id = comp.care_request_id AND comp.name = 'complete'
          JOIN addressable_items ai
            ON cr.id = ai.addressable_id AND ai.addressable_type = 'CareRequest'
          JOIN addresses a
@@ -28,11 +37,14 @@ view: shift_routes {
          LEFT JOIN looker_scratch.timezones tzs
            ON mkt.sa_time_zone = tzs.rails_tz
          WHERE mkt.id IS NOT NULL
+         GROUP BY 1,2,5,6,7,8, pg_tz
         UNION
         SELECT
           m.id AS market_id,
           gl.car_id,
           gl.created_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
+          NULL AS complete_time,
+          0 AS mins_on_scene,
           gl.latitude,
           gl.longitude,
           0 AS care_request_location
@@ -72,6 +84,12 @@ view: shift_routes {
     sql: ${TABLE}.care_request_location ;;
   }
 
+  dimension: mins_on_scene {
+    type: number
+    sql: ${TABLE}.mins_on_scene ;;
+    value_format: "0.00"
+  }
+
   dimension_group: update {
     type: time
     description: "The local date and time when latitude/longitude was updated"
@@ -88,6 +106,24 @@ view: shift_routes {
       day_of_month
     ]
     sql: ${TABLE}.update_time ;;
+  }
+
+  dimension_group: complete {
+    type: time
+    description: "The local date and time when latitude/longitude was updated"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.complete_time ;;
   }
 
   dimension: latitude {
@@ -109,17 +145,13 @@ view: shift_routes {
   dimension: time_difference {
     type: number
     sql: ${TABLE}.time_difference ;;
-  }
-
-  dimension: time_difference_mins {
-    type: number
-    sql: ${time_difference}::float/60.0 ;;
     value_format: "0.00"
   }
 
   measure: avg_time_difference {
     type: average
-    sql: ${time_difference_mins} ;;
+    sql: ${time_difference} ;;
+    value_format: "0.00"
   }
 
   dimension: distance_to_office {
