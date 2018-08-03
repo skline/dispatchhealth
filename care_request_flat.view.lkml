@@ -1158,6 +1158,11 @@ view: care_request_flat {
       value: "yes"
     }
   }
+  dimension: hours_to_archive {
+    value_format: "0.0"
+    type: number
+    sql: round(EXTRACT(EPOCH FROM ${archive_raw}-${requested_raw})/3600) ;;
+  }
 
   dimension: escalated_on_phone_reason {
     type: string
