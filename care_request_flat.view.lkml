@@ -186,8 +186,14 @@ view: care_request_flat {
 
   dimension: auto_assigned_final {
     type: string
-    description: "A flag indicating the care request was auto-assigned"
+    description: "A flag indicating the care request was auto-assigned (String)"
     sql: ${TABLE}.auto_assigned_final ;;
+  }
+
+  dimension: auto_assigned_flag {
+    type: yesno
+    description: "A flag indicating the care request was auto-assigned (Boolean)"
+    sql: ${TABLE}.auto_assigned_final = 'true' ;;
   }
 
   dimension: reassignment_reason_final {
