@@ -105,6 +105,16 @@ view: channel_items {
     sql: ${TABLE}.preferred_partner_description ;;
   }
 
+  dimension: send_clinical_note {
+    type: yesno
+    sql: ${TABLE}.send_clinical_note IS TRUE ;;
+  }
+
+  dimension: send_note_automatically {
+    type: yesno
+    sql: ${TABLE}.send_note_automatically IS TRUE ;;
+  }
+
   dimension: source_name {
     type: string
     sql: ${TABLE}.source_name ;;
