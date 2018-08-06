@@ -26,7 +26,7 @@ view: incontact_clone {
 
   dimension: month_to_date  {
     type:  yesno
-    sql: ${start_day_of_month} <=${today_mountain_day_of_month}  ;;
+    sql: ${start_day_of_month} < ${today_mountain_day_of_month}  ;;
   }
 
   dimension: until_today {
