@@ -455,7 +455,8 @@ view: visit_facts {
 
   measure: count_complete_visits {
     label: "Complete Visits Count"
-    type: count
+    type: count_distinct
+    sql: ${care_request_id} ;;
     filters: {
       field: complete_visit
       value: "yes"
