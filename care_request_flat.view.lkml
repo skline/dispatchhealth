@@ -227,11 +227,29 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  dimension: is_reasonable_in_queue_time {
+    type: yesno
+    hidden: yes
+    sql: ${in_queue_time_minutes} < 720  ;;
+  }
+
   dimension: assigned_time_minutes {
     type: number
     description: "The number of minutes between accepted time and on-route time"
     sql: (EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
     value_format: "0.00"
+  }
+
+  dimension: is_reasonable_assigned_time {
+    type: yesno
+    hidden: yes
+    sql: ${assigned_time_minutes} < 720  ;;
+  }
+
+  dimension: is_reasonable_on_scene_time {
+    type: yesno
+    hidden: yes
+    sql: ${on_scene_time_seconds} > 299 AND ${on_scene_time_seconds} < 14401 ;;
   }
 
   dimension: accept_employee_first_name {
@@ -279,6 +297,10 @@ view: care_request_flat {
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${in_queue_time_seconds} ;;
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
   }
 
   measure:  average_assigned_time_seconds{
@@ -287,6 +309,10 @@ view: care_request_flat {
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${assigned_time_seconds} ;;
+    filters: {
+      field: is_reasonable_assigned_time
+      value: "yes"
+    }
   }
 
   measure:  average_drive_time_minutes{
@@ -315,6 +341,10 @@ view: care_request_flat {
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${in_queue_time_minutes} ;;
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
   }
 
   measure:  average_assigned_time_minutes{
@@ -323,6 +353,10 @@ view: care_request_flat {
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${assigned_time_minutes} ;;
+    filters: {
+      field: is_reasonable_assigned_time
+      value: "yes"
+    }
   }
 
   measure:  average_on_scene_time_minutes{
@@ -331,7 +365,10 @@ view: care_request_flat {
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${on_scene_time_minutes} ;;
-
+    filters: {
+      field: is_reasonable_on_scene_time
+      value: "yes"
+    }
   }
 #   Need to get this working for histograms
    parameter: bucket_size {
