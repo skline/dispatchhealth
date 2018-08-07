@@ -149,10 +149,13 @@ view: care_request_flat {
     sql: ${on_scene_time_minutes} < 30.0 ;;
   }
 
-  dimension: post_logistics_date {
+  dimension: post_logistics_flag {
     type: yesno
-    description: "A flag indicating the logistics platform was put into production (06/27/2018)"
-    sql: ${accept_date} >= '2018-06-27' ;;
+    description: "A flag indicating the logistics platform was put into production"
+    sql: (${market_id} IN (160, 162, 165, 166) AND ${created_date} >= '2018-06-27') OR
+         (${market_id} = 161 AND ${created_date} >= '2018-07-30') OR
+         (${market_id} = 159 AND ${created_date} >= '2018-07-31') OR
+         (${created_date} >= '2018-08-07') ;;
   }
 
   dimension: post_cc_fix_date {
