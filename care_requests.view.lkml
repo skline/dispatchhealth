@@ -1101,11 +1101,27 @@ measure: distinct_day_of_week {
     type: string
     sql:${TABLE}.no_credit_card_reason ;;
   }
+
   dimension: no_credit_card_reason_other {
     type: string
     sql:${TABLE}.no_credit_card_reason_other ;;
   }
 
+  dimension: no_credit_card_collected {
+    type: yesno
+    hidden: yes
+    sql: ${no_credit_card_reason} = '' IS FALSE;;
+  }
+
+  measure: count_no_credit_card_collected {
+    type: count_distinct
+    description: "Count of care requests where no credit card was collected"
+    sql: ${id} ;;
+    filters: {
+      field: no_credit_card_collected
+      value: "yes"
+    }
+  }
 
 
   # ----- Sets of fields for drilling ------
