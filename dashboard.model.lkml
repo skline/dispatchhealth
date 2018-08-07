@@ -436,7 +436,7 @@ explore: care_requests {
   }
 
   join: markets {
-    relationship: one_to_one
+    relationship: many_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
   }
   join: market_start_date{
@@ -549,7 +549,8 @@ explore: care_requests {
   }
 
   join: channel_items {
-    sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+    relationship: many_to_one
+    sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
   }
 
   join: patient_payer_lookup{
