@@ -88,6 +88,11 @@ dimension: complete_care_requests_last_month {
   type: number
   sql:  ${TABLE}.complete_care_requests;;
   }
+  measure: sum_complete_care_requests_last_month {
+    type: sum_distinct
+    sql_distinct_key: concat(${sf_account_name}, ${sf_implementation_name}) ;;
+    sql:  ${complete_care_requests_last_month};;
+  }
 
   dimension: projected_volume {
     type: number
