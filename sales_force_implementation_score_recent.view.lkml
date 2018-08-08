@@ -90,7 +90,15 @@ dimension: complete_care_requests_last_month {
   }
   measure: sum_complete_care_requests_last_month {
     type: sum_distinct
-    sql_distinct_key: concat(${sf_account_name}, ${sf_implementation_name}) ;;
+    sql_distinct_key: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
+    sql:  ${complete_care_requests_last_month};;
+  }
+
+
+  measure: average_complete_care_requests_last_month {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
     sql:  ${complete_care_requests_last_month};;
   }
 
@@ -163,7 +171,19 @@ dimension: complete_care_requests_last_month {
     sql: case when ${account_age_days} <= 30 then '0-30'
               when ${account_age_days} between 30 and 60 then '31-60'
               when ${account_age_days} between 60 and 90 then '61-90'
-              when ${account_age_days}>=90 then '91+'
+              when ${account_age_days} between 90 and 120 then '91-120'
+
+              when ${account_age_days}>=120 then '120+'
+              else null end;;
+  }
+
+  dimension: implementation_cat {
+    type: string
+    sql: case when ${implementation_score} <= 20 then '0-20'
+              when ${implementation_score} between 20 and 40 then '21-40'
+              when ${implementation_score} between 40 and 60 then '41-60'
+              when ${implementation_score} between 60 and 80 then '61-80'
+              when ${implementation_score}>=80 then '80+'
               else null end;;
   }
 
