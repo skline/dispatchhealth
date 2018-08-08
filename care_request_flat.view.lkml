@@ -401,6 +401,30 @@ view: care_request_flat {
     sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
   }
 
+  measure: average_wait_time_total_pre_logistics {
+    description: "Total patient wait time: the average minutes between requested time and on-scene time"
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds} ;;
+    filters: {
+      field: auto_assigned_flag
+      value: "no"
+    }
+  }
+
+  measure: average_wait_time_total_post_logistics {
+    description: "Total patient wait time: the average minutes between requested time and on-scene time"
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds} ;;
+    filters: {
+      field: auto_assigned_flag
+      value: "yes"
+    }
+  }
+
   dimension: last_care_request {
     type: yesno
     sql: MAX(${complete_raw}) ;;
