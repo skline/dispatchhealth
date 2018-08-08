@@ -32,6 +32,16 @@ view: athenadwh_transactions_clone {
     sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'PAYMENT' ;;
   }
 
+  dimension: copay_transaction {
+    type: yesno
+    sql: ${transaction_reason} = 'COPAY' ;;
+  }
+
+  dimension: deductible_transaction {
+    type: yesno
+    sql: ${transaction_reason} = 'DEDUCTIBLE' ;;
+  }
+
   dimension: patient_responsibility {
     type: yesno
     sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'TRANSFERIN' ;;
@@ -61,6 +71,34 @@ view: athenadwh_transactions_clone {
     value_format: "0.00"
     filters: {
       field: patient_responsibility
+      value: "yes"
+    }
+  }
+
+  measure: total_patient_responsibility_copay {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility
+      value: "yes"
+    }
+    filters: {
+      field: copay_transaction
+      value: "yes"
+    }
+  }
+
+  measure: total_patient_responsibility_deductible {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility
+      value: "yes"
+    }
+    filters: {
+      field: deductible_transaction
       value: "yes"
     }
   }
