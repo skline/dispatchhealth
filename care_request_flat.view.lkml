@@ -1205,6 +1205,32 @@ view: care_request_flat {
     }
   }
 
+  measure: lwbs_count_pre_logistics {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: post_logistics_flag
+      value: "no"
+    }
+  }
+
+  measure: lwbs_count_post_logistics {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: post_logistics_flag
+      value: "yes"
+    }
+  }
+
   measure: lwbs_no_longer_need_count {
     type: count_distinct
     description: "Count of care requests where resolve reason is 'No longer need care'"
