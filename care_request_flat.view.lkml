@@ -411,6 +411,18 @@ view: care_request_flat {
       field: auto_assigned_flag
       value: "no"
     }
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_assigned_time
+      value: "yes"
+    }
   }
 
   measure: average_wait_time_total_post_logistics {
@@ -421,6 +433,18 @@ view: care_request_flat {
     sql: ${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds} ;;
     filters: {
       field: auto_assigned_flag
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_assigned_time
       value: "yes"
     }
   }
