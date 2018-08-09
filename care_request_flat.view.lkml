@@ -493,7 +493,7 @@ view: care_request_flat {
   dimension: followup_3day_result {
     type: string
     description: "The 3-day follow-up call result"
-    sql: ${TABLE}.followup_3day_result ;;
+    sql: TRIM(${TABLE}.followup_3day_result) ;;
   }
 
   dimension: followup_3day {
@@ -511,7 +511,7 @@ view: care_request_flat {
   dimension: followup_14day_result {
     type: string
     description: "The 14-day follow-up result"
-    sql: ${TABLE}.followup_14day_result ;;
+    sql: TRIM(${TABLE}.followup_14day_result) ;;
   }
 
   dimension: bounceback_14day {
@@ -522,7 +522,7 @@ view: care_request_flat {
   dimension: followup_30day_result {
     type: string
     description: "The 30-day follow-up result"
-    sql: ${TABLE}.followup_30day_result ;;
+    sql: TRIM(${TABLE}.followup_30day_result) ;;
   }
 
   dimension: followup_30day {
@@ -535,7 +535,7 @@ view: care_request_flat {
 
   dimension: no_hie_data {
     type: yesno
-    sql: ${followup_14day_result} != 'no_hie_data' OR ${followup_30day_result} != 'no_hie_data' ;;
+    sql: ${complete_date} IS NOT NULL AND (${followup_14day_result} = 'no_hie_data' OR ${followup_30day_result} = 'no_hie_data') ;;
   }
 
   measure: count_no_hie_data {
