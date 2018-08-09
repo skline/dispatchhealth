@@ -28,6 +28,30 @@ view: primary_payer_dimensions_clone {
     sql: ${TABLE}.custom_insurance_grouping ;;
   }
 
+  dimension: medicare_advantage_flag {
+    type: yesno
+    hidden: yes
+    sql: ${custom_insurance_grouping} =  '(MA)MEDICARE ADVANTAGE';;
+  }
+
+  dimension: commercial_flag {
+    type: yesno
+    hidden: yes
+    sql: ${custom_insurance_grouping} =  '(CM)COMMERCIAL';;
+  }
+
+  dimension: medicare_flag {
+    type: yesno
+    hidden: yes
+    sql: ${custom_insurance_grouping} =  '(MCARE)MEDICARE';;
+  }
+
+  dimension: medicaid_flag {
+    type: yesno
+    hidden: yes
+    sql: ${custom_insurance_grouping} =  '(MAID)MEDICAID';;
+  }
+
   dimension: custom_insurance_label {
     type: string
     sql: CASE ${custom_insurance_grouping}
