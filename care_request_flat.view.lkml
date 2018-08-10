@@ -726,6 +726,7 @@ view: care_request_flat {
       week,
       month,
       month_num,
+      day_of_week,
       day_of_week_index,
       day_of_month,quarter,
       hour
@@ -1470,14 +1471,13 @@ view: care_request_flat {
         AND
         ${on_scene_hour_of_day} < 15
         AND
-       ${on_scene_day_of_week_index} NOT IN ( 1,
-                                               7 ) THEN 'senior care - weekdays before 3pm'
+       ${on_scene_day_of_week_index} NOT IN (5, 6) THEN 'senior care - weekdays before 3pm'
       WHEN lower(${channel_items.type_name})  = 'senior care'
         AND
         (
           ${on_scene_hour_of_day} > 15
           OR
-            ${on_scene_day_of_week_index} IN ( 1,7 )
+            ${on_scene_day_of_week_index} IN (5, 6)
         )
         THEN 'senior care - weekdays after 3pm and weekends'
       WHEN ${ed_diversion_survey_response_clone.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
@@ -1504,7 +1504,7 @@ view: care_request_flat {
       WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
       WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
       WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0.0
-      WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate_clone.er_percent}
+      WHEN ${diversion_category} = 'no survey' THEN ROUND(CAST(${ed_diversion_survey_response_rate_clone.er_percent} AS numeric), 3)
         ELSE 0.0
       END ;;
   }
