@@ -18,7 +18,7 @@ view: cpt_code_types_clone {
 
   dimension: e_m_level {
     type: string
-    sql: ${TABLE}.e_m_level ;;
+    sql: UPPER(${TABLE}.e_m_level) ;;
   }
 
   dimension: fee {

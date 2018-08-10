@@ -416,6 +416,18 @@ view: care_request_flat {
       field: auto_assigned_flag
       value: "no"
     }
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_assigned_time
+      value: "yes"
+    }
   }
 
   measure: average_wait_time_total_post_logistics {
@@ -426,6 +438,18 @@ view: care_request_flat {
     sql: ${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds} ;;
     filters: {
       field: auto_assigned_flag
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_assigned_time
       value: "yes"
     }
   }
@@ -474,7 +498,7 @@ view: care_request_flat {
   dimension: followup_3day_result {
     type: string
     description: "The 3-day follow-up call result"
-    sql: ${TABLE}.followup_3day_result ;;
+    sql: TRIM(${TABLE}.followup_3day_result) ;;
   }
 
   dimension: followup_3day {
@@ -492,7 +516,7 @@ view: care_request_flat {
   dimension: followup_14day_result {
     type: string
     description: "The 14-day follow-up result"
-    sql: ${TABLE}.followup_14day_result ;;
+    sql: TRIM(${TABLE}.followup_14day_result) ;;
   }
 
   dimension: bounceback_14day {
@@ -503,7 +527,7 @@ view: care_request_flat {
   dimension: followup_30day_result {
     type: string
     description: "The 30-day follow-up result"
-    sql: ${TABLE}.followup_30day_result ;;
+    sql: TRIM(${TABLE}.followup_30day_result) ;;
   }
 
   dimension: followup_30day {
@@ -516,7 +540,7 @@ view: care_request_flat {
 
   dimension: no_hie_data {
     type: yesno
-    sql: ${followup_14day_result} != 'no_hie_data' OR ${followup_30day_result} != 'no_hie_data' ;;
+    sql: ${complete_date} IS NOT NULL AND (${followup_14day_result} = 'no_hie_data' OR ${followup_30day_result} = 'no_hie_data') ;;
   }
 
   measure: count_no_hie_data {
@@ -1183,6 +1207,32 @@ view: care_request_flat {
     sql: ${care_request_id} ;;
     filters: {
       field: lwbs
+      value: "yes"
+    }
+  }
+
+  measure: lwbs_count_pre_logistics {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: post_logistics_flag
+      value: "no"
+    }
+  }
+
+  measure: lwbs_count_post_logistics {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: post_logistics_flag
       value: "yes"
     }
   }

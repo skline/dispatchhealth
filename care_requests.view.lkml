@@ -535,6 +535,24 @@ view: care_requests {
    sql: count(distinct ${id}) ;;
   }
 
+  measure: count_distinct_pre_logistics {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: care_request_flat.post_logistics_flag
+      value: "no"
+    }
+  }
+
+  measure: count_distinct_post_logistics {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: care_request_flat.post_logistics_flag
+      value: "yes"
+    }
+  }
+
 
   dimension:  complete_visit {
     type: yesno
