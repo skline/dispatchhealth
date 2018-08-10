@@ -498,6 +498,10 @@ explore: care_requests {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
+  join: seasonal_adj {
+    sql_on: ${care_request_flat.on_scene_month_num}=${seasonal_adj.month_number} ;;
+  }
+
   join: google_trend_data {
     sql_on: ${care_request_flat.on_scene_month_num} = ${google_trend_data.month}
             and

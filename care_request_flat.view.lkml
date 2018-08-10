@@ -108,6 +108,11 @@ view: care_request_flat {
     sql: ${TABLE}.care_request_id ;;
   }
 
+  measure: complete_count_seasonal_adj {
+    type: number
+    value_format: "#,##0"
+    sql: ${complete_count}/${seasonal_adj.seasonal_adj} ;;
+  }
   dimension: on_scene_time_seconds {
     type: number
     description: "The number of seconds between complete time and on scene time"
@@ -785,7 +790,8 @@ view: care_request_flat {
       day_of_week,
       day_of_week_index,
       day_of_month,
-      quarter
+      quarter,
+      month_num
       ]
     sql: ${TABLE}.complete_date ;;
   }
