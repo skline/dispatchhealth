@@ -56,6 +56,12 @@ view: market_dimensions {
     sql: ${TABLE}.market_name ;;
   }
 
+  dimension: market_name_adj {
+    type: string
+    sql: case when ${market_name} = 'West Metro Fire Rescue' then 'Denver'
+      else ${market_name} end;;
+  }
+
   dimension: state {
     type: string
     sql: ${TABLE}.state ;;
