@@ -87,7 +87,7 @@ view: channel_items {
 
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: TRIM(INITCAP(${TABLE}.name)) ;;
   }
 
   dimension: phone {
