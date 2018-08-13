@@ -11,8 +11,5 @@ view: southwire {
     sql: ${TABLE}.zipcode ;;
   }
 
-  measure: count {
-    type: count
-    drill_fields: []
-  }
+
 }
