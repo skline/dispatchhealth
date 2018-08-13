@@ -105,34 +105,6 @@ view: athenadwh_transactions_clone {
     }
   }
 
-  measure: total_patient_responsibility_copay {
-    type: sum
-    sql: ${amount} ;;
-    value_format: "0.00"
-    filters: {
-      field: patient_responsibility
-      value: "yes"
-    }
-    filters: {
-      field: copay_transaction
-      value: "yes"
-    }
-  }
-
-  measure: total_patient_responsibility_deductible {
-    type: sum
-    sql: ${amount} ;;
-    value_format: "0.00"
-    filters: {
-      field: patient_responsibility
-      value: "yes"
-    }
-    filters: {
-      field: deductible_transaction
-      value: "yes"
-    }
-  }
-
   measure: total_patient_responsibility_without_secondary {
     type: sum
     sql: ${amount} ;;
