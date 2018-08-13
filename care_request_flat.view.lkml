@@ -111,7 +111,7 @@ view: care_request_flat {
   measure: complete_count_seasonal_adj {
     type: number
     value_format: "#,##0"
-    sql: ${complete_count}/${seasonal_adj.seasonal_adj} ;;
+    sql: (${complete_count}/${seasonal_adj.seasonal_adj})/${days_in_month_adj.days_in_month_adj} ;;
   }
   dimension: on_scene_time_seconds {
     type: number
@@ -1380,6 +1380,19 @@ view: care_request_flat {
     type: number
     sql: round(${complete_count}/${month_percent});;
   }
+
+  measure: monthly_complete_run_rate_seasonal_adj {
+    type: number
+    value_format: "#,##0"
+    sql: (
+           (
+            ${complete_count}/${month_percent}
+           )
+          /${seasonal_adj.seasonal_adj}
+         )
+        /${days_in_month_adj.days_in_month_adj};;
+  }
+
 
   dimension: rolling_30_day {
     type: string
