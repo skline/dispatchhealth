@@ -32,16 +32,6 @@ view: athenadwh_transactions_clone {
     sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'PAYMENT' ;;
   }
 
-  dimension: copay_transaction {
-    type: yesno
-    sql: ${transaction_reason} = 'COPAY' ;;
-  }
-
-  dimension: deductible_transaction {
-    type: yesno
-    sql: ${transaction_reason} = 'DEDUCTIBLE' ;;
-  }
-
   dimension: patient_responsibility {
     type: yesno
     sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'TRANSFERIN' ;;
