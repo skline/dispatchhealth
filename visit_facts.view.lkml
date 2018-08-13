@@ -1241,7 +1241,7 @@ view: visit_facts {
     type: yesno
     description: "A flag indicating the 3-day follow-up was completed"
     sql: ${billable_visit} AND ${resolve_reason} LIKE '%NOT APPLICABLE%' AND
-      (${day_3_followup_outcome} NOT IN ('PENDING', 'REMOVED', 'patient_called_but_did_not_answer')) ;;
+      (${day_3_followup_outcome} NOT IN ('PENDING', 'REMOVED', 'patient_called_but_did_not_answer', 'UNDOCUMENTED')) ;;
   }
 
   measure: count_3day_followups {
@@ -1289,7 +1289,7 @@ view: visit_facts {
     type: yesno
     description: "A flag indicating the 30-day follow-up was completed"
     sql: ${billable_visit} AND ${resolve_reason} LIKE '%NOT APPLICABLE%' AND
-      (${day_30_followup_outcome} NOT IN ('REMOVED', 'PENDING', 'no_hie_data') OR
+      (${day_30_followup_outcome} NOT IN ('REMOVED', 'PENDING', 'no_hie_data', 'UNDOCUMENTED') OR
       ${bb_3_day} OR ${bb_14_day}) ;;
   }
 

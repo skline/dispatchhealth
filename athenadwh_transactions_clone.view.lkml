@@ -55,6 +55,18 @@ view: athenadwh_transactions_clone {
         (${transaction_transfer_type} = 'Secondary' AND ${transaction_type} = 'TRANSFEROUT') ;;
   }
 
+  dimension: copay_transaction {
+    description: "Transactions that are specific to copay"
+    type: yesno
+    sql: ${transaction_reason} = 'COPAY' ;;
+  }
+
+  dimension: deductible_transaction {
+    description: "Transactions that are specific to deductible"
+    type: yesno
+    sql: ${transaction_reason} = 'DEDUCTIBLE' ;;
+  }
+
   measure: total_oop_paid {
     type: sum
     sql: ${payment_amount} ;;
@@ -71,6 +83,34 @@ view: athenadwh_transactions_clone {
     value_format: "0.00"
     filters: {
       field: patient_responsibility
+      value: "yes"
+    }
+  }
+
+  measure: total_patient_responsibility_copay {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility
+      value: "yes"
+    }
+    filters: {
+      field: copay_transaction
+      value: "yes"
+    }
+  }
+
+  measure: total_patient_responsibility_deductible {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility
+      value: "yes"
+    }
+    filters: {
+      field: deductible_transaction
       value: "yes"
     }
   }
@@ -126,6 +166,24 @@ view: athenadwh_transactions_clone {
   measure: count_claims {
     type: count_distinct
     sql: ${claim_id} ;;
+  }
+
+  measure: count_deductible_claims {
+    type: count_distinct
+    sql: ${claim_id} ;;
+    filters: {
+      field: deductible_transaction
+      value: "yes"
+    }
+  }
+
+  measure: count_copay_claims {
+    type: count_distinct
+    sql: ${claim_id} ;;
+    filters: {
+      field: copay_transaction
+      value: "yes"
+    }
   }
 
   dimension_group: created {

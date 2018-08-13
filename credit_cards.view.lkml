@@ -122,6 +122,42 @@ view: credit_cards {
     sql: ${care_request_id} ;;
   }
 
+  measure: credit_card_count_commercial {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: primary_payer_dimensions_clone.commercial_flag
+      value: "yes"
+    }
+  }
+
+  measure: credit_card_count_medicare_advantage {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: primary_payer_dimensions_clone.medicare_advantage_flag
+      value: "yes"
+    }
+  }
+
+  measure: credit_card_count_medicaid {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: primary_payer_dimensions_clone.medicaid_flag
+      value: "yes"
+    }
+  }
+
+  measure: credit_card_count_medicare {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: primary_payer_dimensions_clone.medicare_flag
+      value: "yes"
+    }
+  }
+
   measure: dh_credit_card_count {
     label: "Dispatch Health Credit Card Count"
     type: count_distinct

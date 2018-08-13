@@ -108,6 +108,11 @@ view: care_request_flat {
     sql: ${TABLE}.care_request_id ;;
   }
 
+  measure: complete_count_seasonal_adj {
+    type: number
+    value_format: "#,##0"
+    sql: ${complete_count}/${seasonal_adj.seasonal_adj} ;;
+  }
   dimension: on_scene_time_seconds {
     type: number
     description: "The number of seconds between complete time and on scene time"
@@ -401,6 +406,54 @@ view: care_request_flat {
     sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
   }
 
+  measure: average_wait_time_total_pre_logistics {
+    description: "Total patient wait time: the average minutes between requested time and on-scene time"
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds} ;;
+    filters: {
+      field: auto_assigned_flag
+      value: "no"
+    }
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_assigned_time
+      value: "yes"
+    }
+  }
+
+  measure: average_wait_time_total_post_logistics {
+    description: "Total patient wait time: the average minutes between requested time and on-scene time"
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds} ;;
+    filters: {
+      field: auto_assigned_flag
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+    filters: {
+      field: is_reasonable_assigned_time
+      value: "yes"
+    }
+  }
+
   dimension: last_care_request {
     type: yesno
     sql: MAX(${complete_raw}) ;;
@@ -445,7 +498,7 @@ view: care_request_flat {
   dimension: followup_3day_result {
     type: string
     description: "The 3-day follow-up call result"
-    sql: ${TABLE}.followup_3day_result ;;
+    sql: TRIM(${TABLE}.followup_3day_result) ;;
   }
 
   dimension: followup_3day {
@@ -463,7 +516,7 @@ view: care_request_flat {
   dimension: followup_14day_result {
     type: string
     description: "The 14-day follow-up result"
-    sql: ${TABLE}.followup_14day_result ;;
+    sql: TRIM(${TABLE}.followup_14day_result) ;;
   }
 
   dimension: bounceback_14day {
@@ -474,7 +527,7 @@ view: care_request_flat {
   dimension: followup_30day_result {
     type: string
     description: "The 30-day follow-up result"
-    sql: ${TABLE}.followup_30day_result ;;
+    sql: TRIM(${TABLE}.followup_30day_result) ;;
   }
 
   dimension: followup_30day {
@@ -487,7 +540,7 @@ view: care_request_flat {
 
   dimension: no_hie_data {
     type: yesno
-    sql: ${followup_14day_result} != 'no_hie_data' OR ${followup_30day_result} != 'no_hie_data' ;;
+    sql: ${complete_date} IS NOT NULL AND (${followup_14day_result} = 'no_hie_data' OR ${followup_30day_result} = 'no_hie_data') ;;
   }
 
   measure: count_no_hie_data {
@@ -673,6 +726,7 @@ view: care_request_flat {
       week,
       month,
       month_num,
+      day_of_week,
       day_of_week_index,
       day_of_month,quarter,
       hour
@@ -761,7 +815,8 @@ view: care_request_flat {
       day_of_week,
       day_of_week_index,
       day_of_month,
-      quarter
+      quarter,
+      month_num
       ]
     sql: ${TABLE}.complete_date ;;
   }
@@ -1157,6 +1212,32 @@ view: care_request_flat {
     }
   }
 
+  measure: lwbs_count_pre_logistics {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: post_logistics_flag
+      value: "no"
+    }
+  }
+
+  measure: lwbs_count_post_logistics {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: post_logistics_flag
+      value: "yes"
+    }
+  }
+
   measure: lwbs_no_longer_need_count {
     type: count_distinct
     description: "Count of care requests where resolve reason is 'No longer need care'"
@@ -1390,14 +1471,13 @@ view: care_request_flat {
         AND
         ${on_scene_hour_of_day} < 15
         AND
-       ${on_scene_day_of_week_index} NOT IN ( 1,
-                                               7 ) THEN 'senior care - weekdays before 3pm'
+       ${on_scene_day_of_week_index} NOT IN (5, 6) THEN 'senior care - weekdays before 3pm'
       WHEN lower(${channel_items.type_name})  = 'senior care'
         AND
         (
           ${on_scene_hour_of_day} > 15
           OR
-            ${on_scene_day_of_week_index} IN ( 1,7 )
+            ${on_scene_day_of_week_index} IN (5, 6)
         )
         THEN 'senior care - weekdays after 3pm and weekends'
       WHEN ${ed_diversion_survey_response_clone.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
@@ -1424,7 +1504,7 @@ view: care_request_flat {
       WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
       WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
       WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0.0
-      WHEN ${diversion_category} = 'no survey' THEN ${ed_diversion_survey_response_rate_clone.er_percent}
+      WHEN ${diversion_category} = 'no survey' THEN ROUND(CAST(${ed_diversion_survey_response_rate_clone.er_percent} AS numeric), 3)
         ELSE 0.0
       END ;;
   }

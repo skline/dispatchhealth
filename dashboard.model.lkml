@@ -252,6 +252,11 @@ explore: care_requests {
     sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;
   }
 
+  join: market_projections_by_month {
+    relationship: one_to_one
+    sql_on: ${markets.name_adj} = ${market_projections_by_month.market} AND ${care_request_flat.complete_date} = ${market_projections_by_month.month_date} ;;
+  }
+
   join: payer_dimensions_clone {
     relationship: many_to_one
     sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id}  ;;
@@ -496,6 +501,10 @@ explore: care_requests {
   join: care_request_flat {
     relationship: one_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: seasonal_adj {
+    sql_on: ${care_request_flat.on_scene_month_num}=${seasonal_adj.month_number} ;;
   }
 
   join: google_trend_data {
@@ -1593,3 +1602,5 @@ explore: shift_routes {
   }
 
 }
+
+explore: brant_testing {}
