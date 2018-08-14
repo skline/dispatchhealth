@@ -57,6 +57,12 @@ view: athenadwh_transactions_clone {
     sql: ${transaction_reason} = 'DEDUCTIBLE' ;;
   }
 
+  dimension: coinsurance_transaction {
+    description: "Transactions that are specific to coinsurance"
+    type: yesno
+    sql: ${transaction_reason} = 'COINSURANCE' ;;
+  }
+
   measure: total_oop_paid {
     type: sum
     sql: ${payment_amount} ;;
@@ -105,6 +111,20 @@ view: athenadwh_transactions_clone {
     }
   }
 
+  measure: total_patient_responsibility_coinsurance {
+    type: sum
+    sql: ${amount} ;;
+    value_format: "0.00"
+    filters: {
+      field: patient_responsibility
+      value: "yes"
+    }
+    filters: {
+      field: coinsurance_transaction
+      value: "yes"
+    }
+  }
+
   measure: total_patient_responsibility_without_secondary {
     type: sum
     sql: ${amount} ;;
@@ -144,6 +164,15 @@ view: athenadwh_transactions_clone {
     sql: ${claim_id} ;;
     filters: {
       field: copay_transaction
+      value: "yes"
+    }
+  }
+
+  measure: count_coinsurance_claims {
+    type: count_distinct
+    sql: ${claim_id} ;;
+    filters: {
+      field: coinsurance_transaction
       value: "yes"
     }
   }
