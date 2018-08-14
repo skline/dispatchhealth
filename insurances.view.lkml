@@ -275,6 +275,12 @@ view: insurances {
     sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
+  measure: last_updated_date {
+    type: date
+    sql: MAX(${updated_raw}) ;;
+    convert_tz: no
+  }
+
   dimension: insurance_card_captured_flag {
     type: yesno
     sql: ${updated_date} = ${care_request_flat.complete_date}::date;;
