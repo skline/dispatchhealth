@@ -213,7 +213,8 @@ explore: care_requests {
 
   join: transaction_facts_clone {
     relationship: one_to_many
-    sql_on: ${transaction_facts_clone.visit_dim_number} = ${visit_dimensions_clone.visit_number}  ;;
+    sql_on: ${transaction_facts_clone.visit_dim_number} = ${visit_dimensions_clone.visit_number}
+    AND transaction_facts_clone.voided_date IS NULL ;;
   }
 
 #   join: charge_dimensions_clone {
@@ -264,8 +265,8 @@ explore: care_requests {
 
   join: primary_payer_dimensions_clone {
     relationship: many_to_one
-    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} AND
-            ${transaction_facts_clone.voided_date} IS NULL ;;
+    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} ;;
+    # AND ${transaction_facts_clone.voided_date} IS NULL ;;
   }
 
   join: care_request_toc_predictions {
