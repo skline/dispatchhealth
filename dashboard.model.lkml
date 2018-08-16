@@ -98,8 +98,9 @@ explore: care_requests {
     relationship:  one_to_many
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_labs.clinical_encounter_id} AND
     ${athenadwh_labs.document_class} = 'ORDER' AND
-    ${athenadwh_labs.status} != 'DELETED' AND
-    ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB';;
+    ${athenadwh_labs.status} != 'DELETED' ;;
+    # sql_where:  ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB' ;;
+    # AND ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB';;
   }
 
   join: athenadwh_orders {
