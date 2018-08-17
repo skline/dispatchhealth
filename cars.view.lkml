@@ -68,6 +68,22 @@ view: cars {
     type: yesno
     sql: ${name} like '%SMFR_Car%' ;;
   }
+
+  dimension: mfr_flex_car  {
+    type: yesno
+    sql: ${name} like '%MFR%' OR ${name} LIKE '%Flex%' ;;
+  }
+
+  measure: count_distinct_cars {
+    description: "Count of distinct cars, not including SMFR/WMFR/Flex"
+    type: count_distinct
+    sql: ${name} ;;
+    filters: {
+      field: mfr_flex_car
+      value: "no"
+    }
+  }
+
   measure: emt_car_staff {
     type: string
     sql:  max(case when provider_profiles.position ='emt' then concat(${users.first_name},' ',${users.last_name})  else null end);;
