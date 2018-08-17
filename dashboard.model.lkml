@@ -98,8 +98,9 @@ explore: care_requests {
     relationship:  one_to_many
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_labs.clinical_encounter_id} AND
     ${athenadwh_labs.document_class} = 'ORDER' AND
-    ${athenadwh_labs.status} != 'DELETED' AND
-    ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB';;
+    ${athenadwh_labs.status} != 'DELETED' ;;
+    # sql_where:  ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB' ;;
+    # AND ${athenadwh_clinical_results_clone.clinical_order_type_group} = 'LAB';;
   }
 
   join: athenadwh_orders {
@@ -108,6 +109,12 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_orders.clinical_encounter_id} AND
       ${athenadwh_orders.document_class} = 'ORDER' AND
       ${athenadwh_orders.status} != 'DELETED' ;;
+  }
+
+  join: athenadwh_order_providers {
+    from: athenadwh_clinical_providers_clone
+    relationship: one_to_one
+    sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_order_providers.clinical_provider_id} ;;
   }
 
   join: athenadwh_referrals {
@@ -213,7 +220,8 @@ explore: care_requests {
 
   join: transaction_facts_clone {
     relationship: one_to_many
-    sql_on: ${transaction_facts_clone.visit_dim_number} = ${visit_dimensions_clone.visit_number}  ;;
+    sql_on: ${transaction_facts_clone.visit_dim_number} = ${visit_dimensions_clone.visit_number}
+    AND transaction_facts_clone.voided_date IS NULL ;;
   }
 
 #   join: charge_dimensions_clone {
@@ -264,8 +272,8 @@ explore: care_requests {
 
   join: primary_payer_dimensions_clone {
     relationship: many_to_one
-    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} AND
-            ${transaction_facts_clone.voided_date} IS NULL ;;
+    sql_on: ${transaction_facts_clone.primary_payer_dim_id} = ${primary_payer_dimensions_clone.id} ;;
+    # AND ${transaction_facts_clone.voided_date} IS NULL ;;
   }
 
   join: care_request_toc_predictions {
@@ -297,7 +305,7 @@ explore: care_requests {
     sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
                ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
                ${care_requests.id} IS NOT NULL ;;
-    }
+  }
 
   join: dhmt_shift_planning_facts_clone {
     view_label: "DHMT Shift Information"
@@ -697,6 +705,30 @@ explore: shift_planning_facts_clone {
     type: cross
     relationship: one_to_many
   }
+
+  join: users {
+    relationship: many_to_one
+    sql_on: TRIM(UPPER(${shift_planning_facts_clone.clean_employee_name})) =
+            replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') ;;
+  }
+
+  # join: care_request_flat {
+  #   sql_on: ${markets.id} = ${care_request_flat.market_id} AND  ;;
+  # }
+
+  # join: app_shift_planning_facts_clone {
+  #   view_label: "APP Shift Information"
+  #   from: shift_planning_facts_clone
+  #   type: full_outer
+  #   relationship: many_to_one
+  #   sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
+  #           replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+  #           ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+  #   sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
+  #             ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
+  #             ${care_requests.id} IS NOT NULL ;;
+  # }
+
 }
 
 explore: care_request_3day_bb {

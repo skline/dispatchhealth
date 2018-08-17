@@ -130,6 +130,16 @@ view: channel_items {
     sql: ${TABLE}.type_name ;;
   }
 
+  dimension: sub_type {
+    type: string
+    sql: CASE
+          WHEN ${source_name} LIKE 'Emergency Medical Service%' THEN ${name}
+          WHEN ${source_name} = 'Direct Access' THEN ${source_name}
+          WHEN ${source_name} = 'Healthcare Partners' THEN ${type_name}
+          ELSE 'Undocumented'
+        END ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [

@@ -25,6 +25,7 @@ view: care_request_flat {
         accept.auto_assigned AS auto_assigned_final,
         accept.reassignment_reason AS reassignment_reason_final,
         accept.reassignment_reason_other AS reassignment_reason_other_final,
+        accept.drive_time_seconds,
         accept.first_name AS accept_employee_first_name,
         accept.last_name AS accept_employee_last_name,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
@@ -64,6 +65,7 @@ view: care_request_flat {
         name,
         crs.started_at,
         meta_data::json->> 'auto_assigned' AS auto_assigned,
+        meta_data::json->> 'drive_time' AS drive_time_seconds,
         reassignment_reason,
         reassignment_reason_other,
         ROW_NUMBER() OVER(PARTITION BY care_request_id
@@ -96,7 +98,7 @@ view: care_request_flat {
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25 ;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26 ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -220,6 +222,25 @@ view: care_request_flat {
     type: number
     description: "The number of minutes between on-route time and on-scene time"
     sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}))::float/60.0 ;;
+  }
+
+  dimension: drive_time_seconds_google {
+    type: number
+    sql: ${TABLE}.drive_time_seconds ;;
+  }
+
+  dimension: drive_time_minutes_google {
+    type: number
+    sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
+    value_format: "0.00"
+  }
+
+  measure:  average_drive_time_minutes_google {
+    type: average_distinct
+    description: "The average drive time from Google in minutes"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_minutes_google} ;;
   }
 
   dimension: is_reasonable_drive_time {

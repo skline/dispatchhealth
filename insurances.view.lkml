@@ -15,7 +15,7 @@ view: insurances {
 
   dimension: card_front {
     type: string
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.card_front ;;
   }
 
@@ -272,16 +272,38 @@ view: insurances {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
+    sql: ${TABLE}.updated_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
-  dimension: insurance_card_captured_flag {
+  measure: last_updated_date {
+    type: date
+    sql: MAX(${updated_raw}) ;;
+    convert_tz: no
+  }
+
+  dimension: insurance_updated_flag {
     type: yesno
     sql: ${updated_date} = ${care_request_flat.complete_date}::date;;
   }
 
-  measure: count_insurances_captured {
+  dimension: insurance_card_captured_flag {
+    type: yesno
+    sql: ${card_front} IS NOT NULL ;;
+  }
+
+  measure: count_insurances_updated {
     type: count_distinct
+    description: "The count of patients where the insurance information was updated the same date as the visit"
+    sql: ${patient_id} ;;
+    filters: {
+      field: insurance_updated_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_insurance_image_captured {
+    type: count_distinct
+    description: "The count of patients where the insurance card image was stored at the same date as the visit"
     sql: ${patient_id} ;;
     filters: {
       field: insurance_card_captured_flag
