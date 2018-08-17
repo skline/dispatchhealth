@@ -177,6 +177,13 @@ dimension: complete_care_requests_last_month {
               else null end;;
   }
 
+  measure: avg_account_age_days {
+    type: average_distinct
+    value_format: "0"
+    sql_distinct_key: concat(${channel_item_id}, ${sf_account_name}, ${sf_implementation_name}) ;;
+    sql: ${account_age_days} ;;
+  }
+
   dimension: implementation_cat {
     type: string
     sql: case when ${implementation_score} <= 20 then '0-20'
