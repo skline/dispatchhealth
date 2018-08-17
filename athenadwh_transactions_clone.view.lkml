@@ -27,6 +27,12 @@ view: athenadwh_transactions_clone {
     }
   }
 
+  dimension: payment_transaction {
+    type: yesno
+    hidden: no
+    sql: ${transaction_type} = 'PAYMENT' ;;
+  }
+
   dimension: patient_payment {
     type: yesno
     sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'PAYMENT' ;;
@@ -69,6 +75,24 @@ view: athenadwh_transactions_clone {
     value_format: "0.00"
     filters: {
       field: patient_payment
+      value: "yes"
+    }
+  }
+
+  measure: total_revenue {
+    type: sum
+    sql: ${amount} ;;
+    filters: {
+      field: payment_transaction
+      value: "no"
+    }
+  }
+
+  measure: total_payments {
+    type: sum
+    sql: ${payment_amount} ;;
+    filters: {
+      field: payment_transaction
       value: "yes"
     }
   }
