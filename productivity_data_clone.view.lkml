@@ -12,6 +12,11 @@ view: productivity_data_clone {
     sql: ${TABLE}.billable_visits ;;
   }
 
+  measure: sum_billable_visits {
+    type: sum
+    sql: ${billable_visits} ;;
+  }
+
   dimension: cpr_goal {
     type: number
     sql: ${TABLE}.cpr_goal ;;
