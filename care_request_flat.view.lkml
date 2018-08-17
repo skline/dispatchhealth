@@ -231,7 +231,7 @@ view: care_request_flat {
 
   dimension: drive_time_minutes_google {
     type: number
-    sql: ${TABLE}.drive_time_seconds / 60 ;;
+    sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
     value_format: "0.00"
   }
 
