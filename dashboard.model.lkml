@@ -305,7 +305,7 @@ explore: care_requests {
     sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
                ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
                ${care_requests.id} IS NOT NULL ;;
-    }
+  }
 
   join: dhmt_shift_planning_facts_clone {
     view_label: "DHMT Shift Information"
@@ -705,6 +705,30 @@ explore: shift_planning_facts_clone {
     type: cross
     relationship: one_to_many
   }
+
+  join: users {
+    relationship: many_to_one
+    sql_on: TRIM(UPPER(${shift_planning_facts_clone.clean_employee_name})) =
+            replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') ;;
+  }
+
+  # join: care_request_flat {
+  #   sql_on: ${markets.id} = ${care_request_flat.market_id} AND  ;;
+  # }
+
+  # join: app_shift_planning_facts_clone {
+  #   view_label: "APP Shift Information"
+  #   from: shift_planning_facts_clone
+  #   type: full_outer
+  #   relationship: many_to_one
+  #   sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
+  #           replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+  #           ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+  #   sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
+  #             ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
+  #             ${care_requests.id} IS NOT NULL ;;
+  # }
+
 }
 
 explore: care_request_3day_bb {
