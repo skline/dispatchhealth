@@ -71,6 +71,11 @@ view: productivity_data_clone {
     sql: ${TABLE}.hours_worked ;;
   }
 
+  measure: sum_hours_worked {
+    type: sum
+    sql: ${hours_worked} ;;
+  }
+
   dimension: market_dim_id {
     type: number
     sql: ${TABLE}.market_dim_id ;;
