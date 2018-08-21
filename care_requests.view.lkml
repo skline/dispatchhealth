@@ -642,6 +642,20 @@ view: care_requests {
     }
   }
 
+  measure: count_auto_assignment_overridden {
+    type: count_distinct
+    description: "Count of overridden auto-assigned care requests"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.auto_assignment_overridden
+      value: "true"
+    }
+  }
+
   measure: count_visits_prescriptions {
     type: count_distinct
     description: "Count of completed care requests where 1 or more prescriptions were written"
