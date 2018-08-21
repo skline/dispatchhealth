@@ -1079,12 +1079,14 @@ view: care_request_flat {
 
   measure: weekly_average_complete {
     type: number
-    sql: ${complete_count}/(nullif(${distinct_weeks_on_scene},0)) ;;
+    value_format: "0.0"
+    sql: ${complete_count}/(nullif(${distinct_weeks_on_scene},0))::float  ;;
   }
 
   measure: monthly_average_complete {
     type: number
-    sql: ${complete_count}/(nullif(${distinct_months_on_scene},0)) ;;
+    value_format: "0.0"
+    sql: ${complete_count}/(nullif(${distinct_months_on_scene},0))::float ;;
   }
 
 
