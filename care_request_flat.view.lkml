@@ -1493,6 +1493,7 @@ view: care_request_flat {
     type: string
     sql: CASE
       WHEN ${complete_time} IS NULL THEN 'not completed'
+      WHEN ${escalated_on_scene} THEN 'escalated'
       WHEN ${visit_facts_clone.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
         OR
         ${visit_facts_clone.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
@@ -1532,6 +1533,7 @@ view: care_request_flat {
     sql:  CASE
       WHEN ${diversion_category} = 'ed_same_complaint' THEN  0.0
       WHEN ${diversion_category} = 'not completed' THEN 0.0
+      WHEN ${diversion_category} = 'escalated' THEN  0
       WHEN ${diversion_category} = 'smfr' THEN  1.0
       WHEN ${diversion_category} = 'home health' THEN  .9
       WHEN ${diversion_category} = 'snf' THEN 1.0
@@ -1545,9 +1547,20 @@ view: care_request_flat {
       END ;;
   }
 
+
+  #.89 comes from this report: https://dispatchhealth.looker.com/explore/dashboard/care_requests?qid=kYQK5B33hMS9mlBhfjwJJl&toggle=fil
+  dimension: ed_diversion_adj {
+    type: number
+    sql: case when ${followup_30day} then ${ed_diversion}
+         else ${ed_diversion}*0.89 end;;
+  }
+
   dimension: 911_diversion {
     type: number
     sql:  CASE
+      WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
+      WHEN ${diversion_category} = 'escalated' THEN  0
+      WHEN ${diversion_category} = 'not completed' THEN 0
       WHEN ${diversion_category} = 'smfr' THEN 1.0
       WHEN ${diversion_category} = 'home health' THEN .5
       WHEN ${diversion_category} = 'snf' THEN 1.0
@@ -1557,50 +1570,76 @@ view: care_request_flat {
       END;;
   }
 
+  dimension: 911_diversion_adj {
+    type: number
+    sql: case when ${followup_30day} then ${911_diversion}
+              else ${911_diversion}*0.89 end;;
+  }
+
+  dimension: hospital_diversion {
+    type: number
+    sql: ${ed_diversion_adj} * 0.05;;
+  }
+
+
 
   measure: est_vol_ed_diversion {
     type: sum_distinct
-    sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key:  concat(${care_request_id}, ${followup_30day}) ;;
     value_format: "#,##0"
-    sql: ${ed_diversion};;
+    sql: ${ed_diversion_adj};;
+
+  }
+
+  measure: est_vol_hospital_diversion {
+    type: sum_distinct
+    sql_distinct_key:  concat(${care_request_id}, ${followup_30day}) ;;
+    value_format: "#,##0"
+    sql: ${hospital_diversion};;
 
   }
 
 
   measure: est_vol_911_diversion {
     type: sum_distinct
-    sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key:  concat(${care_request_id}, ${followup_30day}) ;;
     value_format: "#,##0"
-    sql: ${911_diversion};;
+    sql: ${911_diversion_adj};;
 
   }
 
   measure: est_ed_diversion_savings {
     type: sum_distinct
-    sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key:  concat(${care_request_id}, ${followup_30day});;
     value_format: "$#,##0"
-    sql: ${ed_diversion} * 2000;;
+    sql: ${ed_diversion_adj} * 2000;;
 
   }
 
+
   measure: est_911_diversion_savings {
     type: sum_distinct
-    sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
     value_format: "$#,##0"
-    sql: ${911_diversion} * 750;;
+    sql: ${911_diversion_adj} * 750;;
+
+  }
+
+  measure: est_hospital_diversion_savings {
+    type: sum_distinct
+    sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
+    value_format: "$#,##0"
+    sql: ${hospital_diversion} * 12000;;
 
   }
 
   measure: est_diversion_savings {
     type: sum_distinct
-    sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
     value_format: "$#,##0"
-    sql: ${911_diversion} * 750 + ${ed_diversion} * 2000;;
+    sql: ${911_diversion_adj} * 750 + ${ed_diversion_adj} * 2000 + ${hospital_diversion} *12000;;
 
   }
-
-
-
 
 
 }
