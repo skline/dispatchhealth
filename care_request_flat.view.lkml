@@ -510,6 +510,20 @@ view: care_request_flat {
     sql: ${TABLE}.reorder_reason ;;
   }
 
+  dimension: reordered_visit {
+    type: yesno
+    sql: ${reorder_reason} IS NOT NULL ;;
+  }
+
+  measure: count_reordered_care_requests {
+    description: "Count of care requests that were reordered by CSC"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: reordered_visit
+      value: "yes"
+    }
+  }
 
   dimension: complete_comment {
     type: string
