@@ -1570,6 +1570,7 @@ view: care_request_flat {
       END;;
   }
 
+  #.89 comes from this report: https://dispatchhealth.looker.com/explore/dashboard/care_requests?qid=kYQK5B33hMS9mlBhfjwJJl&toggle=fil
   dimension: 911_diversion_adj {
     type: number
     sql: case when ${followup_30day} then ${911_diversion}
@@ -1639,6 +1640,10 @@ view: care_request_flat {
     value_format: "$#,##0"
     sql: ${911_diversion_adj} * 750 + ${ed_diversion_adj} * 2000 + ${hospital_diversion} *12000;;
 
+  }
+  dimension: patient_age_month {
+    type: number
+    sql:  extract(year from age(${care_requests.created_raw}, ${patients.created_raw}))*12 + extract(month from age(${care_requests.created_raw},  ${patients.created_raw})) ;;
   }
 
 

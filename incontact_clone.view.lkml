@@ -319,19 +319,27 @@ dimension: care_line {
     sql:count(distinct case when ${talk_time_sec}>0  then ${from_number} else null end) ;;
   }
 
-  measure:  wait_time{
+  dimension:  wait_time{
     type: number
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
+
+  dimension:  wait_time_band{
+  type: string
+  sql: case when ${wait_time} < 2.00 then '< 2s'
+            when ${wait_time} between 2.00 and  5.00 then 'between 2s and 5s'
+            when ${wait_time} between 5.00 and 30.00 then 'between 5s and 30s'
+            when ${wait_time} between 30.00 and 90.00 then 'between 30s and 90s'
+            else '>90s' end
+            ;;
+ }
   measure:  average_wait_time{
     label: "Average Wait Time (s)"
     type: average_distinct
+    value_format: "0.0"
     sql_distinct_key: concat(${master_contact_id}, ${start_time}, ${skll_name}) ;;
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
 
-  measure:  average_wait_time_r{
-    type: number
-    sql: round(${average_wait_time}) ;;
-    }
+
 }
