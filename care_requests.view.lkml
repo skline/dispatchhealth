@@ -14,7 +14,10 @@ view: care_requests {
 
   dimension: activated_by {
     type: string
-    sql: ${TABLE}.activated_by ;;
+    sql: CASE
+          WHEN ${TABLE}.activated_by LIKE 'Other:%' THEN 'Other'
+          ELSE initcap(replace(${TABLE}.activated_by, '’', ''))
+        END ;;
   }
 
   dimension: appointment_type {

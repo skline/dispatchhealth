@@ -165,6 +165,21 @@ view: patients {
     sql: ${TABLE}.created_at  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain'  ;;
   }
 
+  dimension_group: created_local {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.created_at  AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz}  ;;
+  }
+
   dimension_group: deleted {
     type: time
     timeframes: [
