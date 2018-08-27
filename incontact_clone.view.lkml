@@ -42,7 +42,16 @@ view: incontact_clone {
 
    measure: avg_inqueuetime {
     label: "Average InQueue Time (s)"
-    type: average
+    type: average_distinct
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    value_format: "#.0"
+    sql: ${inqueuetime} ;;
+  }
+
+  measure: median_inqueuetime {
+    label: "Median InQueue Time (s)"
+    type: median_distinct
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
     value_format: "#.0"
     sql: ${inqueuetime} ;;
   }
@@ -53,7 +62,8 @@ view: incontact_clone {
 
   measure: avg_abandontime {
     label: "Average Abandon Time (s)"
-    type: average
+    type: average_distinct
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
     value_format: "#.0"
     sql: ${abandon_time} ;;
   }
@@ -333,11 +343,21 @@ dimension: care_line {
             else '>90s' end
             ;;
  }
+
   measure:  average_wait_time{
     label: "Average Wait Time (s)"
     type: average_distinct
     value_format: "0.0"
-    sql_distinct_key: concat(${master_contact_id}, ${start_time}, ${skll_name}) ;;
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    sql: ${contact_time_sec} - ${talk_time_sec} ;;
+  }
+
+
+  measure:  median_wait_time{
+    label: "Median Wait Time (s)"
+    type: median_distinct
+    value_format: "0.0"
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
 
