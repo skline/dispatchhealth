@@ -429,6 +429,11 @@ explore: care_requests {
     sql_on: ${provider_profiles.user_id} = ${users.id} ;;
   }
 
+  join: provider_licenses {
+    relationship: one_to_many
+    sql_on: ${provider_profiles.id} = ${provider_licenses.provider_profile_id} ;;
+  }
+
   join: dhmt_names {
     view_label: "DHMT Names"
     from: users
