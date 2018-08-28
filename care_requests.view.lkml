@@ -616,6 +616,20 @@ view: care_requests {
     ]
   }
 
+  measure: count_visits_with_onscene_meds {
+    type: count_distinct
+    description: "Count of completed care requests where medications were administered"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: athenadwh_documents_clone.medicine_administered_onscene
+      value: "yes"
+    }
+  }
+
   measure: count_billable_actual {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations where Athena no charge entry reason is NULL"
