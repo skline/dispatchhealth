@@ -92,7 +92,8 @@ view: productivity_data_clone {
     sql: (${market_dim_id} IN (160, 162, 165, 166) AND ${date_date} >= '2018-06-27') OR
     (${market_dim_id} = 161 AND ${date_date} >= '2018-07-30') OR
     (${market_dim_id} = 159 AND ${date_date} >= '2018-07-31') OR
-    (${date_date} >= '2018-08-07')
+    (${date_date} >= '2018-08-07') ;;
+    }
 
   dimension: monthly_goal {
     type: number
