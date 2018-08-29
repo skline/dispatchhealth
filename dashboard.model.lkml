@@ -811,6 +811,11 @@ explore: productivity_data_clone {
     sql_on: ${productivity_data_clone.market_dim_id} = ${markets.id} ;;
     }
 
+  join: market_market_dim_crosswalk {
+    relationship: one_to_one
+    sql_on: ${markets.id} = ${market_market_dim_crosswalk.market_id} ;;
+  }
+
   join: shift_planning_facts_clone {
     relationship: one_to_many
     sql_on: ${productivity_data_clone.date_date} = ${shift_planning_facts_clone.local_actual_start_date} AND
