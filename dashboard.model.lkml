@@ -429,6 +429,11 @@ explore: care_requests {
     sql_on: ${provider_profiles.user_id} = ${users.id} ;;
   }
 
+  join: provider_licenses {
+    relationship: one_to_many
+    sql_on: ${provider_profiles.id} = ${provider_licenses.provider_profile_id} ;;
+  }
+
   join: dhmt_names {
     view_label: "DHMT Names"
     from: users
@@ -805,6 +810,11 @@ explore: productivity_data_clone {
     relationship: many_to_one
     sql_on: ${productivity_data_clone.market_dim_id} = ${markets.id} ;;
     }
+
+  join: market_market_dim_crosswalk {
+    relationship: one_to_one
+    sql_on: ${markets.id} = ${market_market_dim_crosswalk.market_id} ;;
+  }
 
   join: shift_planning_facts_clone {
     relationship: one_to_many

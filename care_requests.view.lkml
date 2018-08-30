@@ -616,6 +616,56 @@ view: care_requests {
     ]
   }
 
+  measure: count_visits_with_onscene_meds {
+    type: count_distinct
+    description: "Count of completed care requests where medications were administered"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: athenadwh_documents_clone.medicine_administered_onscene
+      value: "yes"
+    }
+  }
+
+  measure: count_visits_with_onscene_labs {
+    type: count_distinct
+    description: "Count of completed care requests where labs were performed on-scene"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: athenadwh_lab_imaging_providers.provider_category
+      value: "Performed On-Scene"
+    }
+    filters: {
+      field: athenadwh_lab_imaging_results.document_class
+      value: "LABRESULT"
+    }
+  }
+
+  measure: count_visits_with_third_party_labs {
+    type: count_distinct
+    description: "Count of completed care requests where labs were performed by 3rd party"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: athenadwh_lab_imaging_providers.provider_category
+      value: "Performed by Third Party"
+    }
+    filters: {
+      field: athenadwh_lab_imaging_results.document_class
+      value: "LABRESULT"
+    }
+  }
+
   measure: count_billable_actual {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations where Athena no charge entry reason is NULL"

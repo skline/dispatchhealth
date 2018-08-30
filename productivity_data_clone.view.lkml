@@ -81,6 +81,20 @@ view: productivity_data_clone {
     sql: ${TABLE}.market_dim_id ;;
   }
 
+  dimension: market_id {
+    type: number
+
+  }
+
+  dimension: post_logistics_flag {
+    type: yesno
+    description: "A flag indicating the logistics platform was put into production"
+    sql: (${market_market_dim_crosswalk.market_dim_id} IN (160, 162, 165, 166) AND ${date_date} >= '2018-06-27') OR
+          (${market_market_dim_crosswalk.market_dim_id} = 161 AND ${date_date} >= '2018-07-30') OR
+          (${market_market_dim_crosswalk.market_dim_id} = 159 AND ${date_date} >= '2018-07-31') OR
+          (${date_date} >= '2018-08-07') ;;
+  }
+
   dimension: monthly_goal {
     type: number
     sql: ${TABLE}.monthly_goal ;;

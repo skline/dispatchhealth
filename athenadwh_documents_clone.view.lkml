@@ -58,6 +58,12 @@ view: athenadwh_documents_clone {
     sql: ${document_class} = 'PRESCRIPTION' ;;
   }
 
+  dimension: medicine_administered_onscene {
+    type: yesno
+    description: "A flag indicating that medicine was administered on-scene"
+    sql: ${document_class} = 'PRESCRIPTION' AND ${clinical_provider_id} IS NULL ;;
+  }
+
   dimension: labs_flag {
     type: yesno
     sql: ${document_class} = 'LABRESULT' ;;
