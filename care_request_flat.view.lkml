@@ -1659,6 +1659,13 @@ view: care_request_flat {
     type: number
     sql:  extract(year from age(${care_requests.created_raw}, ${patients.created_raw}))*12 + extract(month from age(${care_requests.created_raw},  ${patients.created_raw})) ;;
   }
+  dimension: post_acute_follow_up {
+    type: yesno
+    description: "Chief complaint, risk protocol name, or channel name is post-acute follow-up"
+    sql:  TRIM(LOWER(${care_requests.chief_complaint})) ~ 'pafu|post acute|post-acute' OR
+          TRIM(LOWER(${risk_assessments.protocol_name})) = 'Post-Acute Patient' OR
+          TRIM(LOWER(${channel_items.name})) ~ 'pafu|post acute|post-acute' ;;
+  }
 
 
 }

@@ -1641,3 +1641,31 @@ explore: shift_routes {
 }
 
 explore: brant_testing {}
+
+explore:thpg_providers  {
+  join: thpg_zipcode {
+  sql_on: ${thpg_providers.zip} = ${thpg_zipcode.zipcodes} ;;
+  }
+}
+
+explore:thpg_hospitals  {
+  join: thpg_zipcode {
+    sql_on: ${thpg_hospitals.zip_code} = ${thpg_zipcode.zipcodes} ;;
+  }
+}
+
+explore:thpg_satellite_locations  {
+  join: thpg_zipcode {
+    sql_on: ${thpg_satellite_locations.satellite_zip} = ${thpg_zipcode.zipcodes} ;;
+  }
+}
+
+explore:thpg_texashealth_backcare  {
+  join: thpg_zipcode {
+    sql_on: ${thpg_texashealth_backcare.zip} = ${thpg_zipcode.zipcodes} ;;
+  }
+}
+
+
+explore:thpg_zipcode  {
+}

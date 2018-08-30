@@ -1,5 +1,25 @@
 view: incontact_clone {
-  sql_table_name: looker_scratch.incontact_clone ;;
+  derived_table: {
+    sql:
+    select contact_type, skll_name, from_number, contact_id, to_number, start_time, end_time, campaign, master_contact_id,
+    (select array_agg(a) from unnest(agent_name) a where a is not null) agent_name,
+    abandons, short_abandons, transferred, queued, busy, answered, abandon_time, short_abandon_time, ivr_time, duration, talk_time_sec, contact_time_sec, inqueuetime, prequeue_abandons, call_backs
+    from
+    (select incontact_clone.contact_type, incontact_clone.skll_name, incontact_clone.from_number, incontact_clone.contact_id, incontact_clone.to_number, incontact_clone.start_time,
+incontact_clone.end_time, campaign, master_contact_id,
+array_agg(case when incontact_clone.agent_name = '' then null else agent_name end  order by talk_time_sec desc) as agent_name,
+max(abandons) abandons, max(incontact_clone.short_abandons) short_abandons, max(incontact_clone.transferred) transferred, max(incontact_clone.queued) queued, max(incontact_clone.busy) busy,
+max(incontact_clone.answered) answered, sum(incontact_clone.abandon_time) as abandon_time,
+sum(incontact_clone.short_abandon_time) as short_abandon_time, sum(incontact_clone.ivr_time) as ivr_time,
+ sum(incontact_clone.duration) duration, sum(incontact_clone.talk_time_sec) as talk_time_sec,
+ sum(incontact_clone.contact_time_sec) as contact_time_sec,
+ sum(incontact_clone.inqueuetime) as inqueuetime, max(prequeue_abandons) as prequeue_abandons, max(call_backs) as call_backs
+from looker_scratch.incontact_clone
+group by 1,2,3,4,5,6,7,8,9)lq
+;;
+    sql_trigger_value: SELECT MAX(start_time) FROM incontact_clone ;;
+    indexes: ["start_time", "campaign", "skll_name", "contact_id", "master_contact_id"]
+    }
 
   dimension: contact_id {
     type: number
@@ -65,7 +85,15 @@ view: incontact_clone {
     type: average_distinct
     sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
     value_format: "#.0"
-    sql: ${abandon_time} ;;
+    sql: case when ${abandon_time} = 0 then null else ${abandon_time} end ;;
+  }
+
+  measure: median_abandontime {
+    label: "Median Abandon Time (s)"
+    type: median_distinct
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    value_format: "#.0"
+    sql: case when ${abandon_time} = 0 then null else ${abandon_time} end ;;
   }
 
   dimension: contact_type {
@@ -336,11 +364,7 @@ dimension: care_line {
 
   dimension:  wait_time_band{
   type: string
-  sql: case when ${wait_time} < 2.00 then '< 2s'
-            when ${wait_time} between 2.00 and  5.00 then 'between 2s and 5s'
-            when ${wait_time} between 5.00 and 30.00 then 'between 5s and 30s'
-            when ${wait_time} between 30.00 and 90.00 then 'between 30s and 90s'
-            else '>90s' end
+  sql:round(ln(${wait_time}),0)
             ;;
  }
 
@@ -349,7 +373,7 @@ dimension: care_line {
     type: average_distinct
     value_format: "0.0"
     sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
-    sql: ${contact_time_sec} - ${talk_time_sec} ;;
+    sql: ${wait_time} ;;
   }
 
 
@@ -358,7 +382,7 @@ dimension: care_line {
     type: median_distinct
     value_format: "0.0"
     sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
-    sql: ${contact_time_sec} - ${talk_time_sec} ;;
+    sql: ${wait_time} ;;
   }
 
 
