@@ -75,6 +75,24 @@ group by 1,2,3,4,5,6,7,8,9)lq
     value_format: "#.0"
     sql: ${inqueuetime} ;;
   }
+
+
+  measure: avg_talk_time {
+    label: "Average Talk Time (s)"
+    type: average_distinct
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    value_format: "#.0"
+    sql: ${talk_time_sec} ;;
+  }
+
+  measure: median_talk_time  {
+    label: "Median Talk Time (s)"
+    type: median_distinct
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    value_format: "#.0"
+    sql: ${talk_time_sec} ;;
+  }
+
   dimension: abandon_time {
     type: number
     sql: ${TABLE}.abandon_time ;;
@@ -95,6 +113,8 @@ group by 1,2,3,4,5,6,7,8,9)lq
     value_format: "#.0"
     sql: case when ${abandon_time} = 0 then null else ${abandon_time} end ;;
   }
+
+
 
   dimension: contact_type {
     type: string
