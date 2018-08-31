@@ -178,8 +178,9 @@ group by 1,2,3,4,5,6,7,8,9)lq
 
   dimension: agent_name {
     type: string
-    sql: ${TABLE}.agent_name ;;
+    sql: ${TABLE}.agent_name[1] ;;
   }
+
 
   dimension: market_id
   {
@@ -258,6 +259,22 @@ dimension: abandons {
     sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct}::float));;
 
   }
+
+  measure: cr_create_rate_contact_id {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_contact_id.care_request_count}::float/${count_distinct}::float));;
+
+  }
+
+  measure: close_rate_contact_id {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_contact_id.complete_count}::float/${count_distinct}::float));;
+
+  }
+
+
 
   measure: close_rate_exact {
     type: number

@@ -112,6 +112,11 @@ view: users {
     sql: ${TABLE}.last_name ;;
   }
 
+  dimension: csc_name {
+    type: string
+    sql: concat(${last_name}, ', ', ${first_name});;
+  }
+
   dimension: chart_scrubbing_name {
     type: string
     sql: CASE
@@ -181,6 +186,12 @@ view: users {
     type: number
     sql: ${TABLE}.sign_in_count ;;
   }
+
+  dimension: in_contact_agent_id {
+    type: number
+    sql: ${TABLE}.in_contact_agent_id ;;
+  }
+
 
   dimension: unconfirmed_email {
     type: string

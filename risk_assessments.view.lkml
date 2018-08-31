@@ -77,7 +77,9 @@ view: risk_assessments {
   }
 
   measure: average_score {
-    type: average
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${id} ;;
     sql: ${score} ;;
   }
 

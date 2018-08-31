@@ -453,6 +453,24 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
+  join: csc_created {
+    from: users
+    relationship: one_to_one
+    sql_on:  ${care_request_requested.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
+  }
+
+  join: csc_risk_assessments {
+    from: users
+    relationship: one_to_one
+    sql_on:  ${risk_assessments.user_id} = ${csc_risk_assessments.id};;
+  }
+
+  join: csc_agent_location_risk {
+    from: csc_agent_location
+    sql_on: ${csc_risk_assessments.csc_name} = ${csc_agent_location_risk.agent_name} ;;
+  }
+
+
   join: markets {
     relationship: many_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
@@ -1547,6 +1565,18 @@ explore: ga_pageviews_clone {
             from: care_request_flat
             relationship: many_to_one
             sql_on: ${care_request_flat_exact.care_request_id} = ${care_requests_exact.id} ;;
+          }
+
+
+          join: care_requests_contact_id {
+            from: care_requests
+            sql_on: ${care_requests_contact_id.contact_id} = ${incontact_clone.contact_id};;
+          }
+
+          join: care_request_flat_contact_id {
+            from: care_request_flat
+            relationship: many_to_one
+            sql_on: ${care_request_flat_contact_id.care_request_id} = ${care_requests_contact_id.id} ;;
           }
 
           join: risk_assessments {
