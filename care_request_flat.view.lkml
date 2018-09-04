@@ -573,6 +573,25 @@ view: care_request_flat {
     ${bounceback_3day} OR ${bounceback_14day}) ;;
   }
 
+
+  dimension: bb_30_day_in_sample {
+    label: "30-Day Bounce back flag, removing any bouncebacks without a 30 day followup"
+    type: yesno
+    sql: (((${bounceback_3day} OR ${bounceback_14day}) AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)
+         OR ${followup_30day_result} = 'ed_same_complaint' OR ${followup_30day_result} = 'hospitalization_same_complaint')
+      AND ${followup_3day_result} != 'REMOVED';;
+  }
+
+  measure: bb_30_day_count_in_sample {
+    label: "30-Day Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: bb_30_day_in_sample
+      value: "yes"
+    }
+  }
+
   dimension: no_hie_data {
     type: yesno
     sql: ${complete_date} IS NOT NULL AND (${followup_14day_result} = 'no_hie_data' OR ${followup_30day_result} = 'no_hie_data') ;;
