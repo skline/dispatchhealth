@@ -103,7 +103,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
     type: average_distinct
     sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
     value_format: "#.0"
-    sql: case when ${abandon_time} = 0 then null else ${abandon_time} end ;;
+    sql: case when ${abandon_time} = 0 then null else ${wait_time} end ;;
   }
 
   measure: median_abandontime {
@@ -111,7 +111,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
     type: median_distinct
     sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
     value_format: "#.0"
-    sql: case when ${abandon_time} = 0 then null else ${abandon_time} end ;;
+    sql: case when ${abandon_time} = 0 then null else ${wait_time} end ;;
   }
 
 
@@ -254,43 +254,62 @@ dimension: abandons {
     drill_fields: [skll_name]
   }
   measure: count_distinct {
-    label: "Inbound Contacts"
+    label: "Contacts"
     type: number
     sql:count(distinct ${master_contact_id}) ;;
+  }
+
+  measure: count_distinct_inbound {
+    label: "Inbound Calls"
+    type: number
+    sql:count(distinct case when ${campaign} in('Care Phone') then ${master_contact_id} else null end) ;;
+  }
+
+  measure: count_distinct_outbound {
+    label: "Outbound Calls"
+    type: number
+    sql:count(distinct case when ${campaign} in('Care Outbound') then ${master_contact_id} else null end) ;;
   }
 
   measure: close_rate {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat.complete_count}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat.complete_count}::float/${count_distinct_inbound}::float));;
 
   }
 
   measure: cr_create_rate {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat.care_request_count}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat.care_request_count}::float/${count_distinct_inbound}::float));;
 
   }
 
   measure: cr_create_rate_exact {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct_inbound}::float));;
+
+  }
+
+  measure: cr_create_rate_exact_answer {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_exact.care_request_count}::float/nullif(${count_distinct_live_answers}::float,0)));;
 
   }
 
   measure: cr_create_rate_contact_id {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_contact_id.care_request_count}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat_contact_id.care_request_count}::float/${count_distinct_inbound}::float));;
 
   }
 
   measure: close_rate_contact_id {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_contact_id.complete_count}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat_contact_id.complete_count}::float/${count_distinct_inbound}::float));;
 
   }
 
@@ -303,6 +322,14 @@ dimension: abandons {
 
   }
 
+  measure: close_rate_exact_answer {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_exact.complete_count}::float/nullif(${count_distinct_live_answers}::float,0)));;
+
+  }
+
+
 
   dimension: phone_call  {
     type: yesno
@@ -310,7 +337,7 @@ dimension: abandons {
   }
 
   measure: count_distinct_calls {
-    label: "Inbound Calls"
+    label: "Calls"
     type: number
     sql:count(distinct case when (${campaign} != 'Care Electronic')  then ${master_contact_id} else null end);;
 
@@ -346,7 +373,25 @@ dimension: abandons {
   measure: count_distinct_long_abandoned {
     type: number
     label: "Long Abandons (>20s)"
-    sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${abandon_time} > 20  then ${master_contact_id} else null end);;
+    sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 20  then ${master_contact_id} else null end);;
+  }
+
+  measure: count_distinct_long_abandoned_15 {
+    type: number
+    label: "Long Abandons (>15s)"
+    sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 15  then ${master_contact_id} else null end);;
+  }
+
+  measure: count_distinct_long_abandoned_10 {
+    type: number
+    label: "Long Abandons (>10s)"
+    sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 10  then ${master_contact_id} else null end);;
+  }
+
+  measure: count_distinct_long_abandoned_5 {
+    type: number
+    label: "Long Abandons (>5s)"
+    sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 5  then ${master_contact_id} else null end);;
   }
 
   measure: live_answer_rate {
@@ -374,6 +419,31 @@ dimension: abandons {
     value_format: "#.0\%"
     sql: ((${count_distinct_long_abandoned}::float/${count_distinct_calls}::float))*100;;
   }
+
+  measure: long_abandoned_rate_10 {
+    type: number
+    label: "Long Abandon Rate (>10s)"
+    value_format: "#.0\%"
+    sql: ((${count_distinct_long_abandoned_10}::float/${count_distinct_calls}::float))*100;;
+  }
+
+  measure: long_abandoned_rate_5 {
+    type: number
+    label: "Long Abandon Rate (>5s)"
+    value_format: "#.0\%"
+    sql: ((${count_distinct_long_abandoned_5}::float/${count_distinct_calls}::float))*100;;
+  }
+
+  measure: long_abandoned_rate_15 {
+    type: number
+    label: "Long Abandon Rate (>15s)"
+    value_format: "#.0\%"
+    sql: ((${count_distinct_long_abandoned_15}::float/${count_distinct_calls}::float))*100;;
+  }
+
+
+
+
 
 
 

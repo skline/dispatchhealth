@@ -1526,7 +1526,7 @@ explore: ga_pageviews_clone {
           }
         }
 
-        explore: incontact_clone {
+  explore: incontact_clone {
 
           join: invoca_clone {
             sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 300
@@ -1592,6 +1592,14 @@ explore: ga_pageviews_clone {
 
           join: channel_items {
             sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
+          }
+          join: csc_working_rate_week_clone {
+            sql_on: ${incontact_clone.agent_name} = ${csc_working_rate_week_clone.agent_name}
+                     and
+                     ${incontact_clone.start_week} = ${csc_working_rate_week_clone.week_week};;
+          }
+          join: csc_survey_clone {
+             sql_on: ${csc_survey_clone.contact_id} = ${incontact_clone.contact_id} ;;
           }
 
 
