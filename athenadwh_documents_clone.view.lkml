@@ -58,6 +58,11 @@ view: athenadwh_documents_clone {
     sql: ${document_class} = 'PRESCRIPTION' ;;
   }
 
+  dimension: clinical_letter_flag {
+    type: yesno
+    sql: ${document_class} = 'LETTER' ;;
+  }
+
   dimension: medicine_administered_onscene {
     type: yesno
     description: "A flag indicating that medicine was administered on-scene"
@@ -185,6 +190,15 @@ view: athenadwh_documents_clone {
   measure: count_encounters {
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
+  }
+
+  measure: count_letters {
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: clinical_letter_flag
+      value: "yes"
+    }
   }
 
 }
