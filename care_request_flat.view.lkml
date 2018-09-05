@@ -1286,6 +1286,13 @@ view: care_request_flat {
     }
   }
 
+  measure: lwbs_rate {
+    type: number
+    value_format: "0.0%"
+    sql: ${lwbs_count}/${care_request_count} ;;
+
+  }
+
   measure: lwbs_count_pre_logistics {
     type: count_distinct
     sql: ${care_request_id} ;;

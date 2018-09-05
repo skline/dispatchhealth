@@ -248,6 +248,12 @@ view: shift_planning_facts_clone {
     sql: ROUND(SUM(${total_actual_seconds}) / 3600, 2) ;;
   }
 
+  measure: sum_actual_hours_distinct {
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${total_actual_seconds}::float/3600 ;;
+  }
+
   measure: sum_actual_seconds {
     type: sum
     sql: ${total_actual_seconds} ;;
