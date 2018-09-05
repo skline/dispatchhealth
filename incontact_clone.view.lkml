@@ -387,19 +387,19 @@ dimension: abandons {
 
   measure: count_distinct_long_abandoned_15 {
     type: number
-    label: "Long Abandons (>15s)"
+    label: "Abandons (>15s)"
     sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 15  then ${master_contact_id} else null end);;
   }
 
   measure: count_distinct_long_abandoned_10 {
     type: number
-    label: "Long Abandons (>10s)"
+    label: "Abandons (>10s)"
     sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 10  then ${master_contact_id} else null end);;
   }
 
   measure: count_distinct_long_abandoned_5 {
     type: number
-    label: "Long Abandons (>5s)"
+    label: "Abandons (>5s)"
     sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 5  then ${master_contact_id} else null end);;
   }
 
@@ -431,21 +431,21 @@ dimension: abandons {
 
   measure: long_abandoned_rate_10 {
     type: number
-    label: "Long Abandon Rate (>10s)"
+    label: "Abandon Rate (>10s)"
     value_format: "#.0\%"
     sql: ((${count_distinct_long_abandoned_10}::float/${count_distinct_calls}::float))*100;;
   }
 
   measure: long_abandoned_rate_5 {
     type: number
-    label: "Long Abandon Rate (>5s)"
+    label: "Abandon Rate (>5s)"
     value_format: "#.0\%"
     sql: ((${count_distinct_long_abandoned_5}::float/${count_distinct_calls}::float))*100;;
   }
 
   measure: long_abandoned_rate_15 {
     type: number
-    label: "Long Abandon Rate (>15s)"
+    label: "Abandon Rate (>15s)"
     value_format: "#.0\%"
     sql: ((${count_distinct_long_abandoned_15}::float/${count_distinct_calls}::float))*100;;
   }
