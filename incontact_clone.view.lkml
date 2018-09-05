@@ -96,6 +96,14 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${talk_time_sec} ;;
   }
 
+  measure: sum_talk_time {
+    label: "Sum Talk Time (s)"
+    type: sum_distinct
+    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    value_format: "#.0"
+    sql: ${talk_time_sec} ;;
+  }
+
   dimension: abandon_time {
     type: number
     sql: ${TABLE}.abandon_time ;;
@@ -308,6 +316,13 @@ dimension: abandons {
 
   }
 
+  measure: cr_create_rate_exact_phone {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_exact.care_request_count}::float/nullif(${count_distinct_phone_number}::float,0)));;
+
+  }
+
   measure: cr_create_rate_contact_id {
     type: number
     value_format: "0.0%"
@@ -335,6 +350,13 @@ dimension: abandons {
     type: number
     value_format: "0.0%"
     sql: ((${care_request_flat_exact.complete_count}::float/nullif(${count_distinct_live_answers}::float,0)));;
+
+  }
+
+  measure: close_rate_exact_phone {
+    type: number
+    value_format: "0.0%"
+    sql: ((${care_request_flat_exact.complete_count}::float/nullif(${count_distinct_phone_number}::float,0)));;
 
   }
 
