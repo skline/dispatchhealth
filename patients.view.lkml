@@ -29,7 +29,11 @@ view: patients {
 
   dimension: gender {
     type: string
-    sql: ${TABLE}.gender ;;
+    sql: CASE
+          WHEN ${TABLE}.gender = 'f' THEN 'Female'
+          WHEN ${TABLE}.gender = 'm' THEN 'Male'
+          ELSE ${TABLE}.gender
+        END ;;
   }
 
   dimension: female {
