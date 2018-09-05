@@ -573,6 +573,24 @@ view: care_request_flat {
     ${bounceback_3day} OR ${bounceback_14day}) ;;
   }
 
+  # Add 3 or 30 day followup measures
+  dimension: followup_3day_or_30day {
+    type: yesno
+    description: "A flag indicating that either the 3 or 30-day follow-up was completed"
+    sql: ${complete_date} IS NOT NULL AND
+          (${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data') OR
+          (${followup_3day}) ;;
+  }
+
+  measure: count_3_or_30day_followups {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: followup_3day_or_30day
+      value: "yes"
+    }
+  }
+  # End 3 or 30 day followup measures
 
   dimension: bb_30_day_in_sample {
     label: "30-Day Bounce back flag, removing any bouncebacks without a 30 day followup"
