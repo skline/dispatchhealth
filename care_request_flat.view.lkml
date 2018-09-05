@@ -1289,7 +1289,7 @@ view: care_request_flat {
   measure: lwbs_rate {
     type: number
     value_format: "0.0%"
-    sql: ${lwbs_count}/nullif(${care_request_count},0) ;;
+    sql: ${lwbs_count}::float/nullif(${care_request_count},0) ;;
 
   }
 
