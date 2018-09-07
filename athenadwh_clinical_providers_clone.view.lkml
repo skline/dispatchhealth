@@ -125,4 +125,15 @@ view: athenadwh_clinical_providers_clone {
     type: count
     drill_fields: [id, first_name, name, last_name]
   }
+
+  measure: names_aggregated {
+    type: string
+    sql: array_agg(distinct ${name}) ;;
+  }
+
+  measure: address_aggregated {
+    type: string
+    sql: array_agg(distinct concat(${address1},': ',coalesce(${address2}, ''),': ', ${city}, ': ', left(${zip},5))) ;;
+  }
+
 }
