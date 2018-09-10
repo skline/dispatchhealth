@@ -32,6 +32,18 @@ explore: care_requests {
       ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id};;
   }
 
+  join: athenadwh_provider_clone {
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_provider_clone.provider_id} ;;
+    sql_where: ${athenadwh_provider_clone.provider_id} != ${athenadwh_provider_clone.supervising_provider_id} ;;
+  }
+
+  join: athenadwh_supervising_provider_clone {
+    from: athenadwh_provider_clone
+    relationship: many_to_one
+    sql_on: ${athenadwh_provider_clone.supervising_provider_id} = ${athenadwh_supervising_provider_clone.provider_id} ;;
+  }
+
   join: athenadwh_appointments_clone {
     relationship: one_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_appointments_clone.appointment_id} ;;
