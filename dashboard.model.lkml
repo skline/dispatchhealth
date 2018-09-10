@@ -172,6 +172,13 @@ explore: care_requests {
     sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
   }
 
+  join: athenadwh_clinical_providers_fax_clone {
+    sql_on: ${athenadwh_clinical_providers_fax_clone.clinical_provider_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
+  }
+  join: faxes_sent {
+    sql_on: ${athenadwh_clinical_providers_fax_clone.fax} = ${faxes_sent.fax} ;;
+  }
+
   join: athenadwh_letter_recipient_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
