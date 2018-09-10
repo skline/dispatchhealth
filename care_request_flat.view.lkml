@@ -559,6 +559,25 @@ view: care_request_flat {
     sql: ${followup_14day_result} LIKE '%same_complaint%' OR ${bounceback_3day} ;;
   }
 
+
+  dimension: bb_14_day_in_sample {
+    label: "14-Day Bounce back flag, removing any bouncebacks without a 30 day followup"
+    type: yesno
+    sql: ((${bounceback_3day} AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)
+         OR ${followup_14day_result} = 'ed_same_complaint' OR ${followup_14day_result} = 'hospitalization_same_complaint')
+      AND ${followup_3day_result} != 'REMOVED';;
+  }
+
+  measure: bb_14_day_count_in_sample {
+    label: "14-Day Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: bb_14_day_in_sample
+      value: "yes"
+    }
+  }
+
   dimension: followup_30day_result {
     type: string
     description: "The 30-day follow-up result"
