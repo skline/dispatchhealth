@@ -208,6 +208,11 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${TABLE}.start_time ;;
   }
 
+  dimension: after_pilot {
+    type: yesno
+    sql: ${start_date} > '2018-09-03' ;;
+  }
+
   dimension: talk_time_sec {
     type: number
     sql: coalesce(${TABLE}.talk_time_sec,0) ;;

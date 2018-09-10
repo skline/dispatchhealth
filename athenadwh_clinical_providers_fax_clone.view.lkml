@@ -2,10 +2,11 @@ view: athenadwh_clinical_providers_fax_clone {
   derived_table: {
     sql:
     select case
-  when fax is not null and fax not in('nan') then replace(replace(replace(replace(fax, '(', ''), ')', ''), '-', ''), ' ', '')::bigint
+  when fax is not null and fax not in('nan') then trim(replace(replace(replace(replace(fax, '(', ''), ')', ''), '-', ''), ' ', ''))::bigint
   else null end
   as fax, clinical_provider_id
 from looker_scratch.athenadwh_clinical_providers_fax_clone
+group by 1,2
 
 ;;
     sql_trigger_value: select max(athenadwh_clinical_providers_clone.created_at)
