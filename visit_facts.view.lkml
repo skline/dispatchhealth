@@ -1269,6 +1269,24 @@ view: visit_facts {
     }
   }
 
+  dimension: bb_14_day_test {
+    label: "14-Day Bounce back flag, removing any bouncebacks without a 30 day followup"
+    type: yesno
+    sql: ((${bb_3_day} AND ${day_30_followup_outcome} NOT IN ('REMOVED', 'PENDING', 'no_hie_data', 'UNDOCUMENTED'))
+    OR ${day_14_followup_outcome} = 'ed_same_complaint' OR ${day_14_followup_outcome} = 'hospitalization_same_complaint')
+    AND ${day_3_followup_outcome} != 'REMOVED';;
+  }
+
+  measure: bb_14_day_count_test {
+    label: "14-Day Bounce back Count With No Followups Removed"
+    type: count
+    filters: {
+      field: bb_14_day_test
+      value: "yes"
+    }
+  }
+
+
   dimension: bb_30_day {
     label: "30-Day Bounce back flag"
     type: yesno

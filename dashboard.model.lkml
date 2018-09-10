@@ -32,6 +32,18 @@ explore: care_requests {
       ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id};;
   }
 
+  join: athenadwh_provider_clone {
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_provider_clone.provider_id} ;;
+    sql_where: ${athenadwh_provider_clone.provider_id} != ${athenadwh_provider_clone.supervising_provider_id} ;;
+  }
+
+  join: athenadwh_supervising_provider_clone {
+    from: athenadwh_provider_clone
+    relationship: many_to_one
+    sql_on: ${athenadwh_provider_clone.supervising_provider_id} = ${athenadwh_supervising_provider_clone.provider_id} ;;
+  }
+
   join: athenadwh_appointments_clone {
     relationship: one_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_appointments_clone.appointment_id} ;;
@@ -831,15 +843,15 @@ explore: care_request_3day_bb {
 
 explore: productivity_data_clone {
 
-  join: markets {
-    relationship: many_to_one
-    sql_on: ${productivity_data_clone.market_dim_id} = ${markets.id} ;;
-    }
-
   join: market_market_dim_crosswalk {
-    relationship: one_to_one
-    sql_on: ${markets.id} = ${market_market_dim_crosswalk.market_id} ;;
+    relationship: many_to_one
+    sql_on: ${productivity_data_clone.market_dim_id} = ${market_market_dim_crosswalk.market_dim_id} ;;
   }
+
+  join: markets {
+    relationship: one_to_one
+    sql_on: ${market_market_dim_crosswalk.market_id} = ${markets.id} ;;
+    }
 
   join: shift_planning_facts_clone {
     relationship: one_to_many
