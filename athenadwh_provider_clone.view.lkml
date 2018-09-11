@@ -22,7 +22,10 @@ view: athenadwh_provider_clone {
 
   dimension: provider_first_name {
     type: string
-    sql: ${TABLE}.provider_first_name ;;
+    sql: CASE
+          WHEN ${TABLE}.provider_first_name = 'MARY' AND ${provider_last_name} = 'WILLIAMS' THEN 'ELIZABETH'
+          ELSE ${TABLE}.provider_first_name
+        END ;;
   }
 
   dimension: provider_group_id {
