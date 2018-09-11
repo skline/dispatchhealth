@@ -37,7 +37,9 @@ view: care_request_flat {
         case when array_to_string(array_agg(distinct notes.note), ':') = '' then null
         else array_to_string(array_agg(distinct notes.note), ':')end
         as reorder_reason,
-        cr.shift_team_id
+        cr.shift_team_id,
+        min(to_date(schedule.comment, 'DD Mon YYYY')) as scheduled_care_date
+
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
@@ -709,6 +711,21 @@ view: care_request_flat {
       day_of_month
       ]
     sql: ${TABLE}.on_route_date ;;
+  }
+
+  dimension_group: scheduled_care {
+    type: time
+    description: "The date where we are trying to complete a scheduled care_request"
+    convert_tz: no
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.scheduled_care_date ;;
   }
 
   dimension_group: created {
