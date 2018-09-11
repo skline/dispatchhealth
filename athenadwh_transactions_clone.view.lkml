@@ -288,6 +288,11 @@ view: athenadwh_transactions_clone {
     sql: ${TABLE}.total_rvu ;;
   }
 
+  measure: sum_total_rvu {
+    type: sum
+    sql: ${total_rvu} ;;
+  }
+
   dimension_group: transaction_created_datetime {
     type: time
     timeframes: [
