@@ -245,6 +245,14 @@ view: care_request_flat {
     sql: ${drive_time_minutes_google} ;;
   }
 
+  measure: total_drive_time_minutes_google {
+    type: sum_distinct
+    description: "The sum of drive time from Google in minutes"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_minutes_google} ;;
+  }
+
   dimension: is_reasonable_drive_time {
     type: yesno
     hidden: yes
