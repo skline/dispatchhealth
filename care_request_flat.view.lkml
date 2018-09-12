@@ -1046,6 +1046,14 @@ view: care_request_flat {
     sql: ${shift_hours} ;;
   }
 
+  measure: sum_distinct_shift_hours {
+    type: sum_distinct
+    description: "The sum of each scheduled shift hours"
+    sql: ${shift_hours} ;;
+    #sql_distinct_key: ${cars.name} ;;
+    sql_distinct_key: ${care_requests.shift_team_id} ;;
+  }
+
   measure: max_complete_time {
     label: "Last Care Request Completion Time"
     type: date_time
