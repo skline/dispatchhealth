@@ -253,6 +253,11 @@ view: care_request_flat {
     sql: ${drive_time_minutes_google} ;;
   }
 
+  dimension: under_20_minute_drive_time {
+    type: yesno
+    sql: ${drive_time_minutes_google} <= 20.0 ;;
+  }
+
   dimension: is_reasonable_drive_time {
     type: yesno
     hidden: yes
