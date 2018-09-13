@@ -489,6 +489,13 @@ explore: care_requests {
     sql_on: ${csc_risk_assessments.csc_name} = ${csc_agent_location_risk.agent_name} ;;
   }
 
+  join: csc_agent_location_created {
+    from: csc_agent_location
+    sql_on: ${csc_created.csc_name} = ${csc_agent_location_created.agent_name} ;;
+  }
+
+
+
 
   join: markets {
     relationship: many_to_one
@@ -1617,6 +1624,12 @@ explore: ga_pageviews_clone {
                      and
                      ${incontact_clone.start_week} = ${csc_working_rate_week_clone.week_week};;
           }
+
+    join: csc_working_rate_month_clone {
+      sql_on: ${incontact_clone.agent_name} = ${csc_working_rate_month_clone.agent_name}
+                     and
+                     ${incontact_clone.start_month} = ${csc_working_rate_month_clone.month_month};;
+    }
           join: csc_survey_clone {
              sql_on: ${csc_survey_clone.contact_id} = ${incontact_clone.contact_id} ;;
           }
