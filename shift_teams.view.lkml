@@ -35,7 +35,8 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.end_time AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz}  ;;
   }
@@ -49,7 +50,8 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
@@ -69,7 +71,8 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.start_time AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
@@ -83,9 +86,10 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
-    sql:  ${TABLE}.end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
+    sql:  ${TABLE}.start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension: shift_hours {
