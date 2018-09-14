@@ -616,6 +616,16 @@ view: care_requests {
     ]
   }
 
+  measure: count_optimum_drive_time {
+    type: count_distinct
+    description: "Count of complete visits where drive time < 20 minutes"
+    sql: ${id} ;;
+    filters: {
+      field: care_request_flat.under_20_minute_drive_time
+      value: "yes"
+    }
+  }
+
   measure: count_visits_with_onscene_meds {
     type: count_distinct
     description: "Count of completed care requests where medications were administered"
