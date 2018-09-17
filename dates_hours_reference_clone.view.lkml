@@ -79,4 +79,12 @@ view: dates_hours_reference_clone {
     type: count
     drill_fields: [id]
   }
+
+  measure: average_cars {
+    label: "Average Number of Cars"
+    value_format: "0.0"
+    type: number
+    sql: ${shift_teams.count_distinct_car_date_shift}::float / COUNT(DISTINCT ${datehour_date})::float ;;
+  }
+
 }

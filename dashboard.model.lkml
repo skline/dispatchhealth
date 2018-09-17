@@ -1753,10 +1753,10 @@ explore:thpg_zipcode  {
 explore: dates_hours_reference_clone {
 
   join: shift_teams {
-    sql_on:  (${dates_hours_reference_clone.datehour_date} >= ${shift_teams.start_mountain_date}
+    sql_on:  ${dates_hours_reference_clone.datehour_date} = ${shift_teams.start_mountain_date}
             AND ${dates_hours_reference_clone.datehour_hour_of_day} >= ${shift_teams.start_mountain_hour_of_day}
             AND ${dates_hours_reference_clone.datehour_hour_of_day} <= ${shift_teams.end_mountain_hour_of_day}
-            );;
+            ;;
   }
 
   join: cars {

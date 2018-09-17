@@ -114,7 +114,28 @@ view: shift_teams {
       year
     ]
     sql: ${TABLE}.updated_at ;;
+
+
   }
+
+  dimension: car_date_id {
+    type: string
+    sql: CONCAT(${cars.name}, ${start_mountain_date});;
+  }
+
+  measure: count_distinct_car_date_shift {
+    label: "Count of Distinct Cars by Date (Shift Teams)"
+    type: count_distinct
+    sql_distinct_key: ${car_date_id} ;;
+    sql: ${car_date_id} ;;
+  }
+
+  measure: hourly_productivity {
+    value_format: "0.00"
+    type: number
+    sql: ${care_request_flat.complete_count}::float / ${count_distinct_car_date_shift}::float ;;
+  }
+
 
   measure: count {
     type: count

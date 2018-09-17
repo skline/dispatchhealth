@@ -98,4 +98,9 @@ view: cars {
     type: count
     drill_fields: [id, name]
   }
+
+  measure: car_names_aggregated {
+    type: string
+    sql: array_agg(distinct ${name}) ;;
+    }
 }
