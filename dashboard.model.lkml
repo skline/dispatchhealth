@@ -1749,3 +1749,51 @@ explore:thpg_texashealth_backcare  {
 
 explore:thpg_zipcode  {
 }
+
+explore: dates_hours_reference_clone {
+
+  join: shift_teams {
+    sql_on:  ${dates_hours_reference_clone.datehour_date} = ${shift_teams.start_mountain_date}
+            AND ${dates_hours_reference_clone.datehour_hour_of_day} >= ${shift_teams.start_mountain_hour_of_day}
+            AND ${dates_hours_reference_clone.datehour_hour_of_day} <= ${shift_teams.end_mountain_hour_of_day}
+            ;;
+  }
+
+  join: cars {
+    relationship: many_to_one
+    sql_on: ${shift_teams.car_id} = ${cars.id} ;;
+  }
+
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${markets.id} = ${cars.market_id} ;;
+  }
+
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+
+
+
+  join: care_request_flat {
+    type: left_outer
+    relationship: one_to_many
+    sql_on:  (DATE(${care_request_flat.on_scene_date}) = ${dates_hours_reference_clone.datehour_date}
+      AND ${care_request_flat.on_scene_hour_of_day} = ${dates_hours_reference_clone.hour_of_day}
+      AND ${care_request_flat.shift_team_id} = ${shift_teams.id}) ;;
+  }
+
+  join: care_requests {
+    sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
+
+
+
+
+
+
+
+
+}

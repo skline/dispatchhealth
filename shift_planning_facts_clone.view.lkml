@@ -9,7 +9,6 @@ view: shift_planning_facts_clone {
   }
 
   dimension: car_dim_id {
-    hidden: yes
     type: number
     sql: ${TABLE}.car_dim_id ;;
   }
@@ -17,7 +16,7 @@ view: shift_planning_facts_clone {
   dimension: car_date_id {
     hidden: yes
     type: string
-    sql: CONCAT(${car_dim_id}, DATE_FORMAT(${local_actual_start_date}, "%Y-%m-%d"));;
+    sql: CONCAT(${car_dim_id}, ${local_actual_start_date});;
   }
 
   measure: count_distinct_car_date {
@@ -34,8 +33,15 @@ view: shift_planning_facts_clone {
 
   measure: average_cars {
     label: "Average Number of Cars"
+    value_format: "0.0"
     type: number
-    sql: ${count_distinct_car_date} / COUNT(DISTINCT ${dates_hours_reference.datehour_date}) ;;
+    sql: ${count_distinct_car_date}::float / COUNT(DISTINCT ${dates_hours_reference_clone.datehour_date})::float ;;
+  }
+
+  measure: hourly_productivity {
+    value_format: "0.00"
+    type: number
+    sql: ${care_request_flat.complete_count}::float / ${count_distinct_car_date}::float ;;
   }
 
   dimension_group: created {

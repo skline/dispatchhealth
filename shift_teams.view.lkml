@@ -35,7 +35,8 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.end_time AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz}  ;;
   }
@@ -49,7 +50,8 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
@@ -69,7 +71,8 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
     sql: ${TABLE}.start_time AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
@@ -83,9 +86,10 @@ view: shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day
     ]
-    sql:  ${TABLE}.end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
+    sql:  ${TABLE}.start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension: shift_hours {
@@ -110,7 +114,28 @@ view: shift_teams {
       year
     ]
     sql: ${TABLE}.updated_at ;;
+
+
   }
+
+  dimension: car_date_id {
+    type: string
+    sql: CONCAT(${cars.name}, ${start_mountain_date});;
+  }
+
+  measure: count_distinct_car_date_shift {
+    label: "Count of Distinct Cars by Date (Shift Teams)"
+    type: count_distinct
+    sql_distinct_key: ${car_date_id} ;;
+    sql: ${car_date_id} ;;
+  }
+
+  measure: hourly_productivity {
+    value_format: "0.00"
+    type: number
+    sql: ${care_request_flat.complete_count}::float / ${count_distinct_car_date_shift}::float ;;
+  }
+
 
   measure: count {
     type: count

@@ -1054,6 +1054,12 @@ view: care_request_flat {
     sql: EXTRACT(EPOCH FROM ${shift_end_raw} - ${shift_start_raw})/3600 ;;
   }
 
+  dimension: shift_team_id  {
+    type: number
+    sql:${TABLE}.shift_team_id ;;
+  }
+
+
   measure: sum_shift_hours {
     type: sum
     description: "The sum of all scheduled shift hours"
