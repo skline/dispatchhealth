@@ -1756,6 +1756,7 @@ explore: dates_hours_reference_clone {
     sql_on:  ${dates_hours_reference_clone.datehour_date} = ${shift_teams.start_mountain_date}
             AND ${dates_hours_reference_clone.datehour_hour_of_day} >= ${shift_teams.start_mountain_hour_of_day}
             AND ${dates_hours_reference_clone.datehour_hour_of_day} <= ${shift_teams.end_mountain_hour_of_day}
+            and extract (epoch from (${shift_teams.end_mountain_raw}- ${shift_teams.start_mountain_raw}))::integer > 600
             ;;
   }
 
