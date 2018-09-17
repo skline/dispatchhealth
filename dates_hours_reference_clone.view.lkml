@@ -25,6 +25,24 @@ view: dates_hours_reference_clone {
     sql: ${TABLE}.datehour ;;
   }
 
+  dimension_group: datehour_timezone {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      hour_of_day,
+      date,
+      day_of_week,
+      week,
+      month,
+      day_of_month,
+      quarter,
+      year
+    ]
+    convert_tz: no
+    sql: ${TABLE}.datehour AT TIME ZONE 'US/Mountain' AT TIME ZONE ${timezones.pg_tz} ;;
+  }
+
   dimension: day_of_week {
     type: number
     sql: ${TABLE}.day_of_week ;;
@@ -80,11 +98,17 @@ view: dates_hours_reference_clone {
     drill_fields: [id]
   }
 
+  measure: distinct_datehour_date {
+    type: number
+    sql:   COUNT(DISTINCT ${datehour_date});;
+
+    }
+
   measure: average_cars {
     label: "Average Number of Cars"
     value_format: "0.0"
     type: number
-    sql: ${shift_teams.count_distinct_car_date_shift}::float / COUNT(DISTINCT ${datehour_date})::float ;;
+    sql: ${shift_teams.count_distinct_car_date_shift}::float / ${distinct_datehour_date}::float ;;
   }
 
 }

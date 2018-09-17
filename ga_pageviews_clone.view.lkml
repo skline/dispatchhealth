@@ -370,7 +370,7 @@ dimension: source_category
 
   dimension: ad_group_final {
     type: string
-    sql: lower(coalesce(${ad_groups_clone.ad_group_name}, ${content_final})) ;;
+    sql: lower(coalesce(${ad_groups_clone.ad_group_name}, ${content_final}, ${marketing_cost_clone.ad_group_name})) ;;
   }
 
 
