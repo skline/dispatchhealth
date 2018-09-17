@@ -81,6 +81,12 @@ view: addresses {
     sql: left(${zipcode}, 5) ;;
   }
 
+  dimension: scf_code {
+    type: string
+    description: "The sectional center facility code (first 3 digits of the zip)"
+    sql: left(${zipcode}, 3) ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id]
