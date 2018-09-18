@@ -485,6 +485,13 @@ from looker_scratch.marketing_cost_clone)lq;;
     sql: ${sum_marketing_cost}/${month_percent} ;;
   }
 
+  measure: cost_per_care_complete {
+    type: number
+    value_format:"$#;($#)"
+    sql:  ${sum_marketing_cost}cost}/NULLIF(${total_complete}, 0) ;;
+  }
+
+
 
 
 
