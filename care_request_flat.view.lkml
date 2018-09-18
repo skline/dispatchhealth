@@ -237,6 +237,7 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+
   measure:  average_drive_time_minutes_google {
     type: average_distinct
     description: "The average drive time from Google in minutes"
@@ -738,6 +739,22 @@ view: care_request_flat {
     sql: ${TABLE}.on_route_date ;;
   }
 
+  dimension_group: drive_start {
+    type: time
+    description: "The on-scene date and time minus the Google drive time"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month
+    ]
+    sql: ${on_scene_raw} - (${drive_time_seconds_google}::int * INTERVAL '1' second) ;;
+  }
+
   dimension_group: scheduled_care {
     type: time
     description: "The date where we are trying to complete a scheduled care_request"
@@ -840,10 +857,17 @@ view: care_request_flat {
   }
 
   dimension: on_route_decimal {
-    description: "The local on-route time of day, represented as a decimal (e.g. 10:15 AM = 10.25"
+    description: "The local on-route time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${on_route_raw}) AS INT)) +
         ((CAST(EXTRACT(MINUTE FROM ${on_route_raw} ) AS FLOAT)) / 60) ;;
+  }
+
+  dimension: drive_start_decimal {
+    description: "The Google on-route time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${drive_start_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${drive_start_raw} ) AS FLOAT)) / 60) ;;
   }
 
   dimension_group: on_scene {
