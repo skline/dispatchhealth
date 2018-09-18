@@ -45,7 +45,7 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     and lower((lower(coalesce(adwords_campaigns_clone.campaign_name,  marketing_cost_clone.campaign_name, invoca_clone.utm_campaign, ga_pageviews_full_clone.campaign)))) = lower(marketing_cost_clone.campaign_name)
     ;;
       sql_trigger_value: SELECT MAX(start_time) FROM invoca_clone ;;
-      indexes: ["ga_time"]
+      indexes: ["marketing_time"]
   }
 
   dimension: source_final {
