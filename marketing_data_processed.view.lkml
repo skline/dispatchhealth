@@ -46,13 +46,13 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     ;;
       sql_trigger_value: select array_agg(timevalue)
 from
-(select max(timestamp_mst) as timevalue
+(select count(*) as timevalue
 from looker_scratch.ga_pageviews_clone
 union all
-select max(start_time)  as timevalue
+select count(*)  as timevalue
 from looker_scratch.invoca_clone
 union all
-select max(date) as timevalue
+select count(*) as timevalue
 from looker_scratch.marketing_cost_clone)lq;;
       indexes: ["marketing_time"]
   }
