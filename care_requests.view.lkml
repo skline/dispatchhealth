@@ -966,10 +966,22 @@ measure: distinct_day_of_week {
     sql:  max(${care_request_flat.complete_time}::timestamp) ;;
   }
 
+  measure: min_on_route_time {
+    label: "First Care Request On Route Time"
+    type: date_time
+    sql:  min(${care_request_flat.on_route_time}::timestamp) ;;
+  }
+
   measure: shift_end_last_cr_diff{
     label: "Hours between Last Patient Seen and Shift End "
     type: number
     sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time}::timestamp - ${care_request_flat.shift_end_time}::timestamp))/3600)::decimal,2);;
+  }
+
+  measure: shift_start_first_on_route_diff{
+    label: "Hours Between Shift Start and First On Route"
+    type: number
+    sql:  round(((EXTRACT(EPOCH FROM ${min_on_route_time}::timestamp - ${care_request_flat.shift_start_time}::timestamp))/3600)::decimal,2);;
   }
 
   measure: shift_end_last_cr_diff_adj{
@@ -979,7 +991,6 @@ measure: distinct_day_of_week {
                when  ${shift_end_last_cr_diff} < -18.0 then ${shift_end_last_cr_diff} + 24.0
            else ${shift_end_last_cr_diff} end;;
     }
-
 
   measure: min_max_range_week {
     type: string
