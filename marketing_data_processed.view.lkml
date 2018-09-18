@@ -192,7 +192,9 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
       month,
       quarter,
       year,
-      hour_of_day
+      hour_of_day,
+      day_of_week_index,
+      day_of_month
     ]
     sql: ${TABLE}.marketing_time ;;
   }
@@ -386,7 +388,7 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
 
   measure: sum_marketing_cost{
     type: sum_distinct
-    value_format: "$0"
+    value_format: "$#,##0"
     sql_distinct_key: concat(${marketing_cost_campaign_name}, ${marketing_date}, ${marketing_cost_type}, ${marketing_cost_ad_group_name}) ;;
     sql: ${marketing_cost}  ;;
   }
@@ -394,6 +396,28 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     type: count_distinct
     sql: ${call_record_ikd} ;;
   }
+
+  dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month,date]
+    sql: current_date - interval '1 day';;
+  }
+
+  dimension:  same_day_of_week_marketing {
+    type: yesno
+    sql:  ${yesterday_mountain_day_of_week_index} = ${marketing_day_of_week_index};;
+  }
+
+  dimension: until_today_marketing {
+    type: yesno
+    sql: ${marketing_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${marketing_day_of_week_index} >= 0 ;;
+  }
+
+  dimension: month_to_date_marketing  {
+    type:  yesno
+    sql: ${marketing_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
+  }
+
 
 
 
