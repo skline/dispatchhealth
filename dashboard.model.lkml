@@ -1780,8 +1780,8 @@ explore: dates_hours_reference_clone {
   join: care_request_flat {
     type: left_outer
     relationship: one_to_many
-    sql_on:  (DATE(${care_request_flat.on_scene_date}) = ${dates_hours_reference_clone.datehour_date}
-      AND ${care_request_flat.on_scene_hour_of_day} = ${dates_hours_reference_clone.hour_of_day}
+    sql_on:  (DATE(${care_request_flat.on_scene_mountain_date}) = ${dates_hours_reference_clone.datehour_date}
+      AND ${care_request_flat.on_scene_mountain_hour_of_day} = ${dates_hours_reference_clone.hour_of_day}
       AND ${care_request_flat.shift_team_id} = ${shift_teams.id}) ;;
   }
 
@@ -1862,5 +1862,8 @@ explore: marketing_data_processed {
     sql_on: ${dtc_categorization.care_request_id} =${care_requests.id} or ${dtc_categorization.care_request_id} =${web_care_requests.id};;
   }
 
+
+}
+explore: last_patient_seen {
 
 }

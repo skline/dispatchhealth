@@ -386,6 +386,7 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
 
   measure: sum_marketing_cost{
     type: sum_distinct
+    value_format: "$0"
     sql_distinct_key: concat(${marketing_cost_campaign_name}, ${marketing_date}, ${marketing_cost_type}, ${marketing_cost_ad_group_name}) ;;
     sql: ${marketing_cost}  ;;
   }

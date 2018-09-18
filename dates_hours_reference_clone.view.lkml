@@ -110,5 +110,9 @@ view: dates_hours_reference_clone {
     type: number
     sql: ${shift_teams.count_distinct_car_date_shift}::float / ${distinct_datehour_date}::float ;;
   }
+  dimension: hours_til_shift_end {
+    type: number
+    sql: ${shift_teams.end_mountain_hour_of_day}::int - ${datehour_hour_of_day}::int ;;
+  }
 
 }

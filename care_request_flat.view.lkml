@@ -891,6 +891,33 @@ view: care_request_flat {
     sql: ${TABLE}.on_scene_date ;;
   }
 
+  dimension: pg_tz {
+    type: string
+    sql: ${TABLE}.pg_tz ;;
+  }
+
+  dimension_group: on_scene_mountain {
+    type: time
+    description: "The mountain time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour
+    ]
+    sql: ${TABLE}.on_scene_date AT TIME ZONE ${pg_tz} AT TIME ZONE 'US/Mountain' ;;
+  }
+
+
   dimension_group: accept {
     type: time
     description: "The local date/time that the care request was accepted.
