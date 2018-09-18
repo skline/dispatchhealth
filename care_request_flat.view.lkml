@@ -414,6 +414,18 @@ view: care_request_flat {
       value: "yes"
     }
   }
+
+  measure:  total_on_scene_time_minutes{
+    type: sum_distinct
+    description: "The sum of minutes between complete time and on scene time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${on_scene_time_minutes} ;;
+    filters: {
+      field: is_reasonable_on_scene_time
+      value: "yes"
+    }
+  }
 #   Need to get this working for histograms
    parameter: bucket_size {
      default_value: "10"
