@@ -1789,12 +1789,78 @@ explore: dates_hours_reference_clone {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
 
+}
+explore: marketing_data_processed {
+  join: patients {
+    sql_on:  ${patients.mobile_number} = ${marketing_data_processed.invoca_phone_number} and ${patients.mobile_number} is not null  ;;
+  }
+
+  join: ga_geodata_clone {
+    sql_on: ${marketing_data_processed.ga_client_id} = ${ga_geodata_clone.client_id}
+      and ${marketing_data_processed.ga_timestamp_orig_raw} = ${ga_geodata_clone.timestamp_raw};;
+  }
+
+
+  join: web_care_requests {
+    from: care_requests
+    sql_on:
+        (
+          abs(EXTRACT(EPOCH FROM ${marketing_data_processed.ga_timestamp_mst_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
+          AND
+          web_care_requests.marketing_meta_data->>'ga_client_id' = ${marketing_data_processed.ga_client_id}
+         ) ;;
+  }
+
+  join: care_requests {
+    sql_on:
+        (
+          (
+            ${patients.id} = ${care_requests.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+          OR
+          (
+            ${care_requests.origin_phone} = ${marketing_data_processed.invoca_phone_number}
+            and
+            ${care_requests.origin_phone} is not null
+          )
+        )
+        AND
+        abs(EXTRACT(EPOCH FROM ${marketing_data_processed.invoca_start_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+        );;
+  }
+
+  join: dtc_ff_patients {
+    sql_on: ${patients.id} = ${care_requests.patient_id}
+      OR ${patients.id} = ${web_care_requests.patient_id} ;;
+  }
 
 
 
+  join: care_request_flat {
+    relationship: many_to_one
+    sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: web_care_request_flat {
+    from: care_request_flat
+    relationship: many_to_one
+    sql_on: ${web_care_request_flat.care_request_id} = ${web_care_requests.id} ;;
+  }
 
 
 
+  join: markets {
+    sql_on:  ${markets.id} = ${marketing_data_processed.market_id} ;;
+  }
+
+
+  join: channel_items {
+    sql_on:  ${channel_items.id} =${care_requests.channel_item_id} or ${channel_items.id} =${web_care_requests.channel_item_id};;
+  }
+
+  join: dtc_categorization {
+    relationship: one_to_one
+    sql_on: ${dtc_categorization.care_request_id} =${care_requests.id} or ${dtc_categorization.care_request_id} =${web_care_requests.id};;
+  }
 
 
 }
