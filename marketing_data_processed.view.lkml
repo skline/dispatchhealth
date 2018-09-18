@@ -419,6 +419,68 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
   }
 
 
+  measure: sessions_to_calls_rate {
+    type: number
+    value_format: "0%"
+    sql: ${invoca_calls}::float /nullif(${count_distinct_sessions}::float,0) ;;
+  }
+
+  measure: calls_to_complete{
+    type: number
+    value_format: "0%"
+    sql: ${total_complete}::float /nullif(${invoca_calls}::float,0);;
+  }
+
+  measure: month_percent {
+    type: number
+    sql:
+
+        case when ${marketing_month} != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
+  }
+
+  measure: sessions_run_rate{
+    type: number
+    value_format: "#,##0"
+    sql: ${count_distinct_sessions}/${month_percent} ;;
+  }
+
+  measure: care_request_run_rate{
+    type: number
+    value_format: "#,##0"
+    sql: ${total_care_requests}/${month_percent} ;;
+  }
+
+  measure: complete_run_rate{
+    type: number
+    value_format: "#,##0"
+    sql: ${total_complete}/${month_percent} ;;
+  }
+
+
+  measure: resolved_run_rate{
+    type: number
+    value_format: "#,##0"
+    sql: ${total_resolved}/${month_percent} ;;
+  }
+
+  measure: cost_run_rate{
+    type: number
+    value_format: "$0"
+    sql: ${sum_marketing_cost}/${month_percent} ;;
+  }
+
+
+
+
+
+
 
 
 
