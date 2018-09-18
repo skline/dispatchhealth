@@ -123,6 +123,12 @@ view: shift_teams {
     sql: CONCAT(${cars.name}, ${start_mountain_date});;
   }
 
+  dimension: car_hour_id {
+    type: string
+    sql: CONCAT(${cars.name}, ${start_mountain_date}, ${dates_hours_reference_clone.datehour_timezone_hour_of_day});;
+  }
+
+
   measure: count_distinct_car_date_shift {
     label: "Count of Distinct Cars by Date (Shift Teams)"
     type: count_distinct
@@ -130,10 +136,24 @@ view: shift_teams {
     sql: ${car_date_id} ;;
   }
 
+
+  measure: count_distinct_car_hour_shift {
+    label: "Count of Distinct Cars by Hour (Shift Teams)"
+    type: count_distinct
+    sql_distinct_key: ${car_hour_id} ;;
+    sql: ${car_hour_id} ;;
+  }
+
   measure: hourly_productivity {
     value_format: "0.00"
     type: number
     sql: ${care_request_flat.complete_count}::float / ${count_distinct_car_date_shift}::float ;;
+  }
+
+  measure: daily_productivity {
+    value_format: "0.00"
+    type: number
+    sql: ${care_request_flat.complete_count}::float / ${count_distinct_car_hour_shift}::float ;;
   }
 
 
