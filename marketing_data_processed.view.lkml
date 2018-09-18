@@ -390,6 +390,10 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     sql_distinct_key: concat(${marketing_cost_campaign_name}, ${marketing_date}, ${marketing_cost_type}, ${marketing_cost_ad_group_name}) ;;
     sql: ${marketing_cost}  ;;
   }
+  measure: invoca_calls {
+    type: count_distinct
+    sql: ${call_record_ikd} ;;
+  }
 
 
 
