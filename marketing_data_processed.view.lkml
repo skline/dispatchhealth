@@ -22,7 +22,7 @@ view: marketing_data_processed {
          marketing_cost_clone.date as marketing_cost_date,
          lower(marketing_cost_clone.campaign_name) as marketing_cost_campaign_name,
          lower(marketing_cost_clone.ad_group_name) as marketing_cost_ad_group_name,
-         lower(marketing_cost_clone.type) as marketing_cost_clone_type,
+         lower(marketing_cost_clone.type) as marketing_cost_type,
          marketing_cost_clone.impressions ad_impressions,
          marketing_cost_clone.cost as marketing_cost,
          marketing_cost_clone.clicks ad_clicks,
@@ -205,6 +205,12 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     sql: ${TABLE}.marketing_cost_campaign_name ;;
   }
 
+  dimension:marketing_cost_type{
+    type: string
+    sql: ${TABLE}.marketing_cost_type ;;
+  }
+
+
 
   dimension: marketing_cost_market_id {
     type: string
@@ -360,6 +366,31 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     type: number
     sql:count(distinct ${complete_care_request_id});;
   }
+
+  measure: total_resolved {
+    type: number
+    sql:count(distinct ${resolved_care_request_id});;
+  }
+
+  measure: sum_impressions{
+    type: sum_distinct
+    sql_distinct_key: concat(${marketing_cost_campaign_name}, ${marketing_date}, ${marketing_cost_type}, ${marketing_cost_ad_group_name}) ;;
+    sql: ${ad_impressions}  ;;
+  }
+
+  measure: sum_ad_clicks{
+    type: sum_distinct
+    sql_distinct_key: concat(${marketing_cost_campaign_name}, ${marketing_date}, ${marketing_cost_type}, ${marketing_cost_ad_group_name}) ;;
+    sql: ${ad_clicks}  ;;
+  }
+
+  measure: sum_marketing_cost{
+    type: sum_distinct
+    sql_distinct_key: concat(${marketing_cost_campaign_name}, ${marketing_date}, ${marketing_cost_type}, ${marketing_cost_ad_group_name}) ;;
+    sql: ${marketing_cost}  ;;
+  }
+
+
 
 
 
