@@ -528,5 +528,11 @@ dimension: care_line {
     sql: ${wait_time} ;;
   }
 
+  dimension: conversion_rate_eligible  {
+    type: yesno
+    sql: ${abandons} > 0 or lower(${disposition}) not in ('junk', 'spam') or ${disposition} is null;;
+
+  }
+
 
 }
