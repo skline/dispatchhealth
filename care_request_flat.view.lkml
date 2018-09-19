@@ -152,6 +152,13 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  measure: app_months_of_experience {
+    type: number
+    sql: date_part('year', age(${app_shift_planning_facts_clone.first_shift_date}::date))*12 +
+         date_part('month', age(${app_shift_planning_facts_clone.first_shift_date}::date)) ;;
+    #date_part('month',age('2010-04-01', '2012-03-05'))
+  }
+
   dimension: on_scene_time_30min_or_less {
     type: yesno
     description: "A flag indicating the on scene time was less than 30 minutes"
