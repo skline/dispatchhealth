@@ -125,6 +125,11 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.local_actual_start_time ;;
   }
 
+  measure: first_shift_date {
+    type: date_time
+    sql:  MIN(${local_actual_start_raw}) ;;
+  }
+
   dimension_group: local_expected_end {
     type: time
     convert_tz: no
