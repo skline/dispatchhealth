@@ -53,7 +53,11 @@ select count(*)  as timevalue
 from looker_scratch.invoca_clone
 union all
 select count(*) as timevalue
-from looker_scratch.marketing_cost_clone)lq;;
+from looker_scratch.marketing_cost_clone
+union all
+select extract(epoch from max(timestamp_mst))::float/10000.0
+from looker_scratch.ga_pageviews_clone
+)lq;;
       indexes: ["marketing_time"]
   }
 
