@@ -53,6 +53,13 @@ view: care_requests {
           ${channel_items.name} SIMILAR TO '%(pafu|post acute|post-acute)%';;
   }
 
+  dimension: follow_up {
+    type: yesno
+    description: "The word follow-up or follow up occurs in Chief Complaint"
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(follow-up|follow up)%' ;;
+  }
+
+
   measure: placeholder1 {
     type: number
     sql: NULL ;;
