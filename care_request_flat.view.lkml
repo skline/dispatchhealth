@@ -1863,4 +1863,8 @@ view: care_request_flat {
     type: number
     sql:  extract(year from age(${care_requests.created_raw}, ${patients.created_raw}))*12 + extract(month from age(${care_requests.created_raw},  ${patients.created_raw})) ;;
   }
+  dimension: secondary_screening {
+    type: yesno
+    sql: ${secondary_screenings.care_request_id} is not null;;
+  }
 }
