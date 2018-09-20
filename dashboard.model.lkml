@@ -483,6 +483,10 @@ explore: care_requests {
     relationship: one_to_one
     sql_on:  ${risk_assessments.user_id} = ${csc_risk_assessments.id};;
   }
+  join: secondary_screenings {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${secondary_screenings.care_request_id} ;;
+  }
 
   join: csc_agent_location_risk {
     from: csc_agent_location
