@@ -33,6 +33,12 @@ view: athenadwh_transactions_clone {
     sql: ${transaction_type} = 'PAYMENT' ;;
   }
 
+  dimension: charge_transaction {
+    type: yesno
+    hidden: yes
+    sql: ${transaction_type} = 'CHARGE' ;;
+  }
+
   dimension: patient_payment {
     type: yesno
     sql: ${transaction_transfer_type} = 'Patient' AND ${transaction_type} = 'PAYMENT' ;;
@@ -155,6 +161,16 @@ view: athenadwh_transactions_clone {
     value_format: "0.00"
     filters: {
       field: patient_responsibility_without_secondary
+      value: "yes"
+    }
+  }
+
+  measure: total_expected_allowable {
+    type: sum
+    sql: ${expected_allowed_amount}::float ;;
+    value_format: "0.00"
+    filters: {
+      field: charge_transaction
       value: "yes"
     }
   }
