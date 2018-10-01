@@ -133,7 +133,11 @@ view: athenadwh_clinical_providers_clone {
 
   measure: address_aggregated {
     type: string
-    sql: array_agg(distinct concat(${address1},': ',coalesce(${address2}, ''),': ', ${city}, ': ', left(${zip},5))) ;;
+    sql: array_agg(distinct ${address_full}) ;;
+  }
+  dimension: address_full {
+    type: string
+    sql: concat(${address1},': ',coalesce(${address2}, ''),': ', ${city}, ': ', left(${zip},5)) ;;
   }
 
 }

@@ -76,7 +76,8 @@ view: athenadwh_clinical_letters_clone {
   }
 
   measure: count {
-    type: count
+    type: count_distinct
+    sql: ${clinical_letter_id} ;;
     drill_fields: [id]
   }
 }
