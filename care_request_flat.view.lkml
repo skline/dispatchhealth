@@ -1151,6 +1151,13 @@ view: care_request_flat {
     sql:  MAX(${complete_raw}) ;;
   }
 
+  dimension: created_decimal {
+    description: "Complete Time of Day as Decimal"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT)) / 60) ;;
+  }
+
   dimension: complete_decimal {
     description: "Complete Time of Day as Decimal"
     type: number

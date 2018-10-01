@@ -355,6 +355,11 @@ explore: care_requests {
     sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
   }
 
+  join: postal_codes {
+    relationship: many_to_one
+    sql_on: ${addresses.zipcode_short} = ${postal_codes.postalcode} ;;
+  }
+
   join: credit_cards {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
