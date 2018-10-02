@@ -81,6 +81,11 @@ view: addresses {
     sql: left(${zipcode}, 5) ;;
   }
 
+  measure: zipcode_list {
+    type: string
+    sql: array_agg(${zipcode_short}) ;;
+  }
+
   dimension: scf_code {
     type: string
     description: "The sectional center facility code (first 3 digits of the zip)"
