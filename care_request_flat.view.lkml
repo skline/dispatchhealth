@@ -789,6 +789,7 @@ view: care_request_flat {
       time,
       week,
       month,
+      year,
       day_of_week,
       day_of_week_index,
       day_of_month,
