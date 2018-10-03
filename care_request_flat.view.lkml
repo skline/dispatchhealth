@@ -1429,6 +1429,23 @@ view: care_request_flat {
     }
   }
 
+  measure: resolved_non_lwbs_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_requests.billable_est
+      value: "no"
+    }
+    filters: {
+      field: lwbs
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
   measure: lwbs_rate {
     type: number
     value_format: "0.0%"
