@@ -203,6 +203,7 @@ view: channel_items {
           when lower(${type_name}) in('health system', 'employer', 'payer', 'provider group', 'injury finance') or lower(${name}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue') then 'Strategic'          when ${digital_bool} then 'Direct to Consumer'
           when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
           when lower(${name}) ='family or friend' then 'Family or Friends'
+          when ${name} is null then 'No Channel'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name}) end;;
   }
 
