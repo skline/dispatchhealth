@@ -483,6 +483,13 @@ explore: care_requests {
     sql_on:  ${care_request_requested.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
   }
 
+  join: secondary_screening_provider {
+    from: users
+    relationship: one_to_one
+    sql_on:  ${secondary_screenings.provider_id} = ${secondary_screening_provider.id};;
+  }
+
+
   join: csc_risk_assessments {
     from: users
     relationship: one_to_one
