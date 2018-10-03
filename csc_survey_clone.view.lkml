@@ -119,4 +119,8 @@ view: csc_survey_clone {
     sql: count(distinct ${contact_id}) ;;
 
   }
+  dimension: active {
+    type: yesno
+    sql:${TABLE}.active;;
+  }
 }

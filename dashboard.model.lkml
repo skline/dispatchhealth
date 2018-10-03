@@ -1641,6 +1641,7 @@ explore: ga_pageviews_clone {
     }
           join: csc_survey_clone {
              sql_on: ${csc_survey_clone.contact_id} = ${incontact_clone.contact_id} ;;
+            sql_where:  ${csc_survey_clone.active} ;;
           }
 
 
@@ -1682,6 +1683,7 @@ explore: cost_projections {
         explore: csc_survey_clone {
           join: incontact_clone {
             sql_on:  ${incontact_clone.contact_id} = ${csc_survey_clone.contact_id} ;;
+            sql_where:  ${csc_survey_clone.active} ;;
           }
 
           join: markets {
