@@ -88,6 +88,11 @@ view: secondary_screenings {
     sql: ${TABLE}.updated_at ;;
   }
 
+  measure: count_distinct {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id]
