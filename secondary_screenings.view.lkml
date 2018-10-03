@@ -93,6 +93,16 @@ view: secondary_screenings {
     sql: ${care_request_id} ;;
   }
 
+  measure: count_screened_escalated_phone {
+    description: "Count of care requests that had secondary screening and that were escalated over the phone"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_phone
+      value: "yes"
+    }
+  }
+
   measure: count {
     type: count
     drill_fields: [id]
