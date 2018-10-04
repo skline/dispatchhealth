@@ -35,6 +35,13 @@ view: athenadwh_clinical_encounters_clone_full {
     sql: ${TABLE}.closed_datetime ;;
   }
 
+  measure: last_closed_datetime {
+    type: date
+    sql: MAX(${closed_datetime_raw}) ;;
+    convert_tz: no
+  }
+
+
   dimension_group: created_datetime {
     type: time
     timeframes: [
