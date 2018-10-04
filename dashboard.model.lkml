@@ -1886,3 +1886,9 @@ explore: marketing_data_processed {
 explore: last_patient_seen {
 
 }
+
+explore: houston_zipcodes_processed{
+  join: zipcodes {
+    sql_on: ${zipcodes.zip}::int =${houston_zipcodes_processed.zipcode} and ${zipcodes.market_id}=165 ;;
+  }
+}
