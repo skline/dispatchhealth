@@ -41,7 +41,6 @@ view: athenadwh_clinical_encounters_clone_full {
     convert_tz: no
   }
 
-
   dimension_group: created_datetime {
     type: time
     timeframes: [
