@@ -899,6 +899,11 @@ view: care_request_flat {
     sql: ${TABLE}.on_scene_date ;;
   }
 
+  dimension: first_half_of_month_on_scene {
+    type: yesno
+    sql: ${on_scene_day_of_month} <= 15 ;;
+  }
+
   dimension: pg_tz {
     type: string
     sql: ${TABLE}.pg_tz ;;

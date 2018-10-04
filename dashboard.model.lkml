@@ -14,6 +14,7 @@ explore: care_requests {
     user_attribute: "market_name"
   }
 
+
 # Join all Athena data warehouse feed tables -- DE
   join: athenadwh_patient_insurances_clone {
     relationship: one_to_many
@@ -1687,9 +1688,10 @@ explore: cost_projections {
 }
 
         explore: csc_survey_clone {
+          sql_always_where:  ${csc_survey_clone.active};;
+
           join: incontact_clone {
             sql_on:  ${incontact_clone.contact_id} = ${csc_survey_clone.contact_id} ;;
-            sql_where:  ${csc_survey_clone.active} ;;
           }
 
           join: markets {
