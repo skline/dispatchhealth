@@ -33,6 +33,11 @@ explore: care_requests {
       ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id};;
   }
 
+  join: athenadwh_clinical_encounters_clone_full {
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} ;;
+  }
+
   join: athenadwh_provider_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_provider_clone.provider_id} ;;
