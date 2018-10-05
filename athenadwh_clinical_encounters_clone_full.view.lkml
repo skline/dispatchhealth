@@ -21,6 +21,11 @@ view: athenadwh_clinical_encounters_clone_full {
     sql: ${TABLE}.closed_by ;;
   }
 
+  dimension: closed_by_supervisor {
+    type: yesno
+    sql: ${closed_by} IS NOT NULL AND ${closed_by} = ${athenadwh_supervising_provider_clone.provider_user_name} ;;
+  }
+
   dimension_group: closed_datetime {
     type: time
     timeframes: [
