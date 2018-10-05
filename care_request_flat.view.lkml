@@ -793,7 +793,8 @@ view: care_request_flat {
       day_of_week,
       day_of_week_index,
       day_of_month,
-      month_num
+      month_num,
+      quarter
     ]
     sql: ${TABLE}.created_date ;;
   }
