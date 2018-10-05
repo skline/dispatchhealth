@@ -41,7 +41,7 @@ explore: care_requests {
   join: athenadwh_provider_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_provider_clone.provider_id} ;;
-    sql_where: ${athenadwh_provider_clone.provider_id} != ${athenadwh_provider_clone.supervising_provider_id} ;;
+    #sql_where: ${athenadwh_provider_clone.provider_id} != ${athenadwh_provider_clone.supervising_provider_id} ;;
   }
 
   join: athenadwh_supervising_provider_clone {
