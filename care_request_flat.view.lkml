@@ -1371,6 +1371,7 @@ view: care_request_flat {
   dimension: primary_resolved_reason {
     type:  string
     sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
+    drill_fields: [secondary_resolved_reason]
   }
 
   dimension: secondary_resolved_reason {
@@ -1449,6 +1450,10 @@ view: care_request_flat {
       field: lwbs
       value: "yes"
     }
+    drill_fields: [
+      secondary_resolved_reason,
+      care_request_count
+    ]
   }
 
   measure: cancelled_by_patient_count {
@@ -1458,6 +1463,10 @@ view: care_request_flat {
       field: cancelled_by_patient_reason
       value: "yes"
     }
+    drill_fields: [
+      secondary_resolved_reason,
+      care_request_count
+      ]
   }
 
   measure: no_answer_no_show_count {
@@ -1488,6 +1497,10 @@ view: care_request_flat {
       field: resolved_911_divert
       value: "no"
     }
+    drill_fields: [
+      secondary_resolved_reason,
+      care_request_count
+    ]
   }
 
   measure: lwbs_rate {
