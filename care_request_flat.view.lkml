@@ -1420,6 +1420,11 @@ view: care_request_flat {
     sql: ${archive_comment} LIKE '%Cancelled by Patient: No longer need care%' ;;
   }
 
+  dimension: cancelled_by_patient_reason {
+    type: yesno
+    sql: ${primary_resolved_reason} = 'Cancelled by Patient' ;;
+  }
+
   dimension: lwbs {
     type: yesno
     description: "Going to ED/Urgent Care, Wait Time Too Long, No Show, or No Longer Need Care"
@@ -1442,6 +1447,15 @@ view: care_request_flat {
     sql: ${care_request_id} ;;
     filters: {
       field: lwbs
+      value: "yes"
+    }
+  }
+
+  measure: cancelled_by_patient_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: cancelled_by_patient_reason
       value: "yes"
     }
   }
