@@ -1375,7 +1375,11 @@ view: care_request_flat {
 
   dimension: secondary_resolved_reason {
     type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 2)) ;;
+    sql: CASE
+          WHEN ${resolved_reason_full} LIKE '%Spoke to my family doctor%'
+          THEN 'Spoke to my Family Doctor'
+          ELSE trim(split_part(${resolved_reason_full}, ':', 2))
+        END ;;
   }
 
   dimension: primary_and_secondary_resolved_reason {
@@ -1392,7 +1396,8 @@ view: care_request_flat {
 
   dimension: escalated_on_scene {
     type: yesno
-    sql: UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
+    sql: UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+    ${primary_resolved_reason} = 'Referred - Point of Care';;
   }
 
   dimension: lwbs_going_to_ed {
@@ -1410,11 +1415,6 @@ view: care_request_flat {
     sql: ${archive_comment} LIKE '%Wait time too long%' ;;
   }
 
-  dimension: lwbs_no_show {
-    type: yesno
-    sql: ${archive_comment} LIKE '%No Show%' ;;
-  }
-
   dimension: lwbs_no_longer_need_care {
     type: yesno
     sql: ${archive_comment} LIKE '%Cancelled by Patient: No longer need care%' ;;
@@ -1422,8 +1422,19 @@ view: care_request_flat {
 
   dimension: lwbs {
     type: yesno
-    description: "Going to ED/Urgent Care, Wait Time Too Long, or No Show"
-    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} OR ${lwbs_no_show} ;;
+    description: "Going to ED/Urgent Care, Wait Time Too Long, No Show, or No Longer Need Care"
+    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR
+      ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care} ;;
+  }
+
+  dimension: resolved_no_answer_no_show {
+    type: yesno
+    sql: ${archive_comment} LIKE '%No Answer%' OR ${archive_comment} LIKE '%No Show%';;
+  }
+
+  dimension: resolved_911_divert {
+    type: yesno
+    sql: ${archive_comment} LIKE '%911 Divert%' ;;
   }
 
   measure: lwbs_count {
@@ -1431,6 +1442,15 @@ view: care_request_flat {
     sql: ${care_request_id} ;;
     filters: {
       field: lwbs
+      value: "yes"
+    }
+  }
+
+  measure: no_answer_no_show_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: resolved_no_answer_no_show
       value: "yes"
     }
   }
