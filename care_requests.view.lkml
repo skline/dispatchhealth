@@ -388,6 +388,16 @@ view: care_requests {
     sql: ${patient_id} ;;
   }
 
+  measure: count_distinct_intended_care_requests {
+    description: "Count of distinct care requests where 911 diversions have been removed"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: care_request_flat.resolved_911_divert
+      value: "no"
+    }
+  }
+
   dimension: place_of_service {
     type: string
     sql: ${TABLE}.place_of_service ;;

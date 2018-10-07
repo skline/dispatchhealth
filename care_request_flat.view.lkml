@@ -1470,6 +1470,10 @@ view: care_request_flat {
       field: escalated_on_phone
       value: "no"
     }
+    filters: {
+      field: resolved_911_divert
+      value: "no"
+    }
   }
 
   measure: lwbs_rate {
