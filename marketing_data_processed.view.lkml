@@ -126,7 +126,7 @@ from looker_scratch.ga_pageviews_clone
 
   dimension: ad_group_final {
     type: string
-    sql: ${TABLE}.campaign_final ;;
+    sql: ${TABLE}.ad_group_final ;;
   }
 
 
