@@ -52,6 +52,11 @@ view: power_of_attorneys {
     drill_fields: [detail*]
   }
 
+  measure: count_distinct_patients {
+    type: count_distinct
+    sql: ${patient_id} ;;
+  }
+
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
