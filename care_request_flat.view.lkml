@@ -1497,6 +1497,10 @@ view: care_request_flat {
       field: resolved_911_divert
       value: "no"
     }
+    filters: {
+      field: resolved_no_answer_no_show
+      value: "no"
+    }
     drill_fields: [
       secondary_resolved_reason,
       care_request_count
