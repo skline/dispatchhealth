@@ -1443,6 +1443,25 @@ view: care_request_flat {
     sql: ${archive_comment} LIKE '%911 Divert%' ;;
   }
 
+  dimension: resolved_other {
+    type: yesno
+    sql:  ${complete_date} IS NULL AND ((${lwbs} IS NOT TRUE AND ${escalated_on_phone} IS NOT TRUE AND ${resolved_911_divert} IS NOT TRUE AND ${resolved_no_answer_no_show} IS NOT TRUE)
+          OR ${archive_comment} IS NULL);;
+  }
+
+  dimension: resolved_category {
+    type: string
+    sql: CASE
+          WHEN ${lwbs} THEN 'Left Without Being Seen'
+          WHEN ${resolved_no_answer_no_show} THEN 'No Answer/No Show'
+          WHEN ${resolved_911_divert} THEN '911 Diversion'
+          WHEN ${escalated_on_phone} THEN 'Escalated Over Phone'
+          WHEN ${resolved_other} THEN 'Other Resolved'
+          ELSE 'Billable Visit'
+        END
+          ;;
+  }
+
   measure: lwbs_count {
     type: count_distinct
     sql: ${care_request_id} ;;
