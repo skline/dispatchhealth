@@ -1598,6 +1598,34 @@ view: care_request_flat {
     }
   }
 
+  measure: screened_escalated_phone_count {
+    description: "Care requests secondary screened and escalated over the phone"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "yes"
+    }
+    filters: {
+      field: secondary_screening
+      value: "yes"
+    }
+  }
+
+  measure: non_screened_escalated_phone_count {
+    description: "Care requests NOT secondary screened and escalated over the phone"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "yes"
+    }
+    filters: {
+      field: secondary_screening
+      value: "no"
+    }
+  }
+
   measure: escalated_on_phone_ed_count {
     type: count_distinct
     sql: ${care_request_id} ;;
