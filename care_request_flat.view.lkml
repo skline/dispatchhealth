@@ -1969,6 +1969,11 @@ view: care_request_flat {
     type: number
     sql:  extract(year from age(${care_requests.created_raw}, ${patients.created_raw}))*12 + extract(month from age(${care_requests.created_raw},  ${patients.created_raw})) ;;
   }
+
+  dimension: patient_age_month_absolute {
+    type: number
+    sql:  extract(year from age('2018-10-01', ${patients.created_raw}))*12 + extract(month from age('2018-10-01',  ${patients.created_raw})) ;;
+  }
   dimension: secondary_screening {
     type: yesno
     sql: ${secondary_screenings.care_request_id} is not null;;

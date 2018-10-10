@@ -277,8 +277,9 @@ dimension: abandons {
   }
   measure: count_distinct {
     label: "Contacts"
-    type: number
-    sql:count(distinct ${master_contact_id}) ;;
+    type: count_distinct
+    sql_distinct_key:  ${master_contact_id};;
+    sql: ${master_contact_id} ;;
   }
 
   measure: count_distinct_inbound {
@@ -533,6 +534,83 @@ dimension: care_line {
     sql: ${abandons} > 0 or lower(${disposition}) not in ('junk', 'spam') or ${disposition} is null;;
 
   }
+
+  measure: care_contacts {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: campaign
+      value: "Care Electronic, Care Phone"
+    }
+
+  }
+
+  measure: electronic_contacts {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: campaign
+      value: "Care Electronic"
+    }
+  }
+
+  measure: requesting_care_calls{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: disposition
+      value: "Requesting Care"
+    }
+  }
+
+  measure: general_inquiry_calls{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: disposition
+      value: "General Inquiry"
+    }
+  }
+    measure: junk_calls{
+      type: count_distinct
+      sql_distinct_key: ${master_contact_id} ;;
+      sql: ${master_contact_id} ;;
+      filters: {
+        field: disposition
+        value: "Junk"
+      }
+  }
+
+  measure: booked_calls{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: disposition
+      value: "Booked"
+    }
+  }
+
+  dimension: other_or_null_disposition {
+    type: yesno
+    sql: (${disposition} not in('Junk', 'Booked', 'Requesting Care', 'General Inquiry') or ${disposition} is null) and ${campaign} = 'Care Phone' ;;
+  }
+  measure: other_calls {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: other_or_null_disposition
+      value: "yes"
+    }
+  }
+
+
+
 
 
 }
