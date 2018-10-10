@@ -545,6 +545,12 @@ view: care_request_flat {
     sql: ${TABLE}.reorder_reason ;;
   }
 
+  dimension: reassigned_or_reordered {
+    type: yesno
+    description: "A flag indicating the care request was reassigned OR re-ordered"
+    sql: ${reassignment_reason_other_final} IS NOT NULL OR ${reorder_reason} IS NOT NULL ;;
+  }
+
   dimension: reordered_visit {
     type: yesno
     sql: ${reorder_reason} IS NOT NULL ;;
