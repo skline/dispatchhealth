@@ -545,6 +545,12 @@ view: care_request_flat {
     sql: ${TABLE}.reorder_reason ;;
   }
 
+  dimension: reassigned_or_reordered {
+    type: yesno
+    description: "A flag indicating the care request was reassigned OR re-ordered"
+    sql: ${reassignment_reason_other_final} IS NOT NULL OR ${reorder_reason} IS NOT NULL ;;
+  }
+
   dimension: reordered_visit {
     type: yesno
     sql: ${reorder_reason} IS NOT NULL ;;
@@ -1595,6 +1601,34 @@ view: care_request_flat {
     filters: {
       field: escalated_on_phone
       value: "yes"
+    }
+  }
+
+  measure: screened_escalated_phone_count {
+    description: "Care requests secondary screened and escalated over the phone"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "yes"
+    }
+    filters: {
+      field: secondary_screening
+      value: "yes"
+    }
+  }
+
+  measure: non_screened_escalated_phone_count {
+    description: "Care requests NOT secondary screened and escalated over the phone"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "yes"
+    }
+    filters: {
+      field: secondary_screening
+      value: "no"
     }
   }
 

@@ -115,5 +115,18 @@ view: protocols {
   measure: count {
     type: count
     drill_fields: [parent_protocol_id, name]
+
+  }
+
+  # ----- Sets of fields for drilling ------
+  set: detail {
+    fields: [
+      parent_protocol_id,
+      name,
+      protocol_keywords.count,
+      protocols_questions.count,
+      questions.count,
+      rules.count
+    ]
   }
 }
