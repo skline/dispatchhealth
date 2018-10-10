@@ -1897,6 +1897,3 @@ explore: houston_zipcodes_processed{
     sql_on: ${zipcodes.zip}::int =${houston_zipcodes_processed.zipcode} and ${zipcodes.market_id}=165 ;;
   }
 }
-
-explore: funnel_data {
-}
