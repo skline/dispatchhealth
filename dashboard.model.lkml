@@ -280,6 +280,11 @@ explore: care_requests {
     sql_on: ${icd_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) ;;
   }
 
+  join: drg_to_icd10_crosswalk {
+    relationship: one_to_one
+    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
+  }
+
   join: letter_recipient_dimensions_clone {
     relationship:  many_to_one
     sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;
