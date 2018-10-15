@@ -531,7 +531,7 @@ dimension: care_line {
 
   dimension: conversion_rate_eligible  {
     type: yesno
-    sql: ${abandons} > 0 or lower(${disposition}) not in ('junk', 'spam') or ${disposition} is null;;
+    sql: ${abandons} > 0 or lower(${disposition}) not in ('junk', 'spam') or ${disposition} is null or lower(${campaign}) = 'care electronic';;
 
   }
 
@@ -564,6 +564,10 @@ dimension: care_line {
       field: disposition
       value: "Requesting Care"
     }
+    filters: {
+      field: answered
+      value: "1"
+    }
   }
 
   measure: general_inquiry_calls{
@@ -574,6 +578,10 @@ dimension: care_line {
       field: disposition
       value: "General Inquiry"
     }
+    filters: {
+      field: answered
+      value: "1"
+    }
   }
     measure: junk_calls{
       type: count_distinct
@@ -582,6 +590,10 @@ dimension: care_line {
       filters: {
         field: disposition
         value: "Junk"
+      }
+      filters: {
+        field: answered
+        value: "1"
       }
   }
 
@@ -593,12 +605,33 @@ dimension: care_line {
       field: disposition
       value: "Booked"
     }
+    filters: {
+      field: answered
+      value: "1"
+    }
+  }
+
+  dimension: non_answered_care_calls {
+    type: yesno
+    sql:  ${campaign} = 'Care Phone' and ${answered}= 0 ;;
+  }
+
+  measure: no_answer_calls{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: non_answered_care_calls
+      value: "Yes"
+    }
   }
 
   dimension: other_or_null_disposition {
     type: yesno
-    sql: (${disposition} not in('Junk', 'Booked', 'Requesting Care', 'General Inquiry') or ${disposition} is null) and ${campaign} = 'Care Phone' ;;
+    label: "Other/Null Disposition"
+    sql: (${disposition} not in('Junk', 'Booked', 'Requesting Care', 'General Inquiry') or ${disposition} is null) and ${campaign} = 'Care Phone' and ${answered}!= 0 ;;
   }
+
   measure: other_calls {
     type: count_distinct
     sql_distinct_key: ${master_contact_id} ;;

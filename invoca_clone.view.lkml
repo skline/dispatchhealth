@@ -420,5 +420,12 @@ view: invoca_clone {
  ;;
   }
 
+  dimension: local_listings {
+    type: yesno
+    sql:  lower(${promo_number_description}) like '%local listings%'
+
+      ;;
+  }
+
 
 }
