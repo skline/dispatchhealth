@@ -548,6 +548,7 @@ dimension: care_line {
 
   measure: electronic_contacts {
     type: count_distinct
+    label: "Web or Mobile Contacts"
     sql_distinct_key: ${master_contact_id} ;;
     sql: ${master_contact_id} ;;
     filters: {
