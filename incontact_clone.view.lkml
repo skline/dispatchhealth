@@ -619,6 +619,7 @@ dimension: care_line {
 
   measure: no_answer_calls{
     type: count_distinct
+    label: "Abandoned Phone Calls"
     sql_distinct_key: ${master_contact_id} ;;
     sql: ${master_contact_id} ;;
     filters: {
