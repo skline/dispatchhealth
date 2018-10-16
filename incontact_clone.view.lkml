@@ -52,6 +52,12 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${start_day_of_month} < ${today_mountain_day_of_month}  ;;
   }
 
+  dimension: month_to_date_two_days  {
+    type:  yesno
+    sql: ${start_day_of_month} < (${today_mountain_day_of_month} -1) ;;
+  }
+
+
   dimension: until_today {
     type: yesno
     sql: ${start_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${start_day_of_week_index} >= 0 ;;

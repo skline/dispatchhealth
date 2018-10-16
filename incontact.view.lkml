@@ -124,4 +124,9 @@ view: incontact {
     type:  yesno
     sql: DAYOFMONTH(${start_date}) <= DAYOFMONTH(curdate() - interval 1 day) ;;
   }
+
+  dimension: month_to_date_two_days  {
+    type:  yesno
+    sql: DAYOFMONTH(${start_date}) <= (DAYOFMONTH(curdate() - interval 2 day) ;;
+  }
 }

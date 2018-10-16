@@ -1248,6 +1248,11 @@ view: care_request_flat {
     sql: ${created_day_of_month} <= ${yesterday_mountain_day_of_month} ;;
   }
 
+  dimension: month_to_date_created_two_days{
+    type:  yesno
+    sql: ${created_day_of_month} <= (${yesterday_mountain_day_of_month}-1) ;;
+  }
+
   measure: distinct_months_on_scene {
     type: number
     sql: count(DISTINCT ${on_scene_month}) ;;
