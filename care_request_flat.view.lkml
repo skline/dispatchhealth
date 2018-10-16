@@ -2004,6 +2004,11 @@ view: care_request_flat {
     sql:  extract(year from age(${care_requests.created_raw}, ${patients.created_raw}))*12 + extract(month from age(${care_requests.created_raw},  ${patients.created_raw})) ;;
   }
 
+  dimension: patient_age_month_min_complete_date {
+    type: number
+    sql:  extract(year from age(${care_requests.created_raw}, ${min_patient_complete_visit.min_complete_raw}))*12 + extract(month from age(${care_requests.created_raw},  ${min_patient_complete_visit.min_complete_raw})) ;;
+  }
+
   dimension: patient_age_month_absolute {
     type: number
     sql:  extract(year from age('2018-10-01', ${patients.created_raw}))*12 + extract(month from age('2018-10-01',  ${patients.created_raw})) ;;

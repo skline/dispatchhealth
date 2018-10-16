@@ -622,6 +622,11 @@ explore: care_requests {
     sql_on:  ${care_requests.patient_id} = ${patients.id} ;;
   }
 
+  join: min_patient_complete_visit {
+    relationship: many_to_one
+    sql_on:  ${min_patient_complete_visit.patient_id} = ${patients.id} ;;
+  }
+
   join: driver_licenses {
     relationship: one_to_one
     sql_on: ${patients.id} = ${driver_licenses.patient_id} ;;
