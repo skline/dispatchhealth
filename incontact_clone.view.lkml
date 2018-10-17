@@ -20,7 +20,7 @@ from looker_scratch.incontact_clone
 group by 1,2,3,4,5,6,7,8,9)lq
 
 ;;
-    sql_trigger_value: SELECT MAX(start_time) FROM incontact_clone ;;
+    sql_trigger_value: SELECT MAX(contact_id) FROM incontact_clone ;;
     indexes: ["start_time", "campaign", "skll_name", "contact_id", "master_contact_id"]
     }
 
@@ -255,6 +255,12 @@ dimension: abandons {
   sql: ${TABLE}.abandons ;;
 }
 
+  dimension: short_abandons {
+    type: number
+    sql: ${TABLE}.short_abandons ;;
+  }
+
+
   dimension: answered {
     type: number
     sql: ${TABLE}.answered ;;
@@ -388,8 +394,13 @@ dimension: abandons {
 
   measure: count_distinct_live_answers {
     label: "Live Answers"
-    type: number
-    sql:  count(distinct case when (${answered}=1 and ${campaign} != 'VM')  then ${master_contact_id} else null end);;
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: answered
+      value: "1"
+    }
 
   }
 
@@ -407,11 +418,8 @@ dimension: abandons {
   }
 
 
-  measure: count_distinct_abandoned {
-    type: number
-    label: "Total Abandons"
-    sql:  count(distinct case when (${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM'  then ${master_contact_id} else null end);;
-  }
+
+
 
   measure: count_distinct_long_abandoned {
     type: number
@@ -618,19 +626,15 @@ dimension: care_line {
     }
   }
 
-  dimension: non_answered_care_calls {
-    type: yesno
-    sql:  ${campaign} = 'Care Phone' and ${answered}= 0 ;;
-  }
 
   measure: no_answer_calls{
     type: count_distinct
-    label: "Abandoned Phone Calls"
+    label: "No Answer Calls"
     sql_distinct_key: ${master_contact_id} ;;
     sql: ${master_contact_id} ;;
     filters: {
-      field: non_answered_care_calls
-      value: "Yes"
+      field: answered
+      value: "0"
     }
   }
 
@@ -649,6 +653,121 @@ dimension: care_line {
       value: "yes"
     }
   }
+
+
+  measure: count_distinct_abandoned_and_prequeue {
+    type: number
+    label: "Total Abandons and Prequeue Abandons"
+    sql:  count(distinct case when (${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM'  then ${master_contact_id} else null end);;
+  }
+
+  measure: count_distinct_abandoned {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    label: "Total Abandons (No Short Abandons or Prequeue Abandons)"
+    sql:  ${master_contact_id};;
+    filters: {
+      field: abandons
+      value: "1"
+    }
+    filters: {
+      field: short_abandons
+      value: "0"
+    }
+    filters: {
+      field: prequeue_abandons
+      value: "0"
+    }
+    filters: {
+      field: answered
+      value: "0"
+    }
+  }
+
+  measure: count_distinct_short_abandoned {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    label: "Total Short Abandons"
+    sql:  ${master_contact_id};;
+    filters: {
+      field: short_abandons
+      value: "1"
+    }
+    filters: {
+      field: answered
+      value: "0"
+    }
+    filters: {
+      field: prequeue_abandons
+      value: "0"
+    }
+  }
+
+
+  measure: count_distinct_prequeue_abandoned {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    label: "Total Prequeue Abandons"
+    sql:  ${master_contact_id};;
+    filters: {
+      field: prequeue_abandons
+      value: "1"
+    }
+    filters: {
+      field: answered
+      value: "0"
+    }
+
+  }
+
+  measure: count_distinct_callbacks{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    label: "Total Callbacks"
+    sql:  ${master_contact_id};;
+    filters: {
+      field: call_back
+      value: "1"
+    }
+  }
+
+  measure: no_answer_no_abandon{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    label: "Total No Answer and No Abandon"
+    sql:  ${master_contact_id};;
+    filters: {
+      field: answered
+      value: "0"
+    }
+    filters: {
+      field: short_abandons
+      value: "0"
+    }
+    filters: {
+      field: prequeue_abandons
+      value: "0"
+    }
+    filters: {
+      field: abandons
+      value: "0"
+    }
+  }
+
+  measure: count_distinct_vms{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    label: "Total Voicemails"
+    sql:  ${master_contact_id};;
+    filters: {
+      field: campaign
+      value: "VM"
+    }
+  }
+
+
+
+
 
 
 
