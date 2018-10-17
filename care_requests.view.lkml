@@ -731,8 +731,8 @@ view: care_requests {
       value: "yes"
     }
     filters: {
-      field: care_request_flat.auto_assignment_overridden
-      value: "true"
+      field: care_request_flat.reassigned_or_reordered
+      value: "yes"
     }
   }
 
