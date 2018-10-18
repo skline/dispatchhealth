@@ -1906,4 +1906,10 @@ explore: houston_zipcodes_processed{
   join: zipcodes {
     sql_on: ${zipcodes.zip}::int =${houston_zipcodes_processed.zipcode} and ${zipcodes.market_id}=165 ;;
   }
+
 }
+explore: psu_count_data{
+  join: zipcodes {
+    sql_on: ${zipcodes.zip}::int =${psu_count_data.zipcode}::int and ${zipcodes.market_id}=165 ;;
+  }
+  }
