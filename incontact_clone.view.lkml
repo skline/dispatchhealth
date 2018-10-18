@@ -641,7 +641,7 @@ dimension: care_line {
   dimension: other_or_null_disposition {
     type: yesno
     label: "Other/Null Disposition"
-    sql: (${disposition} not in('Junk', 'Booked', 'Requesting Care', 'General Inquiry') or ${disposition} is null) and ${campaign} = 'Care Phone' and ${answered}!= 0 ;;
+    sql: (${disposition} not in('Junk', 'Booked', 'Requesting Care', 'General Inquiry') or ${disposition} is null) and ${campaign} = 'Care Phone' and ${answered} = 1 ;;
   }
 
   measure: other_calls {
