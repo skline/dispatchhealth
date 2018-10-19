@@ -499,7 +499,6 @@ from looker_scratch.ga_pageviews_clone
     sql: case when ${source_final} = 'google' and ${medium_final} = 'cpc' and ${campaign_final} like '%call only%' then 'Call Only'
               when ${source_final} = 'google' and ${medium_final} = 'cpc' and ${campaign_final} not like '%call only%' then 'Regular'
               when ${medium_final} = 'google call extension' and ${source_final} like '%new%' then 'Call Only'
-              when ${medium_final} = 'google call extension' and ${source_final} like '%click to call%' then 'Call Only'
               when ${medium_final} = 'google call extension' and ${source_final} not like '%new%' then 'Regular'
           else null end;;
   }
