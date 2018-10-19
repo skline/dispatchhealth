@@ -436,6 +436,12 @@ explore: care_requests {
     sql_on:  ${shift_team_members.user_id} = ${users.id};;
   }
 
+  join: medical_necessity_notes {
+    from: notes
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${medical_necessity_notes.care_request_id} AND ${medical_necessity_notes.note_type} = 'medical-necessity' ;;
+  }
+
   join: csc_user_roles {
     relationship: one_to_many
     from: user_roles
