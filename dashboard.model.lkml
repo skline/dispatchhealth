@@ -1919,3 +1919,39 @@ explore: psu_count_data{
     sql_on: ${zipcodes.zip}::int =${psu_count_data.zipcode}::int and ${zipcodes.market_id}=165 ;;
   }
   }
+
+
+
+explore: iora_patients{
+  join: patients {
+    sql_on: ${iora_patients.dob_raw} = ${patients.dob}
+              and
+            lower(${patients.first_name}) = lower(${iora_patients.first_name})
+              and
+            lower(${patients.last_name}) = lower(${iora_patients.last_name});;
+  }
+
+  join: care_requests {
+    sql_on: ${patients.id} = ${care_requests.patient_id} ;;
+  }
+
+  join: care_request_flat {
+    sql_on: ${care_requests.id} = ${care_request_flat.care_request_id} ;;
+  }
+
+  join: channel_items {
+    sql_on: ${channel_items.id} = ${care_requests.channel_item_id} ;;
+  }
+
+  join: visit_facts_clone {
+    sql_on: ${care_requests.id} = ${visit_facts_clone.care_request_id} ;;
+  }
+
+  join: survey_responses_flat_clone {
+    relationship: one_to_one
+    sql_on: ${survey_responses_flat_clone.visit_dim_number} = ${visit_facts_clone.visit_dim_number};;
+  }
+
+
+
+}
