@@ -655,17 +655,11 @@ dimension: care_line {
   }
 
 
-  measure: count_distinct_abandoned_and_prequeue {
-    type: number
-    label: "Total Abandons and Prequeue Abandons"
-    sql:  count(distinct case when (${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM'  then ${master_contact_id} else null end);;
-  }
-
 
   measure: count_distinct_abandoned {
     type: count_distinct
     sql_distinct_key: ${master_contact_id} ;;
-    label: "Total Abandons (No Short Abandons or Prequeue Abandons)"
+    label: "Total Abandons"
     sql:  ${master_contact_id};;
 
     filters: {
