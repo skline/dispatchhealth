@@ -1710,6 +1710,20 @@ view: care_request_flat {
     }
   }
 
+  measure: complete_count_flu {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: icd_code_dimensions_clone.likely_flu_diganosis
+      value: "yes"
+    }
+  }
+
+
 
 
   dimension: new_care_request_complete_bool {

@@ -309,21 +309,21 @@ dimension: abandons {
   measure: close_rate {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat.complete_count}::float/${count_distinct_inbound}::float));;
+    sql: ((${care_request_flat.complete_count}::float/${count_distinct}::float));;
 
   }
 
   measure: cr_create_rate {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat.care_request_count}::float/${count_distinct_inbound}::float));;
+    sql: ((${care_request_flat.care_request_count}::float/${count_distinct}::float));;
 
   }
 
   measure: cr_create_rate_exact {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct_inbound}::float));;
+    sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct}::float));;
 
   }
 
@@ -344,14 +344,14 @@ dimension: abandons {
   measure: cr_create_rate_contact_id {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_contact_id.care_request_count}::float/${count_distinct_inbound}::float));;
+    sql: ((${care_request_flat_contact_id.care_request_count}::float/${count_distinct}::float));;
 
   }
 
   measure: close_rate_contact_id {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_contact_id.complete_count}::float/${count_distinct_inbound}::float));;
+    sql: ((${care_request_flat_contact_id.complete_count}::float/${count_distinct}::float));;
 
   }
 
