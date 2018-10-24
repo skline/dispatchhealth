@@ -424,7 +424,7 @@ dimension: abandons {
   measure: count_distinct_long_abandoned {
     type: number
     label: "Long Abandons (>20s)"
-    sql:  count(distinct case when ((${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM') and ${wait_time} > 20  then ${master_contact_id} else null end);;
+    sql:  ${count_distinct_abandoned_no_short};;
   }
 
   measure: count_distinct_long_abandoned_15 {
@@ -468,7 +468,7 @@ dimension: abandons {
     type: number
     label: "Long Abandon Rate (>20s)"
     value_format: "#.0\%"
-    sql: ((${count_distinct_long_abandoned}::float/${count_distinct_calls}::float))*100;;
+    sql: ((${count_distinct_abandoned_no_short}::float/${count_distinct_calls}::float))*100;;
   }
 
   measure: long_abandoned_rate_10 {
@@ -661,7 +661,25 @@ dimension: care_line {
     sql:  count(distinct case when (${abandons}=1 or ${prequeue_abandons}=1) and ${campaign} !='VM'  then ${master_contact_id} else null end);;
   }
 
+
   measure: count_distinct_abandoned {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    label: "Total Abandons (No Short Abandons or Prequeue Abandons)"
+    sql:  ${master_contact_id};;
+
+    filters: {
+      field: all_abandon
+      value: "yes"
+    }
+  }
+  dimension: all_abandon {
+    type: yesno
+    sql: ${abandons} =1 or ${short_abandons} = 1 or ${prequeue_abandons} = 1 ;;
+
+  }
+
+  measure: count_distinct_abandoned_no_short {
     type: count_distinct
     sql_distinct_key: ${master_contact_id} ;;
     label: "Total Abandons (No Short Abandons or Prequeue Abandons)"
