@@ -1609,11 +1609,13 @@ explore: ga_pageviews_clone {
           }
 
           join: care_requests {
-            sql_on: ${care_requests.created_mountain_date} = ${incontact_clone.start_date} and ${incontact_clone.market_id} =${care_requests.market_id} ;;
+            sql_on: ${care_requests.created_mountain_date} = ${incontact_clone.start_date} and ${incontact_clone.market_id} =${care_requests.market_id_adj}
+                and ${care_requests.deleted_raw} IS NULL
+            ;;
           }
           join: care_request_flat {
             relationship: many_to_one
-            sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+            sql_on: ${care_request_flat.care_request_id} = ${care_requests.id}   AND  (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate') OR ${care_request_flat.secondary_resolved_reason} IS NULL) ;;
           }
 
 

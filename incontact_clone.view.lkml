@@ -316,35 +316,35 @@ dimension: abandons {
   measure: cr_create_rate {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat.care_request_count}::float/${count_distinct}::float));;
+    sql: ((${care_requests.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
 
   }
 
   measure: cr_create_rate_exact {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct}::float));;
+    sql: ((${care_requests.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
 
   }
 
   measure: cr_create_rate_exact_answer {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_exact.care_request_count}::float/nullif(${count_distinct_live_answers}::float,0)));;
+    sql: ((${care_requests.count_distinct_intended_care_requests}::float/nullif(${count_distinct_live_answers}::float,0)));;
 
   }
 
   measure: cr_create_rate_exact_phone {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_exact.care_request_count}::float/nullif(${count_distinct_phone_number}::float,0)));;
+    sql: ((${care_requests.count_distinct_intended_care_requests}::float/nullif(${count_distinct_phone_number}::float,0)));;
 
   }
 
   measure: cr_create_rate_contact_id {
     type: number
     value_format: "0.0%"
-    sql: ((${care_request_flat_contact_id.care_request_count}::float/${count_distinct}::float));;
+    sql: ((${care_requests.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
 
   }
 

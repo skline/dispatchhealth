@@ -1246,6 +1246,12 @@ measure: distinct_day_of_week {
     }
   }
 
+  dimension: market_id_adj {
+    type: number
+    hidden: yes
+    sql: case when ${market_id} = 167 then 159 else ${market_id} end;;
+  }
+
 
   # ----- Sets of fields for drilling ------
   set: detail {
