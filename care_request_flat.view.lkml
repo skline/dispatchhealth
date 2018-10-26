@@ -1023,6 +1023,30 @@ view: care_request_flat {
       ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60) ;;
   }
 
+  dimension: accepted_decimal {
+    description: "The accepted time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${accept_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${accept_raw} ) AS FLOAT)) / 60) ;;
+    value_format: "0.00"
+  }
+
+  dimension: shift_start_decimal {
+    description: "The shift start time of day, represented as a decimal"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${shift_start_raw}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM ${shift_start_raw}) AS FLOAT)) / 60) ;;
+    value_format: "0.00"
+  }
+
+  dimension: shift_end_decimal {
+    description: "The shift start time of day, represented as a decimal"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${shift_end_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${shift_end_raw}) AS FLOAT)) / 60) ;;
+    value_format: "0.00"
+  }
+
   dimension_group: complete {
     type: time
     description: "The local date/time that the care request was completed or
@@ -1189,6 +1213,7 @@ view: care_request_flat {
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT)) / 60) ;;
+      value_format: "0.00"
   }
 
   dimension: complete_decimal {
@@ -1196,6 +1221,14 @@ view: care_request_flat {
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT)) / 60) ;;
+  }
+
+  dimension: complete_resolved_decimal {
+    description: "Complete or Resolved Time of Day as Decimal"
+    type: number
+    sql: (CAST(EXTRACT(HOUR FROM ${complete_resolved_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${complete_resolved_raw} ) AS FLOAT)) / 60) ;;
+      value_format: "0.00"
   }
 
   dimension: complete_decimal_after_midnight {
@@ -1207,6 +1240,7 @@ view: care_request_flat {
         END +
         (CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) +
         ((CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT)) / 60) ;;
+    value_format: "0.00"
   }
 
   dimension_group: today_mountain{
