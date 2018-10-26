@@ -316,6 +316,16 @@ view: insurances {
     sql: ${TABLE}.web_address ;;
   }
 
+  measure: count_distinct_priority_one{
+    type: count_distinct
+    sql: ${package_id} ;;
+    filters: {
+      field:  priority
+      value: "1"
+
+    }
+  }
+
   measure: count {
     type: count
     drill_fields: [id, company_name, subscriber_first_name, subscriber_last_name, ehr_name]

@@ -38,8 +38,8 @@ view: care_request_flat {
         else array_to_string(array_agg(distinct notes.note), ':')end
         as reorder_reason,
         cr.shift_team_id,
-        min(to_date(schedule.comment, 'DD Mon YYYY')) as scheduled_care_date
-
+        min(to_date(schedule.comment, 'DD Mon YYYY')) as scheduled_care_date,
+        insurances.package_id
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
@@ -100,7 +100,21 @@ view: care_request_flat {
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26 ;;
+      left join(select  care_requests.id as care_request_id, package_id,  ROW_NUMBER() OVER(PARTITION BY care_requests.id
+                                ORDER BY insurances.created_at desc) as rn
+        FROM care_requests
+        join public.patients
+        on patients.id=care_requests.patient_id
+        join public.insurances
+        on care_requests.patient_id = insurances.patient_id AND insurances.priority = '1'
+        AND insurances.patient_id IS NOT NULL
+        and care_requests.created_at + interval '1' day >= insurances.created_at
+        and insurances.package_id is not null
+        and trim(insurances.package_id)!='') as insurances
+        ON cr.id = insurances.care_request_id AND insurances.rn = 1
+
+
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26, insurances.package_id ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -111,6 +125,12 @@ view: care_request_flat {
     primary_key: yes
     sql: ${TABLE}.care_request_id ;;
   }
+
+  dimension: self_report_primary_package_id {
+    type: number
+    sql: ${TABLE}.package_id ;;
+  }
+
 
   measure: complete_count_seasonal_adj {
     type: number

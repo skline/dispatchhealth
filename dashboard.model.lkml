@@ -553,6 +553,12 @@ explore: care_requests {
     sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND ${insurances.company_name} = ${insurance_plans.name} AND ${insurance_plans.state_id} = ${states.id};;
   }
 
+  join: self_report_insurance_crosswalk {
+    from: primary_payer_dimensions_clone
+    relationship: many_to_one
+    sql_on: ${care_request_flat.self_report_primary_package_id} = ${self_report_insurance_crosswalk.insurance_package_id} ;;
+  }
+
   join: insurance_classifications {
     relationship: many_to_one
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
