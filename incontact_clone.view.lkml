@@ -214,6 +214,23 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${TABLE}.start_time ;;
   }
 
+  dimension: start_time_decimal{
+    description: "Start Time as Decimal"
+    type: number
+    value_format: "0.00"
+    sql: (CAST(EXTRACT(HOUR FROM ${start_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${start_raw} ) AS FLOAT)) / 60) ;;
+  }
+
+  dimension: end_time_decimal{
+    description: "Start Time as Decimal"
+    type: number
+    value_format: "0.00"
+    sql: (CAST(EXTRACT(HOUR FROM ${end_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${end_raw} ) AS FLOAT)) / 60) ;;
+  }
+
+
   dimension: after_pilot {
     type: yesno
     sql: ${start_date} > '2018-09-03' ;;
