@@ -559,6 +559,19 @@ explore: care_requests {
     sql_on: ${care_request_flat.self_report_primary_package_id} = ${self_report_insurance_crosswalk.insurance_package_id} ;;
   }
 
+  join: insurance_coalese {
+    relationship: many_to_one
+    sql_on: ${insurance_coalese.care_request_id} = ${care_requests.id} ;;
+  }
+
+
+  join: insurance_coalese_crosswalk {
+    from: primary_payer_dimensions_clone
+    relationship: many_to_one
+    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id} ;;
+  }
+
+
   join: insurance_classifications {
     relationship: many_to_one
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
