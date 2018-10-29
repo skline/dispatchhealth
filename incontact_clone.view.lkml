@@ -63,6 +63,11 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${start_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${start_day_of_week_index} >= 0 ;;
   }
 
+  dimension: week_to_date_two_days {
+    type: yesno
+    sql: ${start_day_of_week_index} <=  (${yesterday_mountain_day_of_week_index}-1) AND ${start_day_of_week_index} >= 0 ;;
+  }
+
   dimension: inqueuetime {
     type: number
 
@@ -194,6 +199,14 @@ group by 1,2,3,4,5,6,7,8,9)lq
   dimension: mvp {
     type: yesno
     sql: ${campaign}='Care Phone' and lower(${skll_name}) like '%mvp%'  ;;
+  }
+
+  dimension: sem_mvp {
+    type: string
+    sql: case when not ${mvp} then 'non-MVP'
+              when ${mvp} and ${invoca_clone.sem} then 'MVP SEM'
+              when ${mvp} then 'MVP non-SEM'
+              else 'Other' end;;
   }
 
   dimension_group: start {
