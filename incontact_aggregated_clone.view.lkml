@@ -211,7 +211,7 @@ view: incontact_aggregated_clone {
     sql: ${answered} ;;
     filters: {
       field: disposition
-      value: "other,"
+      value: "other,no disposition"
     }
   }
 
