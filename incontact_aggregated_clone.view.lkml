@@ -150,7 +150,7 @@ view: incontact_aggregated_clone {
 
   measure: requesting_care_calls{
     type: sum_distinct
-    label: "Created Care Request Calls"
+    label: "Created Care Request Answers"
     sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
     sql: ${answered} ;;
     filters: {
@@ -162,7 +162,7 @@ view: incontact_aggregated_clone {
 
   measure: junk_calls{
     type: sum_distinct
-    label: "Junk Calls"
+    label: "Junk Answers"
     sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
     sql: ${answered} ;;
     filters: {
@@ -173,7 +173,7 @@ view: incontact_aggregated_clone {
 
   measure: general_inquiry_calls{
     type: sum_distinct
-    label: "General Inquiry Calls"
+    label: "General Inquiry Answers"
     sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
     sql: ${answered} ;;
     filters: {
@@ -184,7 +184,7 @@ view: incontact_aggregated_clone {
 
   measure: booked_calls{
     type: sum_distinct
-    label: "Booked Calls"
+    label: "Booked Answers"
     sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
     sql: ${answered} ;;
     filters: {
@@ -195,7 +195,7 @@ view: incontact_aggregated_clone {
 
   measure: coordination_calls{
     type: sum_distinct
-    label: "Visit Questions or Changes/Test Results/POA Calls"
+    label: "Visit Questions or Changes/Test Results/POA Answers"
     sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
     sql: ${answered} ;;
     filters: {
@@ -206,7 +206,7 @@ view: incontact_aggregated_clone {
 
   measure: other_calls{
     type: sum_distinct
-    label: "Other Calls"
+    label: "Other Answers"
     sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
     sql: ${answered} ;;
     filters: {
