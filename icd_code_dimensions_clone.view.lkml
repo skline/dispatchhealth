@@ -112,6 +112,6 @@ view: icd_code_dimensions_clone {
 
   dimension: likely_flu_diganosis {
     type: yesno
-    sql: ${diagnosis_code} in('J09', 'J11', 'J10', 'J39','J06', 'B34', 'J20', 'J18', 'J20') ;;
+    sql: ${diagnosis_code} in('J09', 'J11', 'J10','J06',  'J20', 'J18', 'J20') ;;
   }
 }
