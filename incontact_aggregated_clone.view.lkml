@@ -254,6 +254,22 @@ view: incontact_aggregated_clone {
     sql:  ${care_request_created_rate}-${target_care_request_created_rate};;
   }
 
+  measure: target_care_request_created {
+    type: number
+    label: "Target Care Request Created (DEC)"
+    value_format: "0"
+    sql:  ${target_care_request_created_rate}*${target_possible_intent_calls};;
+  }
+
+
+  measure: diff_care_request_created {
+    type: number
+    label: "Diff Care Request Created"
+    value_format: "0"
+    sql:  ${requesting_care_calls} -${target_care_request_created};;
+  }
+
+
 
 
   measure: answer_rate  {
