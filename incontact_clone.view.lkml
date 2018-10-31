@@ -22,7 +22,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
 ;;
     sql_trigger_value: SELECT MAX(contact_id) FROM incontact_clone ;;
     indexes: ["start_time", "campaign", "skll_name", "contact_id", "master_contact_id"]
-    }
+  }
 
   dimension: contact_id {
     type: number
@@ -74,7 +74,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${TABLE}.inqueuetime ;;
   }
 
-   measure: avg_inqueuetime {
+  measure: avg_inqueuetime {
     label: "Average InQueue Time (s)"
     type: average_distinct
     sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
@@ -272,18 +272,18 @@ group by 1,2,3,4,5,6,7,8,9)lq
           when lower(${skll_name})  like '%okla%' or lower(${skll_name})  like '%okc%' then 166
            else null end ;;
   }
-dimension: skill_category {
-  type:  string
-  sql: case
-    when lower(${skll_name}) like '%voicemail%' or lower(${skll_name}) like '% vm%' then 'Voicemail'
-    when lower(${skll_name}) like '%outbound%' then 'Outbound'
-    else ${campaign} end ;;
-}
+  dimension: skill_category {
+    type:  string
+    sql: case
+          when lower(${skll_name}) like '%voicemail%' or lower(${skll_name}) like '% vm%' then 'Voicemail'
+          when lower(${skll_name}) like '%outbound%' then 'Outbound'
+          else ${campaign} end ;;
+  }
 
-dimension: abandons {
-  type: number
-  sql: ${TABLE}.abandons ;;
-}
+  dimension: abandons {
+    type: number
+    sql: ${TABLE}.abandons ;;
+  }
 
   dimension: short_abandons {
     type: number
@@ -346,7 +346,7 @@ dimension: abandons {
   measure: cr_create_rate {
     type: number
     value_format: "0.0%"
-    sql: ((${care_requests.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
+    sql: ((${care_requests_flat.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
 
   }
 
@@ -528,10 +528,10 @@ dimension: abandons {
 
 
 
-dimension: care_line {
-  type: yesno
-  sql: (${campaign} in('Care Phone', 'VM') and ${contact_type} != 'Transfer to Agent') or ${invoca_clone.call_record_ikd} is not null;;
-}
+  dimension: care_line {
+    type: yesno
+    sql: (${campaign} in('Care Phone', 'VM') and ${contact_type} != 'Transfer to Agent') or ${invoca_clone.call_record_ikd} is not null;;
+  }
 
 
   measure: count_distinct_phone_number {
@@ -551,10 +551,10 @@ dimension: care_line {
   }
 
   dimension:  wait_time_band{
-  type: string
-  sql:round(ln(${wait_time}),0)
-            ;;
- }
+    type: string
+    sql:round(ln(${wait_time}),0)
+      ;;
+  }
 
   measure:  average_wait_time{
     label: "Average Wait Time (s)"
@@ -603,11 +603,12 @@ dimension: care_line {
 
   measure: requesting_care_calls{
     type: count_distinct
+    label: "Created Care Request Calls"
     sql_distinct_key: ${master_contact_id} ;;
     sql: ${master_contact_id} ;;
     filters: {
       field: disposition
-      value: "Requesting Care"
+      value: "Requesting Care,Care Request Created"
     }
     filters: {
       field: answered
@@ -628,18 +629,18 @@ dimension: care_line {
       value: "1"
     }
   }
-    measure: junk_calls{
-      type: count_distinct
-      sql_distinct_key: ${master_contact_id} ;;
-      sql: ${master_contact_id} ;;
-      filters: {
-        field: disposition
-        value: "Junk"
-      }
-      filters: {
-        field: answered
-        value: "1"
-      }
+  measure: junk_calls{
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: disposition
+      value: "Junk"
+    }
+    filters: {
+      field: answered
+      value: "1"
+    }
   }
 
   measure: booked_calls{
@@ -668,10 +669,26 @@ dimension: care_line {
     }
   }
 
+  measure: cordination_disposition {
+    type: count_distinct
+    label: "Visit Questions or Changes/Test Results/POA Calls"
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: disposition
+      value: "Visit Questions / Changes,Test Results,POA"
+    }
+    filters: {
+      field: answered
+      value: "1"
+    }
+  }
+
+
   dimension: other_or_null_disposition {
     type: yesno
     label: "Other/Null Disposition"
-    sql: (${disposition} not in('Junk', 'Booked', 'Requesting Care', 'General Inquiry') or ${disposition} is null) and ${campaign} = 'Care Phone' and ${answered} = 1 ;;
+    sql: (${disposition} not in('Junk', 'Booked', 'Requesting Care', 'General Inquiry', 'Care Request Created', 'Visit Questions / Changes','Test Results','POA') or ${disposition} is null) and ${campaign} = 'Care Phone' and ${answered} = 1 ;;
   }
 
   measure: other_calls {
@@ -806,13 +823,4 @@ dimension: care_line {
       value: "VM"
     }
   }
-
-
-
-
-
-
-
-
-
 }

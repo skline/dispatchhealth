@@ -1973,6 +1973,12 @@ explore: iora_patients{
     sql_on: ${survey_responses_flat_clone.visit_dim_number} = ${visit_facts_clone.visit_dim_number};;
   }
 
+}
+explore: incontact_aggregated_clone  {
+
+  join: markets {
+    sql_on: ${markets.id} = ${incontact_aggregated_clone.market_id} ;;
+  }
 
 
 }
