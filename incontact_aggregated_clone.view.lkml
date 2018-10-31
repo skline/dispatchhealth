@@ -91,11 +91,13 @@ view: incontact_aggregated_clone {
 
   measure: target_possible_intent_calls {
     type: number
+    label: "Target Inbound Calls with Possible Intent (DEC)"
     value_format: "0"
     sql: 343.0/${day_week_modifier};;
   }
 
   measure: diff_possible_intent_calls {
+    label: "Diff vs Target Inbound Calls with Possible Intent"
     type: number
     value_format: "0"
     sql: ${possible_intent_calls} -${target_possible_intent_calls} ;;
@@ -229,7 +231,7 @@ view: incontact_aggregated_clone {
 
   measure: possible_intent_calls  {
     type: number
-    label: "Inbound Demand with Possible Intent"
+    label: "Inbound Calls with Possible Intent"
     sql: ${general_inquiry_calls}+${requesting_care_calls}+${sum_short_preq_abandons}+${booked_calls} ;;
   }
 
@@ -241,13 +243,13 @@ view: incontact_aggregated_clone {
   }
   measure: target_care_request_created_rate {
     type: number
-    label: "Target Care Request Created Rate"
+    label: "Target Care Request Created Rate (DEC)"
     value_format: "0.0%"
     sql:  .74;;
   }
   measure: diff_care_request_created_rate {
     type: number
-    label: "Diff Care Request Created Rate"
+    label: "Diff vs Target Care Request Created Rate"
     value_format: "0.0%"
     sql:  ${care_request_created_rate}-${target_care_request_created_rate};;
   }
