@@ -76,24 +76,13 @@ view: incontact_aggregated_clone {
            else null end ;;
   }
 
-  measure: day_week_modifier {
-    type: number
-    sql: case when ${date_day_of_week_index} = 0 then .88
-              when ${date_day_of_week_index} = 1 then .93
-              when ${date_day_of_week_index} = 2 then .97
-              when ${date_day_of_week_index} = 3 then .94
-              when ${date_day_of_week_index} = 4 then .91
-              when ${date_day_of_week_index} = 5 then 1.17
-              when ${date_day_of_week_index} = 6 then 1.34
-              else 999.0 end
-              ;;
-  }
 
   measure: target_possible_intent_calls {
-    type: number
+    type: sum_distinct
     label: "Target Inbound Calls with Possible Intent (DEC)"
     value_format: "0"
-    sql: 343.0/${day_week_modifier};;
+    sql_distinct_key: ${date_date} ;;
+    sql: ${goal_inbound_calls_dec.goal_inbound_calls_dec};;
   }
 
   measure: diff_possible_intent_calls {
