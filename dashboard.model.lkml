@@ -1596,18 +1596,18 @@ explore: ga_pageviews_clone {
           }
         }
 
-        explore: insurance_plans {
+  explore: insurance_plans {
 
-          join: states{
-            relationship: many_to_one
-            sql_on:  ${states.id} =${insurance_plans.state_id} ;;
-          }
+    join: states{
+      relationship: many_to_one
+      sql_on:  ${states.id} =${insurance_plans.state_id} ;;
+    }
 
-          join: insurance_classifications {
-            relationship: many_to_one
-            sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
-          }
-        }
+    join: insurance_classifications {
+      relationship: many_to_one
+      sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
+    }
+  }
 
   explore: incontact_clone {
 
@@ -1984,6 +1984,7 @@ explore: incontact_aggregated_clone  {
   join: goal_inbound_calls_dec {
     sql_on:  ${goal_inbound_calls_dec.date_date} =${incontact_aggregated_clone.date_date} ;;
   }
+
 
 
 }
