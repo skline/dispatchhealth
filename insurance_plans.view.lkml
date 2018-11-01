@@ -14,7 +14,7 @@ view: insurance_plans {
 
   dimension_group: created {
     type: time
-    hidden: yes
+    hidden: no
     timeframes: [
       raw,
       time,
