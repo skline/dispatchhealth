@@ -80,11 +80,11 @@ view: incontact_aggregated_clone {
     type: number
     sql: case when ${date_day_of_week_index} = 0 then .88
               when ${date_day_of_week_index} = 1 then .93
-              when ${date_day_of_week_index} = 2 then .99
-              when ${date_day_of_week_index} = 3 then .89
-              when ${date_day_of_week_index} = 4 then .97
-              when ${date_day_of_week_index} = 5 then 1.07
-              when ${date_day_of_week_index} = 6 then 1.45
+              when ${date_day_of_week_index} = 2 then .97
+              when ${date_day_of_week_index} = 3 then .94
+              when ${date_day_of_week_index} = 4 then .91
+              when ${date_day_of_week_index} = 5 then 1.17
+              when ${date_day_of_week_index} = 6 then 1.34
               else 999.0 end
               ;;
   }
@@ -232,7 +232,7 @@ view: incontact_aggregated_clone {
   measure: possible_intent_calls  {
     type: number
     label: "Inbound Calls with Possible Intent"
-    sql: ${general_inquiry_calls}+${requesting_care_calls}+${sum_short_preq_abandons}+${booked_calls} ;;
+    sql: ${general_inquiry_calls}+${requesting_care_calls}+${sum_short_abandons}+${booked_calls}+${sum_called_back} ;;
   }
 
   measure: care_request_created_rate  {
@@ -245,7 +245,7 @@ view: incontact_aggregated_clone {
     type: number
     label: "Target Care Request Created Rate (DEC)"
     value_format: "0.0%"
-    sql:  .74;;
+    sql:  .72;;
   }
   measure: diff_care_request_created_rate {
     type: number

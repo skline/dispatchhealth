@@ -825,6 +825,13 @@ view: care_request_flat {
     sql: ${TABLE}.created_date ;;
   }
 
+  measure: count_distinct_days_created {
+    type: count_distinct
+    sql_distinct_key: ${created_date} ;;
+    sql: ${created_date} ;;
+
+  }
+
   dimension: time_group_sort {
     type: number
     hidden: yes
