@@ -79,7 +79,7 @@ view: incontact_aggregated_clone {
 
   measure: target_possible_intent_calls {
     type: sum_distinct
-    label: "Target Inbound Calls with Possible Intent (DEC)"
+    label: "Target Inbound Calls with Possible Intent (December)"
     value_format: "0"
     sql_distinct_key: concat(${date_date}, ${market_id}) ;;
     sql: ${goal_inbound_calls_dec.goal_inbound_calls_dec};;
@@ -260,7 +260,7 @@ view: incontact_aggregated_clone {
   }
   measure: target_care_request_created_rate {
     type: number
-    label: "Target Care Request Created Rate (DEC)"
+    label: "Target Care Request Created Rate (December)"
     value_format: "0.0%"
     sql:  .72;;
   }
@@ -273,7 +273,7 @@ view: incontact_aggregated_clone {
 
   measure: target_care_request_created {
     type: number
-    label: "Target Care Request Created (DEC)"
+    label: "Target Care Request Created (December)"
     value_format: "0"
     sql:  ${target_care_request_created_rate}*${target_possible_intent_calls};;
   }
