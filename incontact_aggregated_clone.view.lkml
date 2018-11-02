@@ -81,7 +81,7 @@ view: incontact_aggregated_clone {
     type: sum_distinct
     label: "Target Inbound Calls with Possible Intent (DEC)"
     value_format: "0"
-    sql_distinct_key: ${date_date} ;;
+    sql_distinct_key: concat(${date_date}, ${market_id}) ;;
     sql: ${goal_inbound_calls_dec.goal_inbound_calls_dec};;
   }
 
