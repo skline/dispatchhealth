@@ -1605,6 +1605,61 @@ view: care_request_flat {
 
   }
 
+  dimension: not_resolved_or_complete {
+    type: yesno
+    sql:not ${complete} and ${archive_comment} is null ;;
+  }
+
+  measure: not_resolved_or_complete_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: not_resolved_or_complete
+      value: "yes"
+    }
+
+  }
+
+  measure: resolved_other_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_requests.billable_est
+      value: "no"
+    }
+    filters: {
+      field: lwbs
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: resolved_911_divert
+      value: "no"
+    }
+    filters: {
+      field: resolved_no_answer_no_show
+      value: "no"
+    }
+
+    filters: {
+      field: complete
+      value: "no"
+    }
+
+    filters: {
+      field: not_resolved_or_complete
+      value: "no"
+    }
+    drill_fields: [
+      secondary_resolved_reason,
+      care_request_count
+    ]
+  }
+
+
   measure: lwbs_count_pre_logistics {
     type: count_distinct
     sql: ${care_request_id} ;;

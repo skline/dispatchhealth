@@ -398,6 +398,36 @@ view: care_requests {
     }
   }
 
+  measure: count_distinct_intended_care_requests_phone {
+    description: "Count of distinct Phone care requests"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type_phone_or_other
+      value: "phone"
+    }
+    filters: {
+      field: care_request_flat.resolved_911_divert
+      value: "no"
+    }
+  }
+
+
+  measure: count_distinct_intended_care_requests_other {
+    description: "Count of distinct other care requests (911 diversions have been removed)"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type_phone_or_other
+      value: "other"
+    }
+    filters: {
+      field: care_request_flat.resolved_911_divert
+      value: "no"
+    }
+  }
+
+
   dimension: place_of_service {
     type: string
     sql: ${TABLE}.place_of_service ;;
@@ -490,6 +520,12 @@ view: care_requests {
                when ${request_type_id} = 6 then 'centura_care_coordinator'
                when ${request_type_id} = 7 then 'orderly'
             else 'other' end;;
+  }
+
+  dimension: request_type_phone_or_other {
+    type: string
+    sql:  case when  ${request_type} = 'phone' then 'phone'
+               else 'other' end;;
   }
 
   dimension: requested_by {
