@@ -357,6 +357,11 @@ explore: care_requests {
   # End cloned BI table joins
   ############################
 
+  join: survey_response_facts_clone {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${survey_response_facts_clone.care_request_id} ;;
+  }
+
   join: addressable_items {
     relationship: one_to_one
     sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;

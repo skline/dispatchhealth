@@ -60,6 +60,11 @@ view: survey_response_facts_clone {
     sql: ${nps_survey_id} ;;
   }
 
+  measure: count_distinct_survey_respondents {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+  }
+
   measure: promoter_count {
     type: count_distinct
     sql: ${nps_survey_id} ;;
