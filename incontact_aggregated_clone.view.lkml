@@ -130,6 +130,34 @@ view: incontact_aggregated_clone {
     sql: ${inbound} ;;
   }
 
+  measure: sum_mvp_inbound_calls{
+    type: sum_distinct
+    label: "Inbound Calls"
+    sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
+    sql: ${inbound} ;;
+    filters: {
+      field: mvp
+      value: "yes"
+    }
+  }
+
+  measure: sum_non_mvp_inbound_calls{
+    type: sum_distinct
+    label: "Inbound Calls"
+    sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
+    sql: ${inbound} ;;
+    filters: {
+      field: mvp
+      value: "no"
+    }
+  }
+
+  measure: mvp_percent {
+    type: number
+    value_format: "0.0%"
+    sql: ${sum_mvp_inbound_calls}/${sum_inbound_calls} ;;
+  }
+
   measure: sum_short_preq_abandons{
     type: number
     label: "Short & Prequeue Abandons"

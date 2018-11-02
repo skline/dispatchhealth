@@ -1620,6 +1620,40 @@ view: care_request_flat {
 
   }
 
+  dimension: pafu_or_follow_up {
+    type: yesno
+    sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} ;;
+  }
+
+  measure: follow_up_limbo_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: not_resolved_or_complete
+      value: "yes"
+    }
+
+    filters: {
+      field: pafu_or_follow_up
+      value: "yes"
+    }
+
+  }
+
+  measure: non_follow_up_limbo_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: not_resolved_or_complete
+      value: "yes"
+    }
+    filters: {
+      field: pafu_or_follow_up
+      value: "no"
+    }
+
+  }
+
   measure: resolved_other_count {
     type: count_distinct
     sql: ${care_request_id} ;;
