@@ -1982,7 +1982,7 @@ explore: incontact_aggregated_clone  {
 
 
   join: goal_inbound_calls_dec {
-    sql_on:  ${goal_inbound_calls_dec.date_date} =${incontact_aggregated_clone.date_date} ;;
+    sql_on:  ${goal_inbound_calls_dec.date_date} =${incontact_aggregated_clone.date_date} and ${goal_inbound_calls_dec} =${markets.id};;
   }
 
 

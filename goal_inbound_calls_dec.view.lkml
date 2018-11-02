@@ -21,6 +21,11 @@ view: goal_inbound_calls_dec {
     sql: ${TABLE}.day_of_week ;;
   }
 
+  dimension: market_id {
+    type: number
+    sql: ${TABLE}.market_id ;;
+  }
+
   dimension: day_of_week_adj {
     type: number
     sql: ${TABLE}.day_of_week_adj ;;
