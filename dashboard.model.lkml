@@ -1994,3 +1994,10 @@ explore: incontact_aggregated_clone  {
 
 
 }
+
+explore: slc_data {
+  sql_always_where: ${slc_data.denver_comb_psa}='X' ;;
+  join: zipcodes {
+    sql_on: ${zipcodes.zip}=${slc_data.zip_code} ;;
+  }
+  }
