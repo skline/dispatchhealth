@@ -42,6 +42,11 @@ view: addresses {
     sql_longitude:${longitude} ;;
   }
 
+  measure: count_unique_locations {
+    type: count_distinct
+    sql: ${care_request_location} ;;
+  }
+
   dimension: state {
     type: string
     sql: ${TABLE}.state ;;
