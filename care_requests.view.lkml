@@ -412,6 +412,12 @@ view: care_requests {
     }
   }
 
+  measure: percent_phone_request_type {
+    type: number
+    value_format: "0.0%"
+    sql: ${count_distinct_intended_care_requests_phone}::float/nullif(${count_distinct_intended_care_requests}::float,0) ;;
+  }
+
 
   measure: count_distinct_intended_care_requests_other {
     description: "Count of distinct other care requests (911 diversions have been removed)"
