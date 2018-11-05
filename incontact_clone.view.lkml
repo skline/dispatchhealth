@@ -453,7 +453,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
 
   measure: count_distinct_long_abandoned {
     type: number
-    label: "Long Abandons (>20s)"
+    label: "Long Abandons"
     sql:  ${count_distinct_abandoned_no_short};;
   }
 
@@ -823,4 +823,29 @@ group by 1,2,3,4,5,6,7,8,9)lq
       value: "VM"
     }
   }
+
+  measure: implied_vm_calls {
+    type: number
+    sql:  ${count_distinct_inbound} - (${count_distinct_live_answers}+${count_distinct_prequeue_abandoned}+${count_distinct_short_abandoned}+${count_distinct_long_abandoned});;
+  }
+
+  measure: sum_called_back {
+    type: number
+    label: "Called Back"
+    sql: ${implied_vm_calls}+${count_distinct_long_abandoned} ;;
+  }
+
+  measure: possible_intent_calls  {
+    type: number
+    label: "Inbound Calls with Possible Intent"
+    sql: ${general_inquiry_calls}+${requesting_care_calls}+${count_distinct_abandoned_no_short}+${booked_calls}+${sum_called_back} ;;
+  }
+
+  measure: care_request_created_rate  {
+    type: number
+    value_format: "0.0%"
+    label: "Care Request Created Rate"
+    sql: ${requesting_care_calls}::float/nullif(${possible_intent_calls}::float,0) ;;
+  }
+
 }
