@@ -155,7 +155,7 @@ view: incontact_aggregated_clone {
   measure: mvp_percent {
     type: number
     value_format: "0.0%"
-    sql: ${sum_mvp_inbound_calls}/${sum_inbound_calls} ;;
+    sql: ${sum_mvp_inbound_calls}/nullif(${sum_inbound_calls},0) ;;
   }
 
   measure: sum_short_preq_abandons{
@@ -256,7 +256,7 @@ view: incontact_aggregated_clone {
     type: number
     value_format: "0.0%"
     label: "Care Request Created Rate"
-    sql: ${requesting_care_calls}/${possible_intent_calls} ;;
+    sql: ${requesting_care_calls}/nullif(${possible_intent_calls},0) ;;
   }
   measure: target_care_request_created_rate {
     type: number
@@ -293,7 +293,7 @@ view: incontact_aggregated_clone {
     type: number
     value_format: "0.0%"
     label: "Answer Rate"
-    sql: ${sum_answered_calls}/${sum_inbound_calls} ;;
+    sql: ${sum_answered_calls}/nullif(${sum_inbound_calls},0) ;;
   }
 
 
