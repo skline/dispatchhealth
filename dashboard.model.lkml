@@ -1992,7 +1992,13 @@ explore: incontact_aggregated_clone  {
   }
 }
 
-explore: provider_address {}
+explore: provider_address {
+
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.id} = ${provider_address.location} ;;
+  }
+}
 
 explore: slc_data {
   sql_always_where: ${slc_data.denver_comb_psa}='X' ;;
