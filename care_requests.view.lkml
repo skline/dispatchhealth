@@ -675,6 +675,27 @@ view: care_requests {
     ]
   }
 
+  measure: count_billable_est_phone {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+
+    filters: {
+      field: request_type_phone_or_other
+      value: "phone"
+    }
+    drill_fields: [
+      athenadwh_referral_providers.name,
+      athenadwh_referral_providers.provider_category,
+      count_billable_est
+    ]
+  }
+
+
   measure: count_optimum_drive_time {
     type: count_distinct
     description: "Count of complete visits where drive time < 20 minutes"
