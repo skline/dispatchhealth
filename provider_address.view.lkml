@@ -46,6 +46,22 @@ view: provider_address {
     sql: ${TABLE}.zip_code ;;
   }
 
+  dimension: latitude {
+    type: number
+    sql: ${TABLE}.latitude ;;
+  }
+
+  dimension: longitude {
+    type: number
+    sql: ${TABLE}.longitude ;;
+  }
+
+  dimension: provider_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [first_name, last_name]

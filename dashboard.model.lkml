@@ -1990,10 +1990,9 @@ explore: incontact_aggregated_clone  {
     sql_on:  ${goal_inbound_calls_dec.date_date} =${incontact_aggregated_clone.date_date}
     and ${goal_inbound_calls_dec.market_id} =${markets.id};;
   }
-
-
-
 }
+
+explore: provider_address {}
 
 explore: slc_data {
   sql_always_where: ${slc_data.denver_comb_psa}='X' ;;
