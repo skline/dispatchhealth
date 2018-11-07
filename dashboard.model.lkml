@@ -50,6 +50,11 @@ explore: care_requests {
     sql_on: ${athenadwh_provider_clone.supervising_provider_id} = ${athenadwh_supervising_provider_clone.provider_id} ;;
   }
 
+  join: oversight_provider {
+    relationship: one_to_one
+    sql_on: ${athenadwh_provider_clone.provider_user_name} = ${oversight_provider.user_name} ;;
+  }
+
   join: athenadwh_appointments_clone {
     relationship: one_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_appointments_clone.appointment_id} ;;
