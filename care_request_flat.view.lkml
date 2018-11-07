@@ -1038,6 +1038,12 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  measure: first_accepted_decimal {
+    description: "The first accepted time of day, represented as a decimal"
+    type: min
+    sql: ${accepted_decimal} ;;
+  }
+
   dimension: shift_start_decimal {
     description: "The shift start time of day, represented as a decimal"
     type: number
