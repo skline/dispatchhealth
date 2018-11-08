@@ -732,9 +732,13 @@ view: care_requests {
       field: athenadwh_lab_imaging_providers.provider_category
       value: "Performed On-Scene"
     }
+#     filters: {
+#       field: athenadwh_lab_imaging_results.document_class
+#       value: "LABRESULT"
+#     }
     filters: {
-      field: athenadwh_lab_imaging_results.document_class
-      value: "LABRESULT"
+      field: athenadwh_clinical_results_clone.labs_flag
+      value: "yes"
     }
   }
 
@@ -750,9 +754,13 @@ view: care_requests {
       field: athenadwh_lab_imaging_providers.provider_category
       value: "Performed by Third Party"
     }
+#     filters: {
+#       field: athenadwh_lab_imaging_results.document_class
+#       value: "LABRESULT"
+#     }
     filters: {
-      field: athenadwh_lab_imaging_results.document_class
-      value: "LABRESULT"
+      field: athenadwh_clinical_results_clone.labs_flag
+      value: "yes"
     }
   }
 
