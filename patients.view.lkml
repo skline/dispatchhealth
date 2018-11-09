@@ -141,6 +141,17 @@ view: patients {
 
   }
 
+  measure: average_age {
+    type: average_distinct
+    sql_distinct_key: ${care_requests.id} ;;
+    value_format: "0.0"
+    sql: ${age} ;;
+    filters: {
+      field: bad_age_filter
+      value: "no"
+    }
+  }
+
   dimension_group: created {
     type: time
     timeframes: [

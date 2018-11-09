@@ -534,6 +534,34 @@ view: care_requests {
                else 'other' end;;
   }
 
+  measure: count_phone_care_requests {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type
+      value: "phone"
+    }
+  }
+
+  measure: count_web_care_requests {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type
+      value: "web"
+    }
+  }
+
+  measure: count_mobile_care_requests {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type
+      value: "mobile%"
+    }
+  }
+
+
   dimension: requested_by {
     type: number
     sql: ${TABLE}.requested_by ;;
