@@ -1263,15 +1263,15 @@ measure: distinct_day_of_week {
     sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Wait time too long' ;;
   }
 
-  dimension: lwbs_no_show {
+  dimension: lwbs_no_longer_need_care {
     type: yesno
-    sql: ${care_request_flat.archive_comment} = 'No Show' ;;
+    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: No longer need care' ;;
   }
 
   dimension: lwbs {
     type: yesno
-    description: "Going to ED/Urgent Care, Wait Time Too Long, or No Show"
-    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} OR ${lwbs_no_show} ;;
+    description: "Going to ED/Urgent Care, Wait Time Too Long, or No Longer Need Care"
+    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care} ;;
   }
 
   measure: lwbs_count {

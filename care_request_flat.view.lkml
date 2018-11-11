@@ -1506,7 +1506,7 @@ view: care_request_flat {
 
   dimension: lwbs {
     type: yesno
-    description: "Going to ED/Urgent Care, Wait Time Too Long, No Show, or No Longer Need Care"
+    description: "Going to ED/Urgent Care, Wait Time Too Long, No Longer Need Care"
     sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR
       ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care} ;;
   }
