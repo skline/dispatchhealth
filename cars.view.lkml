@@ -1,5 +1,7 @@
+include: "cars_user.view.lkml"
+
 view: cars {
-  sql_table_name: public.cars ;;
+  extends: [cars_user]
 
   dimension: id {
     primary_key: yes

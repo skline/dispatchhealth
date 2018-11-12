@@ -1,11 +1,7 @@
-view: care_requests {
-  sql_table_name: public.care_requests ;;
+include: "care_requests_user.view.lkml"
 
-  dimension: id {
-    primary_key: yes
-    type: number
-    sql: ${TABLE}.id ;;
-  }
+view: care_requests {
+  extends: [care_requests_user]
 
   dimension: accepted_order {
     type: number
@@ -28,16 +24,6 @@ view: care_requests {
   dimension: centura_connect_aco {
     type: string
     sql: ${TABLE}.centura_connect_aco ;;
-  }
-
-  dimension: channel_item_id {
-    type: number
-    sql: ${TABLE}.channel_item_id ;;
-  }
-
-  dimension: chief_complaint {
-    type: string
-    sql: ${TABLE}.chief_complaint ;;
   }
 
   dimension: chief_complaint_trimmed {
@@ -73,16 +59,6 @@ view: care_requests {
   dimension: consent_signature {
     type: string
     sql: ${TABLE}.consent_signature ;;
-  }
-
-  dimension: consenter_name {
-    type: string
-    sql: ${TABLE}.consenter_name ;;
-  }
-
-  dimension: consenter_relationship {
-    type: string
-    sql: ${TABLE}.consenter_relationship ;;
   }
 
   dimension: credit_card_completed {
@@ -167,20 +143,6 @@ view: care_requests {
   dimension: data_use_consent {
     type: yesno
     sql: ${TABLE}.data_use_consent ;;
-  }
-
-  dimension_group: deleted {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}.deleted_at ;;
   }
 
   dimension: dispatch_queue_id {
@@ -378,11 +340,6 @@ view: care_requests {
     sql: ${TABLE}.orig_zipcode ;;
   }
 
-  dimension: patient_id {
-    type: number
-    sql: ${TABLE}.patient_id ;;
-  }
-
   measure: count_distinct_patients {
     type: count_distinct
     sql: ${patient_id} ;;
@@ -510,24 +467,6 @@ view: care_requests {
     sql: ${TABLE}.pushed_at ;;
   }
 
-  dimension: request_type_id {
-    type: number
-    sql: ${TABLE}.request_type ;;
-  }
-
-  dimension: request_type {
-    type: string
-    sql:  case when ${request_type_id} = 0 then 'phone'
-               when ${request_type_id} = 1 then 'manual_911'
-               when ${request_type_id} = 2 then 'mobile'
-               when ${request_type_id} = 3 then 'web'
-               when ${request_type_id} = 4 then 'mobile_android'
-               when ${request_type_id} = 5 then 'centura_connect'
-               when ${request_type_id} = 6 then 'centura_care_coordinator'
-               when ${request_type_id} = 7 then 'orderly'
-            else 'other' end;;
-  }
-
   dimension: request_type_phone_or_other {
     type: string
     sql:  case when  ${request_type} = 'phone' then 'phone'
@@ -620,11 +559,6 @@ view: care_requests {
     drill_fields: [detail*]
   }
 
-  measure: count_distinct {
-   type: number
-   sql: count(distinct ${id}) ;;
-  }
-
   measure: count_distinct_pre_logistics {
     type: count_distinct
     sql: ${id} ;;
@@ -641,12 +575,6 @@ view: care_requests {
       field: care_request_flat.post_logistics_flag
       value: "yes"
     }
-  }
-
-
-  dimension:  complete_visit {
-    type: yesno
-    sql: ${care_request_flat.complete_date} is not null;;
   }
 
   dimension:  archived_visit {
@@ -666,16 +594,6 @@ view: care_requests {
       field: complete_visit_with_procedure
       value: "yes"
     }
-  }
-
-  dimension:  referred_point_of_care {
-    type: yesno
-    sql: ${care_request_flat.complete_comment} like '%Referred - Point of Care%';;
-  }
-
-  dimension:  billable_est {
-    type: yesno
-    sql: ${referred_point_of_care} or ${care_requests.complete_visit};;
   }
 
   dimension:  billable_with_cpt {
@@ -1211,29 +1129,10 @@ measure: distinct_day_of_week {
     type: date_time
     sql: min(${care_request_complete.created_mountain_raw}) ;;
   }
-  dimension: resolved_reason_full {
-    type: string
-    sql: coalesce(${care_request_flat.complete_comment}, ${care_request_flat.archive_comment}) ;;
-  }
-
-  dimension: primary_resolved_reason {
-    type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
-  }
-
-  dimension: secondary_resolved_reason {
-    type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 2)) ;;
-  }
 
   dimension: primary_and_secondary_resolved_reason {
     type: string
     sql: concat(${primary_resolved_reason},': ', ${secondary_resolved_reason}) ;;
-  }
-
-  dimension: other_resolved_reason {
-    type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 3)) ;;
   }
 
   dimension: other_resolved_booked {
@@ -1241,7 +1140,6 @@ measure: distinct_day_of_week {
     description: "A flag indicating resolved - booked for the day"
     sql: LOWER(${other_resolved_reason}) LIKE '%booked%' ;;
   }
-
 
   dimension: escalated_on_scene {
     type: yesno

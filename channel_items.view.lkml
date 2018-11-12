@@ -1,11 +1,7 @@
-view: channel_items {
-  sql_table_name: public.channel_items ;;
+include: "channel_items_user.view.lkml"
 
-  dimension: id {
-    primary_key: yes
-    type: number
-    sql: ${TABLE}.id ;;
-  }
+view: channel_items {
+  extends: [channel_items_user]
 
   dimension: address {
     type: string
@@ -85,11 +81,6 @@ view: channel_items {
     sql: ${TABLE}.emr_provider_id ;;
   }
 
-  dimension: name {
-    type: string
-    sql: TRIM(INITCAP(${TABLE}.name)) ;;
-  }
-
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;
@@ -115,29 +106,9 @@ view: channel_items {
     sql: ${TABLE}.send_note_automatically IS TRUE ;;
   }
 
-  dimension: source_name {
-    type: string
-    sql: ${TABLE}.source_name ;;
-  }
-
   dimension: state {
     type: string
     sql: ${TABLE}.state ;;
-  }
-
-  dimension: type_name {
-    type: string
-    sql: ${TABLE}.type_name ;;
-  }
-
-  dimension: sub_type {
-    type: string
-    sql: CASE
-          WHEN ${source_name} LIKE 'Emergency Medical Service%' THEN ${name}
-          WHEN ${source_name} = 'Direct Access' THEN ${source_name}
-          WHEN ${source_name} = 'Healthcare Partners' THEN ${type_name}
-          ELSE 'Undocumented'
-        END ;;
   }
 
   dimension_group: updated {
