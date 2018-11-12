@@ -122,6 +122,7 @@ view: care_request_flat_user {
 
   dimension: care_request_id {
     type: number
+    description: "The care request ID from dashboard"
     primary_key: yes
     sql: ${TABLE}.care_request_id ;;
   }
@@ -269,11 +270,13 @@ view: care_request_flat_user {
 
   dimension: scheduled_visit {
     type: yesno
+    description: "A flag indicating the visit was scheduled for a future date"
     sql: ${scheduled_date} IS NOT NULL ;;
   }
 
   measure: scheduled_count {
     type: count_distinct
+    description: "The count of scheduled care requests"
     sql: ${care_request_id} ;;
     filters: {
       field: scheduled_visit
@@ -341,22 +344,26 @@ view: care_request_flat_user {
 
   measure: resolved_reason {
     type: string
+    hidden: yes
     sql:array_agg(distinct concat(${complete_comment}, ${archive_comment}))::text ;;
   }
 
   dimension: resolved_reason_full {
     type: string
+    description: "The full resolved reason entered by the CSC.  If the care request was not resolved, this is Null"
     sql: coalesce(${complete_comment}, ${archive_comment}) ;;
   }
 
   dimension: primary_resolved_reason {
     type:  string
+    description: "The primary resolved reason logged (e.g. 'Cancelled by Patient')"
     sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
     drill_fields: [secondary_resolved_reason]
   }
 
   dimension: secondary_resolved_reason {
     type:  string
+    description: "The secondary resolved reason logged (e.g. 'Wait time too long')"
     sql: CASE
           WHEN ${resolved_reason_full} LIKE '%Spoke to my family doctor%'
           THEN 'Spoke to my Family Doctor'
@@ -372,36 +379,42 @@ view: care_request_flat_user {
 
   dimension: other_resolved_reason {
     type:  string
+    description: "The tertiary resolved reason provided.  If populated, this is typically a free form comment."
     sql: trim(split_part(${resolved_reason_full}, ':', 3)) ;;
   }
 
 
   dimension: escalated_on_scene {
     type: yesno
+    description: "A flag indicating the care requested was escalated on-scene."
     sql: UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
       ${primary_resolved_reason} = 'Referred - Point of Care';;
   }
 
   dimension: on_scene_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between complete time and on scene time"
     sql: EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}) ;;
   }
 
   dimension: drive_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between on route time and on scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}) ;;
   }
 
   dimension: in_queue_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between requested time and accepted time"
     sql: EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
   }
 
   dimension: assigned_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between accepted time and on-route time"
     sql: EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
   }
@@ -456,6 +469,7 @@ view: care_request_flat_user {
 
   dimension: drive_time_minutes_google {
     type: number
+    description: "The number of minutes from the provider's current location to the care request, as estimated by Google."
     sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
     value_format: "0.00"
   }
