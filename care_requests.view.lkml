@@ -179,12 +179,6 @@ view: care_requests {
     sql: ${TABLE}.facility ;;
   }
 
-  dimension: market_id {
-    type: number
-    # hidden: yes
-    sql: ${TABLE}.market_id ;;
-  }
-
   dimension_group: on_accepted_eta {
     type: time
     timeframes: [

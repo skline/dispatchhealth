@@ -23,9 +23,10 @@ explore: care_requests_user {
       sql_on:  ${care_requests_user.channel_item_id} = ${channel_items_user.id} ;;
   }
 
-#   join: markets_user {
-#
-#   }
+  join: markets_user {
+    relationship: many_to_one
+    sql_on: ${care_requests_user.market_id} = ${markets_user.id} ;;
+  }
 
   join: patients_user {
     relationship: many_to_one

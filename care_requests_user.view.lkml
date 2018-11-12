@@ -4,6 +4,7 @@ view: care_requests_user {
   dimension: id {
     primary_key: yes
     type: number
+    label: "Care Request ID"
     alias: [care_request_id]
     sql: ${TABLE}.id ;;
   }
@@ -14,6 +15,11 @@ view: care_requests_user {
     sql: ${TABLE}.channel_item_id ;;
   }
 
+  dimension: market_id {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.market_id ;;
+  }
 
   dimension: patient_id {
     type: number
@@ -23,6 +29,7 @@ view: care_requests_user {
 
   dimension_group: deleted {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

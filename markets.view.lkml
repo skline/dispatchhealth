@@ -1,19 +1,7 @@
+include: "markets_user.view.lkml"
+
 view: markets {
-  sql_table_name: public.markets ;;
-
-  dimension: id {
-    primary_key: yes
-    type: number
-    sql: ${TABLE}.id ;;
-  }
-
-
-  dimension: id_adj {
-    type: string
-    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 159
-      else ${id} end;;
-  }
-
+  extends: [markets_user]
 
   dimension: city {
     type: string
@@ -108,17 +96,6 @@ view: markets {
     sql: ${TABLE}.market_image ;;
   }
 
-  dimension: name {
-    type: string
-    sql: ${TABLE}.name ;;
-  }
-
-  dimension: name_adj {
-    type: string
-    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
-    else ${name} end;;
-  }
-
   dimension: old_close_at {
     type: string
     sql: ${TABLE}.old_close_at ;;
@@ -152,11 +129,6 @@ view: markets {
   dimension: service_area_image {
     type: string
     sql: ${TABLE}.service_area_image ;;
-  }
-
-  dimension: short_name {
-    type: string
-    sql: ${TABLE}.short_name ;;
   }
 
   dimension: state {
