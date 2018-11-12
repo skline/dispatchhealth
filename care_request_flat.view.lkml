@@ -109,13 +109,6 @@ view: care_request_flat {
     sql: ${drive_time_minutes_google} <= 20.0 ;;
   }
 
-  dimension: in_queue_time_minutes {
-    type: number
-    description: "The number of minutes between requested time and accepted time"
-    sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0 ;;
-    value_format: "0.00"
-  }
-
   dimension: accept_employee_first_name {
     description: "The first name of the user who accepted the patient"
     type: string
@@ -470,24 +463,6 @@ view: care_request_flat {
     }
   }
 
-  dimension_group: on_route {
-    type: time
-    description: "The local date and time when the care request team is on-route"
-    convert_tz: no
-    timeframes: [
-      raw,
-      hour_of_day,
-      time_of_day,
-      date,
-      time,
-      week,
-      month,
-      day_of_week_index,
-      day_of_month
-      ]
-    sql: ${TABLE}.on_route_date ;;
-  }
-
   dimension_group: drive_start {
     type: time
     description: "The on-scene date and time minus the Google drive time"
@@ -574,24 +549,6 @@ view: care_request_flat {
     sql: ${created_hour_of_day} >= 18 ;;
   }
 
-  dimension_group: scheduled {
-    type: time
-    description: "The local date/time that the care request was scheduled."
-    convert_tz: no
-    timeframes: [
-      raw,
-      hour_of_day,
-      time_of_day,
-      date,
-      time,
-      week,
-      month,
-      day_of_week_index,
-      day_of_month
-    ]
-    sql: ${TABLE}.scheduled_date ;;
-  }
-
   dimension: on_route_decimal {
     description: "The local on-route time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
@@ -604,27 +561,6 @@ view: care_request_flat {
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${drive_start_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${drive_start_raw} ) AS FLOAT)) / 60) ;;
-  }
-
-  dimension_group: on_scene {
-    type: time
-    description: "The local date/time that the care request team arrived on-scene"
-    convert_tz: no
-    timeframes: [
-      raw,
-      hour_of_day,
-      time_of_day,
-      date,
-      time,
-      week,
-      month,
-      month_num,
-      day_of_week,
-      day_of_week_index,
-      day_of_month,quarter,
-      hour
-      ]
-    sql: ${TABLE}.on_scene_date ;;
   }
 
   dimension: first_half_of_month_on_scene {
@@ -656,26 +592,6 @@ view: care_request_flat {
       hour
     ]
     sql: ${TABLE}.on_scene_date AT TIME ZONE ${pg_tz} AT TIME ZONE 'US/Mountain' ;;
-  }
-
-
-  dimension_group: accept {
-    type: time
-    description: "The local date/time that the care request was accepted.
-                  This is also used as a surrogate for when the care team is assigned."
-    convert_tz: no
-    timeframes: [
-      raw,
-      hour_of_day,
-      time_of_day,
-      date,
-      time,
-      week,
-      month,
-      day_of_week_index,
-      day_of_month
-    ]
-    sql: ${TABLE}.accept_date ;;
   }
 
   dimension_group: accept_initial {

@@ -168,6 +168,82 @@ view: care_request_flat_user {
     sql: ${TABLE}.created_date ;;
   }
 
+  dimension_group: accept {
+    type: time
+    description: "The local date/time that the care request was accepted.
+    This is also used as a surrogate for when the care team is assigned."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.accept_date ;;
+  }
+
+  dimension_group: scheduled {
+    type: time
+    description: "The local date/time that the care request was scheduled."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.scheduled_date ;;
+  }
+
+  dimension_group: on_route {
+    type: time
+    description: "The local date and time when the care request team is on-route"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.on_route_date ;;
+  }
+
+  dimension_group: on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour
+    ]
+    sql: ${TABLE}.on_scene_date ;;
+  }
+
   dimension_group: complete {
     type: time
     description: "The local date/time that the care request was completed or
@@ -363,6 +439,13 @@ view: care_request_flat_user {
     type: yesno
     hidden: yes
     sql: ${on_scene_time_seconds} > 299 AND ${on_scene_time_seconds} < 14401 ;;
+  }
+
+  dimension: in_queue_time_minutes {
+    type: number
+    description: "The number of minutes between requested time and accepted time"
+    sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0 ;;
+    value_format: "0.00"
   }
 
   dimension: drive_time_minutes {
