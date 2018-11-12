@@ -1879,6 +1879,12 @@ view: care_request_flat {
     }
   }
 
+  measure: flu_percent {
+    type: number
+    value_format: "0.0%"
+    sql: ${complete_count_flu}::float/nullif(${complete_count}::float,0);;
+  }
+
 
 
 
