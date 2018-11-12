@@ -21,11 +21,23 @@ view: incontact_aggregated_clone {
       quarter,
       year,
       day_of_week_index,
-      day_of_week
+      day_of_week,
+      day_of_month
     ]
     convert_tz: no
     datatype: date
     sql: ${TABLE}.date ;;
+  }
+
+  dimension_group: today_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month]
+    sql: current_date;;
+  }
+
+  dimension: month_to_date  {
+    type:  yesno
+    sql: ${date_day_of_month} < ${today_mountain_day_of_month}  ;;
   }
 
   dimension: disposition {
