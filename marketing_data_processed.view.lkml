@@ -207,6 +207,7 @@ from looker_scratch.ga_pageviews_clone
       year,
       hour_of_day,
       day_of_week_index,
+      day_of_week,
       day_of_month
     ]
     sql: ${TABLE}.marketing_time ;;
