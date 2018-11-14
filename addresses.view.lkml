@@ -62,6 +62,11 @@ view: addresses {
     sql: ${TABLE}.street_address_2 ;;
   }
 
+  measure: count_unique_addresses {
+    type: count_distinct
+    sql: ${street_address_1} ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
