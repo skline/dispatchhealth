@@ -1,4 +1,5 @@
 view: care_request_flat_user {
+  view_label: "Care Request Statuses"
   derived_table: {
     sql:
     SELECT
