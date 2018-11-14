@@ -207,6 +207,7 @@ from looker_scratch.ga_pageviews_clone
       year,
       hour_of_day,
       day_of_week_index,
+      day_of_week,
       day_of_month
     ]
     sql: ${TABLE}.marketing_time ;;
@@ -292,25 +293,24 @@ from looker_scratch.ga_pageviews_clone
   }
 
 
-  dimension: source_category
+  dimension: granular_category
   {
     type: string
     sql: case
+            when lower(${channel_items.name}) = 'article or press' then 'Self Report article or press'
             when ${source_final} in('google', 'google.com') and (${campaign_final} in('[agt] remarketing', '[agt] look a like audiences') or lower(${campaign_final}) like '%display%'  or lower(${campaign_final}) like '%video%')  then 'Google Display'
+            when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
             when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and (lower(${ad_group_final}) like '%brand%' or lower(${invoca_promo_number_description}) like '%brand%') then 'SEM: Brand'
             when (${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%' then 'SEM: Non-Brand'
-            when (${source_final} in('facebook', 'instagram') and ${medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image', 'cpc')) or lower(${source_final}) like '%fb click to call%' then 'Paid Social'
-            when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
-            when ${source_final} in('(direct)')  then 'Direct Traffic'
+            when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'SEM: Brand or Organic Search'
             when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
+            when ${source_final} in('bidtellect') then 'Bidtellect'
+            when (${source_final} in('facebook', 'instagram') and ${medium_final} in('paidsocial', 'ctr', 'image_carousel', 'static_image', 'cpc')) or lower(${source_final}) like '%fb click to call%' then 'Paid Social Direct'
+            when ${medium_final} in('self report') then concat('Self Report ', ${source_final})
+            when ${source_final} in('(direct)', 'direct')  then 'Direct Traffic'
             when (${source_final} like '%facebook%' or  ${source_final} like '%instagram%' or  ${source_final} like '%linkedin%') and ${medium_final} = 'referral' then 'Organic Social'
-            when lower(${medium_final}) like '%email%' then 'Email'
-            when ${medium_final} in('nativedisplay') then 'Native Display'
-            when ${medium_final} in('display') then 'Display'
-            when ${medium_final} in('referral') then 'Referral'
-            when ${source_final} in('shannon') then null
-            when ${medium_final} in('self report') then 'Self Report Digital'
-            else ${source_medium} end;;
+            when ${dtc_ff_patients.patient_id} is not null then 'Other'
+            else 'Other' end;;
   }
 
   dimension: source_medium {
@@ -338,13 +338,13 @@ from looker_scratch.ga_pageviews_clone
 
   dimension: low_intent{
     type: yesno
-    sql:  source_category in('Native Display','Display', 'Paid Social', 'Organic Social', 'Direct Traffic') ;;
+    sql:  ${granular_category} in('Native Display','Display', 'Paid Social', 'Organic Social', 'Direct Traffic') ;;
   }
 
   dimension: high_low_intent
   {
     type: string
-    sql: case when ${source_category} in('Google Display', 'Paid Social', 'Organic Social', 'Native Display', 'Display', 'Direct Traffic', 'Local Listings') or lower(${medium_final}) like '%google%' or  lower(${source_final}) like '%bing ad extension%'  then 'Low Intent'
+    sql: case when ${granular_category} in('Google Display', 'Paid Social', 'Organic Social', 'Native Display', 'Display', 'Direct Traffic', 'Local Listings') or lower(${medium_final}) like '%google%' or  lower(${source_final}) like '%bing ad extension%'  then 'Low Intent'
       else 'High Intent' end;;
   }
 
