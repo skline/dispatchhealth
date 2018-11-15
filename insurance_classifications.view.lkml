@@ -23,6 +23,25 @@ view: insurance_classifications {
     sql: ${TABLE}.name ;;
   }
 
+  dimension: exp_allowable {
+    type: number
+    sql: CASE
+          WHEN ${id} = 2 THEN 261
+          WHEN ${id} = 3 THEN 239
+          WHEN ${id} = 4 THEN 131
+          WHEN ${id} = 5 THEN 154
+          WHEN ${id} = 6 THEN 220
+          WHEN ${id} = 8 THEN 128
+          ELSE 200
+        END
+          ;;
+  }
+
+  measure: avg_exp_allowable {
+    type: average
+    sql: ${exp_allowable} ;;
+  }
+
   dimension_group: updated {
     type: time
     hidden: yes
