@@ -691,6 +691,11 @@ explore: care_requests {
     sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
   }
 
+  join: channel_item_emr_providers {
+    relationship: many_to_one
+    sql_on: ${channel_items.id} = ${channel_item_emr_providers.channel_item_id} ;;
+  }
+
   join: patient_payer_lookup{
     relationship: one_to_one
     sql_on: ${patients.id} = ${patient_payer_lookup.dashboard_patient_id}  ;;
