@@ -399,7 +399,7 @@ view: care_requests {
   }
 
   measure: count_distinct_intended_care_requests_phone {
-    description: "Count of distinct Phone care requests"
+    description: "Count of distinct Phone care requests intended (no 911 diverts)"
     type: count_distinct
     sql: ${id} ;;
     filters: {
@@ -411,6 +411,45 @@ view: care_requests {
       value: "no"
     }
   }
+
+  measure: count_distinct__care_requests_phone {
+    description: "Count of distinct Phone care requests"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type_phone_or_other
+      value: "phone"
+    }
+  }
+
+  measure: count_distinct_complete_phone {
+    description: "Count of distinct Phone complete"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type_phone_or_other
+      value: "phone"
+    }
+    filters: {
+      field: care_request_flat.complete
+      value: "yes"
+    }
+  }
+
+  measure: count_distinct_complete_other {
+    description: "Count of distinct Other complete"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type_phone_or_other
+      value: "other"
+    }
+    filters: {
+      field: care_request_flat.complete
+      value: "yes"
+    }
+  }
+
 
   measure: percent_phone_request_type {
     type: number
@@ -431,6 +470,17 @@ view: care_requests {
       field: care_request_flat.resolved_911_divert
       value: "no"
     }
+  }
+
+  measure: count_distinct_care_requests_other {
+    description: "Count of distinct other care requests "
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: request_type_phone_or_other
+      value: "other"
+    }
+
   }
 
 

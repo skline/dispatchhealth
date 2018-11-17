@@ -832,6 +832,13 @@ view: care_request_flat {
 
   }
 
+  measure: count_distinct_days_accepted {
+    type: count_distinct
+    sql_distinct_key: ${accept_date} ;;
+    sql: ${accept_date} ;;
+
+  }
+
   dimension: time_group_sort {
     type: number
     hidden: yes
@@ -979,7 +986,8 @@ view: care_request_flat {
       week,
       month,
       day_of_week_index,
-      day_of_month
+      day_of_month,
+      day_of_week
     ]
     sql: ${TABLE}.accept_date ;;
   }
@@ -1977,6 +1985,30 @@ view: care_request_flat {
   measure: monthly_visits_run_rate {
     type: number
     sql: round(${complete_count}/${month_percent});;
+  }
+
+  measure: care_request_count_run_rate {
+    type: number
+    value_format: "0"
+    sql:  ${care_request_count}/${month_percent};;
+  }
+
+  measure: complete_count_flu_run_rate {
+    type: number
+    value_format: "0"
+    sql:  ${complete_count_flu}/${month_percent};;
+  }
+
+  measure: count_distinct_care_requests_phone_run_rate {
+    type: number
+    value_format: "0"
+    sql:  ${care_requests.count_distinct__care_requests_phone}/${month_percent};;
+  }
+
+  measure: count_distinct_care_requests_other_run_rate {
+    type: number
+    value_format: "0"
+    sql:  ${care_requests.count_distinct_care_requests_other}/${month_percent};;
   }
 
   measure: monthly_complete_run_rate_seasonal_adj {
