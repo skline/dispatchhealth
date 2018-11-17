@@ -19,7 +19,9 @@ explore: care_requests {
   join: athenadwh_patient_insurances_clone {
     relationship: one_to_many
     sql_on: ${patients.ehr_id} = ${athenadwh_patient_insurances_clone.patient_id}::varchar
-      AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0;;
+      AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0
+      AND ${athenadwh_patient_insurances_clone.sequence_number}::int = 1
+      AND ${athenadwh_patient_insurances_clone.cancellation_date} IS NULL ;;
   }
 
   join: athenadwh_payers_clone {
@@ -689,6 +691,11 @@ explore: care_requests {
   join: channel_items {
     relationship: many_to_one
     sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: channel_item_emr_providers {
+    relationship: many_to_one
+    sql_on: ${channel_items.id} = ${channel_item_emr_providers.channel_item_id} ;;
   }
 
   join: patient_payer_lookup{

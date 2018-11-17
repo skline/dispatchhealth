@@ -1050,6 +1050,7 @@ view: care_request_flat {
     description: "The first accepted time of day, represented as a decimal"
     type: min
     sql: ${accepted_decimal} ;;
+    value_format: "0.00"
   }
 
   dimension: shift_start_decimal {
