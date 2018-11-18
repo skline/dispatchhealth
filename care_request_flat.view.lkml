@@ -2070,7 +2070,7 @@ view: care_request_flat {
   dimension: ga_high_level_category {
     type: string
     label: "Direct to Consumer Category"
-    sql: coalesce((case when ${ga_pageviews_clone.high_level_category} = 'Other' then null else ${ga_pageviews_clone.high_level_category} end), ${web_ga_pageviews_clone.high_level_category}) ;;
+    sql: coalesce((case when ${ga_pageviews_clone.high_level_category} in('Other', 'Self Report Direct to Consumer') then null else ${ga_pageviews_clone.high_level_category} end), ${web_ga_pageviews_clone.high_level_category}) ;;
   }
 
 
