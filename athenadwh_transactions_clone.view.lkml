@@ -165,12 +165,53 @@ view: athenadwh_transactions_clone {
     }
   }
 
-  measure: total_expected_allowable {
+  measure: total_expected_allowable_old {
     type: sum
     sql: ${expected_allowed_amount}::float ;;
     value_format: "0.00"
     filters: {
       field: charge_transaction
+      value: "yes"
+    }
+  }
+
+  dimension: ghost_transaction {
+    type: yesno
+    sql: ${transaction_reason} = 'GHOST' ;;
+  }
+
+  dimension: primary_transaction_type {
+    type: yesno
+    description: "A flag indicating that the transaction transfer type is primary"
+    sql: ${transaction_transfer_type} = 'Primary' ;;
+  }
+
+  dimension: voided_date_is_null {
+    description: "A flag indicating that the voided date is null."
+    type: yesno
+    sql: ${voided_date} IS NULL ;;
+  }
+
+  measure: total_expected_allowable {
+    description: "Transaction type is CHARGE, transaction reason is not GHOST, transaction type is PRIMARY, voided date is NULL"
+    type: sum
+    sql: ${expected_allowed_amount}::float ;;
+    value_format: "0.00"
+    sql_distinct_key: ${transaction_id} ;;
+    filters: {
+      field: charge_transaction
+      value: "yes"
+    }
+    filters: {
+      field: ghost_transaction
+      value: "no"
+    }
+    filters: {
+      field: primary_transaction_type
+      value: "yes"
+    }
+    filters: {
+      field: voided_date_is_null
       value: "yes"
     }
   }
