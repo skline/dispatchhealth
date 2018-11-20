@@ -40,11 +40,24 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} ;;
   }
 
-  join: athenadwh_patient_medication_clone {
+  join: athenadwh_patient_medication_listing {
+    from: athenadwh_patient_medication_clone
     relationship: one_to_many
-    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patient_medication_clone.patient_id} AND
-    ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_patient_medication_clone.chart_id} AND
-    ${athenadwh_patient_medication_clone.medication_type} IN ('PATIENTMEDICATION', 'CLINICALPRESCRIPTION') ;;
+    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patient_medication_listing.patient_id} AND
+    ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_patient_medication_listing.chart_id} AND
+    ${athenadwh_patient_medication_listing.medication_type} = 'PATIENTMEDICATION' ;;
+  }
+
+  join: athenadwh_patient_prescriptions {
+    from: athenadwh_patient_medication_clone
+    relationship: one_to_one
+    sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_patient_prescriptions.document_id} AND
+          ${athenadwh_patient_prescriptions.medication_type} = 'CLINICALPRESCRIPTION' ;;
+  }
+
+  join: athenadwh_medication_clone {
+    relationship: many_to_one
+    sql_on: ${athenadwh_patient_medication_listing.medication_id} = ${athenadwh_medication_clone.medication_id} ;;
   }
 
   join: athenadwh_provider_clone {

@@ -133,6 +133,12 @@ view: athenadwh_patient_medication_clone {
     sql: ${TABLE}.medication_name ;;
   }
 
+  measure: medications_list {
+    label: "List of all medications"
+    type: string
+    sql: string_agg(DISTINCT ${medication_name}, ' | ') ;;
+  }
+
   dimension: medication_type {
     type: string
     sql: ${TABLE}.medication_type ;;
