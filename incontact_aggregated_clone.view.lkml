@@ -142,6 +142,12 @@ view: incontact_aggregated_clone {
     sql: ${inbound} ;;
   }
 
+  measure: count_distinct_days {
+    type: count_distinct
+    #sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
+    sql: ${date_date} ;;
+  }
+
   measure: sum_mvp_inbound_calls{
     type: sum_distinct
     label: "Inbound MVP Calls"

@@ -321,8 +321,8 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: post_date {
-    type: string
-    sql: ${TABLE}.post_date ;;
+    type: date
+    sql: ${TABLE}.post_date::date ;;
   }
 
   dimension: procedure_code {
