@@ -172,6 +172,13 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  dimension: on_scene_time_tier {
+    type: tier
+    tiers: [10,20,30,40,50,60,70,80,90,100]
+    style: integer
+    sql: ${on_scene_time_minutes} ;;
+  }
+
   measure: app_months_of_experience {
     type: number
     sql: date_part('year', age(${app_shift_planning_facts_clone.first_shift_date}::date))*12 +
@@ -264,6 +271,12 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  dimension: google_drive_time_tier {
+  type: tier
+  tiers: [0,5,10,15,20,25,30,35,40,45,50]
+  style: integer
+  sql: ${drive_time_minutes_google} ;;
+  }
 
   measure:  average_drive_time_minutes_google {
     type: average_distinct
