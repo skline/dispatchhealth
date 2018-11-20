@@ -29,7 +29,8 @@ view: marketing_data_processed {
          invoca_clone.call_record_ikd as call_record_ikd,
          ga_pageviews_full_clone.timestamp as ga_timestamp_orig,
         lower(invoca_clone.profile_campaign) as invoca_profile_campaign,
-        invoca_clone.promo_number_description as invoca_promo_number_description
+        invoca_clone.promo_number_description as invoca_promo_number_description,
+        invoca_clone.source as invoca_number
 FROM looker_scratch.ga_pageviews_clone  AS ga_pageviews_full_clone
 FULL OUTER JOIN looker_scratch.invoca_clone  AS invoca_clone ON abs(
         EXTRACT(EPOCH FROM invoca_clone.start_time)-EXTRACT(EPOCH FROM ga_pageviews_full_clone.timestamp_mst)) < (60*60*1.5)
@@ -68,6 +69,11 @@ from looker_scratch.ga_pageviews_clone
   dimension: invoca_promo_number_description {
     type: string
     sql: ${TABLE}.invoca_promo_number_description ;;
+  }
+
+  dimension: invoca_number {
+    type: string
+    sql: invoca_number
   }
 
   dimension: fullreferrer {
