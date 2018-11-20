@@ -40,6 +40,13 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} ;;
   }
 
+  join: athenadwh_patient_medication_clone {
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patient_medication_clone.patient_id} AND
+    ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_patient_medication_clone.chart_id} AND
+    ${athenadwh_patient_medication_clone.medication_type} IN ('PATIENTMEDICATION', 'CLINICALPRESCRIPTION') ;;
+  }
+
   join: athenadwh_provider_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_provider_clone.provider_id} ;;
