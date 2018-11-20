@@ -173,6 +173,18 @@ view: athenadwh_transactions_clone {
       field: charge_transaction
       value: "yes"
     }
+    filters: {
+      field: ghost_transaction
+      value: "no"
+    }
+#     filters: {
+#       field: primary_transaction_type
+#       value: "yes"
+#     }
+    filters: {
+      field: voided_date_is_null
+      value: "yes"
+    }
   }
 
   dimension: ghost_transaction {
