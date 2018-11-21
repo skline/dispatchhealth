@@ -165,7 +165,7 @@ view: athenadwh_transactions_clone {
     }
   }
 
-  measure: total_expected_allowable_old {
+  measure: total_expected_allowable_test {
     type: sum
     sql: ${expected_allowed_amount}::float ;;
     value_format: "0.00"
