@@ -22,6 +22,7 @@ view: care_request_flat {
         accept1.auto_assigned AS auto_assigned_initial,
         accept1.reassignment_reason AS reassignment_reason_initial,
         accept1.reassignment_reason_other AS reassignment_reason_other_initial,
+        accept1.drive_time_seconds AS drive_time_seconds_initial,
         accept.auto_assigned AS auto_assigned_final,
         accept.reassignment_reason AS reassignment_reason_final,
         accept.reassignment_reason_other AS reassignment_reason_other_final,
@@ -51,6 +52,7 @@ view: care_request_flat {
         name,
         started_at,
         meta_data::json->> 'auto_assigned' AS auto_assigned,
+        meta_data::json->> 'drive_time' AS drive_time_seconds,
         reassignment_reason,
         reassignment_reason_other,
         ROW_NUMBER() OVER(PARTITION BY care_request_id
@@ -114,7 +116,7 @@ view: care_request_flat {
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
 
 
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26, insurances.package_id ;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27, insurances.package_id ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -268,6 +270,13 @@ view: care_request_flat {
   dimension: drive_time_minutes_google {
     type: number
     sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
+    value_format: "0.00"
+  }
+
+  dimension: initial_drive_time_minutes_google {
+    description: "The Google drive time of the care team that was initially assigned"
+    type: number
+    sql: ${TABLE}.drive_time_seconds_initial::float / 60.0 ;;
     value_format: "0.00"
   }
 
