@@ -23,6 +23,8 @@ view: care_request_flat {
         accept1.reassignment_reason AS reassignment_reason_initial,
         accept1.reassignment_reason_other AS reassignment_reason_other_initial,
         accept1.drive_time_seconds AS drive_time_seconds_initial,
+        accept1.shift_team_id_initial,
+        cars.name AS shift_team_initial,
         accept.auto_assigned AS auto_assigned_final,
         accept.reassignment_reason AS reassignment_reason_final,
         accept.reassignment_reason_other AS reassignment_reason_other_final,
@@ -53,6 +55,7 @@ view: care_request_flat {
         started_at,
         meta_data::json->> 'auto_assigned' AS auto_assigned,
         meta_data::json->> 'drive_time' AS drive_time_seconds,
+        meta_data::json->> 'shift_team_id' AS shift_team_id_initial,
         reassignment_reason,
         reassignment_reason_other,
         ROW_NUMBER() OVER(PARTITION BY care_request_id
@@ -98,6 +101,10 @@ view: care_request_flat {
       ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30'
       LEFT JOIN public.shift_teams
       ON shift_teams.id = cr.shift_team_id
+      LEFT JOIN public.shift_teams st_init
+      ON st_init.id::int = accept1.shift_team_id_initial::int
+      LEFT JOIN cars
+      ON st_init.car_id = cars.id
       JOIN markets
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
@@ -114,9 +121,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-
-
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27, insurances.package_id ;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29, insurances.package_id ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -179,6 +184,18 @@ view: care_request_flat {
     tiers: [10,20,30,40,50,60,70,80,90,100]
     style: integer
     sql: ${on_scene_time_minutes} ;;
+  }
+
+  dimension: shift_team_id_initial {
+    type: number
+    description: "The shift team ID of the team initially assigned to the care request"
+    sql: ${TABLE}.shift_team_id_initial ;;
+  }
+
+  dimension: shift_team_initial {
+    type: string
+    description: "The name of the shift initially assigned to the care request"
+    sql: ${TABLE}.shift_team_initial ;;
   }
 
   measure: app_months_of_experience {
