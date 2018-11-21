@@ -73,7 +73,7 @@ from looker_scratch.ga_pageviews_clone
 
   dimension: invoca_number {
     type: string
-    sql: invoca_number
+    sql:  ${TABLE}.invoca_number;;
   }
 
   dimension: fullreferrer {
@@ -504,8 +504,8 @@ from looker_scratch.ga_pageviews_clone
     type: string
     sql: case when ${source_final} = 'google' and ${medium_final} = 'cpc' and ${campaign_final} like '%call only%' then 'Call Only'
               when ${source_final} = 'google' and ${medium_final} = 'cpc' and ${campaign_final} not like '%call only%' then 'Regular'
-              when ${medium_final} = 'google call extension' and ${source_final} like '%new%' then 'Call Only'
-              when ${medium_final} = 'google call extension' and ${source_final} not like '%new%' then 'Regular'
+              when ${invoca_number} in ('7207589004', '7209905096', '9284822092', '8046211436', '7026230403', '8322808605', '4054580139', '4133042037', '4699986838', '2536500099', '7203709191', '7198220163', '6234044126', '8047747289', '7028050348', '8327812136', '4058146007', '4133042037', '4699986839', '2536500036') then 'Call Only'
+              when ${invoca_number} in ('7206446778', '7194939780', '9285891062', '8042920050', '7024727133', '8329750773', '4058041055', '4134550057', '4699986836', '2536500603', '7203709864', '7198220163', '6234044124', '8886547952', '7028050077', '8324263216', '4058146020', '4137260257', '4699986837', '2536500036') then 'Regular'
           else null end;;
   }
 
