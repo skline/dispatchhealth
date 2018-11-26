@@ -165,24 +165,30 @@ view: athenadwh_transactions_clone {
     }
   }
 
+  ### Test block for expected allowable calculation
+
+  dimension: is_valid_exp_allowable {
+    type: yesno
+    sql: ${transaction_type} = 'CHARGE' AND (
+    (${transaction_transfer_type} = 'Primary')
+    OR (${transaction_transfer_type} != 'Primary' AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int = -100));;
+  }
+
+  dimension: fixed_expected_allowable {
+    description: "Expected allowable where GHOST charges are dealt with effectively"
+    type: number
+    sql: CASE
+          WHEN ${reversal_flag} = 1 THEN ${expected_allowed_amount}::float * -1
+          ELSE ${expected_allowed_amount}::float
+        END ;;
+  }
+
   measure: total_expected_allowable_test {
     type: sum
-    sql: ${expected_allowed_amount}::float ;;
+    sql: ${fixed_expected_allowable}::float ;;
     value_format: "0.00"
     filters: {
-      field: charge_transaction
-      value: "yes"
-    }
-    filters: {
-      field: ghost_transaction
-      value: "no"
-    }
-#     filters: {
-#       field: primary_transaction_type
-#       value: "yes"
-#     }
-    filters: {
-      field: voided_date_is_null
+      field: is_valid_exp_allowable
       value: "yes"
     }
   }
