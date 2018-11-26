@@ -60,6 +60,13 @@ explore: care_requests {
     sql_on: ${athenadwh_patient_medication_listing.medication_id} = ${athenadwh_medication_clone.medication_id} ;;
   }
 
+  join: dea_schedule_ii_medications  {
+    from: athenadwh_medication_clone
+    relationship: many_to_one
+    sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1))
+    AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
+  }
+
   join: athenadwh_provider_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_provider_clone.provider_id} ;;
