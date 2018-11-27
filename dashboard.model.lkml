@@ -225,6 +225,13 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
+  join: athenadwh_primary_care_provider {
+    from: athenadwh_clinical_providers_clone
+    relationship:  many_to_one
+    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} ;;
+    sql_where: ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
+  }
+
 #   join: athenadwh_orders_provider {
 #     from: athenadwh_clinical_providers_clone
 #     relationship:  many_to_one
@@ -590,6 +597,14 @@ explore: care_requests {
   join: insurance_plans {
     relationship: many_to_one
     sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND ${insurances.company_name} = ${insurance_plans.name} AND ${insurance_plans.state_id} = ${states.id};;
+  }
+
+  join: primary_insurance_plans {
+    from: insurance_plans
+    relationship: many_to_one
+    sql_on: ${insurances.package_id} = ${primary_insurance_plans.package_id} AND
+            ${insurances.company_name} = ${primary_insurance_plans.name} AND
+            ${primary_insurance_plans.state_id} = ${states.id} AND ${primary_insurance_plans.primary} IS TRUE ;;
   }
 
   join: self_report_insurance_crosswalk {

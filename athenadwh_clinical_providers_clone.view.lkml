@@ -128,7 +128,12 @@ view: athenadwh_clinical_providers_clone {
 
   measure: names_aggregated {
     type: string
-    sql: array_agg(distinct ${name}) ;;
+    sql: array_to_string(array_agg(DISTINCT ${name}), ' | ') ;;
+  }
+
+  measure: npi_aggregated {
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${npi}), ' | ') ;;
   }
 
   measure: address_aggregated {
