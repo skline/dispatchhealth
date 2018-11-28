@@ -28,6 +28,7 @@ view: shift_teams {
 
   dimension_group: end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -43,6 +44,7 @@ view: shift_teams {
 
   dimension_group: end_mountain {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -64,6 +66,7 @@ view: shift_teams {
 
   dimension_group: start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
