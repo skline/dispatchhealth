@@ -992,15 +992,15 @@ explore: productivity_data_clone {
     sql_on: ${shift_planning_facts_clone.car_dim_id} = ${cars.id} ;;
   }
 
-  # join: timezones {
-  #   relationship: many_to_one
-  #   sql: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
-  # }
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
+  }
 
   join: shift_teams {
     relationship: one_to_one
     sql_on: ${shift_teams.car_id} = ${shift_planning_facts_clone.car_dim_id} AND
-            ${shift_planning_facts_clone.local_actual_start_date} = (${shift_teams.start_date}- INTERVAL '6 hour') ;;
+            ${shift_planning_facts_clone.local_actual_start_date} = ${shift_teams.start_date} ;;
   }
 
   join: shifts{
