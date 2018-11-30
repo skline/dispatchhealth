@@ -19,9 +19,9 @@ explore: care_requests {
   join: athenadwh_patient_insurances_clone {
     relationship: one_to_many
     sql_on: ${patients.ehr_id} = ${athenadwh_patient_insurances_clone.patient_id}::varchar
-      AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0
-      AND ${athenadwh_patient_insurances_clone.sequence_number}::int = 1
-      AND ${athenadwh_patient_insurances_clone.cancellation_date} IS NULL ;;
+    AND ${athenadwh_patient_insurances_clone.cancellation_date} IS NULL
+    AND (${athenadwh_patient_insurances_clone.sequence_number}::int = 1 OR ${athenadwh_patient_insurances_clone.insurance_package_id}::int = -100)
+      /*AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0 */ ;;
   }
 
   join: athenadwh_payers_clone {
@@ -58,6 +58,13 @@ explore: care_requests {
   join: athenadwh_medication_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_patient_medication_listing.medication_id} = ${athenadwh_medication_clone.medication_id} ;;
+  }
+
+  join: dea_schedule_ii_medications  {
+    from: athenadwh_medication_clone
+    relationship: many_to_one
+    sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1))
+    AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
   }
 
   join: athenadwh_provider_clone {
@@ -216,6 +223,13 @@ explore: care_requests {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
+  }
+
+  join: athenadwh_primary_care_provider {
+    from: athenadwh_clinical_providers_clone
+    relationship:  many_to_one
+    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} ;;
+    sql_where: ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
   }
 
 #   join: athenadwh_orders_provider {
@@ -583,6 +597,14 @@ explore: care_requests {
   join: insurance_plans {
     relationship: many_to_one
     sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND ${insurances.company_name} = ${insurance_plans.name} AND ${insurance_plans.state_id} = ${states.id};;
+  }
+
+  join: primary_insurance_plans {
+    from: insurance_plans
+    relationship: many_to_one
+    sql_on: ${insurances.package_id} = ${primary_insurance_plans.package_id} AND
+            ${insurances.company_name} = ${primary_insurance_plans.name} AND
+            ${primary_insurance_plans.state_id} = ${states.id} AND ${primary_insurance_plans.primary} IS TRUE ;;
   }
 
   join: self_report_insurance_crosswalk {
@@ -970,15 +992,15 @@ explore: productivity_data_clone {
     sql_on: ${shift_planning_facts_clone.car_dim_id} = ${cars.id} ;;
   }
 
-  # join: timezones {
-  #   relationship: many_to_one
-  #   sql: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
-  # }
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
+  }
 
   join: shift_teams {
     relationship: one_to_one
     sql_on: ${shift_teams.car_id} = ${shift_planning_facts_clone.car_dim_id} AND
-            ${shift_planning_facts_clone.local_actual_start_date} = (${shift_teams.start_date}- INTERVAL '6 hour') ;;
+            ${shift_planning_facts_clone.local_actual_start_date} = ${shift_teams.start_date} ;;
   }
 
   join: shifts{
