@@ -1,5 +1,12 @@
 view: intraday_shift_teams {
-  sql_table_name: public.intraday_shift_teams ;;
+  derived_table: {
+    sql: select *
+from
+(select *,  ROW_NUMBER() OVER(PARTITION BY concat(car_id, date(start_time  AT TIME ZONE 'US/Mountain' ))
+                                ORDER BY updated_at desc)
+from public.intraday_shift_teams)lq
+where row_number = 1 ;;
+  }
 
   dimension: id {
     primary_key: yes
@@ -38,6 +45,11 @@ view: intraday_shift_teams {
       year
     ]
     sql: ${TABLE}.end_time ;;
+  }
+
+  measure: max_end {
+    type: time
+    sql: max(${end_raw}) ;;
   }
 
   dimension: shift_id {
@@ -106,7 +118,7 @@ view: intraday_shift_teams {
   measure: available_time_shift {
     type: number
     value_format: "0.00"
-    sql:EXTRACT(EPOCH FROM max(${end_raw})-${max_etc_or_now_raw})/3600;;
+    sql:EXTRACT(EPOCH FROM ${max_end_raw}-${max_etc_or_now_raw})/3600;;
   }
 
   measure: patient_slots{
@@ -193,6 +205,17 @@ view: intraday_shift_teams {
       value: "(TC)TRICARE"
     }
   }
+
+  measure: complete_crs_medicaid_tricare {
+    type: number
+    sql:  ${complete_crs_tricare}+${complete_crs_medicaid};;
+  }
+
+  measure: accepted_crs_medicaid_tricare {
+    type: number
+    sql:  ${accepted_crs_tricare}+${accepted_crs_medicaid};;
+  }
+
 
   measure: resolved_crs {
     type: count_distinct
