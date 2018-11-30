@@ -243,6 +243,9 @@ from looker_scratch.ga_pageviews_clone
            when lower(${marketing_cost_campaign_name})  like '%las%' or lower(${marketing_cost_campaign_name})  like '%las%' then 162
            when lower(${marketing_cost_campaign_name})  like '%hou%' then 165
            when lower(${marketing_cost_campaign_name})  like '%okla%' or lower(${marketing_cost_campaign_name})  like '%okc%' then 166
+          when lower(${marketing_cost_campaign_name})  like '%springfield%' or lower(${marketing_cost_campaign_name})  like 'spr%' then 168
+     when lower(${marketing_cost_campaign_name})  like '%dal%' then 169
+    when lower(${marketing_cost_campaign_name})  like '%tac%' then 170
            else null
         end;;
   }
@@ -256,6 +259,9 @@ from looker_scratch.ga_pageviews_clone
            when lower(${invoca_profile_campaign}) like '%ric%'  then 164
            when lower(${invoca_profile_campaign})  like '%las%' then 162
            when lower(${invoca_profile_campaign})  like '%hou%' then 165
+               when lower(${invoca_profile_campaign})  like '%springfield%' then 168
+     when lower(${invoca_profile_campaign})  like '%dal%' then 169
+    when lower(${invoca_profile_campaign})  like '%tac%' then 170
            else null end ;;
   }
 
@@ -268,6 +274,9 @@ from looker_scratch.ga_pageviews_clone
          when lower(${full_url})  like '%las%' then 162
          when lower(${full_url})  like '%hou%' then 165
          when lower(${full_url})  like '%okl%' then 166
+        when lower(${full_url})  like '%springfield%' then 168
+     when lower(${full_url})  like '%dal%' then 169
+    when lower(${full_url})  like '%tac%' then 170
          else null end ;;
   }
 

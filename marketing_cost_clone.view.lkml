@@ -131,6 +131,9 @@ view: marketing_cost_clone {
            when lower(${campaign_name})  like '%las%' or lower(${campaign_name})  like '%las%' then 162
            when lower(${campaign_name})  like '%hou%' then 165
            when lower(${campaign_name})  like '%okla%' or lower(${campaign_name})  like '%okc%' then 166
+             when lower(${campaign_name})  like '%springfield%' or lower(${campaign_name})  like 'spr%' then 168
+     when lower(${campaign_name})  like '%dal%' then 169
+    when lower(${campaign_name})  like '%tac%' then 170
            else null
         end;;
   }

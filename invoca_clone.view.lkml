@@ -319,6 +319,9 @@ view: invoca_clone {
      when lower(${profile_campaign}) like '%ric%'  then 164
      when lower(${profile_campaign})  like '%las%' then 162
      when lower(${profile_campaign})  like '%hou%' then 165
+     when lower(${profile_campaign})  like '%springfield%' then 168
+     when lower(${profile_campaign})  like '%dal%' then 169
+    when lower(${profile_campaign})  like '%tac%' then 170
      else null end ;;
   }
   dimension: self_report {
