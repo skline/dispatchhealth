@@ -153,7 +153,7 @@ where row_number = 1 ;;
     }
     filters: {
       field: primary_payer_dimensions_intra.custom_insurance_grouping
-      value: "(MCARE)MEDICARE"
+      value: "(MAID)MEDICAID"
     }
   }
 
