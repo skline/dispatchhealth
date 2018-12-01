@@ -1370,6 +1370,13 @@ view: care_request_flat {
     sql:  ${yesterday_mountain_day_of_week_index} = ${created_day_of_week_index};;
   }
 
+  dimension:  same_day_of_week_created_today {
+    type: yesno
+    sql:  ${today_mountain_day_of_week_index} = ${created_day_of_week_index};;
+  }
+
+
+
   dimension: until_today_on_scene {
     type: yesno
     sql: ${on_scene_day_of_week_index} <=  ${yesterday_mountain_day_of_week_index} AND ${on_scene_day_of_week_index} >= 0 ;;
@@ -2349,4 +2356,32 @@ view: care_request_flat {
     type: yesno
     sql: ${secondary_screenings.care_request_id} is not null;;
   }
+
+  dimension_group: now_mountain{
+    type: time
+    timeframes: [day_of_week_index, week, month, day_of_month, time_of_day,raw]
+    sql:  now();;
+  }
+
+  dimension: created_mounatin_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${created_mountain_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${created_mountain_raw} ) AS FLOAT)) / 60);;
+  }
+
+  dimension: now_mountain_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${now_mountain_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${now_mountain_raw} ) AS FLOAT)) / 60);;
+  }
+
+  dimension: before_now {
+    type: yesno
+    sql: ${created_mounatin_decimal} <= ${now_mountain_decimal};;
+  }
+
 }
