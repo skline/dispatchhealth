@@ -61,6 +61,12 @@ where row_number = 1
     sql: max(${end_raw}) ;;
   }
 
+  measure: max_start {
+    type: time
+    convert_tz: no
+    sql: max(${start_raw}) ;;
+  }
+
   dimension: shift_id {
     type: number
     sql: ${TABLE}.shift_id ;;
@@ -123,8 +129,11 @@ where row_number = 1
   measure:max_etc_or_now
   {
     type: time
+    convert_tz: no
     sql: case when ${max_etc_raw} is not null then ${max_etc_raw}
-         else now() end;;
+              when now() AT TIME ZONE 'US/Mountain' > ${max_start_raw} then now() AT TIME ZONE 'US/Mountain'+interval '30 minute'
+          else ${max_start_raw}+interval '30 minute'
+          end;;
   }
 
   measure: available_time_shift {
