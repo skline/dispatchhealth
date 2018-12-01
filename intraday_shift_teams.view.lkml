@@ -140,12 +140,12 @@ where row_number = 1
   measure: available_time_shift {
     type: number
     value_format: "0.00"
-    sql:EXTRACT(EPOCH FROM ${max_end_raw}-${max_etc_or_now_raw})/3600;;
+    sql:(EXTRACT(EPOCH FROM ${max_end_raw}-${max_etc_or_now_raw})/3600)-.5;;
   }
 
   measure: patient_slots{
     type: number
-    sql:case when floor(${available_time_shift}-.5/1.15) >0 then floor(${available_time_shift}-.5/1.15)
+    sql:case when floor(${available_time_shift}/1.15) >0 then floor(${available_time_shift}-.5/1.15)
               else 0 end;;
 
   }
