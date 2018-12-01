@@ -1,11 +1,17 @@
 view: intraday_shift_teams {
   derived_table: {
-    sql: select *
+    sql: select id, shift_team_id, shift_id, car_id,
+created_at   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as created_at,
+start_time   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as start_time,
+end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as end_time,
+updated_at   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as updated_at
 from
-(select *,  ROW_NUMBER() OVER(PARTITION BY concat(car_id, date(start_time  AT TIME ZONE 'US/Mountain' ))
+(select *,  ROW_NUMBER() OVER(PARTITION BY concat(car_id, date(start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ))
                                 ORDER BY updated_at desc)
 from public.intraday_shift_teams)lq
-where row_number = 1 ;;
+where row_number = 1
+
+ ;;
   }
 
   dimension: id {
@@ -21,6 +27,7 @@ where row_number = 1 ;;
 
   dimension_group: created {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -35,6 +42,7 @@ where row_number = 1 ;;
 
   dimension_group: end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -49,6 +57,7 @@ where row_number = 1 ;;
 
   measure: max_end {
     type: time
+    convert_tz: no
     sql: max(${end_raw}) ;;
   }
 
@@ -64,6 +73,7 @@ where row_number = 1 ;;
 
   dimension_group: start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -78,6 +88,7 @@ where row_number = 1 ;;
 
   dimension_group: updated {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -105,7 +116,8 @@ where row_number = 1 ;;
 
   measure: max_etc {
     type: time
-    sql: max(${intraday_care_requests.etc_raw}) ;;
+    convert_tz: no
+    sql: max(${intraday_care_requests.etc_raw}) AT TIME ZONE 'US/Mountain' ;;
   }
 
   measure:max_etc_or_now
