@@ -110,8 +110,9 @@ where row_number = 1
 
   dimension_group: now_mountain{
     type: time
+    convert_tz: no
     timeframes: [day_of_week_index, week, month, day_of_month, time]
-    sql: now() ;;
+    sql: now() AT TIME ZONE 'US/Mountain' ;;
   }
 
 
