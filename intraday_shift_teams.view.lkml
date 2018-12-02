@@ -145,7 +145,7 @@ where row_number = 1
 
   measure: patient_slots{
     type: number
-    sql:case when floor(${available_time_shift}/1.15) >0 then floor(${available_time_shift}-.5/1.15)
+    sql:case when floor(${available_time_shift}/1.25) >0 then floor(${available_time_shift}-.5/1.15)
               else 0 end;;
 
   }
