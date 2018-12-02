@@ -273,7 +273,10 @@ where row_number = 1
     }
   }
 
-
+  measure: hours_in_shift{
+    type: number
+    sql: EXTRACT(EPOCH FROM ${max_end_raw}-${max_start_raw})/3600 ;;
+  }
 
   measure: count {
     type: count
