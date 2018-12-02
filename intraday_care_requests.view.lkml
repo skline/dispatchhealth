@@ -52,6 +52,12 @@ view: intraday_care_requests {
     sql: (${TABLE}.meta_data ->> 'etos')::int ;;
   }
 
+  dimension: market_id {
+    type: number
+    sql: (${TABLE}.meta_data ->> 'market_id')::int ;;
+  }
+
+
   dimension: package_id {
     type: number
     sql: (${TABLE}.meta_data ->> 'package_id')::int ;;
@@ -155,6 +161,24 @@ view: intraday_care_requests {
       year
     ]
     sql: ${TABLE}.updated_at ;;
+  }
+
+  measure: inqueue_crs {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+
   }
 
   measure: count {

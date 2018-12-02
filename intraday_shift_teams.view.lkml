@@ -164,6 +164,23 @@ where row_number = 1
       field: intraday_care_requests.accepted
       value: "yes"
     }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "no"
+    }
+  }
+
+  measure: accepted_resolved_crs {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: intraday_care_requests.accepted
+      value: "yes"
+    }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "yes"
+    }
   }
 
   measure: accepted_crs_medicaid {
@@ -177,6 +194,10 @@ where row_number = 1
       field: primary_payer_dimensions_intra.custom_insurance_grouping
       value: "(MAID)MEDICAID"
     }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "no"
+    }
   }
 
   measure: accepted_crs_tricare {
@@ -189,6 +210,10 @@ where row_number = 1
     filters: {
       field: primary_payer_dimensions_intra.custom_insurance_grouping
       value: "(TC)TRICARE"
+    }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "no"
     }
   }
 

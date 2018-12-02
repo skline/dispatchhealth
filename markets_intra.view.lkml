@@ -9,7 +9,8 @@ view: markets_intra {
 
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: case when ${cars_intra.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
+         else ${TABLE}.name end ;;
   }
 
   dimension: sa_time_zone {
