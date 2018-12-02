@@ -181,6 +181,56 @@ view: intraday_care_requests {
 
   }
 
+  measure: inqueue_crs_tricare {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: primary_payer_dimensions_intra.custom_insurance_grouping
+      value: "(TC)TRICARE"
+    }
+
+  }
+
+  measure: inqueue_crs_medicaid {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: primary_payer_dimensions_intra.custom_insurance_grouping
+      value: "(MAID)MEDICAID"
+    }
+
+  }
+
+  measure: inqueue_crs_medicaid_tricare {
+    type: number
+    sql:  ${inqueue_crs_medicaid}+${inqueue_crs_tricare};;
+  }
+
+
   measure: count {
     type: count
     drill_fields: [id]
