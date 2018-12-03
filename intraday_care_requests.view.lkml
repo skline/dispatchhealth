@@ -163,6 +163,10 @@ view: intraday_care_requests {
     sql: ${TABLE}.updated_at ;;
   }
 
+  dimension: stuck_inqueue {
+    type: yesno
+    sql: ${care_request_id} in(64317) ;;
+  }
   measure: inqueue_crs {
     type: count_distinct
     sql: ${intraday_care_requests.care_request_id};;
@@ -178,7 +182,10 @@ view: intraday_care_requests {
       field: current_status
       value: "requested"
     }
-
+    filters: {
+      field: stuck_inqueue
+      value: "no"
+    }
   }
 
   measure: inqueue_crs_tricare {
@@ -199,6 +206,10 @@ view: intraday_care_requests {
     filters: {
       field: primary_payer_dimensions_intra.custom_insurance_grouping
       value: "(TC)TRICARE"
+    }
+    filters: {
+      field: stuck_inqueue
+      value: "no"
     }
 
   }
