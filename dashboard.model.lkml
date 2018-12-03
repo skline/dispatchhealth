@@ -36,8 +36,10 @@ explore: care_requests {
       WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
         ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
       WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
-       (${athenadwh_clinical_encounters_clone.encounter_date}::date >= ${care_request_flat.on_scene_date} AND
-        ${athenadwh_clinical_encounters_clone.encounter_date}::date <= ${care_request_flat.on_scene_date} + '3 day'::interval)
+       (${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} >=
+        ${care_request_flat.on_scene_date} AND
+        ${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} <=
+        ${care_request_flat.on_scene_date} + '2 day'::interval)
     END) ;;
   }
 
