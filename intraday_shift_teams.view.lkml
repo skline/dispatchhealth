@@ -146,8 +146,8 @@ where row_number = 1
   measure: inclusive_shift_length  {
     type: number
     sql: max(
-             case when ${markets_intra.name} ='Colorado Springs' then 1.125
-              else 1.25 end)
+             case when ${markets_intra.name} ='Colorado Springs' then 1.1
+              else 1.2 end)
               ;;
   }
 
