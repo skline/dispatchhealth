@@ -143,9 +143,17 @@ where row_number = 1
     sql:(EXTRACT(EPOCH FROM ${max_end_raw}-${max_etc_or_now_raw})/3600)-.5;;
   }
 
+  measure: inclusive_shift_length  {
+    type: number
+    sql: max(
+             case when ${markets_intra.name} ='Colorado Springs' then 1.125
+              else 1.25 end)
+              ;;
+  }
+
   measure: patient_slots{
     type: number
-    sql:case when floor(${available_time_shift}/1.25) >0 then floor(${available_time_shift}-.5/1.15)
+    sql:case when floor(${available_time_shift}/${inclusive_shift_length}) >0 then floor(${available_time_shift}/${inclusive_shift_length})
               else 0 end;;
 
   }
@@ -275,6 +283,7 @@ where row_number = 1
 
   measure: hours_in_shift{
     type: number
+    value_format: "0.0"
     sql: EXTRACT(EPOCH FROM ${max_end_raw}-${max_start_raw})/3600 ;;
   }
 
