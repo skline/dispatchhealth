@@ -625,6 +625,20 @@ view: care_request_flat {
     }
   }
 
+  measure: count_reassigned_reordered_care_requests {
+    description: "Count of care requests that were reassigned or reordered by CSC"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: reassigned_or_reordered
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.billable_est
+      value: "yes"
+    }
+  }
+
   dimension: complete_comment {
     type: string
     sql: ${TABLE}.complete_comment ;;
