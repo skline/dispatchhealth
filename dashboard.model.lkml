@@ -32,7 +32,13 @@ explore: care_requests {
   join: athenadwh_clinical_encounters_clone {
     relationship:  one_to_many
     sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-      ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id};;
+    (CASE
+      WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
+        ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
+      WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
+       (${athenadwh_clinical_encounters_clone.encounter_date}::date >= ${care_request_flat.on_scene_date} AND
+        ${athenadwh_clinical_encounters_clone.encounter_date}::date <= ${care_request_flat.on_scene_date} + '3 day'::interval)
+    END) ;;
   }
 
   join: athenadwh_clinical_encounters_clone_full {
