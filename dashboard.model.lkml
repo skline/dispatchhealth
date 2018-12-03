@@ -183,16 +183,16 @@ explore: care_requests {
       ${athenadwh_referrals.status} != 'DELETED' ;;
   }
 
-  join: athenadwh_orders_test {
-    from:  athenadwh_documents_clone
-    relationship:  one_to_many
-    sql_on:  (${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_document_crosswalk_clone.patient_id} AND
-    ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_document_crosswalk_clone.chart_id} AND
-      ${athenadwh_orders_test.document_class} = 'ORDER') AND
-      (${athenadwh_clinical_encounters_clone.encounter_date}::date >= ${athenadwh_orders_test.created_date}::date AND
-      ${athenadwh_clinical_encounters_clone.encounter_date}::date <= ${athenadwh_orders_test.created_date}::date + '3 day'::interval)
-      ;;
-  }
+#   join: athenadwh_orders_test {
+#     from:  athenadwh_documents_clone
+#     relationship:  one_to_many
+#     sql_on:  (${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_document_crosswalk_clone.patient_id} AND
+#     ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_document_crosswalk_clone.chart_id} AND
+#       ${athenadwh_orders_test.document_class} = 'ORDER') AND
+#       (${athenadwh_clinical_encounters_clone.encounter_date}::date >= ${athenadwh_orders_test.created_date}::date AND
+#       ${athenadwh_clinical_encounters_clone.encounter_date}::date <= ${athenadwh_orders_test.created_date}::date + '3 day'::interval)
+#       ;;
+#   }
 
   join: athenadwh_homehealth_referrals {
     from:  athenadwh_documents_clone
