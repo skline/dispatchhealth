@@ -2000,6 +2000,37 @@ view: care_request_flat {
     }
   }
 
+    measure: complete_count_medicaid {
+      type: count_distinct
+      sql: ${care_request_id} ;;
+      filters: {
+        field: complete
+        value: "yes"
+      }
+      filters: {
+        field: insurance_coalese_crosswalk.custom_insurance_grouping
+        value: "(MAID)MEDICAID"
+      }
+    }
+
+  measure: complete_count_tricare {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: insurance_coalese_crosswalk.custom_insurance_grouping
+      value: "(TC)TRICARE"
+    }
+  }
+
+  measure: complete_count_medicaid_tricare {
+    type: number
+    sql: ${complete_count_medicaid}+${complete_count_tricare} ;;
+  }
+
   measure: complete_count_flu {
     type: count_distinct
     sql: ${care_request_id} ;;
