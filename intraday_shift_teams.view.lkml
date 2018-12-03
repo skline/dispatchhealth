@@ -6,7 +6,7 @@ start_time   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as start_time,
 end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as end_time,
 updated_at   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as updated_at
 from
-(select *,  ROW_NUMBER() OVER(PARTITION BY concat(car_id, date(start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ))
+(select *,  ROW_NUMBER() OVER(PARTITION BY concat(shift_team_id, date(start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ))
                                 ORDER BY updated_at desc)
 from public.intraday_shift_teams)lq
 where row_number = 1
