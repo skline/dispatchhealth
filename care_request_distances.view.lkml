@@ -7,7 +7,10 @@ view: care_request_distances {
         (162, 'US/Pacific', 36.1577462, -115.19155599999999),
         (164, 'US/Eastern', 37.606789, -77.528929),
         (165, 'US/Central', 29.73728509999999, -95.59298539999998),
-        (166, 'US/Central', 35.5256793, -97.55798500000003))
+        (166, 'US/Central', 35.5256793, -97.55798500000003),
+        (167, 'US/Central', 39.709569, -105.086286),
+        (168, 'US/Central', 42.105445, -72.619331),
+        (169, 'US/Central', 32.979254, -96.714748))
 SELECT
     markets.id AS market_id,
     cr.id as care_request_id,
@@ -164,8 +167,7 @@ SELECT
       longitude,
       office_lat,
       office_lon,
-      on_route_date_time,
-      last_care_request,
+      last_care_request_flag,
       next_latitude,
       next_longitude,
       distance_to_next,
