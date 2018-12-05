@@ -22,6 +22,11 @@ view: athenadwh_documents_clone {
     sql: ${TABLE}.clinical_order_type ;;
   }
 
+  dimension: pcp_referral {
+    type: yesno
+    sql: ${clinical_order_type} = 'PRIMARY CARE REFERRAL' ;;
+  }
+
   dimension: rapid_strep_test {
     type: yesno
     description: "A flag indicating a rapid strep test"
@@ -161,6 +166,11 @@ view: athenadwh_documents_clone {
   dimension: status {
     type: string
     sql: ${TABLE}.status ;;
+  }
+
+  dimension: deleted_status {
+    type: yesno
+    sql: ${status} = 'DELETED' ;;
   }
 
   dimension_group: updated {
