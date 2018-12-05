@@ -2079,3 +2079,16 @@ explore: slc_data {
     sql_on: ${zipcodes.zip}=${slc_data.zip_code} ;;
   }
   }
+
+explore: users {
+
+  join: user_roles {
+    relationship: many_to_one
+    sql_on: ${user_roles.user_id} = ${users.id} ;;
+  }
+
+  join: roles {
+    relationship: one_to_many
+    sql_on: ${roles.id} = ${user_roles.role_id} ;;
+  }
+}
