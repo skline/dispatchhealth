@@ -59,6 +59,10 @@ view: notes {
     type: string
     sql: ${TABLE}.note ;;
   }
+  measure: notes_aggregated {
+    type: string
+    sql: array_agg(${note}) ;;
+  }
 
   dimension: note_type {
     type: string
