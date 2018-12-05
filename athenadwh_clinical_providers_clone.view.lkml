@@ -61,6 +61,11 @@ view: athenadwh_clinical_providers_clone {
     sql: ${TABLE}.name ;;
   }
 
+  dimension: thr_access_center_provider {
+    type: yesno
+    sql: ${name} = 'THR ACCESS CENTER' ;;
+  }
+
   dimension: provider_category {
     description: "A flag indicating that the provider is DispatchHealth"
     type: string

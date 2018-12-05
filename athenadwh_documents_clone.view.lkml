@@ -27,6 +27,14 @@ view: athenadwh_documents_clone {
     sql: ${clinical_order_type} = 'PRIMARY CARE REFERRAL' ;;
   }
 
+  dimension: thr_pcp_referral {
+    description: "A flag indicating the patient received a PCP referral to THR Access Center"
+    type: yesno
+    sql:  ${clinical_order_type} = 'PRIMARY CARE REFERRAL' AND
+          ${status} <> 'DELETED' AND
+          ${athenadwh_documents_provider.name} = 'THR ACCESS CENTER';;
+  }
+
   dimension: rapid_strep_test {
     type: yesno
     description: "A flag indicating a rapid strep test"
