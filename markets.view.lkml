@@ -69,6 +69,9 @@ view: markets {
           WHEN ${id} = 160 THEN 38.8851405
           WHEN ${id} = 166 THEN 35.5256793
           WHEN ${id} = 165 THEN 29.73728509999999
+          WHEN ${id} = 167 THEN 39.709569
+          WHEN ${id} = 168 THEN 42.105445
+          WHEN ${id} = 169 THEN 32.979254
         END;;
   }
 
@@ -82,6 +85,9 @@ view: markets {
           WHEN ${id} = 160 THEN -104.83465469999999
           WHEN ${id} = 166 THEN -97.55798500000003
           WHEN ${id} = 165 THEN -95.59298539999998
+          WHEN ${id} = 167 THEN -105.086286
+          WHEN ${id} = 168 THEN -72.619331
+          WHEN ${id} = 169 THEN -96.714748
         END;;
   }
 
