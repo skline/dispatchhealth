@@ -1,17 +1,17 @@
 view: intraday_shift_teams {
   derived_table: {
     sql: select id, shift_team_id, shift_id, car_id,
-created_at   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as created_at,
-start_time   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as start_time,
-end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as end_time,
-updated_at   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as updated_at
-from
-(select *,  ROW_NUMBER() OVER(PARTITION BY concat(shift_team_id, date(start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ))
-                                ORDER BY updated_at desc)
-from public.intraday_shift_teams)lq
-where row_number = 1
+      created_at   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as created_at,
+      start_time   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as start_time,
+      end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as end_time,
+      updated_at   AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' as updated_at
+      from
+      (select *,  ROW_NUMBER() OVER(PARTITION BY concat(shift_team_id, date(start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ))
+                                      ORDER BY updated_at desc)
+      from public.intraday_shift_teams)lq
+      where row_number = 1
 
- ;;
+       ;;
   }
 
   dimension: id {
@@ -61,10 +61,10 @@ where row_number = 1
     sql: max(${end_raw}) ;;
   }
 
-  measure: max_start {
+  measure: min_start {
     type: time
     convert_tz: no
-    sql: max(${start_raw}) ;;
+    sql: min(${start_raw}) ;;
   }
 
   dimension: shift_id {
@@ -132,8 +132,8 @@ where row_number = 1
     type: time
     convert_tz: no
     sql: case when ${max_etc_raw} is not null then ${max_etc_raw}
-              when now() AT TIME ZONE 'US/Mountain' > ${max_start_raw} then now() AT TIME ZONE 'US/Mountain'+interval '30 minute'
-          else ${max_start_raw}+interval '30 minute'
+              when now() AT TIME ZONE 'US/Mountain' > ${min_start_raw} then now() AT TIME ZONE 'US/Mountain'+interval '30 minute'
+          else ${min_start_raw}+interval '30 minute'
           end;;
   }
 
@@ -154,7 +154,7 @@ where row_number = 1
   measure: patient_slots{
     type: number
     sql:case when floor(${available_time_shift}/${inclusive_shift_length}) >0 then floor(${available_time_shift}/${inclusive_shift_length})
-              else 0 end;;
+      else 0 end;;
 
   }
 
@@ -284,7 +284,7 @@ where row_number = 1
   measure: hours_in_shift{
     type: number
     value_format: "0.0"
-    sql: EXTRACT(EPOCH FROM ${max_end_raw}-${max_start_raw})/3600 ;;
+    sql: EXTRACT(EPOCH FROM ${max_end_raw}-${min_start_raw})/3600 ;;
   }
 
   measure: count {
