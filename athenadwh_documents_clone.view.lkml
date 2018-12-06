@@ -31,8 +31,7 @@ view: athenadwh_documents_clone {
     description: "A flag indicating the patient received a PCP referral to THR Access Center"
     type: yesno
     sql:  ${clinical_order_type} = 'PRIMARY CARE REFERRAL' AND
-          ${status} <> 'DELETED' AND
-          ${athenadwh_documents_provider.name} = 'THR ACCESS CENTER';;
+          ${status} <> 'DELETED' AND ${athenadwh_post_visit_providers.name} = 'THR ACCESS CENTER';;
   }
 
   dimension: rapid_strep_test {
