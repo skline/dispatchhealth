@@ -32,7 +32,7 @@ view: athenadwh_documents_clone {
     type: number
     sql:  CASE
             WHEN ${clinical_order_type} = 'PRIMARY CARE REFERRAL' AND
-                 ${status} <> 'DELETED' AND ${athenadwh_post_visit_providers.name} = 'THR ACCESS CENTER' THEN 1
+                 ${status} <> 'DELETED' AND ${athenadwh_documents_provider.name} = 'THR ACCESS CENTER' THEN 1
             ELSE 0
           END ;;
   }
