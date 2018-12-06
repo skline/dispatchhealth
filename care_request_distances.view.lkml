@@ -1,41 +1,42 @@
 view: care_request_distances {
   derived_table: {
-    sql: WITH timezone(id, tz_desc, lat, lon) AS (VALUES
-        (159, 'US/Mountain', 39.7722937, -104.9835581),
-        (160, 'US/Mountain', 38.8851405, -104.83465469999999),
-        (161, 'US/Arizona', 33.4213962, -111.96673450000003),
-        (162, 'US/Pacific', 36.1577462, -115.19155599999999),
-        (164, 'US/Eastern', 37.606789, -77.528929),
-        (165, 'US/Central', 29.73728509999999, -95.59298539999998),
-        (166, 'US/Central', 35.5256793, -97.55798500000003),
-        (167, 'US/Mountain', 39.709569, -105.086286),
-        (168, 'US/Eastern', 42.105445, -72.619331),
-        (169, 'US/Central', 32.979254, -96.714748))
-SELECT
+    sql: SELECT
     markets.id AS market_id,
     cr.id as care_request_id,
-    timezone.tz_desc,
+    tz.timezone,
     cars.name,
     a.latitude,
     a.longitude,
-    timezone.lat as office_lat,
-    timezone.lon as office_lon,
-    MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS complete_date,
-    lead(cars.name, 1, 'ZZZZZZ') OVER (partition by CAST(MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS date) ORDER BY cars.name, MIN(comp.started_at)) AS next_car,
+    tz.latitude as office_lat,
+    tz.longitude as office_lon,
+    MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE tz.timezone AS complete_date,
+    lead(cars.name, 1, 'ZZZZZZ') OVER (partition by CAST(MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE tz.timezone AS date) ORDER BY cars.name, MIN(comp.started_at)) AS next_car,
     CASE
-      WHEN lead(cars.name, 1, 'ZZZZZ') OVER (partition by CAST(MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS date) ORDER BY cars.name, MIN(comp.started_at)) != cars.name
+      WHEN lead(cars.name, 1, 'ZZZZZ') OVER (partition by CAST(MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE tz.timezone AS date) ORDER BY cars.name, MIN(comp.started_at)) != cars.name
         THEN 1
       ELSE 0
     END AS last_care_request,
-    lead(a.latitude, 1, CAST(timezone.lat AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at)) AS next_latitude,
-    lead(a.longitude, 1, CAST(timezone.lon AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at)) AS next_longitude,
-    ROUND(((ACOS(SIN(RADIANS(a.latitude )) * SIN(RADIANS(
-      lead(a.latitude, 1, CAST(timezone.lat AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at))
-  )) + COS(RADIANS(a.latitude )) * COS(RADIANS(
-  lead(a.latitude, 1, CAST(timezone.lat AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at))
-  )) * COS(RADIANS(
-  lead(a.longitude, 1, CAST(timezone.lon AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at))
-    - a.longitude ))) * 6371) / 1.60934)::decimal, 1) AS distance_to_next
+    lead(a.latitude, 1, CAST(tz.latitude AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at)) AS next_latitude,
+    lead(a.longitude, 1, CAST(tz.longitude AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at)) AS next_longitude,
+
+    CASE
+      WHEN
+       lead(a.latitude, 1, CAST(tz.latitude AS double precision)) OVER
+        (partition by cars.name, CAST(MIN(comp.started_at) AS date)
+        ORDER BY cars.name, MIN(comp.started_at)) = a.latitude AND
+       lead(a.longitude, 1, CAST(tz.longitude AS double precision)) OVER
+         (partition by cars.name, CAST(MIN(comp.started_at) AS date)
+         ORDER BY cars.name, MIN(comp.started_at)) = a.longitude
+        THEN 0::float
+      ELSE
+        ROUND(((ACOS(SIN(RADIANS(a.latitude)) * SIN(RADIANS(
+        lead(a.latitude, 1, CAST(tz.latitude AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at))
+        )) + COS(RADIANS(a.latitude)) * COS(RADIANS(
+        lead(a.latitude, 1, CAST(tz.latitude AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at))
+        )) * COS(RADIANS(
+        lead(a.longitude, 1, CAST(tz.longitude AS double precision)) OVER (partition by cars.name, CAST(MIN(comp.started_at) AS date) ORDER BY cars.name, MIN(comp.started_at))
+        - a.longitude ))) * 6371) / 1.60934)::decimal, 1)
+    END AS distance_to_next
   FROM care_requests cr
   LEFT JOIN care_request_statuses AS comp
     ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
@@ -49,12 +50,13 @@ SELECT
     ON st.car_id = cars.id
   JOIN markets
     ON cr.market_id = markets.id
-  JOIN timezone
-    ON markets.id = timezone.id
-  WHERE CAST(comp.started_at AT TIME ZONE 'UTC' AT TIME ZONE timezone.tz_desc AS date) >= '2018-04-30'
+  JOIN looker_scratch.market_geo_locations AS tz
+    ON markets.id = tz.market_id
   GROUP BY 1,2,3,4,5,6,7,8
-  ORDER BY 4,9
- ;;
+  ORDER BY 4,9 ;;
+
+  sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+  indexes: ["care_request_id"]
   }
 
   measure: count {
@@ -142,7 +144,7 @@ SELECT
   }
 
   measure: distance_home {
-    type: sum
+    type: average
     description: "The direct-line distance between the last care request and the clinical office"
     sql: ${TABLE}.distance_to_next ;;
     filters: {
