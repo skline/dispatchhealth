@@ -5,7 +5,8 @@ explore:  intraday_shift_teams {
 
   join: intraday_care_requests {
     sql_on: ${intraday_care_requests.shift_team_id} = ${intraday_shift_teams.shift_team_id}
-    and ${intraday_care_requests.accepted_date}=${intraday_shift_teams.start_date};;
+    and ${intraday_care_requests.accepted_date}=${intraday_shift_teams.start_date}
+    and ${intraday_care_requests.updated_raw} > current_date - interval '1 day';;
   }
   join: primary_payer_dimensions_intra {
     sql_on: ${intraday_care_requests.package_id} = ${primary_payer_dimensions_intra.insurance_package_id} ;;
@@ -23,7 +24,7 @@ explore:  intraday_shift_teams {
 
 
 explore:  intraday_care_requests {
-
+  sql_always_where: ${updated_raw} > current_date - interval '1 day';;
   join: intraday_shift_teams {
     sql_on: ${intraday_care_requests.shift_team_id} = ${intraday_shift_teams.shift_team_id}
       and ${intraday_care_requests.accepted_date}=${intraday_shift_teams.start_date};;
