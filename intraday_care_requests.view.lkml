@@ -35,6 +35,12 @@ view: intraday_care_requests {
     type: yesno
     sql: ${complete_time} is not null;;
   }
+  dimension: complete_accepted_inqueue{
+    sql: case when ${complete} then 'complete'
+              when ${accepted} and not ${resolved} then 'accepted'
+              when ${current_status} = 'requested' and not ${resolved} and not ${stuck_inqueue} and not ${accepted} then 'inqueue'
+              else null end;;
+  }
 
   dimension: resolved {
     type: yesno
@@ -239,6 +245,17 @@ view: intraday_care_requests {
   measure: inqueue_crs_medicaid_tricare {
     type: number
     sql:  ${inqueue_crs_medicaid}+${inqueue_crs_tricare};;
+  }
+
+  measure: count_distinct {
+    type: count_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    sql: ${care_request_id} ;;
+  }
+
+  dimension: accepted_today {
+    type: yesno
+    sql: ${accepted_date} = date(now() AT TIME ZONE 'US/Mountain') ;;
   }
 
 
