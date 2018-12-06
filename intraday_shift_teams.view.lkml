@@ -112,7 +112,7 @@ view: intraday_shift_teams {
   dimension_group: now_mountain{
     type: time
     convert_tz: no
-    timeframes: [day_of_week_index, week, month, day_of_month, time]
+    timeframes: [day_of_week_index, week, month, day_of_month, time, raw]
     sql: now() AT TIME ZONE 'US/Mountain' ;;
   }
 
@@ -142,6 +142,18 @@ view: intraday_shift_teams {
     type: number
     value_format: "0.00"
     sql:(EXTRACT(EPOCH FROM ${max_end_raw}-${max_etc_or_now_raw})/3600)-.5;;
+  }
+
+  measure: booked_out_for {
+    type: number
+    value_format: "0.00"
+    sql:EXTRACT(EPOCH FROM ${max_etc_raw}-${now_mountain_raw})/3600;;
+  }
+
+  measure: time_alloted_per_patient {
+    type: number
+    value_format: "0.00"
+    sql: ${booked_out_for}/${accepted_crs_not_complete} ;;
   }
 
   measure: inclusive_shift_length  {
@@ -191,6 +203,25 @@ view: intraday_shift_teams {
       value: "yes"
     }
   }
+
+  measure: accepted_crs_not_complete {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: intraday_care_requests.accepted
+      value: "yes"
+    }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "no"
+    }
+    filters: {
+      field: intraday_care_requests.complete
+      value: "no"
+    }
+  }
+
+
 
   measure: accepted_crs_medicaid {
     type: count_distinct
