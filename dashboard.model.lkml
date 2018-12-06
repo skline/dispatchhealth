@@ -32,17 +32,15 @@ explore: care_requests {
   join: athenadwh_clinical_encounters_clone {
     relationship:  one_to_one
     sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-            ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id} AND
-            ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL;;
-#     (CASE
-#       WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
-#         ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
-#       WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
-#        (${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} >=
-#         ${care_request_flat.on_scene_date} AND
-#         ${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} <=
-#         ${care_request_flat.on_scene_date} + '2 day'::interval)
-#     END) ;;
+    (CASE
+      WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
+        ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
+      WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
+        (${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} >=
+        ${care_request_flat.on_scene_date} AND
+        ${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} <=
+        ${care_request_flat.on_scene_date} + '2 day'::interval)
+    END) ;;
   }
 
   join: athenadwh_clinical_encounters_clone_full {
@@ -50,30 +48,30 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} ;;
   }
 
-  join: athenadwh_post_visit_encounters {
-    from: athenadwh_clinical_encounters_clone
-    relationship: one_to_many
-    sql_on: ${patients.ehr_id} = ${athenadwh_post_visit_encounters.patient_id}::varchar AND
-    (${athenadwh_post_visit_encounters.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} >=
-        ${care_request_flat.on_scene_date} AND
-        ${athenadwh_post_visit_encounters.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} <=
-        ${care_request_flat.on_scene_date} + '2 day'::interval) AND
-    ${athenadwh_post_visit_encounters.appointment_id} IS NULL ;;
-  }
+  # join: athenadwh_post_visit_encounters {
+  #   from: athenadwh_clinical_encounters_clone
+  #   relationship: one_to_many
+  #   sql_on: ${patients.ehr_id} = ${athenadwh_post_visit_encounters.patient_id}::varchar AND
+  #   (${athenadwh_post_visit_encounters.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} >=
+  #       ${care_request_flat.on_scene_date} AND
+  #       ${athenadwh_post_visit_encounters.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} <=
+  #       ${care_request_flat.on_scene_date} + '2 day'::interval) AND
+  #   ${athenadwh_post_visit_encounters.appointment_id} IS NULL ;;
+  # }
 
-  join: athenadwh_post_visit_documents {
-    from:  athenadwh_documents_clone
-    relationship:  one_to_many
-    sql_on: ${athenadwh_post_visit_encounters.clinical_encounter_id} = ${athenadwh_post_visit_documents.clinical_encounter_id} AND
-            ${athenadwh_post_visit_documents.status} != 'DELETED';;
-  }
+  # join: athenadwh_post_visit_documents {
+  #   from:  athenadwh_documents_clone
+  #   relationship:  one_to_many
+  #   sql_on: ${athenadwh_post_visit_encounters.clinical_encounter_id} = ${athenadwh_post_visit_documents.clinical_encounter_id} AND
+  #           ${athenadwh_post_visit_documents.status} != 'DELETED';;
+  # }
 
-  join: athenadwh_post_visit_providers {
-    from: athenadwh_clinical_providers_clone
-    relationship: one_to_one
-    sql_on: ${athenadwh_post_visit_documents.clinical_provider_id} = ${athenadwh_post_visit_providers.clinical_provider_id} ;;
-    #sql_where: ${athenadwh_provider_clone.provider_id} != ${athenadwh_provider_clone.supervising_provider_id} ;;
-  }
+  # join: athenadwh_post_visit_providers {
+  #   from: athenadwh_clinical_providers_clone
+  #   relationship: one_to_one
+  #   sql_on: ${athenadwh_post_visit_documents.clinical_provider_id} = ${athenadwh_post_visit_providers.clinical_provider_id} ;;
+  #   #sql_where: ${athenadwh_provider_clone.provider_id} != ${athenadwh_provider_clone.supervising_provider_id} ;;
+  # }
 
   join: athenadwh_patient_medication_listing {
     from: athenadwh_patient_medication_clone
