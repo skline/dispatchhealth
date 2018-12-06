@@ -635,6 +635,11 @@ explore: care_requests {
     sql_on: ${markets.id}=${market_start_date.market_id} ;;
   }
 
+  join: market_geo_locations {
+    relationship: one_to_one
+    sql_on: ${markets.id} = ${market_geo_locations.market_id} ;;
+  }
+
   join: states {
     relationship: one_to_one
     sql_on: ${markets.state} = ${states.abbreviation} ;;
