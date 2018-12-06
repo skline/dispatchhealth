@@ -540,6 +540,11 @@ explore: care_requests {
     sql_on: ${provider_profiles.user_id} = ${users.id} ;;
   }
 
+  join: thpg_providers {
+    relationship: one_to_one
+    sql_on: ${provider_profiles.npi} = ${thpg_providers.npi} ;;
+  }
+
   join: provider_licenses {
     relationship: one_to_many
     sql_on: ${provider_profiles.id} = ${provider_licenses.provider_profile_id} ;;

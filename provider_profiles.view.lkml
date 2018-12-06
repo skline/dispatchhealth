@@ -56,6 +56,11 @@ view: provider_profiles {
     sql: ${TABLE}.npi ;;
   }
 
+  dimension: thpg_provider {
+    type: yesno
+    sql: ${thpg_provider.npi} IS NOT NULL ;;
+  }
+
   dimension: position {
     type: string
     sql: ${TABLE}.position ;;
