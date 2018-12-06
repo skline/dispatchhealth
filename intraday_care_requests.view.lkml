@@ -255,7 +255,7 @@ view: intraday_care_requests {
 
   dimension: accepted_today {
     type: yesno
-    sql: ${accepted_date} = date(now()) ;;
+    sql: ${accepted_date} = date(now() AT TIME ZONE 'US/Mountain') ;;
   }
 
 
