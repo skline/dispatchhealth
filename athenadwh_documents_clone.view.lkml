@@ -27,12 +27,19 @@ view: athenadwh_documents_clone {
     sql: ${clinical_order_type} = 'PRIMARY CARE REFERRAL' ;;
   }
 
-  dimension: thr_pcp_referral {
+  dimension: thr_referral {
     description: "A flag indicating the patient received a PCP referral to THR Access Center"
-    type: yesno
-    sql:  ${clinical_order_type} = 'PRIMARY CARE REFERRAL' AND
-          ${status} <> 'DELETED' AND
-          ${athenadwh_documents_provider.name} = 'THR ACCESS CENTER';;
+    type: number
+    sql:  CASE
+            WHEN ${clinical_order_type} = 'PRIMARY CARE REFERRAL' AND
+                 ${status} <> 'DELETED' AND ${athenadwh_documents_provider.name} = 'THR ACCESS CENTER' THEN 1
+            ELSE 0
+          END ;;
+  }
+
+  measure: thr_pcp_referral  {
+    type: max
+    sql: ${thr_referral} ;;
   }
 
   dimension: rapid_strep_test {
