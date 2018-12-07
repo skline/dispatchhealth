@@ -6,6 +6,7 @@ view: shift_routes {
 SELECT
          mkt.id AS market_id,
          stm.car_id,
+         NULL AS device_name,
          MAX(crs.started_at) AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
          MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS complete_time,
          CASE
@@ -32,11 +33,12 @@ SELECT
          LEFT JOIN looker_scratch.timezones tzs
            ON mkt.sa_time_zone = tzs.rails_tz
          WHERE mkt.id IS NOT NULL
-         GROUP BY 1,2,5,6,7,8, pg_tz
+         GROUP BY 1,2,3,6,7,8,9, pg_tz
         UNION
         SELECT
           m.id AS market_id,
           gl.car_id,
+          gl.device_name,
           gl.created_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
           NULL AS complete_time,
           0 AS mins_on_scene,
@@ -58,6 +60,7 @@ SELECT
 SELECT
 gu.market_id,
 gu.car_id,
+gu.device_name,
 gu.update_time,
 gu.mins_on_scene,
 gu.latitude,
@@ -136,6 +139,11 @@ FROM gu) ;;
   dimension: care_request_location {
     type: number
     sql: ${TABLE}.care_request_location ;;
+  }
+
+  dimension: device_name {
+    type: string
+    sql: ${TABLE}.device_name ;;
   }
 
   dimension: distance_to_next {
