@@ -181,7 +181,10 @@ FROM gu) ;;
       week,
       month,
       day_of_week_index,
-      day_of_month
+      day_of_month,
+      minute,
+      minute5,
+      minute10
     ]
     sql: ${TABLE}.update_time ;;
   }
