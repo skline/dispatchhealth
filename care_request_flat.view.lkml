@@ -1584,6 +1584,16 @@ view: care_request_flat {
     sql: trim(split_part(${resolved_reason_full}, ':', 3)) ;;
   }
 
+  dimension: escalation_type {
+    type: string
+    sql: CASE
+          WHEN UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+          ${primary_resolved_reason} = 'Referred - Point of Care' THEN 'Escalated On Scene'
+          WHEN ${archive_comment} LIKE '%Referred - Phone Triage%' THEN 'Escalated Over Phone'
+          ELSE NULL
+         END ;;
+  }
+
 
   dimension: escalated_on_scene {
     type: yesno
