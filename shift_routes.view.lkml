@@ -159,6 +159,7 @@ FROM gu) ;;
   measure: fastest_speed {
     type: max
     sql: ${miles_per_hour} ;;
+    value_format: "0.00"
   }
 
   dimension_group: update {
