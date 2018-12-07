@@ -162,6 +162,12 @@ FROM gu) ;;
     value_format: "0.00"
   }
 
+  measure: average_speed {
+    type: average
+    sql: ${miles_per_hour} ;;
+    value_format: "0.00"
+  }
+
   dimension_group: update {
     type: time
     description: "The local date and time when latitude/longitude was updated"
