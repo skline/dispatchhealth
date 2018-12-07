@@ -138,6 +138,15 @@ view: intraday_shift_teams {
           end;;
   }
 
+  measure:start_time_or_now
+  {
+    type: time
+    convert_tz: no
+    sql: case when now() AT TIME ZONE 'US/Mountain' > ${min_start_raw} then now() AT TIME ZONE 'US/Mountain'+interval '30 minute'
+          else ${min_start_raw}+interval '30 minute'
+          end;;
+  }
+
   measure: available_time_shift {
     type: number
     value_format: "0.00"
@@ -147,7 +156,7 @@ view: intraday_shift_teams {
   measure: booked_out_for {
     type: number
     value_format: "0.00"
-    sql:EXTRACT(EPOCH FROM ${max_etc_raw}-${now_mountain_raw})/3600;;
+    sql:EXTRACT(EPOCH FROM ${max_etc_raw}-${start_time_or_now_raw})/3600;;
   }
 
   measure: time_alloted_per_patient {
