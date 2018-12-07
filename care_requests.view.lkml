@@ -578,6 +578,17 @@ view: care_requests {
             else 'other' end;;
   }
 
+  dimension: request_type_consolidated {
+    type: string
+    description: "The care request type, grouped into phone, web, mobile or other"
+    sql: CASE
+          WHEN ${request_type_id} = 0 THEN 'Phone'
+          WHEN ${request_type_id} = 3 THEN 'Web'
+          WHEN ${request_type_id} IN (2, 4) THEN 'Mobile'
+          ELSE 'Other'
+        END ;;
+  }
+
   dimension: request_type_phone_or_other {
     type: string
     sql:  case when  ${request_type} = 'phone' then 'phone'
