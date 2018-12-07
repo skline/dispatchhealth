@@ -252,7 +252,7 @@ FROM gu) ;;
 
   dimension: distance_to_office {
     type: distance
-    start_location_field: car_location
+    start_location_field: current_location
     end_location_field: markets.office_location
     units: miles
   }
