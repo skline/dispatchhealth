@@ -1,14 +1,9 @@
 view: shift_routes {
   derived_table: {
     sql:
-      SELECT
-        f.*,
-        EXTRACT(EPOCH FROM (
-            (lead(update_time, 1, update_time) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time))
-            - (update_time)))::float/60.0 AS time_difference,
-        CAST(market_id AS text)||CAST(car_id AS text)||CAST(DATE(update_time) AS text) AS p_key
-      FROM
-      (SELECT
+      (WITH gu AS (
+
+SELECT
          mkt.id AS market_id,
          stm.car_id,
          MAX(crs.started_at) AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS update_time,
@@ -56,8 +51,67 @@ view: shift_routes {
         LEFT JOIN markets m
           ON cars.market_id = m.id
         LEFT JOIN looker_scratch.timezones tz
-          ON m.sa_time_zone = tz.rails_tz) AS f
-        ORDER BY market_id, car_id, update_time DESC ;;
+          ON m.sa_time_zone = tz.rails_tz
+        ORDER BY market_id, car_id, update_time)
+
+
+SELECT
+gu.market_id,
+gu.car_id,
+gu.update_time,
+gu.mins_on_scene,
+gu.latitude,
+gu.longitude,
+gu.care_request_location,
+EXTRACT(EPOCH FROM (
+            (lead(update_time, 1, update_time) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time))
+            - (update_time)))::float/60.0 AS time_difference,
+lead(latitude, 1, latitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time) AS next_latitude,
+lead(longitude, 1, longitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time) AS next_longitude,
+
+    CASE
+      WHEN
+       lead(latitude, 1, latitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time) = latitude AND
+       lead(longitude, 1, longitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time) = longitude
+        THEN 0::float
+      ELSE
+        ROUND(((ACOS(SIN(RADIANS(latitude)) * SIN(RADIANS(
+        lead(latitude, 1, latitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time)
+        )) + COS(RADIANS(latitude)) * COS(RADIANS(
+        lead(latitude, 1, latitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time)
+        )) * COS(RADIANS(
+        lead(longitude, 1, longitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time)
+        - longitude ))) * 6371) / 1.60934)::decimal, 3)
+    END AS distance_to_next,
+
+    CASE
+      WHEN (EXTRACT(EPOCH FROM (
+                (lead(update_time, 1, update_time) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time))
+                - (update_time)))::float/60.0) > 0::float
+      THEN
+        (CASE
+          WHEN
+           lead(latitude, 1, latitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time) = latitude AND
+           lead(longitude, 1, longitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time) = longitude
+            THEN 0::float
+          ELSE
+            ROUND(((ACOS(SIN(RADIANS(latitude)) * SIN(RADIANS(
+            lead(latitude, 1, latitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time)
+            )) + COS(RADIANS(latitude)) * COS(RADIANS(
+            lead(latitude, 1, latitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time)
+            )) * COS(RADIANS(
+            lead(longitude, 1, longitude) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time)
+            - longitude ))) * 6371) / 1.60934)::decimal, 3)
+        END)
+        /
+        (EXTRACT(EPOCH FROM (
+                    (lead(update_time, 1, update_time) OVER (partition by market_id, car_id, CAST(update_time AS date) ORDER BY market_id, car_id, update_time))
+                    - (update_time)))::float/3600.0)
+      ELSE 0::float
+    END AS miles_per_hour,
+    CAST(market_id AS text)||CAST(car_id AS text)||CAST(DATE(update_time) AS text) AS p_key
+
+FROM gu) ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["market_id", "car_id"]
@@ -84,10 +138,27 @@ view: shift_routes {
     sql: ${TABLE}.care_request_location ;;
   }
 
+  dimension: distance_to_next {
+    type: number
+    sql: ${TABLE}.distance_to_next ;;
+    value_format: "0.000"
+  }
+
   dimension: mins_on_scene {
     type: number
     sql: ${TABLE}.mins_on_scene ;;
     value_format: "0.00"
+  }
+
+  dimension: miles_per_hour {
+    type: number
+    sql: ${TABLE}.miles_per_hour ;;
+    value_format: "0.00"
+  }
+
+  measure: fastest_speed {
+    type: max
+    sql: ${miles_per_hour} ;;
   }
 
   dimension_group: update {
