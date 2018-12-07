@@ -142,8 +142,8 @@ view: intraday_shift_teams {
   {
     type: time
     convert_tz: no
-    sql: case when now() AT TIME ZONE 'US/Mountain' > ${min_start_raw} then now() AT TIME ZONE 'US/Mountain'+interval '30 minute'
-          else ${min_start_raw}+interval '30 minute'
+    sql: case when now() AT TIME ZONE 'US/Mountain' > ${min_start_raw} then now() AT TIME ZONE 'US/Mountain'
+          else ${min_start_raw}
           end;;
   }
 
