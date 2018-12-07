@@ -208,16 +208,40 @@ FROM gu) ;;
     sql: ${TABLE}.longitude ;;
   }
 
-  dimension: car_location {
+  dimension: current_location {
     type: location
     sql_latitude: ${latitude} ;;
     sql_longitude: ${longitude} ;;
   }
 
+  dimension: next_latitude {
+    type: number
+    sql: ${TABLE}.next_latitude ;;
+  }
+
+  dimension: next_longitude {
+    type: number
+    sql: ${TABLE}.next_longitude ;;
+  }
+
+  dimension: next_location {
+    type: location
+    sql_latitude: ${next_latitude} ;;
+    sql_longitude: ${next_longitude} ;;
+  }
+
+  dimension: distance_in_miles {
+    type: distance
+    start_location_field: current_location
+    end_location_field: next_location
+    units: miles
+    value_format: "0.000"
+  }
+
   dimension: time_difference {
     type: number
     sql: ${TABLE}.time_difference ;;
-    value_format: "0.00"
+    value_format: "0.0000"
   }
 
   measure: avg_time_difference {
