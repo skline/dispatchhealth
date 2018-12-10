@@ -638,6 +638,11 @@ explore: care_requests {
     sql_on: ${markets.id} = ${market_geo_locations.market_id} ;;
   }
 
+  join: clinical_partner_revenue_forecast {
+    relationship: one_to_one
+    sql_on: ${markets.id} = ${clinical_partner_revenue_forecast.market_id} ;;
+  }
+
   join: states {
     relationship: one_to_one
     sql_on: ${markets.state} = ${states.abbreviation} ;;
