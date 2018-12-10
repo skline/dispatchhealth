@@ -640,7 +640,8 @@ explore: care_requests {
 
   join: clinical_partner_revenue_forecast {
     relationship: one_to_one
-    sql_on: ${markets.id} = ${clinical_partner_revenue_forecast.market_id} ;;
+    sql_on: ${markets.id} = ${clinical_partner_revenue_forecast.market_id} AND
+            ${care_request_flat.complete_month} = ${clinical_partner_revenue_forecast.financial_month_month};;
   }
 
   join: states {
