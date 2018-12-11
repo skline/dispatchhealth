@@ -644,6 +644,12 @@ explore: care_requests {
             ${care_request_flat.complete_month} = ${clinical_partner_revenue_forecast.financial_month_month};;
   }
 
+  join: labor_expense_by_month {
+    relationship: one_to_one
+    sql_on: ${markets.id} = ${labor_expense_by_month.market_id} AND
+      ${care_request_flat.complete_month} = ${labor_expense_by_month.reporting_month_month};;
+  }
+
   join: states {
     relationship: one_to_one
     sql_on: ${markets.state} = ${states.abbreviation} ;;
