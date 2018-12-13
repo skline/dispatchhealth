@@ -97,6 +97,12 @@ view: athenadwh_clinical_providers_clone {
     sql: ${TABLE}.npi ;;
   }
 
+  dimension: thpg_provider_flag {
+    description: "A flag indicating the provider is THPG - Use only with the Athena letter recipient provider view"
+    type: yesno
+    sql: ${thpg_providers.last_name} IS NOT NULL ;;
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;

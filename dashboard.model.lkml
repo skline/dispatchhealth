@@ -48,31 +48,6 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} ;;
   }
 
-  # join: athenadwh_post_visit_encounters {
-  #   from: athenadwh_clinical_encounters_clone
-  #   relationship: one_to_many
-  #   sql_on: ${patients.ehr_id} = ${athenadwh_post_visit_encounters.patient_id}::varchar AND
-  #   (${athenadwh_post_visit_encounters.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} >=
-  #       ${care_request_flat.on_scene_date} AND
-  #       ${athenadwh_post_visit_encounters.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} <=
-  #       ${care_request_flat.on_scene_date} + '2 day'::interval) AND
-  #   ${athenadwh_post_visit_encounters.appointment_id} IS NULL ;;
-  # }
-
-  # join: athenadwh_post_visit_documents {
-  #   from:  athenadwh_documents_clone
-  #   relationship:  one_to_many
-  #   sql_on: ${athenadwh_post_visit_encounters.clinical_encounter_id} = ${athenadwh_post_visit_documents.clinical_encounter_id} AND
-  #           ${athenadwh_post_visit_documents.status} != 'DELETED';;
-  # }
-
-  # join: athenadwh_post_visit_providers {
-  #   from: athenadwh_clinical_providers_clone
-  #   relationship: one_to_one
-  #   sql_on: ${athenadwh_post_visit_documents.clinical_provider_id} = ${athenadwh_post_visit_providers.clinical_provider_id} ;;
-  #   #sql_where: ${athenadwh_provider_clone.provider_id} != ${athenadwh_provider_clone.supervising_provider_id} ;;
-  # }
-
   join: athenadwh_patient_medication_listing {
     from: athenadwh_patient_medication_clone
     relationship: one_to_many
@@ -210,16 +185,6 @@ explore: care_requests {
       ${athenadwh_referrals.status} != 'DELETED' ;;
   }
 
-#   join: athenadwh_orders_test {
-#     from:  athenadwh_documents_clone
-#     relationship:  one_to_many
-#     sql_on:  (${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_document_crosswalk_clone.patient_id} AND
-#     ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_document_crosswalk_clone.chart_id} AND
-#       ${athenadwh_orders_test.document_class} = 'ORDER') AND
-#       (${athenadwh_clinical_encounters_clone.encounter_date}::date >= ${athenadwh_orders_test.created_date}::date AND
-#       ${athenadwh_clinical_encounters_clone.encounter_date}::date <= ${athenadwh_orders_test.created_date}::date + '3 day'::interval)
-#       ;;
-#   }
 
   join: athenadwh_homehealth_referrals {
     from:  athenadwh_documents_clone
@@ -269,24 +234,17 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
+  join: thpg_providers {
+    relationship: one_to_one
+    sql_on: ${athenadwh_letter_recipient_provider.npi} = ${thpg_providers.npi} ;;
+  }
+
   join: athenadwh_primary_care_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
             ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
   }
-
-#   join: athenadwh_orders_provider {
-#     from: athenadwh_clinical_providers_clone
-#     relationship:  many_to_one
-#     sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_orders_provider.clinical_provider_id} ;;
-#   }
-#
-#   join: athenadwh_clinical_results_provider {
-#     from: athenadwh_clinical_providers_clone
-#     relationship:  many_to_one
-#     sql_on: ${athenadwh_clinical_results_clone.clinical_provider_id} = ${athenadwh_clinical_results_provider.clinical_provider_id} ;;
-#   }
 
   join: athenadwh_patients_clone {
     relationship: many_to_one
@@ -334,11 +292,6 @@ explore: care_requests {
     AND transaction_facts_clone.voided_date IS NULL ;;
   }
 
-#   join: charge_dimensions_clone {
-#     relationship: one_to_one
-#     sql_on: ${transaction_facts_clone.athena_charge_id} = ${charge_dimensions_clone.athena_charge_id} ;;
-#   }
-
   join: cpt_code_dimensions_clone {
     relationship: many_to_one
     sql_on: ${transaction_facts_clone.cpt_code_dim_id} = ${cpt_code_dimensions_clone.id} ;;
@@ -349,11 +302,6 @@ explore: care_requests {
     sql_on: ${cpt_code_types_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
   }
 
-# Not much information here -- unclear if this is necessary
-#   join: cpt_em_references_clone {
-#      relationship: one_to_one
-#     sql_on: ${cpt_em_references_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
-#   }
 
   join: icd_visit_joins_clone {
     relationship: many_to_one
