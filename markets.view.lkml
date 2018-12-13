@@ -125,6 +125,12 @@ view: markets {
     else ${name} end;;
   }
 
+  dimension: name_smfr {
+    type: string
+    sql: case when ${cars.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
+         else ${name} end ;;
+  }
+
   dimension: old_close_at {
     type: string
     sql: ${TABLE}.old_close_at ;;
