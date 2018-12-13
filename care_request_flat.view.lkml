@@ -2251,8 +2251,8 @@ view: care_request_flat {
         ${visit_facts_clone.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
         OR
         ${visit_facts_clone.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
-      WHEN lower(${cars.name}) = lower('SMFR_Car') THEN
-        'smfr'
+      WHEN lower(${cars.name}) IN ('smfr_car', 'wmfr car')  THEN
+        'smfr/wmfr'
       WHEN lower(${channel_items.type_name}) IN( 'home health',
                           'snf',
                           'provider group' ) THEN lower(${channel_items.type_name})
@@ -2286,7 +2286,7 @@ view: care_request_flat {
       WHEN ${diversion_category} = 'ed_same_complaint' THEN  0.0
       WHEN ${diversion_category} = 'not completed' THEN 0.0
       WHEN ${diversion_category} = 'escalated' THEN  0
-      WHEN ${diversion_category} = 'smfr' THEN  1.0
+      WHEN ${diversion_category} = 'smfr/wmfr' THEN  1.0
       WHEN ${diversion_category} = 'home health' THEN  .9
       WHEN ${diversion_category} = 'snf' THEN 1.0
       WHEN ${diversion_category} = 'provider group' THEN .5
@@ -2313,7 +2313,7 @@ view: care_request_flat {
       WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
       WHEN ${diversion_category} = 'escalated' THEN  0
       WHEN ${diversion_category} = 'not completed' THEN 0
-      WHEN ${diversion_category} = 'smfr' THEN 1.0
+      WHEN ${diversion_category} = 'smfr/wmfr' THEN 1.0
       WHEN ${diversion_category} = 'home health' THEN .5
       WHEN ${diversion_category} = 'snf' THEN 1.0
       WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN  .5
