@@ -2418,7 +2418,7 @@ view: care_request_flat {
     sql:  now();;
   }
 
-  dimension: created_mounatin_decimal {
+  dimension: created_mountain_decimal {
     type: number
     value_format: "0.00"
     sql:
@@ -2436,7 +2436,21 @@ view: care_request_flat {
 
   dimension: before_now {
     type: yesno
-    sql: ${created_mounatin_decimal} <= ${now_mountain_decimal};;
+    sql: ${created_mountain_decimal} <= ${now_mountain_decimal};;
+  }
+
+  dimension: max_time_mountain_predictions {
+    type: number
+    sql:  case when ${markets.id} in(159, 160, 167) then 21
+               when ${markets.id} in(164, 168) then 19
+               when ${markets.id} in(166, 169, 165) then 20
+               when ${markets.id} in(162, 170, 161) then 22
+              else 21 end;;
+  }
+
+  dimension: prediction_elgible {
+    type: yesno
+    sql: ${created_mountain_decimal} < ${max_time_mountain_predictions} ;;
   }
 
 }
