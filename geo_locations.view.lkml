@@ -66,6 +66,17 @@ view: geo_locations {
     sql: ${TABLE}.updated_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
+  measure: max_updated {
+    type: time
+    sql: MAX(${updated_raw}) ;;
+  }
+
+#   measure: shift_end_last_cr_diff{
+#     label: "Mins Btwn Arrival at Office and Shift End"
+#     type: number
+#     sql:  round(((EXTRACT(EPOCH FROM ${max_updated}::timestamp - ${care_request_flat.shift_end_time}::timestamp))/60)::decimal,2);;
+#   }
+
   dimension: velocity {
     type: number
     sql: ${TABLE}.velocity ;;
