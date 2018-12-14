@@ -684,6 +684,10 @@ view: care_requests {
   measure: count_distinct {
    type: number
    sql: count(distinct ${id}) ;;
+    link: {
+      label: "Patient-Level Details"
+      url: "https://dispatchhealth.looker.com/looks/1124?&f[markets.name]={{ _filters['markets.name'] | url_encode }}&f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}"
+    }
   }
 
   measure: count_distinct_pre_logistics {
