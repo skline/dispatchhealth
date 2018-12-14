@@ -686,7 +686,9 @@ view: care_requests {
    sql: count(distinct ${id}) ;;
     link: {
       label: "Patient-Level Details"
-      url: "https://dispatchhealth.looker.com/looks/1124?&f[markets.name]={{ _filters['markets.name'] | url_encode }}&f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}"
+      url: "https://dispatchhealth.looker.com/looks/1124?&f[markets.name]={{ _filters['markets.name'] | url_encode }}
+      &f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}
+      &f[care_request_flat.complete_resolved_date]={{ _filters['care_request_flat.complete_resolved_date'] | url_encode }}"
     }
   }
 
