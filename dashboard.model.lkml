@@ -45,7 +45,9 @@ explore: care_requests {
 
   join: athenadwh_clinical_encounters_clone_full {
     relationship: one_to_one
-    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} ;;
+    type: inner
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} AND
+            ${athenadwh_clinical_encounters_clone.closed_datetime}::timestamp = ${athenadwh_clinical_encounters_clone_full.closed_datetime_raw}::timestamp ;;
   }
 
   join: athenadwh_patient_medication_listing {
