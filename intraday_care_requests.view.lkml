@@ -107,7 +107,9 @@ view: intraday_care_requests {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day,
+      day_of_week
     ]
     sql: (meta_data->>'created_at')::timestamp WITH TIME ZONE ;;
   }
@@ -121,7 +123,8 @@ view: intraday_care_requests {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day, day_of_week
     ]
     sql: (meta_data->>'accepted_at')::timestamp WITH TIME ZONE ;;
   }
@@ -135,7 +138,8 @@ view: intraday_care_requests {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day, day_of_week
     ]
     sql: (meta_data->>'completed_at')::timestamp WITH TIME ZONE ;;
   }
@@ -149,7 +153,8 @@ view: intraday_care_requests {
       week,
       month,
       quarter,
-      year
+      year,
+       hour_of_day, day_of_week
     ]
     sql: (meta_data->>'archived_at')::timestamp WITH TIME ZONE ;;
   }
@@ -164,7 +169,8 @@ view: intraday_care_requests {
       week,
       month,
       quarter,
-      year
+      year,
+      hour_of_day, day_of_week
     ]
     sql: ${TABLE}.updated_at ;;
   }
@@ -175,7 +181,7 @@ view: intraday_care_requests {
   }
   measure: inqueue_crs {
     type: count_distinct
-    sql: ${intraday_care_requests.care_request_id};;
+    sql: ${care_request_id};;
     filters: {
       field: accepted
       value: "no"
@@ -196,7 +202,7 @@ view: intraday_care_requests {
 
   measure: inqueue_crs_tricare {
     type: count_distinct
-    sql: ${intraday_care_requests.care_request_id};;
+    sql: ${care_request_id};;
     filters: {
       field: accepted
       value: "no"
@@ -222,7 +228,7 @@ view: intraday_care_requests {
 
   measure: inqueue_crs_medicaid {
     type: count_distinct
-    sql: ${intraday_care_requests.care_request_id};;
+    sql: ${care_request_id};;
     filters: {
       field: accepted
       value: "no"
@@ -257,6 +263,61 @@ view: intraday_care_requests {
     type: yesno
     sql: ${accepted_date} = date(now() AT TIME ZONE 'US/Mountain') ;;
   }
+
+  dimension: accepted_mountain_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${accepted_raw} AT TIME ZONE 'US/Mountain') AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${accepted_raw} AT TIME ZONE 'US/Mountain' ) AS FLOAT)) / 60);;
+  }
+
+  dimension: care_request_created_mountain_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${care_request_created_raw} AT TIME ZONE 'US/Mountain') AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${care_request_created_raw} AT TIME ZONE 'US/Mountain' ) AS FLOAT)) / 60);;
+  }
+
+  dimension: complete_mountain_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${complete_raw} AT TIME ZONE 'US/Mountain') AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${complete_raw} AT TIME ZONE 'US/Mountain' ) AS FLOAT)) / 60);;
+  }
+  dimension_group: now_mountain{
+    type: time
+    convert_tz: no
+    timeframes: [day_of_week_index, week, month, day_of_month, time_of_day,raw]
+    sql:  now() AT TIME ZONE 'US/Mountain' ;;
+  }
+
+  dimension: now_mountain_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${now_mountain_raw} ) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${now_mountain_raw} ) AS FLOAT)) / 60);;
+  }
+
+  dimension: before_now_accepted {
+    type: yesno
+    sql: ${accepted_mountain_decimal} <= ${now_mountain_decimal};;
+  }
+
+  dimension: before_now_created {
+    type: yesno
+    sql: ${care_request_created_mountain_decimal} <= ${now_mountain_decimal};;
+  }
+
+  dimension: before_now_complete {
+    type: yesno
+    sql: ${complete_mountain_decimal} <= ${now_mountain_decimal};;
+  }
+
+
 
 
   measure: count {

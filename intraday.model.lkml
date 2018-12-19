@@ -22,6 +22,25 @@ explore:  intraday_shift_teams {
   }
 }
 
+explore: intraday_care_requests_full {
+  from:intraday_care_requests
+  join: markets_intra {
+    sql_on: ${markets_intra.id}= ${intraday_care_requests_full.market_id} ;;
+  }
+  join: primary_payer_dimensions_intra {
+    sql_on: ${intraday_care_requests_full.package_id} = ${primary_payer_dimensions_intra.insurance_package_id} ;;
+  }
+  join: timezones_intra {
+    sql_on: ${markets_intra.sa_time_zone}=${timezones_intra.rails_tz} ;;
+  }
+  join: intraday_shift_teams {
+    sql_on: ${intraday_care_requests_full.shift_team_id} = ${intraday_shift_teams.shift_team_id}
+      and ${intraday_care_requests_full.accepted_date}=${intraday_shift_teams.start_date};;
+  }
+  join: cars_intra {
+    sql_on: ${intraday_shift_teams.car_id} = ${cars_intra.id} ;;
+  }
+}
 
 explore:  intraday_care_requests {
   sql_always_where: ${updated_raw} > current_date - interval '1 day';;

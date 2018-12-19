@@ -159,6 +159,52 @@ view: primary_payer_dimensions_clone {
     sql: ${TABLE}.updated_at ;;
   }
 
+  dimension: expected_allowable_est_hardcoded {
+    type: number
+    sql: case when ${markets.name} = 'Colorado Springs' and ${custom_insurance_grouping} = '(CM)COMMERCIAL' then 252.63
+    when ${markets.name} = 'Colorado Springs' and ${custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' then 251.37
+    when ${markets.name} = 'Colorado Springs' and ${custom_insurance_grouping} = '(MAID)MEDICAID' then 102.25
+    when ${markets.name} = 'Colorado Springs' and ${custom_insurance_grouping} = '(MCARE)MEDICARE' then 135.00
+    when ${markets.name} = 'Colorado Springs' and ${custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' then 273.04
+    when ${markets.name} = 'Colorado Springs' and ${custom_insurance_grouping} = '(TC)TRICARE' then  118.12
+    when ${markets.name} = 'Colorado Springs' then 162.46
+    when ${markets.name} = 'Denver' and ${custom_insurance_grouping} = '(CB)CORPORATE BILLING' then 133.10
+    when ${markets.name} = 'Denver' and ${custom_insurance_grouping} = '(CM)COMMERCIAL' then 251.08
+    when ${markets.name} = 'Denver' and ${custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' then 261.99
+    when ${markets.name} = 'Denver' and ${custom_insurance_grouping} = '(MAID)MEDICAID' then  108.83
+    when ${markets.name} = 'Denver' and ${custom_insurance_grouping} = '(MCARE)MEDICARE' then 135.00
+    when ${markets.name} = 'Denver' and ${custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' then 274.32
+    when ${markets.name} = 'Denver' and ${custom_insurance_grouping} = '(TC)TRICARE' then  127.44
+    when ${markets.name} = 'Denver' then  200.10
+    when ${markets.name} = 'Las Vegas' and ${custom_insurance_grouping} = '(CB)CORPORATE BILLING' then 133.10
+    when ${markets.name} = 'Las Vegas' and ${custom_insurance_grouping} = '(CM)COMMERCIAL' then 255.83
+    when ${markets.name} = 'Las Vegas' and ${custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' then 261.99
+    when ${markets.name} = 'Las Vegas' and ${custom_insurance_grouping} = '(MAID)MEDICAID' then  99.29
+    when ${markets.name}  = 'Las Vegas' and ${custom_insurance_grouping} = '(MCARE)MEDICARE' then 135.00
+    when ${markets.name} = 'Las Vegas' and ${custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' then 241.50
+    when ${markets.name} = 'Las Vegas' and ${custom_insurance_grouping} = '(TC)TRICARE' then  87.31
+    when ${markets.name} = 'Las Vegas' and ${custom_insurance_grouping} = '(MMCD)MANAGED MEDICAID' then 223.88
+    when ${markets.name} = 'Las Vegas' then  220.13
+    when  ${custom_insurance_grouping} = '(CB)CORPORATE BILLING' then 133.10
+    when  ${custom_insurance_grouping} = '(CM)COMMERCIAL' then 251.08
+    when  ${custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' then 261.99
+    when  ${custom_insurance_grouping} = '(MAID)MEDICAID' then  108.83
+    when  ${custom_insurance_grouping} = '(MCARE)MEDICARE' then 135.00
+    when  ${custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' then 274.32
+    when  ${custom_insurance_grouping} = '(TC)TRICARE' then  127.44
+    when  ${custom_insurance_grouping} = '(MMCD)MANAGED MEDICAID' then 223.88
+    else 200.10
+    end
+              ;;
+  }
+
+  measure: avg_expected_allowable_est_hardcoded {
+    type: average_distinct
+    value_format: "0.00"
+    sql_distinct_key:  care_request_flat.care_request_id;;
+    sql: ${expected_allowable_est_hardcoded} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id, insurance_package_name]
