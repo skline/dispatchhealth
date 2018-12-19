@@ -201,7 +201,7 @@ view: primary_payer_dimensions_clone {
   measure: avg_expected_allowable_est_hardcoded {
     type: average_distinct
     value_format: "0.00"
-    sql_distinct_key:  care_request_flat.care_request_id;;
+    sql_distinct_key: concat(${care_request_flat.care_request_id}, ${insurance_package_id}, ${custom_insurance_grouping});;
     sql: ${expected_allowable_est_hardcoded} ;;
   }
 
