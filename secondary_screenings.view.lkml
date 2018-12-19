@@ -31,6 +31,20 @@ view: secondary_screenings {
     sql: ${TABLE}.note ;;
   }
 
+  dimension: empty_note {
+    type: yesno
+    sql: ${note} IS NULL ;;
+  }
+
+  measure: count_missing_note {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: empty_note
+      value: "yes"
+    }
+  }
+
   dimension_group: note_updated {
     type: time
     timeframes: [
