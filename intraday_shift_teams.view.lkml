@@ -328,6 +328,30 @@ view: intraday_shift_teams {
     sql: EXTRACT(EPOCH FROM ${max_end_raw}-${min_start_raw})/3600 ;;
   }
 
+  dimension: hours_in_shift_no_agg{
+    type: number
+    value_format: "0.0"
+    sql: EXTRACT(EPOCH FROM ${end_raw}-${start_raw})/3600 ;;
+  }
+
+measure: sum_shift_hours {
+  type: sum_distinct
+  value_format: "0.00"
+  sql_distinct_key: concat(${shift_team_id}, ${start_date}) ;;
+  sql: ${hours_in_shift_no_agg} ;;
+}
+
+measure: productivity {
+  type: number
+  value_format: "0.00"
+  sql: ${complete_crs}/${sum_shift_hours} ;;
+}
+
+measure: revenue_per_hour {
+  type: number
+  value_format: "0.00"
+  sql:  ${productivity}*${primary_payer_dimensions_intra.avg_expected_allowable};;
+}
   measure: count {
     type: count
     drill_fields: [id]
