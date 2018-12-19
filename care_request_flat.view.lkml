@@ -1669,9 +1669,18 @@ view: care_request_flat {
       field: lwbs
       value: "yes"
     }
+    link: {
+      label: "Patient-Level Details"
+      url: "https://dispatchhealth.looker.com/looks/1124?&f[markets.name]={{ _filters['markets.name'] | url_encode }}
+      &f[markets.name_adj]={{ _filters['markets.name_adj'] | url_encode }}
+      &f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}
+      &f[care_request_flat.complete_resolved_date]=1+month+ago+for+1+month
+      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}
+      &f[care_request_flat.secondary_resolved_reason]={{ _filters['care_request_flat.secondary_resolved_reason'] | url_encode }}"
+    }
     drill_fields: [
       secondary_resolved_reason,
-      care_request_count
+      care_request_flat.lwbs_count
     ]
   }
 
