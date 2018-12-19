@@ -458,6 +458,11 @@ explore: care_requests {
     sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
   }
 
+  join: shifts_end_of_shift_times {
+    relationship: many_to_one
+    sql_on: ${care_requests.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
+  }
+
   join: shift_team_members {
     relationship: many_to_one
     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
