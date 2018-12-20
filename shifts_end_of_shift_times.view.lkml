@@ -49,4 +49,23 @@ SELECT
     sql: ${TABLE}.last_update_time ;;
   }
 
+  dimension: mins_early_or_late {
+    type: number
+    description: "The number of minutes between shift end time and back at office time"
+    sql: (EXTRACT(EPOCH FROM ${care_request_flat.shift_end_raw})-EXTRACT(EPOCH FROM ${last_update_time_raw}))::float/60.0 ;;
+    value_format: "0"
+  }
+
+  dimension: early_late_tier {
+    type: tier
+    tiers: [-60, -45, -30, -15, 0, 15, 30, 45, 60, 75]
+    style: integer
+    sql: ${mins_early_or_late} ;;
+  }
+
+  measure: count_shifts {
+    type: count_distinct
+    sql: ${shift_team_id} ;;
+  }
+
 }
