@@ -83,7 +83,8 @@ view: primary_payer_dimensions_clone {
   dimension: insurance_package_id {
     label: "Insurance Package ID"
     type: string
-    sql: ${TABLE}.insurance_package_id ;;
+    sql: case when ${TABLE}.insurance_package_id = '' then '9999999999999999'
+        else ${TABLE}.insurance_package_id end;;
   }
 
   dimension: insurance_package_name {
@@ -205,6 +206,11 @@ view: primary_payer_dimensions_clone {
     sql: ${expected_allowable_est_hardcoded} ;;
   }
 
+measure: revenue_per_hour {
+  type:  number
+  value_format: "0.00"
+  sql: ${avg_expected_allowable_est_hardcoded}*${care_request_flat.productivity} ;;
+}
   measure: count {
     type: count
     drill_fields: [id, insurance_package_name]

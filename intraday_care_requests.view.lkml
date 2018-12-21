@@ -66,7 +66,8 @@ view: intraday_care_requests {
 
   dimension: package_id {
     type: number
-    sql: (${TABLE}.meta_data ->> 'package_id')::int ;;
+    sql: case when (${TABLE}.meta_data ->> 'package_id')='' then 9999999999999999
+    else (${TABLE}.meta_data ->> 'package_id')::int end;;
   }
 
   dimension: shift_team_id {
