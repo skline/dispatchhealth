@@ -11,6 +11,11 @@ view: primary_payer_dimensions_intra {
     type: string
     sql: ${TABLE}.custom_insurance_grouping ;;
   }
+  dimension: medicaid_tricare {
+    type: string
+    sql: case when ${custom_insurance_grouping} in('(MAID)MEDICAID', '(TC)TRICARE') then 'Medicaid/Tricare'
+        else 'Preferred Payer' end;;
+  }
 
   dimension: insurance_package_id {
     type: string

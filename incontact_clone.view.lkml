@@ -841,7 +841,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
   measure: possible_intent_calls  {
     type: number
     label: "Inbound Calls with Possible Intent"
-    sql: ${general_inquiry_calls}+${requesting_care_calls}+${count_distinct_abandoned_no_short}+${booked_calls}+${sum_called_back} ;;
+    sql: ${general_inquiry_calls}+${requesting_care_calls}+${count_distinct_abandoned_no_short}+${booked_calls}+${count_distinct_long_abandoned} ;;
   }
 
   measure: care_request_created_rate  {
