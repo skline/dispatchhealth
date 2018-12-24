@@ -3,7 +3,7 @@ view: csc_agent_location {
 
   dimension: agent_name {
     type: string
-    sql: ${TABLE}.agent_name ;;
+    sql: initcap(${TABLE}.agent_name) ;;
   }
 
   dimension: market {

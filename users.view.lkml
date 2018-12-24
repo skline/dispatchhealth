@@ -114,7 +114,7 @@ view: users {
 
   dimension: csc_name {
     type: string
-    sql: concat(trim(${last_name}), ', ', trim(${first_name}));;
+    sql: initcap(concat(trim(${last_name}), ', ', trim(${first_name})));;
   }
 
   dimension: chart_scrubbing_name {
