@@ -24,6 +24,13 @@ explore: care_requests {
       /*AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0 */ ;;
   }
 
+  join: athenadwh_patientinsurance_clone {
+    relationship: one_to_many
+    sql_on: ${patients.ehr_id} = ${athenadwh_patientinsurance_clone.patient_id}::varchar
+          AND ${athenadwh_patientinsurance_clone.cancellation_date} IS NULL
+          AND (${athenadwh_patientinsurance_clone.sequence_number}::int = 1 OR ${athenadwh_patientinsurance_clone.insurance_package_id}::int = -100) ;;
+  }
+
   join: athenadwh_payers_clone {
     relationship: many_to_one
     sql_on: ${athenadwh_patient_insurances_clone.insurance_package_id} = ${athenadwh_payers_clone.insurance_package_id} ;;
