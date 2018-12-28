@@ -11,6 +11,12 @@ explore:  intraday_shift_teams {
   join: primary_payer_dimensions_intra {
     sql_on: ${intraday_care_requests.package_id} = ${primary_payer_dimensions_intra.insurance_package_id} ;;
   }
+  join: insurance_plans_intra {
+    sql_on: ${insurance_plans_intra.package_id} = ${intraday_care_requests.package_id} ;;
+  }
+  join: insurance_classifications {
+    sql_on: ${insurance_classifications.id} = ${insurance_classifications.classification} ;;
+  }
   join: cars_intra {
     sql_on: ${intraday_shift_teams.car_id} = ${cars_intra.id} ;;
   }
@@ -30,6 +36,12 @@ explore:  intraday_care_requests {
   }
   join: primary_payer_dimensions_intra {
     sql_on: ${intraday_care_requests.package_id} = ${primary_payer_dimensions_intra.insurance_package_id} ;;
+  }
+  join: insurance_plans_intra {
+    sql_on: ${insurance_plans_intra.package_id} = ${intraday_care_requests.package_id} ;;
+  }
+  join: insurance_classifications {
+    sql_on: ${insurance_classifications.id} = ${insurance_classifications.classification} ;;
   }
   join: cars_intra {
     sql_on: ${intraday_shift_teams.car_id} = ${cars_intra.id} ;;

@@ -9,7 +9,8 @@ view: primary_payer_dimensions_intra {
 
   dimension: custom_insurance_grouping {
     type: string
-    sql: ${TABLE}.custom_insurance_grouping ;;
+    sql: case when ${insurance_package_id} in(22741, 47756, 54360, 75708) then ${TABLE}.custom_insurance_grouping '(MMCD)MANAGED MEDICAID'
+              else ${TABLE}.custom_insurance_grouping end;;
   }
   dimension: medicaid_tricare {
     type: string
