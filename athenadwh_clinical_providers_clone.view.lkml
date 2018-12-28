@@ -132,6 +132,16 @@ view: athenadwh_clinical_providers_clone {
     sql: ${TABLE}.zip ;;
   }
 
+  measure: first_name_aggregated {
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${first_name}), ' | ') ;;
+  }
+
+  measure: last_name_aggregated {
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${last_name}), ' | ') ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id, first_name, name, last_name]
