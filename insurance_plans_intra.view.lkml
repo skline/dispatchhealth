@@ -14,7 +14,7 @@ view: insurance_plans_intra {
 
   dimension: insurance_classification_id {
     type: number
-    sql: ${TABLE}.insurance_classification_id ;;
+    sql: ${TABLE}.insurance_classification_id;;
   }
 
   dimension: name {
@@ -28,8 +28,8 @@ view: insurance_plans_intra {
   }
 
   dimension: package_id {
-    type: string
-    sql: ${TABLE}.package_id ;;
+    type: number
+    sql: (${TABLE}.package_id)::int ;;
   }
 
   dimension: plan_type {

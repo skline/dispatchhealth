@@ -14,8 +14,8 @@ explore:  intraday_shift_teams {
   join: insurance_plans_intra {
     sql_on: ${insurance_plans_intra.package_id} = ${intraday_care_requests.package_id} ;;
   }
-  join: insurance_classifications {
-    sql_on: ${insurance_classifications.id} = ${insurance_classifications.classification} ;;
+  join: insurance_classifications_intra {
+    sql_on: ${insurance_classifications_intra.id} = ${insurance_plans_intra.insurance_classification_id} ;;
   }
   join: cars_intra {
     sql_on: ${intraday_shift_teams.car_id} = ${cars_intra.id} ;;
@@ -40,8 +40,8 @@ explore:  intraday_care_requests {
   join: insurance_plans_intra {
     sql_on: ${insurance_plans_intra.package_id} = ${intraday_care_requests.package_id} ;;
   }
-  join: insurance_classifications {
-    sql_on: ${insurance_classifications.id} = ${insurance_classifications.classification} ;;
+  join: insurance_classifications_intra {
+    sql_on: ${insurance_classifications_intra.id} = ${insurance_plans_intra.insurance_classification_id} ;;
   }
   join: cars_intra {
     sql_on: ${intraday_shift_teams.car_id} = ${cars_intra.id} ;;
