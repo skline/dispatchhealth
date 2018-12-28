@@ -809,8 +809,7 @@ join: ga_pageviews_clone {
     }
 
   join: incontact_clone {
-    sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
-             and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
+    sql_on: ${care_requests.contact_id} = ${incontact_clone.contact_id}
                   ;;
   }
   join: ga_experiments {

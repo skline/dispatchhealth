@@ -553,6 +553,11 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${contact_time_sec} - ${talk_time_sec} ;;
   }
 
+  dimension:  wait_time_greater_30{
+    type: yesno
+    sql: ${wait_time}>30 ;;
+  }
+
   dimension:  wait_time_band{
     type: string
     sql:round(ln(${wait_time}),0)
@@ -565,6 +570,18 @@ group by 1,2,3,4,5,6,7,8,9)lq
     value_format: "0.0"
     sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
     sql: ${wait_time} ;;
+  }
+
+  measure:  count_wait_time_greater_30s{
+    type: count_distinct
+    value_format: "0"
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
+    sql: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: wait_time_greater_30
+      value: "yes"
+    }
+
   }
 
 
