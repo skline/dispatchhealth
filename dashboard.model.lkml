@@ -1728,6 +1728,11 @@ explore: ga_pageviews_clone {
       sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
     }
 
+    join: markets {
+      relationship: many_to_one
+      sql_on: ${insurance_networks.market_id} = ${markets.id_adj} ;;
+    }
+
   }
 
   explore: incontact_clone {
