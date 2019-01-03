@@ -1629,13 +1629,13 @@ view: care_request_flat {
   dimension: lwbs {
     type: yesno
     description: "Going to ED/Urgent Care, Wait Time Too Long, No Longer Need Care"
-    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR
-      ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care} ;;
+    sql: (${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR
+      ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care}) and not ${booked_shaping_placeholder_resolved} ;;
   }
 
   dimension: resolved_no_answer_no_show {
     type: yesno
-    sql: ${archive_comment} LIKE '%No Answer%' OR ${archive_comment} LIKE '%No Show%';;
+    sql: (${archive_comment} LIKE '%No Answer%' OR ${archive_comment} LIKE '%No Show%') and not ${booked_shaping_placeholder_resolved};;
   }
 
   dimension: resolved_911_divert {
@@ -1878,7 +1878,7 @@ view: care_request_flat {
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: ${archive_comment} LIKE '%Referred - Phone Triage%' ;;
+    sql: ${archive_comment} LIKE '%Referred - Phone Triage%'  and not ${booked_shaping_placeholder_resolved};;
   }
 
   dimension: escalated_on_phone_ed {
@@ -1894,6 +1894,11 @@ view: care_request_flat {
       field: escalated_on_phone
       value: "yes"
     }
+  }
+
+  dimension: booked_shaping_placeholder_resolved {
+    type: yesno
+    sql:  lower(${archive_comment}) like '% cap%' or  lower(${archive_comment}) like '%book%' or  lower(${archive_comment}) like '%medicaid%' or  lower(${archive_comment}) like '%tricare%' or lower(${patients.last_name}) ='resolved';;
   }
 
   measure: screened_escalated_phone_count {

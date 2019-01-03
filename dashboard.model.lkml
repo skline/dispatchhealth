@@ -2114,3 +2114,22 @@ explore: users {
     sql_on: ${roles.id} = ${user_roles.role_id} ;;
   }
 }
+
+explore: growth_update_channels {
+  join: markets {
+    sql_on: ${markets.id} =${growth_update_channels.market_id} ;;
+  }
+  join: channel_items {
+    sql_on: ${channel_items.id}=${growth_update_channels.identifier_id} and ${growth_update_channels.identifier_type} = 'channel' ;;
+  }
+  join: care_request_channel {
+    from: care_requests
+    sql_on: ${channel_items.id} =${care_request_channel.channel_item_id} and ${care_request_channel.created_raw} >'2018-10-01';;
+  }
+
+  join: care_request_channel_flat {
+    from: care_request_flat
+    sql_on: ${care_request_channel.id} = ${care_request_channel_flat.care_request_id} ;;
+  }
+
+}
