@@ -21,24 +21,9 @@ view: thpg_providers {
     sql: ${TABLE}.clinic_name ;;
   }
 
-  dimension: clinic_number {
-    type: string
-    sql: ${TABLE}.clinic_number ;;
-  }
-
-  dimension: county {
-    type: string
-    sql: ${TABLE}.county ;;
-  }
-
   dimension: degree {
     type: string
     sql: ${TABLE}.degree ;;
-  }
-
-  dimension: executive_director {
-    type: string
-    sql: ${TABLE}.executive_director ;;
   }
 
   dimension: fax {
@@ -62,7 +47,7 @@ view: thpg_providers {
   }
 
   dimension: npi {
-    type: string
+    type: number
     sql: ${TABLE}.npi ;;
   }
 
@@ -76,24 +61,9 @@ view: thpg_providers {
     sql: ${TABLE}.practice_manager ;;
   }
 
-  dimension: provider_id {
-    type: string
-    sql: ${TABLE}.provider_id ;;
-  }
-
   dimension: provider_type {
     type: string
     sql: ${TABLE}.provider_type ;;
-  }
-
-  dimension: regional_director {
-    type: string
-    sql: ${TABLE}.regional_director ;;
-  }
-
-  dimension: service_line {
-    type: string
-    sql: ${TABLE}.service_line ;;
   }
 
   dimension: specialty {
@@ -106,14 +76,9 @@ view: thpg_providers {
     sql: ${TABLE}.state ;;
   }
 
-  dimension: vice_president {
+  dimension: zipcd {
     type: string
-    sql: ${TABLE}.vice_president ;;
-  }
-
-  dimension: zip {
-    type: zipcode
-    sql: left(${TABLE}.zip, 5) ;;
+    sql: ${TABLE}.zipcd ;;
   }
 
   dimension: zone {
@@ -123,6 +88,6 @@ view: thpg_providers {
 
   measure: count {
     type: count
-    drill_fields: [clinic_name, last_name, first_name]
+    drill_fields: [last_name, first_name, clinic_name]
   }
 }
