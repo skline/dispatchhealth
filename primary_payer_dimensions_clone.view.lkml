@@ -25,7 +25,8 @@ view: primary_payer_dimensions_clone {
 
   dimension: custom_insurance_grouping {
     type: string
-    sql: ${TABLE}.custom_insurance_grouping ;;
+    sql: case when ${insurance_package_id}::int in(22741, 47756, 54360, 75708) then '(MMCD)MANAGED MEDICAID'
+      else ${TABLE}.custom_insurance_grouping end;;
   }
 
   dimension: medicare_advantage_flag {
