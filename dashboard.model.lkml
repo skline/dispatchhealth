@@ -1708,29 +1708,14 @@ explore: ga_pageviews_clone {
       sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
     }
 
-    join: insurance_network_insurance_plans {
+    join: insurance_plans_insurance_networks {
       relationship: one_to_one
-      sql_on: ${insurance_plans.package_id} = ${insurance_network_insurance_plans.package_id} ;;
-    }
-
-    join: insurance_networks {
-      relationship: many_to_one
-      sql_on: ${insurance_network_insurance_plans.insurance_network_id} = ${insurance_networks.id} ;;
-    }
-
-    join: insurance_network_network_referrals {
-      relationship: one_to_many
-      sql_on: ${insurance_networks.id} = ${insurance_network_network_referrals.insurance_network_id} ;;
-    }
-
-    join: network_referrals {
-      relationship: many_to_one
-      sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
+      sql_on: ${insurance_plans.id} = ${insurance_plans_insurance_networks.id} ;;
     }
 
     join: markets {
       relationship: many_to_one
-      sql_on: ${insurance_networks.market_id} = ${markets.id_adj} ;;
+      sql_on: ${insurance_plans_insurance_networks.market_id} = ${markets.id_adj} ;;
     }
 
   }
