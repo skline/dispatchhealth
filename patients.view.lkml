@@ -27,6 +27,11 @@ view: patients {
     sql: ${TABLE}.dob ;;
   }
 
+  dimension: patient_email {
+    type: string
+    sql: ${TABLE}.patient_email ;;
+  }
+
   dimension: gender {
     type: string
     sql: CASE
