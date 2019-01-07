@@ -100,7 +100,20 @@ view: athenadwh_clinical_providers_clone {
   dimension: thpg_provider_flag {
     description: "A flag indicating the provider is THPG - Use only with the Athena letter recipient provider view"
     type: yesno
-    sql: ${thpg_providers.last_name} IS NOT NULL ;;
+    sql: COALESCE(${thpg_providers.last_name}, NULL) IS NOT NULL ;;
+    #sql: ${thpg_providers.last_name} IS NOT NULL ;;
+  }
+
+  measure: thpg_provider_count {
+    description: "A flag indicating the provider is THPG - Use only with the Athena letter recipient provider view"
+    type: count_distinct
+    sql: ${thpg_providers.npi} ;;
+  }
+
+  measure: thpg_provider_boolean {
+    description: "A flag indicating the provider is THPG - Use only with the Athena letter recipient provider view"
+    type: yesno
+    sql: ${thpg_provider_count} > 0 ;;
   }
 
   dimension: phone {

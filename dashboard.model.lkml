@@ -245,7 +245,7 @@ explore: care_requests {
 
   join: thpg_providers {
     relationship: one_to_one
-    sql_on: ${athenadwh_letter_recipient_provider.npi} = ${thpg_providers.npi} ;;
+    sql_on: ${athenadwh_letter_recipient_provider.npi}::int = ${thpg_providers.npi} ;;
   }
 
   join: athenadwh_primary_care_provider {

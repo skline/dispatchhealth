@@ -1915,6 +1915,20 @@ view: care_request_flat {
     }
   }
 
+  measure: not_screened_escalated_onscene_count {
+    description: "Care requests not secondary screened that were escalated on scene"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "yes"
+    }
+    filters: {
+      field: secondary_screening
+      value: "no"
+    }
+  }
+
   measure: non_screened_escalated_phone_count {
     description: "Care requests NOT secondary screened and escalated over the phone"
     type: count_distinct
