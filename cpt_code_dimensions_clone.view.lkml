@@ -18,7 +18,7 @@ view: cpt_code_dimensions_clone {
   dimension: cpt_code {
     label: "CPT code"
     type: string
-    sql: ${TABLE}.cpt_code ;;
+    sql: CASE WHEN ${TABLE}.cpt_code = 'S9083' THEN NULL ELSE ${TABLE}.cpt_code END ;;
   }
 
   measure: cpt_code_concat {
