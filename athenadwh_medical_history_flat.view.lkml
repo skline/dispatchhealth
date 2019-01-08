@@ -111,6 +111,7 @@ view: athenadwh_medical_history_flat {
           GROUP BY 1,2,3,4
       ) AS pe
         ON base.chart_id = pe.chart_id AND pe.rownum = 1
+    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14
     ORDER BY base.chart_id ;;
 
       sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
@@ -187,5 +188,36 @@ view: athenadwh_medical_history_flat {
     type: string
     sql: ${TABLE}.pulmonary_embolism ;;
   }
+
+  dimension: number_comorbidities {
+    type: number
+    description: "The number of patient's comorbidities"
+    sql: (CASE WHEN ${hypertension}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${high_cholesterol}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${diabetes}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${copd} ='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${asthma}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${cancer}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${kidney_disease}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${stroke}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${depression}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${coronary_artery_disease}='Y' THEN 1 ELSE 0 END) +
+          (CASE WHEN ${pulmonary_embolism}='Y' THEN 1 ELSE 0 END) ;;
+  }
+#
+#   measure: number_comorbidities {
+#     type: sum
+#     sql: (CASE WHEN ${hypertension}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${high_cholesterol}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${diabetes}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${copd} ='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${asthma}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${cancer}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${kidney_disease}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${stroke}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${depression}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${coronary_artery_disease}='Y' THEN 1 ELSE 0 END) +
+#     (CASE WHEN ${pulmonary_embolism}='Y' THEN 1 ELSE 0 END) ;;
+#   }
 
 }
