@@ -1113,6 +1113,13 @@ explore: channel_items {
     sql_on: ${sales_force_implementation_score_recent.market_id_final} = ${markets.id} ;;
   }
 
+
+  join: markets_channel {
+    from: markets
+    relationship: many_to_one
+    sql_on: ${channels.market_id} = ${markets_channel.id} ;;
+  }
+
 }
 
 explore: invoca_clone {
