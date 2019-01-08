@@ -1,4 +1,4 @@
-view: care_request_flat {
+view: athenadwh_social_history_flat {
   derived_table: {
     sql:
     SELECT DISTINCT
