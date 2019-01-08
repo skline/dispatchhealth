@@ -177,6 +177,7 @@ view: athenadwh_social_history_flat {
     ) AS nstat
       ON base.chart_id = nstat.chart_id AND nstat.rownum = 1
     ORDER BY base.chart_id  ;;
+
       sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
       indexes: ["chart_id"]
     }
@@ -189,7 +190,7 @@ view: athenadwh_social_history_flat {
 
   dimension: review_date {
     type: date
-    description: "The local date and time when the care request team is on-route"
+    description: "The date that the social history questions were reviewed with the patients"
     convert_tz: no
     sql: ${TABLE}.review_date ;;
   }
