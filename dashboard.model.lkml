@@ -286,6 +286,11 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_medical_history_clone.chart_id} ;;
   }
 
+  join: athenadwh_medical_history_flat {
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_medical_history_flat.chart_id} ;;
+  }
+
 # End Athena data warehouse tables
 
   # Join all cloned tables from the BI database -- DE,
