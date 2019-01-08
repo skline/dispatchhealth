@@ -219,11 +219,17 @@ view: athenadwh_documents_clone {
 
   measure: count_letters {
     type: count_distinct
-    sql: ${clinical_encounter_id} ;;
+    sql: ${care_request_flat.care_request_id} ;;
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
     filters: {
       field: clinical_letter_flag
       value: "yes"
     }
+    filters: {
+      field: care_requests.billable_est
+      value: "yes"
+    }
   }
+
 
 }
