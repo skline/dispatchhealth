@@ -276,9 +276,19 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_social_history_clone.patient_id} ;;
   }
 
+  join: athenadwh_social_history_flat {
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_social_history_flat.chart_id} ;;
+  }
+
   join: athenadwh_medical_history_clone {
     relationship: one_to_many
     sql_on: ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_medical_history_clone.chart_id} ;;
+  }
+
+  join: athenadwh_medical_history_flat {
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_medical_history_flat.chart_id} ;;
   }
 
 # End Athena data warehouse tables
