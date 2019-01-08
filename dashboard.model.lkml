@@ -2151,3 +2151,12 @@ explore: growth_update_channels {
   }
 
 }
+
+explore: primary_payer_dimensions_clone {
+  join: insurance_plans {
+    sql_on: ${insurance_plans.package_id}=${primary_payer_dimensions_clone.insurance_package_id} ;;
+  }
+  join: states {
+    sql_on: ${states.id} = ${insurance_plans.state_id} ;;
+  }
+}
