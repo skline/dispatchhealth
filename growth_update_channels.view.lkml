@@ -39,4 +39,38 @@ view: growth_update_channels {
     type: count
     drill_fields: [partner_name]
   }
+
+  measure: complete_count_coalesce {
+    type: number
+    sql:  ${care_request_channel_flat.complete_count}+${care_request_payer_flat.complete_count};;
+  }
+
+  measure: run_rate_coalesce {
+    type: number
+    sql:  ${care_request_channel_flat.monthly_visits_run_rate}+${care_request_payer_flat.monthly_visits_run_rate};;
+  }
+
+  measure: run_rate_seasonal_coalesce {
+    type: number
+    sql:  ${care_request_channel_flat.monthly_complete_run_rate_seasonal_adj}+${care_request_payer_flat.monthly_complete_run_rate_seasonal_adj};;
+  }
+
+  dimension_group: on_scene_date_coalesce {
+      timeframes: [
+        raw,
+        time,
+        date,
+        week,
+        month,
+        quarter,
+        year,
+        day_of_week_index,
+        day_of_month
+      ]
+      type: time
+    sql: case when ${care_request_channel_flat.on_scene_date} is not null then ${care_request_channel_flat.on_scene_date}
+              when ${care_request_payer_flat.on_scene_date} is not null then ${care_request_payer_flat.on_scene_date}
+              else null end
+    ;;
+  }
 }

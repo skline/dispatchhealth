@@ -2160,6 +2160,19 @@ explore: growth_update_channels {
     sql_on: ${care_request_channel.id} = ${care_request_channel_flat.care_request_id} ;;
   }
 
+  join: primary_payer_dimensions_clone {
+    sql_on: ${primary_payer_dimensions_clone.insurance_package_id}::int=${growth_update_channels.identifier_id}
+    and ${growth_update_channels.identifier_type} = 'payer' ;;
+  }
+  join: insurance_coalese {
+    sql_on: ${insurance_coalese.package_id_coalese} = ${primary_payer_dimensions_clone.insurance_package_id} ;;
+  }
+
+  join: care_request_payer_flat {
+    from: care_request_flat
+    sql_on: ${insurance_coalese.care_request_id} = ${care_request_payer_flat.care_request_id} and ${care_request_channel.created_raw} >'2018-10-01' ;;
+  }
+
 }
 
 explore: primary_payer_dimensions_clone {
