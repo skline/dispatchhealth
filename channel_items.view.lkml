@@ -215,6 +215,7 @@ view: channel_items {
 
   dimension: high_level_category_new {
     type: string
+    label: "High Level Category (HH+Provider)"
     sql: case
          when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue'))  then 'Direct to Consumer'
          when lower(${name_no_tabs}) in('home health') then 'Home Health'
