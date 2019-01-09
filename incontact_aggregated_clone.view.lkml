@@ -274,6 +274,11 @@ view: incontact_aggregated_clone {
     sql: ${general_inquiry_calls}+${requesting_care_calls}+${sum_short_abandons}+${booked_calls}+${sum_called_back} ;;
   }
 
+  measure: calls_intent_no_cr {
+    type: number
+    sql: .3*${general_inquiry_calls}+.25*${sum_called_back}+.2*${sum_short_abandons} ;;
+  }
+
   measure: care_request_created_rate  {
     type: number
     value_format: "0.0%"
