@@ -231,5 +231,10 @@ view: athenadwh_documents_clone {
     }
   }
 
+  measure: clinical_notes_boolean {
+    type: yesno
+    description: "A flag indicating that any clinical note was sent to a provider or specialist"
+    sql: ${count_letters} > 0 ;;
+  }
 
 }

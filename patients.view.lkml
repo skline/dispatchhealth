@@ -41,6 +41,15 @@ view: patients {
         END ;;
   }
 
+  dimension: gender_short {
+    type: string
+    sql: CASE
+          WHEN ${gender} = 'Female' THEN 'F'
+          WHEN ${gender} = 'Male' THEN 'M'
+          ELSE NULL
+        END ;;
+  }
+
   dimension: female {
    type: yesno
    sql: ${gender} = 'Female' ;;
@@ -242,6 +251,11 @@ view: patients {
   dimension: mobile_number {
     type: string
     sql: ${TABLE}.mobile_number ;;
+  }
+
+  dimension: mobile_number_short {
+    type: string
+    sql: SUBSTRING(${mobile_number},3) ;;
   }
 
 
