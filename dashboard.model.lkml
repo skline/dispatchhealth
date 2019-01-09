@@ -645,7 +645,9 @@ explore: care_requests {
 
   join: insurances {
     relationship: many_to_one
-    sql_on: ${care_requests.patient_id} = ${insurances.patient_id} AND ${insurances.priority} = '1' AND ${insurances.patient_id} IS NOT NULL ;;
+    sql_on: ${care_requests.patient_id} = ${insurances.patient_id} AND
+            ${insurances.priority} = '1' AND
+            ${insurances.patient_id} IS NOT NULL ;;
   }
 
   join: insurance_plans {
