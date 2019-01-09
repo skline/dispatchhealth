@@ -656,8 +656,8 @@ explore: care_requests {
   }
 
   join: insurance_member_id {
-    relationship: many_to_one
-    sql_on: ${care_requests.patient_id} = ${insurances.patient_id} ;;
+    relationship: one_to_one
+    sql_on: ${care_requests.patient_id} = ${insurance_member_id.patient_id} ;;
   }
 
   join: primary_insurance_plans {
