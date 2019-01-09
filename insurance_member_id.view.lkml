@@ -20,16 +20,16 @@ SELECT
   ORDER BY patient_id ;;
 
   sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
-  indexes: ["id"]
+  indexes: ["id", "patient_id"]
   }
 
   dimension: id {
-    primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension: patient_id {
+    primary_key: yes
     type: number
     sql: ${TABLE}.patient_id ;;
   }

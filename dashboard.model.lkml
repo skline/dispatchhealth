@@ -655,6 +655,11 @@ explore: care_requests {
     sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND ${insurances.company_name} = ${insurance_plans.name} AND ${insurance_plans.state_id} = ${states.id};;
   }
 
+  join: insurance_member_id {
+    relationship: many_to_one
+    sql_on: ${care_requests.patient_id} = ${insurances.patient_id} ;;
+  }
+
   join: primary_insurance_plans {
     from: insurance_plans
     relationship: many_to_one
