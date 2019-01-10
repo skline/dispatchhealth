@@ -1,7 +1,9 @@
 view: insurance_coalese {
     derived_table: {
-      sql:select  care_requests.id as care_request_id, COALESCE(primary_payer_dimensions_clone.insurance_package_id, self_report_insurances.package_id) package_id_coalese,
-         primary_payer_dimensions_clone.insurance_package_id as athena_package_id, self_report_insurances.package_id as self_report_package_id
+      sql:select  care_requests.id as care_request_id,
+         COALESCE(primary_payer_dimensions_clone.insurance_package_id, self_report_insurances.package_id) package_id_coalese,
+         primary_payer_dimensions_clone.insurance_package_id as athena_package_id,
+        self_report_insurances.package_id as self_report_package_id
         FROM care_requests
         join public.patients
         on patients.id=care_requests.patient_id
