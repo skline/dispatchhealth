@@ -537,6 +537,13 @@ explore: care_requests {
     sql_on: ${csc_user_roles.role_id} = ${csc_users.id} ;;
   }
 
+  join: followup_3day_employee {
+    from: users
+    relationship: many_to_one
+    sql_on: ${care_request_flat.followup_3day_id} = ${followup_3day_employee.id} ;;
+  }
+
+
   join: bill_processors {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${bill_processors.care_request_id} ;;
