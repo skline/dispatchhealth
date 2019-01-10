@@ -218,10 +218,10 @@ view: channel_items {
     label: "High Level Category (HH+Provider)"
     sql: case
          when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue'))  then 'Direct to Consumer'
-         when lower(${name_no_tabs}) in('home health') then 'Home Health'
+         when lower(${type_name}) in('home health') then 'Home Health'
          when lower(${name_no_tabs}) in('healthcare provider', 'healthcare provider') or lower(${type_name}) in('provider group') then 'Provider'
-         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf' , )  then 'Senior Care'
-         when lower(${type_name}) in('health system', 'employer', 'payer', 'provider group', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue') then 'Strategic'          when ${digital_bool} then 'Direct to Consumer'
+         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf')  then 'Senior Care'
+         when lower(${type_name}) in('health system', 'employer', 'payer', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue') then 'Strategic'          when ${digital_bool} then 'Direct to Consumer'
          when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
          when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
          when ${name_no_tabs} is null then 'No Channel'
