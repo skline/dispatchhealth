@@ -18,7 +18,7 @@ view: care_request_flat {
         MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
         fu3.comment AS followup_3day_result,
         fu3.commentor_id AS followup_3day_id,
-        fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS 3day_followup_date,
+        fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS day3_followup_date,
         fu14.comment AS followup_14day_result,
         fu30.comment AS followup_30day_result,
         accept1.auto_assigned AS auto_assigned_initial,
@@ -664,7 +664,7 @@ view: care_request_flat {
     sql: ${TABLE}.followup_3day_id ;;
   }
 
-  dimension_group: 3day_followup {
+  dimension_group: day3_followup {
     type: time
     convert_tz: no
     timeframes: [
@@ -678,7 +678,7 @@ view: care_request_flat {
       day_of_week_index,
       day_of_month
     ]
-    sql: ${TABLE}.3day_followup_date ;;
+    sql: ${TABLE}.day3_followup_date ;;
   }
 
   dimension: bounceback_3day {
