@@ -1854,6 +1854,61 @@ view: care_request_flat {
     ]
   }
 
+  measure: resolved_other_wo_shaping_booked_placeholder_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_requests.billable_est
+      value: "no"
+    }
+    filters: {
+      field: lwbs
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: resolved_911_divert
+      value: "no"
+    }
+    filters: {
+      field: resolved_no_answer_no_show
+      value: "no"
+    }
+
+    filters: {
+      field: complete
+      value: "no"
+    }
+
+    filters: {
+      field: not_resolved_or_complete
+      value: "no"
+    }
+
+    filters: {
+      field: booked_resolved
+      value: "no"
+    }
+
+    filters: {
+      field: shaping_resolved
+      value: "no"
+    }
+
+    filters: {
+      field: placeholder_resolved
+      value: "no"
+    }
+
+    drill_fields: [
+      secondary_resolved_reason,
+      care_request_count
+    ]
+  }
+
 
   measure: lwbs_count_pre_logistics {
     type: count_distinct
@@ -1922,7 +1977,62 @@ view: care_request_flat {
 
   dimension: booked_shaping_placeholder_resolved {
     type: yesno
-    sql:  lower(${archive_comment}) like '% cap%' or  lower(${archive_comment}) like '%book%' or  lower(${archive_comment}) like '%medicaid%' or  lower(${archive_comment}) like '%tricare%' or lower(${patients.last_name}) ='resolved';;
+    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|book|medicaid|tricare)%' or lower(${patients.last_name}) ='resolved';;
+  }
+
+  dimension: shaping_resolved {
+    type: yesno
+    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|medicaid|tricare)%';;
+  }
+
+  dimension: booked_resolved {
+    type: yesno
+    sql:  lower(${archive_comment}) like '%book%' and not ${shaping_resolved} ;;
+  }
+
+  dimension: placeholder_resolved {
+    type: yesno
+    sql:  lower(${patients.last_name}) ='resolved' and not ${shaping_resolved} and not ${booked_resolved} ;;
+  }
+
+  measure: booked_shaping_placeholder_resolved_count {
+    description: "Care requests resolved for booked, shaping or placeholder"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: booked_shaping_placeholder_resolved
+      value: "yes"
+    }
+  }
+
+  measure: shaping_resolved_count {
+    description: "Care requests resolved for shaping"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: shaping_resolved
+      value: "yes"
+    }
+  }
+
+  measure: booked_resolved_count {
+    description: "Care requests resolved for booked"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: booked_resolved
+      value: "yes"
+    }
+  }
+
+  measure: placeholder_resolved_count {
+    description: "Care requests resolved with placeholder"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: placeholder_resolved
+      value: "yes"
+    }
   }
 
   measure: screened_escalated_phone_count {
