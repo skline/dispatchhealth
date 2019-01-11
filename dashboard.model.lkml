@@ -537,6 +537,13 @@ explore: care_requests {
     sql_on: ${csc_user_roles.role_id} = ${csc_users.id} ;;
   }
 
+  join: followup_3day_employee {
+    from: users
+    relationship: many_to_one
+    sql_on: ${care_request_flat.followup_3day_id} = ${followup_3day_employee.id} ;;
+  }
+
+
   join: bill_processors {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${bill_processors.care_request_id} ;;
@@ -1724,9 +1731,29 @@ explore: ga_pageviews_clone {
 
   explore: insurance_plans {
 
+    join: insurance_network_insurance_plans {
+      relationship: one_to_one
+      sql_on: ${insurance_plans.package_id} = ${insurance_network_insurance_plans.package_id} ;;
+    }
+
+    join: insurance_networks {
+      relationship: many_to_one
+      sql_on: ${insurance_network_insurance_plans.insurance_network_id} = ${insurance_networks.id} ;;
+    }
+
+    join: insurance_network_network_referrals {
+      relationship: one_to_many
+      sql_on: ${insurance_networks.id} = ${insurance_network_network_referrals.insurance_network_id} ;;
+    }
+
+    join: network_referrals {
+      relationship: many_to_one
+      sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
+    }
+
     join: states{
       relationship: many_to_one
-      sql_on:  ${states.id} =${insurance_plans.state_id} ;;
+      sql_on: ${insurance_plans.state_id} = ${states.id} AND ${network_referral_markets.state} = ${states.abbreviation};;
     }
 
     join: insurance_classifications {
@@ -1742,6 +1769,12 @@ explore: ga_pageviews_clone {
     join: markets {
       relationship: many_to_one
       sql_on: ${insurance_plans_insurance_networks.market_id} = ${markets.id_adj} ;;
+    }
+
+    join: network_referral_markets {
+      from: markets
+      relationship: many_to_one
+      sql_on: ${insurance_networks.market_id} = ${network_referral_markets.id_adj} ;;
     }
 
   }

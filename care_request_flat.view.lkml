@@ -17,6 +17,8 @@ view: care_request_flat {
         MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
         MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
         fu3.comment AS followup_3day_result,
+        fu3.commentor_id AS followup_3day_id,
+        fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS day3_followup_date,
         fu14.comment AS followup_14day_result,
         fu30.comment AS followup_30day_result,
         accept1.auto_assigned AS auto_assigned_initial,
@@ -121,7 +123,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29, insurances.package_id ;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31, insurances.package_id ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -655,6 +657,28 @@ view: care_request_flat {
     description: "A flag indicating the 3-day follow-up call was completed"
     sql: ${complete_date} IS NOT NULL AND
     ${followup_3day_result} is NOT NULL AND ${followup_3day_result} != 'patient_called_but_did_not_answer' ;;
+  }
+
+  dimension: followup_3day_id {
+    type: number
+    sql: ${TABLE}.followup_3day_id ;;
+  }
+
+  dimension_group: day3_followup {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.day3_followup_date ;;
   }
 
   dimension: bounceback_3day {
