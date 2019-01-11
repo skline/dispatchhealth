@@ -275,6 +275,7 @@ view: incontact_aggregated_clone {
   }
 
   measure: calls_intent_no_cr {
+    value_format: "0"
     type: number
     sql: .3*${general_inquiry_calls}+.25*${sum_called_back}+.2*${sum_short_abandons} ;;
   }
@@ -287,7 +288,7 @@ view: incontact_aggregated_clone {
   }
   measure: target_care_request_created_rate {
     type: number
-    label: "Target Care Request Created Rate (December)"
+    label: "Target Care Request Created Rate"
     value_format: "0.0%"
     sql:  .72;;
   }
