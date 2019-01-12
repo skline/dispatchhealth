@@ -794,6 +794,17 @@ explore: care_requests {
       END)) ;;
   }
 
+  join: baycare_eligibility {
+    relationship: one_to_one
+    sql_on:
+    ${baycare_eligibility.match} =
+    UPPER(concat(replace(${patients.last_name}, '''', '')::text, to_char(${patients.dob}, 'MM/DD/YYYY'),
+      CASE WHEN ${patients.gender} = 'Female' THEN 'F'
+      WHEN ${patients.gender} = 'Male' THEN 'M'
+      ELSE ''
+      END)) ;;
+  }
+
   join: power_of_attorneys {
     sql_on:  ${patients.id} =${power_of_attorneys.patient_id} ;;
   }
