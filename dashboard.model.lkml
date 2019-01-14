@@ -2223,7 +2223,7 @@ explore: growth_update_channels {
 
   join: care_request_payer_flat {
     from: care_request_flat
-    sql_on: ${insurance_coalese.care_request_id} = ${care_request_payer_flat.care_request_id} and ${care_request_channel.created_raw} >'2018-10-01' ;;
+    sql_on: ${insurance_coalese.care_request_id} = ${care_request_payer_flat.care_request_id} and ${care_request_payer_flat.created_raw} >'2018-10-01' ;;
   }
 
 }
