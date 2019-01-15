@@ -939,6 +939,12 @@ explore: shift_planning_facts_clone {
     sql_on:  ${shift_planning_facts_clone.shift_id}=${shift_planning_shifts_clone.shift_id} and ${shift_planning_shifts_clone.imported_after_shift} = 1 ;;
   }
 
+  join: shift_planning_future {
+    from: shift_planning_shifts_clone
+    relationship: one_to_one
+    sql_on:  ${shift_planning_facts_clone.shift_id}=${shift_planning_future.shift_id} and ${shift_planning_future.imported_after_shift} = 0 ;;
+  }
+
   join: markets {
     relationship: many_to_one
     sql_on: ${shift_planning_facts_clone.schedule_location_id} = ${markets.humanity_id} ;;
@@ -1962,11 +1968,10 @@ explore: shift_routes {
 
 }
 
-explore: brant_testing {}
 
 explore:thpg_providers  {
   join: thpg_zipcode {
-  sql_on: ${thpg_providers.zip} = ${thpg_zipcode.zipcodes} ;;
+  sql_on: ${thpg_providers.zipcd} = ${thpg_zipcode.zipcodes} ;;
   }
 }
 
