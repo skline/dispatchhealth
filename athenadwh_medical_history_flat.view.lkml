@@ -154,6 +154,11 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.copd ;;
   }
 
+  dimension: copd_flag {
+    type: yesno
+    sql: ${copd} IS NOT NULL AND ${copd} <> 'N' AND ${copd} NOT LIKE '%?%' ;;
+  }
+
   dimension: asthma {
     type: string
     sql: ${TABLE}.asthma ;;
@@ -184,6 +189,11 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.coronary_artery_disease ;;
   }
 
+  dimension: coronary_artery_disease_flag {
+    type: yesno
+    sql: ${coronary_artery_disease} IS NOT NULL AND ${coronary_artery_disease} <> 'N' AND ${coronary_artery_disease} NOT LIKE '%?%' ;;
+  }
+
   dimension: pulmonary_embolism {
     type: string
     sql: ${TABLE}.pulmonary_embolism ;;
@@ -204,20 +214,6 @@ view: athenadwh_medical_history_flat {
           (CASE WHEN ${coronary_artery_disease}='Y' THEN 1 ELSE 0 END) +
           (CASE WHEN ${pulmonary_embolism}='Y' THEN 1 ELSE 0 END) ;;
   }
-#
-#   measure: number_comorbidities {
-#     type: sum
-#     sql: (CASE WHEN ${hypertension}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${high_cholesterol}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${diabetes}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${copd} ='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${asthma}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${cancer}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${kidney_disease}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${stroke}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${depression}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${coronary_artery_disease}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${pulmonary_embolism}='Y' THEN 1 ELSE 0 END) ;;
-#   }
+
 
 }

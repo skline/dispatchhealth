@@ -1700,7 +1700,8 @@ view: care_request_flat {
       &f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}
       &f[care_request_flat.complete_resolved_date]=1+month+ago+for+1+month
       &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}
-      &f[care_request_flat.secondary_resolved_reason]={{ _filters['care_request_flat.secondary_resolved_reason'] | url_encode }}"
+      &f[care_request_flat.secondary_resolved_reason]={{ _filters['care_request_flat.secondary_resolved_reason'] | url_encode }}
+      &f[athenadwh_payers_clone.custom_insurance_grouping]={{ _filters['athenadwh_payers_clone.custom_insurance_grouping'] | url_encode }}"
     }
     drill_fields: [
       secondary_resolved_reason,
