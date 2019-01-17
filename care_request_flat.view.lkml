@@ -1977,7 +1977,7 @@ view: care_request_flat {
 
   dimension: booked_shaping_placeholder_resolved {
     type: yesno
-    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|book|medicaid|tricare)%' or lower(${patients.last_name}) ='resolved';;
+    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|book|medicaid|tricare)%';;
   }
 
   dimension: shaping_resolved {
