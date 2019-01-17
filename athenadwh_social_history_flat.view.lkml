@@ -217,81 +217,103 @@ view: athenadwh_social_history_flat {
 
   dimension: fall_risk_unsteady {
     type: string
+    description: "Fall Risk: Do you feel unsteady when standing or walking?"
     sql: ${TABLE}.fall_risk_unsteady ;;
   }
 
   dimension: activities_daily_living {
     type: string
+    description: "ADL: Do you need help with daily activities such as bathing, preparing meals, dressing, or cleaning?"
     sql: ${TABLE}.activities_daily_living ;;
   }
 
   dimension: transportation {
     type: string
+    description: "Transportation: Do you have transportation to your medical appointments?"
     sql: ${TABLE}.transportation ;;
   }
 
   dimension: fall_risk_provider {
     type: string
+    description: "Fall Risk: In your opinion (provider), does the home or patient potentially predispose them to an increase fall risk?"
     sql: ${TABLE}.fall_risk_provider ;;
   }
 
   dimension: fall_risk_worry {
     type: string
+    description: "Fall Risk: Do you worry about falling?"
     sql: ${TABLE}.fall_risk_worry ;;
   }
 
   dimension: nutrition_access {
     type: string
+    description: "Nutrition: Do you feel you have access to health foods?"
     sql: ${TABLE}.nutrition_access ;;
+  }
+
+  dimension: lack_of_access_healthy_foods {
+    type: yesno
+    description: "Does the patient indicate they have a lack of access to healthy foods"
+    sql: lower(${nutrition_access}) SIMILAR TO '%(n:|moc )%'  ;;
   }
 
   dimension: nutrition_status {
     type: string
+    description: "Nutrition: What is the overall nutritional status of patient?"
     sql: ${TABLE}.nutrition_status ;;
   }
 
   dimension: safety_feeling {
     type: string
+    description: "Social Support: Do you feel safe?"
     sql: ${TABLE}.safety_feeling ;;
   }
 
   dimension: taking_advantage {
     type: string
+    description: "Social Support: Do you feel that anyone is taking advantage of you?"
     sql: ${TABLE}.taking_advantage ;;
   }
 
   dimension: afford_medications {
     type: string
+    description: "Financial: Can you afford the medications that your medical team has prescribed you?"
     sql: ${TABLE}.afford_medications ;;
   }
 
   dimension: heavy_drinking {
     type: string
+    description: "How many days in the past year have you had a heavy drinking consumption (4+ female, 5+ male)?"
     sql: ${TABLE}.heavy_drinking ;;
   }
 
   dimension: tobacco_yrs_of_use {
     type: string
+    description: "Tobacco-years of use"
     sql: ${TABLE}.tobacco_yrs_of_use ;;
   }
 
   dimension: smoking_how_much {
     type: string
+    description: "Smoking-How much?"
     sql: ${TABLE}.smoking_how_much ;;
   }
 
   dimension: fall_hazards {
     type: string
+    description: "Trip/Fall Hazards"
     sql: ${TABLE}.fall_hazards ;;
   }
 
   dimension: general_cleanliness {
     type: string
+    description: "Review of the general cleanliness of the home"
     sql: ${TABLE}.general_cleanliness ;;
   }
 
   dimension: nutritional_status {
     type: string
+    description: "Overall nutritional status of the patient"
     sql: ${TABLE}.nutritional_status ;;
   }
 
