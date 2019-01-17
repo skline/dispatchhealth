@@ -1317,41 +1317,42 @@ measure: distinct_day_of_week {
     sql: UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
   }
 
-  dimension: lwbs_going_to_ed {
-    type: yesno
-    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
-  }
-
-  dimension: lwbs_going_to_urgent_care {
-    type: yesno
-    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Going to an Urgent Care' ;;
-  }
-
-  dimension: lwbs_wait_time_too_long {
-    type: yesno
-    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Wait time too long' ;;
-  }
-
-  dimension: lwbs_no_longer_need_care {
-    type: yesno
-    sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: No longer need care' ;;
-  }
-
-  dimension: lwbs {
-    type: yesno
-    description: "Going to ED/Urgent Care, Wait Time Too Long, or No Longer Need Care"
-    sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care} ;;
-  }
-
-  measure: lwbs_count {
-    type: count_distinct
-    sql: ${id} ;;
-    filters: {
-      field: lwbs
-      value: "yes"
-    }
-    drill_fields: [care_request_flat.archive_comment]
-  }
+# Removing these for now.  These should be calculated in care_request_flat, not duplicated here -- DE 01/17/2019
+#   dimension: lwbs_going_to_ed {
+#     type: yesno
+#     sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Going to an Emergency Department' ;;
+#   }
+#
+#   dimension: lwbs_going_to_urgent_care {
+#     type: yesno
+#     sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Going to an Urgent Care' ;;
+#   }
+#
+#   dimension: lwbs_wait_time_too_long {
+#     type: yesno
+#     sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: Wait time too long' ;;
+#   }
+#
+#   dimension: lwbs_no_longer_need_care {
+#     type: yesno
+#     sql: ${care_request_flat.archive_comment} = 'Cancelled by Patient: No longer need care' ;;
+#   }
+#
+#   dimension: lwbs {
+#     type: yesno
+#     description: "Going to ED/Urgent Care, Wait Time Too Long, or No Longer Need Care"
+#     sql: ${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care} ;;
+#   }
+#
+#   measure: lwbs_count {
+#     type: count_distinct
+#     sql: ${id} ;;
+#     filters: {
+#       field: lwbs
+#       value: "yes"
+#     }
+#     drill_fields: [care_request_flat.archive_comment]
+#   }
 
   measure: escalated_on_scene_count {
     type: count_distinct
