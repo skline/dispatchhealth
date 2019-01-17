@@ -160,15 +160,35 @@ view: shift_planning_facts_clone {
     sql: ${TABLE}.local_expected_start_time ;;
   }
 
-#   dimension: expected_seconds {
-#     type: number
-#     sql: EXTRACT(EPOCH FROM ${local_expected_end_raw}) -  EXTRACT(EPOCH FROM ${local_expected_start_raw}) ;;
-#   }
+  dimension_group: market_expected_start {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.local_expected_start_time AT TIME ZONE 'US/Mountain' AT TIME ZONE ${timezones.pg_tz};;
+  }
 
-#   measure: sum_hours_scheduled {
-#     type: sum
-#     sql: ${expected_seconds} / 3600 ;;
-#   }
+  dimension_group: market_expected_end {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.local_expected_end_time AT TIME ZONE 'US/Mountain' AT TIME ZONE ${timezones.pg_tz};;
+  }
 
   dimension: schedule_location_id {
     type: string

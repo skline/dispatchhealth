@@ -157,6 +157,7 @@ view: athenadwh_patient_medication_clone {
   dimension: patient_medication_id {
     type: number
     sql: ${TABLE}.patient_medication_id ;;
+    primary_key: yes
   }
 
   dimension: pharmacy_name {
@@ -182,5 +183,10 @@ view: athenadwh_patient_medication_clone {
   measure: count {
     type: count
     drill_fields: [medication_name, pharmacy_name]
+  }
+
+  measure: count_medications {
+    type: count
+    sql: ${patient_medication_id} ;;
   }
 }

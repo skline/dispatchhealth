@@ -139,9 +139,19 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.hypertension ;;
   }
 
+  dimension: hypertension_flag {
+    type: yesno
+    sql: ${hypertension} IS NOT NULL AND ${hypertension} <> 'N' AND LOWER(${hypertension}) NOT SIMILAR TO '%(managed|resolved|borderline)%' ;;
+  }
+
   dimension: high_cholesterol {
     type: string
     sql: ${TABLE}.high_cholesterol ;;
+  }
+
+  dimension: high_cholesterol_flag {
+    type: yesno
+    sql: ${high_cholesterol} = 'Y' OR LOWER(${high_cholesterol}) LIKE '%triglyceride%' ;;
   }
 
   dimension: diabetes {
@@ -149,9 +159,19 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.diabetes ;;
   }
 
+  dimension: diabetes_flag {
+    type: yesno
+    sql: ${diabetes} = 'Y' OR LOWER(${diabetes}) SIMILAR TO '%(type|insulin|t2dm|t1dm|neuropathy|hypergly)%' ;;
+  }
+
   dimension: copd {
     type: string
     sql: ${TABLE}.copd ;;
+  }
+
+  dimension: copd_flag {
+    type: yesno
+    sql: ${copd} IS NOT NULL AND ${copd} <> 'N' AND ${copd} NOT LIKE '%?%' ;;
   }
 
   dimension: asthma {
@@ -159,9 +179,19 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.asthma ;;
   }
 
+  dimension: asthma_flag {
+    type: yesno
+    sql: ${asthma} IS NOT NULL AND ${asthma} <> 'N' AND LOWER(${asthma}) NOT LIKE '%unknown%' ;;
+  }
+
   dimension: cancer {
     type: string
     sql: ${TABLE}.cancer ;;
+  }
+
+  dimension: cancer_flag {
+    type: yesno
+    sql: ${cancer} IS NOT NULL AND ${cancer} <> 'N' ;;
   }
 
   dimension: kidney_disease {
@@ -169,9 +199,19 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.kidney_disease ;;
   }
 
+  dimension: kidney_disease_flag {
+    type: yesno
+    sql: ${kidney_disease} IS NOT NULL AND ${kidney_disease} <> 'N' ;;
+  }
+
   dimension: stroke {
     type: string
     sql: ${TABLE}.stroke ;;
+  }
+
+  dimension: stroke_flag {
+    type: yesno
+    sql: ${stroke} IS NOT NULL AND ${stroke} <> 'N' ;;
   }
 
   dimension: depression {
@@ -179,9 +219,19 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.depression ;;
   }
 
+  dimension: depression_flag {
+    type: yesno
+    sql: ${depression} IS NOT NULL AND ${depression} <> 'N' ;;
+  }
+
   dimension: coronary_artery_disease {
     type: string
     sql: ${TABLE}.coronary_artery_disease ;;
+  }
+
+  dimension: coronary_artery_disease_flag {
+    type: yesno
+    sql: ${coronary_artery_disease} IS NOT NULL AND ${coronary_artery_disease} <> 'N' AND ${coronary_artery_disease} NOT LIKE '%?%' ;;
   }
 
   dimension: pulmonary_embolism {
@@ -189,35 +239,42 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.pulmonary_embolism ;;
   }
 
+  dimension: pulmonary_embolism_flag {
+    type: yesno
+    sql: ${pulmonary_embolism} IS NOT NULL AND ${pulmonary_embolism} <> 'N' ;;
+  }
+
   dimension: number_comorbidities {
     type: number
     description: "The number of patient's comorbidities"
-    sql: (CASE WHEN ${hypertension}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${high_cholesterol}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${diabetes}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${copd} ='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${asthma}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${cancer}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${kidney_disease}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${stroke}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${depression}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${coronary_artery_disease}='Y' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${pulmonary_embolism}='Y' THEN 1 ELSE 0 END) ;;
+    sql: (CASE WHEN ${hypertension_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${high_cholesterol_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${diabetes_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${copd_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${asthma_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${cancer_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${kidney_disease_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${stroke_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${depression_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${coronary_artery_disease_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${pulmonary_embolism_flag} THEN 1 ELSE 0 END) ;;
   }
-#
-#   measure: number_comorbidities {
-#     type: sum
-#     sql: (CASE WHEN ${hypertension}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${high_cholesterol}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${diabetes}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${copd} ='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${asthma}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${cancer}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${kidney_disease}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${stroke}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${depression}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${coronary_artery_disease}='Y' THEN 1 ELSE 0 END) +
-#     (CASE WHEN ${pulmonary_embolism}='Y' THEN 1 ELSE 0 END) ;;
-#   }
+
+  dimension: comorbidity_range {
+    type: tier
+    tiers: [2,5]
+    style: integer
+    sql: ${number_comorbidities} ;;
+  }
+
+  measure: avg_num_comorbidities {
+    type: average
+    sql: ${number_comorbidities} ;;
+  }
+
+  measure: count {
+    type: count
+  }
+
 
 }
