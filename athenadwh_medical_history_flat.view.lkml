@@ -260,9 +260,20 @@ view: athenadwh_medical_history_flat {
           (CASE WHEN ${pulmonary_embolism_flag} THEN 1 ELSE 0 END) ;;
   }
 
+  dimension: comorbidity_range {
+    type: tier
+    tiers: [2,5]
+    style: integer
+    sql: ${number_comorbidities} ;;
+  }
+
   measure: avg_num_comorbidities {
     type: average
     sql: ${number_comorbidities} ;;
+  }
+
+  measure: count {
+    type: count
   }
 
 
