@@ -233,10 +233,20 @@ view: athenadwh_social_history_flat {
     sql: ${TABLE}.transportation ;;
   }
 
+  dimension: lack_of_transportation_flag {
+    type: yesno
+    sql: LOWER(${transportation}) SIMILAR TO '%(no:|dementia|bed bound|quadraplegic)%' ;;
+  }
+
   dimension: fall_risk_provider {
     type: string
     description: "Fall Risk: In your opinion (provider), does the home or patient potentially predispose them to an increase fall risk?"
     sql: ${TABLE}.fall_risk_provider ;;
+  }
+
+  dimension: fall_risk_per_provider_flag {
+    type: yesno
+    sql: ${fall_risk_provider} IS NOT NULL AND ${fall_risk_provider} <> 'N' ;;
   }
 
   dimension: fall_risk_worry {
@@ -297,6 +307,11 @@ view: athenadwh_social_history_flat {
     type: string
     description: "Smoking-How much?"
     sql: ${TABLE}.smoking_how_much ;;
+  }
+
+  dimension: current_smoker_flag {
+    type: yesno
+    sql: ${smoking_how_much} IS NOT NULL AND ${smoking_how_much} <> 'n' ;;
   }
 
   dimension: fall_hazards {
