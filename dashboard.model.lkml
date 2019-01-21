@@ -1706,6 +1706,11 @@ explore: ga_pageviews_clone {
 
   explore: insurance_plans {
 
+    join: states{
+      relationship: many_to_one
+      sql_on: ${insurance_plans.state_id} = ${states.id};;
+    }
+
     join: insurance_network_insurance_plans {
       relationship: one_to_one
       sql_on: ${insurance_plans.package_id} = ${insurance_network_insurance_plans.package_id} ;;
@@ -1714,6 +1719,11 @@ explore: ga_pageviews_clone {
     join: insurance_networks {
       relationship: many_to_one
       sql_on: ${insurance_network_insurance_plans.insurance_network_id} = ${insurance_networks.id} ;;
+    }
+
+    join: markets {
+      relationship: many_to_one
+      sql_on: ${insurance_networks.market_id} = ${markets.id_adj} ;;
     }
 
     join: insurance_network_network_referrals {
@@ -1726,31 +1736,21 @@ explore: ga_pageviews_clone {
       sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
     }
 
-    join: states{
-      relationship: many_to_one
-      sql_on: ${insurance_plans.state_id} = ${states.id} AND ${network_referral_markets.state} = ${states.abbreviation};;
-    }
-
     join: insurance_classifications {
       relationship: many_to_one
       sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
     }
 
-    join: insurance_plans_insurance_networks {
-      relationship: one_to_one
-      sql_on: ${insurance_plans.id} = ${insurance_plans_insurance_networks.id} ;;
-    }
-
-    join: markets {
-      relationship: many_to_one
-      sql_on: ${insurance_plans_insurance_networks.market_id} = ${markets.id_adj} ;;
-    }
-
-    join: network_referral_markets {
-      from: markets
-      relationship: many_to_one
-      sql_on: ${insurance_networks.market_id} = ${network_referral_markets.id_adj} ;;
-    }
+#     join: insurance_plans_insurance_networks {
+#       relationship: one_to_one
+#       sql_on: ${insurance_plans.id} = ${insurance_plans_insurance_networks.id} ;;
+#     }
+#
+#     join: network_referral_markets {
+#       from: markets
+#       relationship: many_to_one
+#       sql_on: ${insurance_networks.market_id} = ${network_referral_markets.id_adj} ;;
+#     }
 
   }
 

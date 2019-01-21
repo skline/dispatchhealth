@@ -1017,6 +1017,11 @@ view: care_request_flat {
     sql: ${TABLE}.on_scene_date ;;
   }
 
+  # measure: average_on_scene_hour {
+  #   type: average
+  #   sql: ${on_scene_time_of_day} ;;
+  # }
+
   dimension: first_half_of_month_on_scene {
     type: yesno
     sql: ${on_scene_day_of_month} <= 15 ;;

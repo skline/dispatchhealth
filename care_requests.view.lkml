@@ -230,11 +230,18 @@ view: care_requests {
       time,
       date,
       week,
+      hour_of_day,
+      time_of_day,
       month,
       quarter,
       year
     ]
     sql: ${TABLE}.on_accepted_eta ;;
+  }
+
+  measure: average_eta_hour {
+    type: average
+    sql: ${on_accepted_eta_time_of_day} ;;
   }
 
   dimension_group: on_route_eta {
