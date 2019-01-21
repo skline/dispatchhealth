@@ -1723,7 +1723,7 @@ explore: ga_pageviews_clone {
 
     join: markets {
       relationship: many_to_one
-      sql_on: ${insurance_networks.market_id} = ${markets.id_adj} ;;
+      sql_on: ${insurance_networks.market_id} = ${markets.id_adj} AND ${states.abbreviation} = ${markets.state} ;;
     }
 
     join: insurance_network_network_referrals {
