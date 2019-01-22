@@ -90,6 +90,12 @@ view: channel_items {
     sql: TRIM(INITCAP(${TABLE}.name)) ;;
   }
 
+  dimension: multicare_charity_patient {
+    type: yesno
+    description: "Channel name is Multicare Charity Care OR CSC note references MultiCare - Charity"
+    sql: ${name} = 'Multicare Charity Care' OR ${notes.note} LIKE '%MultiCare - Charity%' ;;
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;

@@ -129,6 +129,11 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.review_date ;;
   }
 
+  dimension: history_captured {
+    type: yesno
+    sql: ${review_date} IS NOT NULL AND ${number_comorbidities} ;;
+  }
+
   dimension: notes {
     type: string
     sql: ${TABLE}.notes ;;
