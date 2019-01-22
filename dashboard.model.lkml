@@ -67,6 +67,13 @@ explore: care_requests {
     ${athenadwh_patient_medication_listing.medication_type} = 'PATIENTMEDICATION' ;;
   }
 
+  join: athenadwh_patient_current_medication_listing {
+    from: athenadwh_patient_current_medications
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patient_current_medication_listing.patient_id} AND
+          ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_patient_current_medication_listing.chart_id} ;;
+  }
+
   join: athenadwh_patient_prescriptions {
     from: athenadwh_patient_medication_clone
     relationship: one_to_one
