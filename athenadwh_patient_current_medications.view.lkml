@@ -37,7 +37,7 @@ view: athenadwh_patient_current_medications {
   WHERE apm.medication_type = 'PATIENTMEDICATION' ;;
 
   sql_trigger_value: SELECT MAX(created_datetime) FROM athenadwh_patient_medication_clone ;;
-  indexes: ["patient_id", "chart_id"]
+  indexes: ["patient_medication_id", "patient_id", "chart_id"]
     }
 
     dimension: chart_id {
