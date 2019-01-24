@@ -269,17 +269,7 @@ view: athenadwh_medical_history_flat {
 
   dimension: medical_history_collected {
     type: yesno
-    sql: ${hypertension} IS NOT NULL OR
-          ${high_cholesterol} IS NOT NULL OR
-          ${diabetes} IS NOT NULL OR
-          ${copd} IS NOT NULL OR
-          ${asthma} IS NOT NULL OR
-          ${cancer} IS NOT NULL OR
-          ${kidney_disease} IS NOT NULL OR
-          ${stroke} IS NOT NULL OR
-          ${depression} IS NOT NULL OR
-          ${coronary_artery_disease} IS NOT NULL OR
-          ${pulmonary_embolism} IS NOT NULL;;
+    sql: ${chart_id} IS NOT NULL;;
   }
 
   dimension: comorbidity_range {
