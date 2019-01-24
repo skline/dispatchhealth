@@ -3,7 +3,7 @@ view: csc_working_rate_month_clone {
 
   dimension: agent_name {
     type: string
-    sql: ${TABLE}.agent_name ;;
+    sql: initcap(${TABLE}.agent_name) ;;
   }
 
   dimension_group: month {
