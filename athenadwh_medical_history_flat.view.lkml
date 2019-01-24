@@ -252,7 +252,8 @@ view: athenadwh_medical_history_flat {
   dimension: number_comorbidities {
     type: number
     description: "The number of patient's comorbidities"
-    sql: (CASE WHEN ${hypertension_flag} THEN 1 ELSE 0 END) +
+    sql: CASE WHEN ${medical_history_collected} THEN (
+          (CASE WHEN ${hypertension_flag} THEN 1 ELSE 0 END) +
           (CASE WHEN ${high_cholesterol_flag} THEN 1 ELSE 0 END) +
           (CASE WHEN ${diabetes_flag} THEN 1 ELSE 0 END) +
           (CASE WHEN ${copd_flag} THEN 1 ELSE 0 END) +
@@ -262,7 +263,13 @@ view: athenadwh_medical_history_flat {
           (CASE WHEN ${stroke_flag} THEN 1 ELSE 0 END) +
           (CASE WHEN ${depression_flag} THEN 1 ELSE 0 END) +
           (CASE WHEN ${coronary_artery_disease_flag} THEN 1 ELSE 0 END) +
-          (CASE WHEN ${pulmonary_embolism_flag} THEN 1 ELSE 0 END) ;;
+          (CASE WHEN ${pulmonary_embolism_flag} THEN 1 ELSE 0 END))
+        ELSE NULL END ;;
+  }
+
+  dimension: medical_history_collected {
+    type: yesno
+    sql: ${chart_id} IS NOT NULL;;
   }
 
   dimension: comorbidity_range {
