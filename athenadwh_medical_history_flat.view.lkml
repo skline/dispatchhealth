@@ -252,22 +252,34 @@ view: athenadwh_medical_history_flat {
   dimension: number_comorbidities {
     type: number
     description: "The number of patient's comorbidities"
-    sql: (CASE WHEN ${hypertension} IS NULL THEN NULL WHEN ${hypertension} <> 'N' AND LOWER(${hypertension}) NOT SIMILAR TO '%(managed|resolved|borderline)%' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${high_cholesterol} IS NULL THEN NULL WHEN ${high_cholesterol} = 'Y' OR LOWER(${high_cholesterol}) LIKE '%triglyceride%' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${diabetes} IS NULL THEN NULL WHEN ${diabetes} = 'Y' OR LOWER(${diabetes}) SIMILAR TO '%(type|insulin|t2dm|t1dm|neuropathy|hypergly)%' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${copd} IS NULL THEN NULL WHEN ${copd} <> 'N' AND ${copd} NOT LIKE '%?%' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${asthma} IS NULL THEN NULL WHEN ${asthma} <> 'N' AND LOWER(${asthma}) NOT LIKE '%unknown%' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${cancer} IS NULL THEN NULL WHEN ${cancer} <> 'N' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${kidney_disease} IS NULL THEN NULL WHEN ${kidney_disease} <> 'N' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${stroke} IS NULL THEN NULL WHEN ${stroke} <> 'N' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${depression} IS NULL THEN NULL WHEN ${depression} <> 'N' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${coronary_artery_disease} IS NULL THEN NULL WHEN ${coronary_artery_disease} <> 'N' AND ${coronary_artery_disease} NOT LIKE '%?%' THEN 1 ELSE 0 END) +
-          (CASE WHEN ${pulmonary_embolism} IS NULL THEN NULL WHEN ${pulmonary_embolism} <> 'N' THEN 1 ELSE 0 END) ;;
+    sql: CASE WHEN ${medical_history_collected} THEN (
+          (CASE WHEN ${hypertension_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${high_cholesterol_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${diabetes_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${copd_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${asthma_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${cancer_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${kidney_disease_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${stroke_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${depression_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${coronary_artery_disease_flag} THEN 1 ELSE 0 END) +
+          (CASE WHEN ${pulmonary_embolism_flag} THEN 1 ELSE 0 END))
+        ELSE NULL END ;;
   }
 
   dimension: medical_history_collected {
     type: yesno
-    sql: ${number_comorbidities} IS NOT NULL ;;
+    sql: ${hypertension} IS NOT NULL OR
+          ${high_cholesterol} IS NOT NULL OR
+          ${diabetes} IS NOT NULL OR
+          ${copd} IS NOT NULL OR
+          ${asthma} IS NOT NULL OR
+          ${cancer} IS NOT NULL OR
+          ${kidney_disease} IS NOT NULL OR
+          ${stroke} IS NOT NULL OR
+          ${depression} IS NOT NULL OR
+          ${coronary_artery_disease} IS NOT NULL OR
+          ${pulmonary_embolism} IS NOT NULL;;
   }
 
   dimension: comorbidity_range {
