@@ -26,6 +26,11 @@ view: zipcodes {
     sql: ${TABLE}.latitude ;;
   }
 
+  dimension: safety_warning {
+    type: yesno
+    sql: ${TABLE}.safety_warning IS TRUE ;;
+  }
+
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
