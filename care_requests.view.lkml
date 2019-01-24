@@ -403,6 +403,10 @@ view: care_requests {
       field: care_request_flat.resolved_911_divert
       value: "no"
     }
+    filters: {
+      field: care_request_flat.booked_shaping_placeholder_resolved
+      value: "no"
+    }
   }
 
   measure: count_distinct_intended_care_requests_phone {

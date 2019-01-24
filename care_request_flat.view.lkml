@@ -1674,7 +1674,7 @@ view: care_request_flat {
 
   dimension: resolved_other {
     type: yesno
-    sql:  ${complete_date} IS NULL AND ((${lwbs} IS NOT TRUE AND ${escalated_on_phone} IS NOT TRUE AND ${resolved_911_divert} IS NOT TRUE AND ${resolved_no_answer_no_show} IS NOT TRUE)
+    sql:  ${complete_date} IS NULL AND ((${lwbs} IS NOT TRUE AND ${escalated_on_phone} IS NOT TRUE AND ${resolved_911_divert} IS NOT TRUE AND ${resolved_no_answer_no_show} IS NOT TRUE and ${booked_shaping_placeholder_resolved} is not true)
           OR ${archive_comment} IS NULL);;
   }
 
@@ -1841,6 +1841,10 @@ view: care_request_flat {
       value: "no"
     }
     filters: {
+      field: booked_shaping_placeholder_resolved
+      value: "no"
+    }
+    filters: {
       field: resolved_no_answer_no_show
       value: "no"
     }
@@ -1984,6 +1988,11 @@ view: care_request_flat {
   dimension: booked_shaping_placeholder_resolved {
     type: yesno
     sql:  lower(${archive_comment}) SIMILAR TO '%( cap|book|medicaid|tricare)%';;
+  }
+
+  dimension: out_of_service_out_of_scope {
+    type: yesno
+    sql:  lower(${archive_comment}) SIMILAR TO '%(oos|ooa|out of service area)%';;
   }
 
   dimension: shaping_resolved {
