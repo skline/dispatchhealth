@@ -256,7 +256,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
 
   dimension: agent_name {
     type: string
-    sql: ${TABLE}.agent_name[1] ;;
+    sql: initcap(${TABLE}.agent_name[1]) ;;
   }
 
 
