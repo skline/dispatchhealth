@@ -1289,6 +1289,19 @@ view: care_request_flat {
          END ;;
   }
 
+  dimension: eta_to_on_scene_resolved_minutes  {
+    type: number
+    description: "The number of minutes between the initial ETA and either the on-scene or resolved time"
+    sql: EXTRACT(EPOCH FROM COALESCE(${on_scene_raw},${archive_raw}) - ${eta_raw})/60 ;;
+  }
+
+  dimension: mins_early_late_tier {
+    type: tier
+    tiers: [-60, -45, -30, -15, 0, 10, 15, 30, 45, 60]
+    style: integer
+    sql: ${eta_to_on_scene_resolved_minutes} ;;
+  }
+
   dimension: days_to_complete {
     type: number
     description: "The number of days required to complete or resolve the care request.
