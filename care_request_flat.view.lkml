@@ -33,6 +33,7 @@ view: care_request_flat {
         accept.drive_time_seconds,
         accept.first_name AS accept_employee_first_name,
         accept.last_name AS accept_employee_last_name,
+        accept.eta_time::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS eta_date,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
         else array_to_string(array_agg(distinct comp.comment), ':')end
         as complete_comment,
@@ -75,6 +76,7 @@ view: care_request_flat {
         crs.started_at,
         meta_data::json->> 'auto_assigned' AS auto_assigned,
         meta_data::json->> 'drive_time' AS drive_time_seconds,
+        meta_data::json->> 'eta' AS eta_time,
         reassignment_reason,
         reassignment_reason_other,
         ROW_NUMBER() OVER(PARTITION BY care_request_id
@@ -123,7 +125,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31, insurances.package_id ;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32, insurances.package_id ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id"]
@@ -679,6 +681,23 @@ view: care_request_flat {
       day_of_month
     ]
     sql: ${TABLE}.day3_followup_date ;;
+  }
+
+  dimension_group: eta {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week,
+      day_of_month
+    ]
+    sql: ${TABLE}.eta_date ;;
   }
 
   dimension: bounceback_3day {
@@ -1667,6 +1686,11 @@ view: care_request_flat {
     sql: (${archive_comment} LIKE '%No Answer%' OR ${archive_comment} LIKE '%No Show%') and not ${booked_shaping_placeholder_resolved};;
   }
 
+  dimension: resolved_no_show {
+    type: yesno
+    sql: (${archive_comment} LIKE '%No Show%') and not ${booked_shaping_placeholder_resolved};;
+  }
+
   dimension: resolved_911_divert {
     type: yesno
     sql: ${archive_comment} LIKE '%911 Divert%' ;;
@@ -1732,6 +1756,15 @@ view: care_request_flat {
     sql: ${care_request_id} ;;
     filters: {
       field: resolved_no_answer_no_show
+      value: "yes"
+    }
+  }
+
+  measure: no_show_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: resolved_no_show
       value: "yes"
     }
   }
