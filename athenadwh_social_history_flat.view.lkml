@@ -255,6 +255,11 @@ view: athenadwh_social_history_flat {
     sql: ${TABLE}.fall_risk_worry ;;
   }
 
+  dimension: fall_risk_worry_flag {
+    type: yesno
+    sql: ${fall_risk_worry} = 'Y' ;;
+  }
+
   dimension: nutrition_access {
     type: string
     description: "Nutrition: Do you feel you have access to health foods?"
@@ -289,6 +294,11 @@ view: athenadwh_social_history_flat {
     type: string
     description: "Financial: Can you afford the medications that your medical team has prescribed you?"
     sql: ${TABLE}.afford_medications ;;
+  }
+
+  dimension: cant_afford_medications_flag {
+    type: yesno
+    sql: ${afford_medications} = 'N' OR LOWER(${afford_medications}) SIMILAR TO '%(t afford|struggl)%';;
   }
 
   dimension: heavy_drinking {
@@ -330,6 +340,11 @@ view: athenadwh_social_history_flat {
     type: string
     description: "Overall nutritional status of the patient"
     sql: ${TABLE}.nutritional_status ;;
+  }
+
+  dimension: overweight_obese_flag {
+    type: yesno
+    sql: LOWER(${nutrition_status}) SIMILAR TO '(overweight|obese)%' ;;
   }
 
   measure: count_distinct_charts {
