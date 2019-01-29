@@ -528,7 +528,7 @@ explore: care_requests {
   }
 
   join: notes {
-    relationship: one_to_one
+    relationship: one_to_many
     sql_on: ${care_requests.id} = ${notes.care_request_id};;
   }
 
