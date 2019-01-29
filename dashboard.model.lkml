@@ -1844,6 +1844,56 @@ explore: ga_pageviews_clone {
           join: csc_survey_clone {
              sql_on: ${csc_survey_clone.contact_id} = ${incontact_clone.contact_id} and ${csc_survey_clone.active} ;;
           }
+    join: ga_pageviews_clone {
+      sql_on:
+          ${invoca_clone.analytics_vistor_id} = ${ga_pageviews_clone.client_id}
+        and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_mst_raw})) < (60*60*1.5)
+          ;;
+    }
+
+    join: ga_experiments {
+      sql_on: ${ga_pageviews_clone.exp_id} = ${ga_experiments.exp_id};;
+
+    }
+
+
+    join: ga_adwords_stats_clone {
+      sql_on:
+          ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
+            and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
+    }
+
+    join: ga_adwords_cost_clone {
+      sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
+            and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
+            and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
+            and ${ga_adwords_stats_clone.adwordsadgroupid} =${ga_adwords_cost_clone.adwordsadgroupid}
+                  and ${ga_adwords_stats_clone.page_timestamp_date} =${ga_adwords_cost_clone.date_date}
+            ;;
+    }
+
+
+    join: adwords_campaigns_clone {
+      sql_on: ${adwords_campaigns_clone.campaign_id} = ${ga_adwords_stats_clone.adwordscampaignid}  ;;
+    }
+
+    join: adwords_ad_clone {
+      sql_on:  ${ga_adwords_stats_clone.adwordscreativeid} = ${adwords_ad_clone.ad_id} ;;
+    }
+
+    join: ad_groups_clone {
+      sql_on:  ${ga_adwords_stats_clone.adwordsadgroupid} = ${ad_groups_clone.adwordsadgroupid} ;;
+    }
+    join: marketing_cost_clone {
+      type: full_outer
+      sql_on:   lower(${ga_pageviews_clone.source_final}) = lower(${marketing_cost_clone.type})
+              and ${ga_pageviews_clone.timestamp_mst_date} =${marketing_cost_clone.date_date}
+              and lower(${ga_pageviews_clone.medium_final})  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
+              and lower(${ga_pageviews_clone.ad_group_final}) = lower(${marketing_cost_clone.ad_group_name})
+            and lower(${ga_pageviews_clone.campaign_final}) = lower(${marketing_cost_clone.campaign_name})
+
+            ;;
+    }
 
 
         }
@@ -2069,10 +2119,6 @@ explore: marketing_data_processed {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} or ${channel_items.id} =${web_care_requests.channel_item_id};;
   }
 
-  join: dtc_categorization {
-    relationship: one_to_one
-    sql_on: ${dtc_categorization.care_request_id} =${care_requests.id} or ${dtc_categorization.care_request_id} =${web_care_requests.id};;
-  }
 
 
 }

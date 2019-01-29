@@ -372,6 +372,7 @@ from looker_scratch.ga_pageviews_clone
 
   dimension: care_request_id_final {
     type: number
+    value_format: "0"
     sql:  coalesce(${care_requests.id},${web_care_requests.id}) ;;
   }
 
