@@ -16,7 +16,8 @@ view: athenadwh_patient_current_medications {
         GROUP BY 1,2
   ) AS mxv
   ON apm.patient_id = mxv.patient_id AND DATE(apm.created_datetime) = mxv.last_visit
-  WHERE apm.medication_type = 'PATIENTMEDICATION'
+  WHERE apm.medication_type = 'PATIENTMEDICATION' AND
+  DATE_PART('day', apm.created_datetime::timestamp - apm.fill_date::date) <= 90
   GROUP BY 1,2,3,4,7 ;;
 
   sql_trigger_value: SELECT MAX(created_datetime) FROM athenadwh_patient_medication_clone ;;
