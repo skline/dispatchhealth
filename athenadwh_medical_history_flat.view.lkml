@@ -279,6 +279,11 @@ view: athenadwh_medical_history_flat {
     sql: ${number_comorbidities} ;;
   }
 
+  measure: count_distinct_charts {
+    type: count_distinct
+    sql: ${chart_id} ;;
+  }
+
   measure: avg_num_comorbidities {
     type: average
     sql: ${number_comorbidities} ;;

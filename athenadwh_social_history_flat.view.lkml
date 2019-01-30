@@ -269,7 +269,7 @@ view: athenadwh_social_history_flat {
   dimension: lack_of_access_healthy_foods {
     type: yesno
     description: "Does the patient indicate they have a lack of access to healthy foods"
-    sql: lower(${nutrition_access}) SIMILAR TO '%(n:|moc )%'  ;;
+    sql: lower(${nutrition_access}) SIMILAR TO '%(no:|no,|moc )%'  ;;
   }
 
   dimension: nutrition_status {

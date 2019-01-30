@@ -1,24 +1,16 @@
 view: athenadwh_patient_current_medications {
     derived_table: {
       sql: SELECT DISTINCT
-        apm.patient_id,
-        apm.chart_id,
-        apm.medication_id,
-        apm.medication_name,
-        MAX(apm.fill_date) AS fill_date,
-        MAX(apm.created_datetime) AS created_datetime,
-        apm.created_by
-  FROM athenadwh_patient_medication_clone apm
-  JOIN (
-        SELECT patient_id, chart_id, MAX(DATE(created_datetime)) AS last_visit
-        FROM athenadwh_patient_medication_clone
-        WHERE medication_type = 'PATIENTMEDICATION'
-        GROUP BY 1,2
-  ) AS mxv
-  ON apm.patient_id = mxv.patient_id AND DATE(apm.created_datetime) = mxv.last_visit
-  WHERE apm.medication_type = 'PATIENTMEDICATION' AND
-  DATE_PART('day', apm.created_datetime::timestamp - apm.fill_date::date) <= 90
-  GROUP BY 1,2,3,4,7 ;;
+        patient_id,
+        chart_id,
+        medication_id,
+        MAX(medication_name) AS medication_name,
+        MAX(fill_date) AS fill_date,
+        MAX(DATE(created_datetime)) AS created_date,
+        MAX(created_by) AS created_by
+        from athenadwh_patient_medication_clone
+        WHERE medication_type = 'PATIENTMEDICATION' AND deactivation_datetime IS NULL
+        GROUP BY 1,2,3;;
 
   sql_trigger_value: SELECT MAX(created_datetime) FROM athenadwh_patient_medication_clone ;;
   indexes: ["patient_id", "chart_id", "medication_id"]
@@ -58,25 +50,6 @@ view: athenadwh_patient_current_medications {
     dimension: deactivated_by {
       type: string
       sql: ${TABLE}.deactivated_by ;;
-    }
-
-    dimension_group: deactivation_datetime {
-      type: time
-      timeframes: [
-        raw,
-        time,
-        date,
-        week,
-        month,
-        quarter,
-        year
-      ]
-      sql: ${TABLE}.deactivation_datetime ;;
-    }
-
-    dimension: document_id {
-      type: number
-      sql: ${TABLE}.document_id ;;
     }
 
     dimension_group: fill {
@@ -120,11 +93,6 @@ view: athenadwh_patient_current_medications {
       type: count_distinct
       sql: ${compound_primary_key} ;;
     }
-
-    # measure: average_medications {
-    #   type: average_distinct
-    #   sql: ${compound_primary_key} ;;
-    # }
 
     measure: count_distinct_patients {
       type: count_distinct

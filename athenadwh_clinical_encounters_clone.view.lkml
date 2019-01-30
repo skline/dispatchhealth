@@ -90,6 +90,11 @@ view: athenadwh_clinical_encounters_clone {
     sql: ${TABLE}.updated_at ;;
   }
 
+  measure: count_distinct_charts {
+    type: count_distinct
+    sql: ${chart_id} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id]
