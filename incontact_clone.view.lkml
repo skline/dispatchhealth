@@ -34,6 +34,13 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${TABLE}.contact_time_sec ;;
   }
 
+  measure: avg_contact_time_sec {
+    value_format: "0.0"
+    type: average_distinct
+    sql_distinct_key:  ${master_contact_id};;
+    sql: ${contact_time_sec};;
+  }
+
 
   dimension_group: today_mountain{
     type: time
