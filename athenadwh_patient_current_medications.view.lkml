@@ -7,10 +7,11 @@ view: athenadwh_patient_current_medications {
         MAX(medication_name) AS medication_name,
         MAX(fill_date) AS fill_date,
         MAX(DATE(created_datetime)) AS created_date,
-        MAX(created_by) AS created_by
+        MAX(created_by) AS created_by,
+        MAX(updated_at) AS updated_at
         from athenadwh_patient_medication_clone
         WHERE medication_type = 'PATIENTMEDICATION' AND deactivation_datetime IS NULL
-        GROUP BY 1,2,3;;
+        GROUP BY 1,2,3 ;;
 
   sql_trigger_value: SELECT MAX(created_datetime) FROM athenadwh_patient_medication_clone ;;
   indexes: ["patient_id", "chart_id", "medication_id"]
