@@ -89,11 +89,17 @@ view: athenadwh_patient_current_medications {
       sql: ${TABLE}.patient_id ;;
     }
 
-
     measure: count_medications {
       type: count_distinct
       sql: ${compound_primary_key} ;;
     }
+
+  # dimension: num_medication_range {
+  #   type: tier
+  #   tiers: [5,10,15,25,35,50]
+  #   style: integer
+  #   sql: ${count_medications} ;;
+  # }
 
     measure: count_distinct_patients {
       type: count_distinct

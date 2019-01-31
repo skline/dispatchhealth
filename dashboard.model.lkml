@@ -83,7 +83,7 @@ explore: care_requests {
 
   join: athenadwh_medication_clone {
     relationship: many_to_one
-    sql_on: ${athenadwh_patient_medication_listing.medication_id} = ${athenadwh_medication_clone.medication_id} ;;
+    sql_on: ${athenadwh_patient_current_medication_listing.medication_id} = ${athenadwh_medication_clone.medication_id} ;;
   }
 
   join: dea_schedule_ii_medications  {
