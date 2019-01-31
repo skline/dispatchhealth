@@ -93,6 +93,12 @@ view: shift_planning_facts_clone {
           ;;
   }
 
+  measure: months_since_first_shift {
+    description: "The number of months that have elapsed since the first shift"
+    type: number
+    sql: COALESCE(EXTRACT(year FROM age(MAX(${local_actual_start_raw}),MIN(${local_actual_start_raw})))*12 + EXTRACT(month FROM age(MAX(${local_actual_start_raw}),MIN(${local_actual_start_raw}))), 0) ;;
+  }
+
   dimension_group: local_actual_end {
     type: time
     convert_tz: no
