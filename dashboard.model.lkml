@@ -2254,6 +2254,6 @@ explore: primary_payer_dimensions_clone {
 }
 explore: thr_zips {
   join: zipcodes {
-    sql_on: ${zipcodes.zip}=${thr_zips.zipcode} and ${zipcodes.market_id}= 169 ;;
+    sql_on: ${zipcodes.zip}::int=${thr_zips.zipcode} and ${zipcodes.market_id}= 169 ;;
   }
 }
