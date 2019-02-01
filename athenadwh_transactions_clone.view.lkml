@@ -247,6 +247,10 @@ view: athenadwh_transactions_clone {
   measure: count_claims {
     type: count_distinct
     sql: ${claim_id} ;;
+    filters: {
+      field: voided_date_is_null
+      value: "yes"
+    }
   }
 
   measure: count_deductible_claims {
