@@ -2252,3 +2252,8 @@ explore: primary_payer_dimensions_clone {
     sql_on: ${states.id} = ${insurance_plans.state_id} ;;
   }
 }
+explore: thr_zips {
+  join: zipcodes {
+    sql_on: ${zipcodes.zip}=${thr_zips.zipcode} and ${zipcodes.market_id}= 169 ;;
+  }
+}
