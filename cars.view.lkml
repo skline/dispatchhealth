@@ -51,6 +51,17 @@ view: cars {
     sql: ${TABLE}.name ;;
   }
 
+  dimension: smfr_wmfr_other {
+    description: "Car names broken out by SMFR, WMFR or Other"
+    type: string
+    sql: CASE
+          WHEN ${name} IS NULL THEN NULL
+          WHEN ${name} LIKE '%SMFR%' THEN 'SMFR'
+          WHEN ${name} LIKE '%WMFR%' THEN 'WMFR'
+          ELSE 'Other'
+        END ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
