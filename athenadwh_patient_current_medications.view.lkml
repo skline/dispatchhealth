@@ -89,9 +89,19 @@ view: athenadwh_patient_current_medications {
       sql: ${TABLE}.patient_id ;;
     }
 
+    dimension: valid_patient_id {
+      type: yesno
+      hidden: yes
+      sql: ${patient_id} IS NOT NULL ;;
+    }
+
     measure: count_medications {
       type: count_distinct
       sql: ${compound_primary_key} ;;
+      filters: {
+        field: valid_patient_id
+        value: "yes"
+      }
     }
 
   # dimension: num_medication_range {
