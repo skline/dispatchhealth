@@ -350,6 +350,7 @@ view: athenadwh_social_history_flat {
   measure: count_distinct_charts {
     type: count_distinct
     sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
   }
 
 }
