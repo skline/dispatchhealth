@@ -12,9 +12,29 @@ view: athenadwh_medical_history_clone {
     sql: ${TABLE}.answer ;;
   }
 
+  dimension: answer_yes {
+    type: yesno
+    hidden: yes
+    sql: ${answer} = 'Y' ;;
+  }
+
   dimension: chart_id {
     type: number
     sql: ${TABLE}.chart_id ;;
+  }
+
+  measure: count_distinct_charts {
+    type: count_distinct
+    sql: ${chart_id} ;;
+  }
+
+  measure: count_positive_responses {
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: answer_yes
+      value: "yes"
+    }
   }
 
   dimension: created_by {
@@ -68,6 +88,14 @@ view: athenadwh_medical_history_clone {
   dimension: question {
     type: string
     sql: ${TABLE}.question ;;
+  }
+
+  dimension: comorbidity_category {
+    type: string
+    sql: CASE
+          WHEN ${question} = 'Notes' OR ${question} = 'Reviewed Date' THEN NULL
+          ELSE ${question}
+        END ;;
   }
 
   measure: count {
