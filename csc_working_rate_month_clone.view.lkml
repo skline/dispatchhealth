@@ -27,6 +27,11 @@ view: csc_working_rate_month_clone {
     sql: max(${TABLE}.working_rate::float/100.0);;
   }
 
+  measure: avg_inbound_time {
+    type: number
+    sql: max(${TABLE}.avg_inbound_time) ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [agent_name]
