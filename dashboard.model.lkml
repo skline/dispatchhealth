@@ -2221,7 +2221,8 @@ explore: growth_update_channels {
   }
   join: care_request_channel {
     from: care_requests
-    sql_on: ${channel_items.id} =${care_request_channel.channel_item_id} and ${care_request_channel.created_raw} >'2018-10-01';;
+    sql_on: ${channel_items.id} =${care_request_channel.channel_item_id} and ${care_request_channel.created_raw} >'2018-10-01'
+    and ${care_request_channel.market_id} =${growth_update_channels.market_id};;
   }
 
   join: care_request_channel_flat {
@@ -2239,7 +2240,8 @@ explore: growth_update_channels {
 
   join: care_request_payer_flat {
     from: care_request_flat
-    sql_on: ${insurance_coalese.care_request_id} = ${care_request_payer_flat.care_request_id} and ${care_request_payer_flat.created_raw} >'2018-10-01' ;;
+    sql_on: ${insurance_coalese.care_request_id} = ${care_request_payer_flat.care_request_id} and ${care_request_payer_flat.created_raw} >'2018-10-01'
+    and ${care_request_payer_flat.market_id} =${growth_update_channels.market_id};;
   }
 
 }
