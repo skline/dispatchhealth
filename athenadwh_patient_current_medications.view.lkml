@@ -95,6 +95,12 @@ view: athenadwh_patient_current_medications {
       sql: ${patient_id} IS NOT NULL ;;
     }
 
+    dimension: dme_equipment_medicine {
+      type: yesno
+      description: "A flag indicating the medicine is DME or Medical Supplies"
+      sql: ${athenadwh_medication_clone.hic1_description} SIMILAR TO '%(MEDICAL SUPPLIES AND DEVICES|DURABLE MEDICAL EQUIPMENT)%' ;;
+    }
+
     measure: count_medications {
       type: count_distinct
       sql: ${compound_primary_key} ;;
@@ -103,6 +109,19 @@ view: athenadwh_patient_current_medications {
         value: "yes"
       }
     }
+
+  measure: count_dme_equipment_medications {
+    type: count_distinct
+    sql: ${compound_primary_key} ;;
+    filters: {
+      field: valid_patient_id
+      value: "yes"
+    }
+    filters: {
+      field: dme_equipment_medicine
+      value: "yes"
+    }
+  }
 
   # dimension: num_medication_range {
   #   type: tier
