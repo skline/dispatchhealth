@@ -812,6 +812,11 @@ explore: care_requests {
       END)) ;;
   }
 
+  join: vitals_flat {
+    relationship: many_to_one
+    sql_on: ${care_requests.id} = ${vitals_flat.care_request_id} ;;
+  }
+
   join: power_of_attorneys {
     sql_on:  ${patients.id} =${power_of_attorneys.patient_id} ;;
   }

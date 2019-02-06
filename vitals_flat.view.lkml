@@ -2,16 +2,12 @@ view: vitals_flat {
     derived_table: {
       sql: WITH vvs AS (
 SELECT
-    care_request_id,
-    v.unpacked::json->>'clinicalelementid' AS measurement,
-    v.unpacked::json->>'value' AS value
-  FROM
-    (
-     SELECT
-       care_request_id,
-       json_array_elements(json_array_elements(data::json)) AS unpacked
-     FROM public.vitals) AS v)
-SELECT
+  care_request_id,
+  json_array_elements(json_array_elements(data::json))::json->>'clinicalelementid' AS measurement,
+  json_array_elements(json_array_elements(data::json))::json->>'value' AS value,
+  updated_at
+FROM public.vitals)
+SELECT DISTINCT
   vitals.care_request_id,
   t.value::float AS temperature,
   tt.value::varchar AS temperature_type,
@@ -24,32 +20,99 @@ SELECT
   o2.value::int AS o2saturation,
   o2a.value::varchar AS o2saturation_airtype,
   wt.value::int/453.592 AS weight_lbs,
-  vitals.created_at,
-  vitals.updated_at,
+  MAX(vitals.created_at) AS created_at,
+  MAX(vitals.updated_at) AS updated_at,
   vitals.user_id
   FROM public.vitals
-  LEFT JOIN vvs AS t
-    ON vitals.care_request_id = t.care_request_id AND t.measurement = 'VITALS.TEMPERATURE'
-  LEFT JOIN vvs AS tt
-    ON vitals.care_request_id = tt.care_request_id AND tt.measurement = 'VITALS.TEMPERATURE.TYPE'
-  LEFT JOIN vvs AS hr
-    ON vitals.care_request_id = hr.care_request_id AND hr.measurement = 'VITALS.HEARTRATE'
-  LEFT JOIN vvs AS rr
-    ON vitals.care_request_id = rr.care_request_id AND rr.measurement = 'VITALS.RESPIRATIONRATE'
-  LEFT JOIN vvs AS sys
-    ON vitals.care_request_id = sys.care_request_id AND sys.measurement = 'VITALS.BLOODPRESSURE.SYSTOLIC'
-  LEFT JOIN vvs AS dia
-    ON vitals.care_request_id = dia.care_request_id AND dia.measurement = 'VITALS.BLOODPRESSURE.DIASTOLIC'
-  LEFT JOIN vvs AS site
-    ON vitals.care_request_id = site.care_request_id AND site.measurement = 'VITALS.BLOODPRESSURE.SITE'
-  LEFT JOIN vvs AS typ
-    ON vitals.care_request_id = typ.care_request_id AND typ.measurement = 'VITALS.BLOODPRESSURE.TYPE'
-  LEFT JOIN vvs AS o2
-    ON vitals.care_request_id = o2.care_request_id AND o2.measurement = 'VITALS.O2SATURATION'
-  LEFT JOIN vvs AS o2a
-    ON vitals.care_request_id = o2a.care_request_id AND o2a.measurement = 'VITALS.O2SATURATION.AIRTYPE'
-  LEFT JOIN vvs AS wt
-    ON vitals.care_request_id = wt.care_request_id AND wt.measurement = 'VITALS.WEIGHT' ;;
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.TEMPERATURE'
+          GROUP BY 1,2,3,4
+    ) AS t
+    ON vitals.care_request_id = t.care_request_id AND t.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.TEMPERATURE.TYPE'
+          GROUP BY 1,2,3,4
+    ) AS tt
+    ON vitals.care_request_id = tt.care_request_id AND tt.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.HEARTRATE'
+          GROUP BY 1,2,3,4
+    ) AS hr
+    ON vitals.care_request_id = hr.care_request_id AND hr.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.RESPIRATIONRATE'
+          GROUP BY 1,2,3,4
+    ) AS rr
+    ON vitals.care_request_id = rr.care_request_id AND rr.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.BLOODPRESSURE.SYSTOLIC'
+          GROUP BY 1,2,3,4
+    ) AS sys
+    ON vitals.care_request_id = sys.care_request_id AND sys.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.BLOODPRESSURE.DIASTOLIC'
+          GROUP BY 1,2,3,4
+    ) AS dia
+    ON vitals.care_request_id = dia.care_request_id AND dia.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.BLOODPRESSURE.SITE'
+          GROUP BY 1,2,3,4
+    ) AS site
+    ON vitals.care_request_id = site.care_request_id AND site.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.BLOODPRESSURE.TYPE'
+          GROUP BY 1,2,3,4
+    ) AS typ
+    ON vitals.care_request_id = typ.care_request_id AND typ.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.O2SATURATION'
+          GROUP BY 1,2,3,4
+    ) AS o2
+    ON vitals.care_request_id = o2.care_request_id AND o2.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.O2SATURATION.AIRTYPE'
+          GROUP BY 1,2,3,4
+    ) AS o2a
+    ON vitals.care_request_id = o2a.care_request_id AND o2a.rownum = 1
+  LEFT JOIN (
+          SELECT care_request_id, measurement, value,updated_at,
+          ROW_NUMBER() OVER (PARTITION BY care_request_id, measurement ORDER BY updated_at DESC) AS rownum
+          FROM vvs
+          WHERE measurement = 'VITALS.WEIGHT'
+          GROUP BY 1,2,3,4
+    ) AS wt
+    ON vitals.care_request_id = wt.care_request_id AND wt.rownum = 1
+  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,15 ;;
 
     sql_trigger_value: SELECT MAX(care_request_id) FROM care_requests ;;
     indexes: ["care_request_id"]
@@ -57,7 +120,7 @@ SELECT
 
     dimension: care_request_id {
       type: number
-      sql: ${TABLE}.chart_id ;;
+      sql: ${TABLE}.care_request_id ;;
     }
 
   dimension: temperature {
@@ -75,6 +138,11 @@ SELECT
     sql: ${TABLE}.heartrate ;;
   }
 
+  dimension: elevated_hr {
+    type: yesno
+    sql: ${heartrate} > 100 ;;
+  }
+
   dimension: respiration_rate {
     type: number
     sql: ${TABLE}.respiration_rate ;;
@@ -83,6 +151,17 @@ SELECT
   dimension: bloodpressure_systolic {
     type: number
     sql: ${TABLE}.bloodpressure_systolic ;;
+  }
+
+  dimension: low_systolic_bp {
+    type: yesno
+    description: "Systolic BP is < 90 AND patient age is 18+"
+    sql: ${bloodpressure_systolic} < 90 AND ${patients.age} >= 18 ;;
+  }
+
+  dimension: hypotension {
+    type: yesno
+    sql: ${bloodpressure_systolic} < 90 AND ${bloodpressure_diastolic} < 60 ;;
   }
 
   dimension: bloodpressure_diastolic {
@@ -103,6 +182,11 @@ SELECT
   dimension: o2saturation {
     type: number
     sql: ${TABLE}.o2saturation ;;
+  }
+
+  dimension: low_o2_saturation {
+    type: yesno
+    sql: ${o2saturation} < 90 ;;
   }
 
   dimension: o2saturation_airtype {
