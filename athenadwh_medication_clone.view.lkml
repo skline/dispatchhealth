@@ -24,6 +24,8 @@ view: athenadwh_medication_clone {
   dimension: hic1_description {
     type: string
     sql: ${TABLE}.hic1_description ;;
+    drill_fields: [medication_name]
+    #link: {label: "Explore Top 20 Results" url: "{{ link }}&limit=20" }
   }
 
   dimension: hic2_pharmacological_class {

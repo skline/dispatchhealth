@@ -167,7 +167,18 @@ view: athenadwh_patient_medication_clone {
 
   dimension: prescribed_yn {
     type: string
+    hidden: yes
     sql: ${TABLE}.prescribed_yn ;;
+  }
+
+  dimension: prescription_flag {
+    type: yesno
+    sql: ${prescribed_yn} LIKE '%Y%' ;;
+  }
+
+  dimension: valid_prescription {
+    type: yesno
+    sql: ${athenadwh_documents_clone.status} <> 'DELETED' ;;
   }
 
   dimension: prescription_fill_quantity {
@@ -188,5 +199,9 @@ view: athenadwh_patient_medication_clone {
   measure: count_medications {
     type: count
     sql: ${patient_medication_id} ;;
+    filters: {
+      field:valid_prescription
+      value: "yes"
+    }
   }
 }
