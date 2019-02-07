@@ -199,9 +199,9 @@ view: athenadwh_patient_medication_clone {
   measure: count_medications {
     type: count
     sql: ${patient_medication_id} ;;
-    filters: {
-      field:valid_prescription
-      value: "yes"
-    }
+    # filters: {
+    #   field:valid_prescription
+    #   value: "yes"
+    # }
   }
 }
