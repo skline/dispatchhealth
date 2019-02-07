@@ -67,7 +67,7 @@ view: icd_code_dimensions_clone {
   dimension: wheelchair_homebound {
     type: yesno
     description: "Diagnosis of Hemiplegia, paraplegia or homebound medical necessity"
-    sql: ${diagnosis_code} IN ('G81','G82') OR ${medical_necessity_notes.note} SIMILAR TO '%(mobility issues|transportation|symptoms of their chronic disease)%' ;;
+    sql: ${diagnosis_code} IN ('G81','G82') OR ${medical_necessity_notes.note} SIMILAR TO '%(mobility issues|transportation|leave the home)%' ;;
     # 1 The patient has an acute condition requiring urgent/emergent care.
     # 2 The patient has mobility issues and is homebound.
     # 3 The patient has no transportation and/or needs special transportation to leave the home.
