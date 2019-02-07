@@ -58,6 +58,25 @@ view: icd_code_dimensions_clone {
                    diagnosis_description]
   }
 
+  dimension: confusion_altered_awareness {
+    type: yesno
+    description: "Diagnosis of confusion, altered awareness, weakness, or behavioral disturbance"
+    sql: ${diagnosis_code} IN ('R40','R41','R53','F03') ;;
+  }
+
+  dimension: wheelchair_homebound {
+    type: yesno
+    description: "Diagnosis of Hemiplegia, paraplegia or homebound medical necessity"
+    sql: ${diagnosis_code} IN ('G81','G82') OR ${medical_necessity_notes.note} SIMILAR TO '%(mobility issues|transportation|symptoms of their chronic disease)%' ;;
+    # 1 The patient has an acute condition requiring urgent/emergent care.
+    # 2 The patient has mobility issues and is homebound.
+    # 3 The patient has no transportation and/or needs special transportation to leave the home.
+    # 4 The patient is physically unable or too ill to leave the home.
+    # 5 The patient would have called 911 or gone to ED.
+    # 6 The patient’s symptoms of their chronic disease process worsen when leaving the home.
+    # 7 There was an acute need to assess the home/safety situation or to involve the home based care givers.
+  }
+
   dimension: diagnosis_code_decimal {
     type: string
     sql: ${TABLE}.diagnosis_code_decimal ;;

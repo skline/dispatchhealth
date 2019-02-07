@@ -204,6 +204,11 @@ SELECT DISTINCT
     sql: ${TABLE}.user_id ;;
   }
 
+  dimension: abnormal_vitals {
+    type: yesno
+    sql: ${low_o2_saturation} OR ${low_systolic_bp} OR ${elevated_hr} ;;
+  }
+
   dimension_group: created {
     type: time
     convert_tz: no
