@@ -84,6 +84,20 @@ view: bill_processors {
     }
   }
 
+  measure: auto_scrubbed_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: scrubbed_flag
+      value: "yes"
+    }
+    filters: {
+      field: csc_names.chart_scrubbing_name
+      value: "Dashboard"
+    }
+  }
+
+
   dimension: settle_case {
     type: yesno
     sql: ${TABLE}.settle_case ;;
