@@ -1325,6 +1325,12 @@ view: care_request_flat {
     sql: ${accepted_to_initial_eta_minutes} ;;
   }
 
+  dimension: eta_150_mins_or_less {
+    type: yesno
+    description: "The accept to ETA time is 150 minutes or less"
+    sql: ${accepted_to_initial_eta_minutes} <= 150 ;;
+  }
+
   dimension: days_to_complete {
     type: number
     description: "The number of days required to complete or resolve the care request.
