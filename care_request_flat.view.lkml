@@ -1295,11 +1295,40 @@ view: care_request_flat {
     sql: EXTRACT(EPOCH FROM COALESCE(${on_scene_raw},${archive_raw}) - ${eta_raw})/60 ;;
   }
 
+  dimension: accepted_to_initial_eta_minutes  {
+    type: number
+    description: "The number of minutes between when the care request was created and the initial ETA"
+    sql: ROUND(CAST(EXTRACT(EPOCH FROM ${eta_raw} - ${accept_raw})/60 AS integer), 0) ;;
+    value_format: "0"
+  }
+
   dimension: mins_early_late_tier {
     type: tier
     tiers: [-60, -45, -30, -15, 0, 10, 15, 30, 45, 60]
     style: integer
     sql: ${eta_to_on_scene_resolved_minutes} ;;
+  }
+
+  dimension: mins_to_eta_tier {
+    type: tier
+    description: "The grouped number of minutes between accepted and ETA"
+    tiers: [30, 60, 90, 120, 150, 180, 210, 240]
+    style: integer
+    sql: ${accepted_to_initial_eta_minutes} ;;
+  }
+
+  dimension: mins_to_eta_tier_wide {
+    type: tier
+    description: "The grouped number of minutes between accepted and ETA"
+    tiers: [60, 120, 180, 240]
+    style: integer
+    sql: ${accepted_to_initial_eta_minutes} ;;
+  }
+
+  dimension: eta_150_mins_or_less {
+    type: yesno
+    description: "The accept to ETA time is 150 minutes or less"
+    sql: ${accepted_to_initial_eta_minutes} <= 150 ;;
   }
 
   dimension: days_to_complete {

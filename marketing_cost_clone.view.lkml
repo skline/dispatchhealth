@@ -125,13 +125,13 @@ view: marketing_cost_clone {
   dimension: market_id {
     type: string
     sql: case when lower(${campaign_name}) like '%den%' then 159
-           when lower(${campaign_name}) like '%colo%' or  lower(${campaign_name}) like '%springs%' then 160
+           when lower(${campaign_name}) like '%colo%' or  lower(${campaign_name}) like '%springs%' or  lower(${campaign_name}) like '%-cos%'  then 160
            when lower(${campaign_name}) like '%phoe%'or lower(${campaign_name}) like '%phx%' then 161
            when lower(${campaign_name}) like '%ric%'  then 164
            when lower(${campaign_name})  like '%las%' or lower(${campaign_name})  like '%las%' then 162
            when lower(${campaign_name})  like '%hou%' then 165
            when lower(${campaign_name})  like '%okla%' or lower(${campaign_name})  like '%okc%' then 166
-             when lower(${campaign_name})  like '%springfield%' or lower(${campaign_name})  like 'spr%' then 168
+             when lower(${campaign_name})  like '%springfield%' or lower(${campaign_name})  like 'spr%' or lower(${campaign_name})  like '%-spr%' then 168
      when lower(${campaign_name})  like '%dal%' then 169
     when lower(${campaign_name})  like '%tac%' then 170
            else null
