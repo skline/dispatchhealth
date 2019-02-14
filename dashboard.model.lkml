@@ -367,6 +367,22 @@ explore: care_requests {
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
   }
 
+  #### Diversion tables for cost savings model - 2/13/2019
+  join: diversion {
+    relationship: one_to_one
+    sql_on: ${icd_code_dimensions_clone.id} = ${diversion.icd_code_id} ;;
+  }
+
+  join: diversion_type {
+    relationship: many_to_one
+    sql_on: ${diversion.diversion_type_id} = ${diversion_type.id} ;;
+  }
+
+  join: diversion_category {
+    relationship: many_to_one
+    sql_on: ${diversion.diversion_category_id} = ${diversion_category.id} ;;
+  }
+
   join: letter_recipient_dimensions_clone {
     relationship:  many_to_one
     sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;
