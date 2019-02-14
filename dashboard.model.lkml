@@ -355,6 +355,13 @@ explore: care_requests {
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 2 ;;
   }
 
+  join: icd_tertiary_code_dimensions_clone {
+    from: icd_code_dimensions_clone
+    view_label: "ICD Tertiary Code Dimensions Clone"
+    relationship: many_to_one
+    sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 3 ;;
+  }
+
   join: drg_to_icd10_crosswalk {
     relationship: one_to_one
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
