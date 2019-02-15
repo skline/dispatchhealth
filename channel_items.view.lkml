@@ -105,7 +105,7 @@ view: channel_items {
   dimension: referred_from_hh_pcp_cm {
     description: "The care request was referred from PCP, home health or care management"
     type: yesno
-    sql: ${type_name} SIMILAR TO '%(Home Health|Provider Group)%' OR LOWER(${care_requests.activated_by}) SIMILAR TO "%(home health|patient's clinician)%" ;;
+    sql: ${type_name} SIMILAR TO '%(Home Health|Provider Group)%' OR LOWER(${care_requests.activated_by}) SIMILAR TO '%(home health|s clinician)%' ;;
   }
 
   dimension: phone {

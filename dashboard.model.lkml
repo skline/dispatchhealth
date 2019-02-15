@@ -369,8 +369,49 @@ explore: care_requests {
 
   #### Diversion tables for cost savings model - 2/13/2019
   join: diversion {
-    relationship: one_to_one
-    sql_on: ${icd_code_dimensions_clone.id} = ${diversion.icd_code_id} ;;
+    relationship: one_to_many
+    sql_on: ${icd_code_dimensions_clone.id} = ${diversion.icd_code_id} AND (
+    ${care_request_flat.dc1} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc2} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc3} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc4} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc5} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc6} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc7} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc8} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc9} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc10} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc11} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc12} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc13} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc14} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc15} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc16} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc17} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc18} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc19} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc20} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc21} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc22} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc23} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc24} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc25} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc26} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc27} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc28} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc29} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc30} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc31} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc32} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc33} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc34} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc35} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc36} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc37} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc38} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc39} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc40} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc41} = ${diversion.diversion_category_id}) ;;
   }
 
   join: diversion_type {
