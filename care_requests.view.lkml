@@ -500,6 +500,21 @@ view: care_requests {
     sql: ${TABLE}.place_of_service ;;
   }
 
+  dimension: pos_snf {
+    type: yesno
+    sql: ${place_of_service} = 'Skilled Nursing Facility' ;;
+  }
+
+  dimension: pos_al {
+    type: yesno
+    sql: ${place_of_service} = 'Assisted Living Facility' ;;
+  }
+
+  dimension: pos_home {
+    type: yesno
+    sql: ${place_of_service} = 'Home' ;;
+  }
+
   dimension_group: prioritized {
     type: time
     timeframes: [

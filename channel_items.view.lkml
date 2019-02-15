@@ -96,6 +96,18 @@ view: channel_items {
     sql: ${name} = 'Multicare Charity Care' OR ${notes.note} LIKE '%MultiCare - Charity%' ;;
   }
 
+  dimension: divert_from_911 {
+    description: "Channel is 911"
+    type: yesno
+    sql: ${name} LIKE '%911 Channel%' OR ${sub_type} LIKE '%911 Channel%';;
+  }
+
+  dimension: referred_from_hh_pcp_cm {
+    description: "The care request was referred from PCP, home health or care management"
+    type: yesno
+    sql: ${type_name} SIMILAR TO '%(Home Health|Provider Group)%' OR LOWER(${care_requests.activated_by}) SIMILAR TO "%(home health|patient's clinician)%" ;;
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;

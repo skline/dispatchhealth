@@ -2492,6 +2492,49 @@ view: care_request_flat {
     sql: max(${complete_raw}) ;;
   }
 
+  dimension: weekend_after_3pm {
+    description: "A flag indicating the care request took place after 3PM or on the weekend"
+    type: yesno
+    sql: ${on_scene_hour_of_day} > 15 OR ${on_scene_day_of_week_index} IN (5, 6)  ;;
+  }
+
+  dimension: diversion_category_id {
+    type: number
+    sql: CASE
+      WHEN ${complete_time} IS NULL THEN 'not completed'
+      WHEN ${escalated_on_scene} THEN 'escalated'
+      WHEN ${visit_facts_clone.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
+        OR
+        ${visit_facts_clone.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
+        OR
+        ${visit_facts_clone.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
+      WHEN lower(${cars.name}) IN ('smfr_car', 'wmfr car')  THEN
+        'smfr/wmfr'
+      WHEN lower(${channel_items.type_name}) IN( 'home health',
+                          'snf',
+                          'provider group' ) THEN lower(${channel_items.type_name})
+      WHEN lower(${channel_items.type_name}) = 'senior care'
+        AND
+        ${on_scene_hour_of_day} < 15
+        AND
+       ${on_scene_day_of_week_index} NOT IN (5, 6) THEN 'senior care - weekdays before 3pm'
+      WHEN lower(${channel_items.type_name})  = 'senior care'
+        AND
+        (
+          ${on_scene_hour_of_day} > 15
+          OR
+            ${on_scene_day_of_week_index} IN (5, 6)
+        )
+        THEN 'senior care - weekdays after 3pm and weekends'
+      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
+      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} != 'Emergency Room'
+        AND
+        ${ed_diversion_survey_response_clone.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
+      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} IS NULL THEN
+        'no survey'
+      ELSE 'other'
+      END;;
+  }
 
   dimension: diversion_category {
     type: string
@@ -2585,7 +2628,6 @@ view: care_request_flat {
     type: number
     sql: ${ed_diversion_adj} * 0.05;;
   }
-
 
 
   measure: est_vol_ed_diversion {
