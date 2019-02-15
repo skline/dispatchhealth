@@ -2501,38 +2501,57 @@ view: care_request_flat {
   dimension: diversion_category_id {
     type: number
     sql: CASE
-      WHEN ${complete_time} IS NULL THEN 'not completed'
-      WHEN ${escalated_on_scene} THEN 'escalated'
-      WHEN ${visit_facts_clone.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
-        OR
-        ${visit_facts_clone.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
-        OR
-        ${visit_facts_clone.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
-      WHEN lower(${cars.name}) IN ('smfr_car', 'wmfr car')  THEN
-        'smfr/wmfr'
-      WHEN lower(${channel_items.type_name}) IN( 'home health',
-                          'snf',
-                          'provider group' ) THEN lower(${channel_items.type_name})
-      WHEN lower(${channel_items.type_name}) = 'senior care'
-        AND
-        ${on_scene_hour_of_day} < 15
-        AND
-       ${on_scene_day_of_week_index} NOT IN (5, 6) THEN 'senior care - weekdays before 3pm'
-      WHEN lower(${channel_items.type_name})  = 'senior care'
-        AND
-        (
-          ${on_scene_hour_of_day} > 15
-          OR
-            ${on_scene_day_of_week_index} IN (5, 6)
-        )
-        THEN 'senior care - weekdays after 3pm and weekends'
-      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
-      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} != 'Emergency Room'
-        AND
-        ${ed_diversion_survey_response_clone.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
-      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} IS NULL THEN
-        'no survey'
-      ELSE 'other'
+          --diagnosis only
+         WHEN ${icd_code_dimensions_clone.diagnosis_code} IS NOT NULL AND ${icd_visit_joins_clone.sequence_number} <=3 THEN
+          CASE
+            WHEN ${care_requests.pos_snf} THEN 4
+            WHEN ${care_requests.pos_al} THEN 5
+            WHEN ${channel_items.referred_from_hh_pcp_cm} THEN 6
+            WHEN ${care_request_flat.weekend_after_3pm} THEN 7
+            WHEN ${vitals_flat.abnormal_vitals} THEN 8
+            WHEN ${icd_code_dimensions_clone.confusion_altered_awareness} THEN 9
+            WHEN ${icd_code_dimensions_clone.wheelchair_homebound} THEN 10
+            WHEN ${cpt_code_dimensions_clone.ekg_performed} THEN 11
+            WHEN ${cpt_code_dimensions_clone.nebulizer} THEN 12
+            WHEN ${cpt_code_dimensions_clone.iv_fluids} THEN 13
+            WHEN ${cpt_code_dimensions_clone.blood_tests} THEN 14
+            WHEN ${cpt_code_dimensions_clone.catheter_placement} THEN 15
+            WHEN ${cpt_code_dimensions_clone.laceration_repair} THEN 16
+            WHEN ${cpt_code_dimensions_clone.epistaxis} THEN 17
+            WHEN ${cpt_code_dimensions_clone.hernia_rp_reduction} THEN 18
+            WHEN ${cpt_code_dimensions_clone.joint_reduction} THEN 19
+            WHEN ${cpt_code_dimensions_clone.gastronomy_tube} THEN 20
+            WHEN ${cpt_code_dimensions_clone.abcess_drain} THEN 21
+            WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 22
+            WHEN ${care_requests.pos_snf} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 23
+            WHEN ${care_requests.pos_snf} AND ${channel_items.referred_from_hh_pcp_cm} THEN 24
+            WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 25
+            WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+                                               ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 26
+            WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 27
+            WHEN ${care_requests.pos_al} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 28
+            WHEN ${care_requests.pos_al} AND ${channel_items.referred_from_hh_pcp_cm} THEN 29
+            WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 30
+            WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR
+                                              ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 31
+            WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 32
+            WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 33
+            WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 34
+            WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 35
+            WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR
+                                                ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 36
+            WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness})  THEN 37
+            WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 38
+            WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 39
+            WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+                                               ${cpt_code_dimensions_clone.any_cs_procedure} THEN 40
+            WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+                                               ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 41
+            WHEN ${channel_items.divert_from_911} THEN 3
+            WHEN ${ed_diversion_survey_response_clone.survey_yes_to_er} THEN 2
+            ELSE 1
+          END
+      ELSE NULL
       END;;
   }
 
