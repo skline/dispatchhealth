@@ -57,6 +57,11 @@ view: diversion {
     sql: ${TABLE}.updated_at ;;
   }
 
+  measure: diversion_flag {
+    type: yesno
+    sql: bool_or(${diversion}) ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id, diversion_type.id, diversion_category.id]
