@@ -1007,6 +1007,13 @@ join: ga_pageviews_clone {
   }
 }
 
+explore: cars {
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.id} = ${cars.market_id} ;;
+  }
+}
+
 explore: shift_planning_facts_clone {
   #view_label: "Shift Information"
 
