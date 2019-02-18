@@ -370,7 +370,8 @@ explore: care_requests {
   #### Diversion tables for cost savings model - 2/13/2019
   join: diversion {
     relationship: one_to_many
-    sql_on: ${icd_code_dimensions_clone.id} = ${diversion.icd_code_id} AND (
+    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion.diagnosis_code} AND
+    ${icd_visit_joins_clone.sequence_number} <= 3 AND (
     ${care_request_flat.dc1} = ${diversion.diversion_category_id} OR
     ${care_request_flat.dc2} = ${diversion.diversion_category_id} OR
     ${care_request_flat.dc3} = ${diversion.diversion_category_id} OR

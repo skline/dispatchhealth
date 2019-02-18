@@ -21,6 +21,11 @@ view: diversion {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension: diagnosis_code {
+    type: string
+    sql: ${TABLE}.diagnosis_code ;;
+  }
+
   dimension: diversion {
     type: yesno
     sql: ${TABLE}.diversion ;;
