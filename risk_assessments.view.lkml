@@ -183,20 +183,20 @@ view: risk_assessments {
 
   measure: count_yellow_escalated_phone {
     type: count_distinct
-    sql: case when ${care_request_flat.escalated_on_phone} and ${yellow_category}  then ${care_request_id}  else null end ;;
+    sql: case when ${care_request_flat.escalated_on_phone_ed} and ${yellow_category}  then ${care_request_id}  else null end ;;
     sql_distinct_key: ${care_request_id} ;;
   }
 
   measure: count_red_escalated_phone {
     type: count_distinct
-    sql: case when ${care_request_flat.escalated_on_phone} and ${red_category}  then ${care_request_id}  else null end ;;
+    sql: case when ${care_request_flat.escalated_on_phone_ed} and ${red_category}  then ${care_request_id}  else null end ;;
     sql_distinct_key: ${care_request_id} ;;
 
   }
 
   measure: count_green_escalated_phone {
     type: count_distinct
-    sql: case when ${care_request_flat.escalated_on_phone} and ${green_category}  then ${care_request_id}  else null end ;;
+    sql: case when ${care_request_flat.escalated_on_phone_ed} and ${green_category}  then ${care_request_id}  else null end ;;
     sql_distinct_key: ${care_request_id} ;;
   }
 
