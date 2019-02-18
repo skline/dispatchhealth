@@ -2307,6 +2307,12 @@ view: care_request_flat {
     sql: ${complete_count_medicaid}+${complete_count_tricare} ;;
   }
 
+
+  dimension: flu_chief_complaint {
+    type: yesno
+    sql: lower(${care_requests.chief_complaint}) like '%flu%' ;;
+  }
+
   measure: complete_count_flu {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -2320,10 +2326,30 @@ view: care_request_flat {
     }
   }
 
+  measure: complete_count_flu_chief_complaint {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: flu_chief_complaint
+      value: "yes"
+    }
+  }
+
+
   measure: flu_percent {
     type: number
     value_format: "0.0%"
     sql: ${complete_count_flu}::float/nullif(${complete_count}::float,0);;
+  }
+
+  measure: flu_percent_chief_complaint {
+    type: number
+    value_format: "0.0%"
+    sql: ${complete_count_flu_chief_complaint}::float/nullif(${complete_count}::float,0);;
   }
 
 
