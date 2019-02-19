@@ -425,6 +425,13 @@ explore: care_requests {
     sql_on: ${diversion.diversion_category_id} = ${diversion_category.id} ;;
   }
 
+  join: diversion_flat {
+    relationship: one_to_many
+    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion_flat.diagnosis_code} AND
+          ${icd_visit_joins_clone.sequence_number} <= 3 AND
+          ${care_request_flat.dc1} = ${diversion_flat.dc1} ;;
+  }
+
   join: letter_recipient_dimensions_clone {
     relationship:  many_to_one
     sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;
