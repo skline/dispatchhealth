@@ -367,7 +367,7 @@ explore: care_requests {
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
   }
 
-  #### Diversion tables for cost savings model - 2/13/2019
+  ### Diversion tables for cost savings model - 2/13/2019
   join: diversion {
     relationship: one_to_many
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion.diagnosis_code} AND
@@ -415,21 +415,61 @@ explore: care_requests {
     ${care_request_flat.dc41} = ${diversion.diversion_category_id}) ;;
   }
 
+  join: diversion_flat {
+    relationship: one_to_many
+    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion_flat.diagnosis_code} AND
+          ${icd_visit_joins_clone.sequence_number} <= 3 AND
+          ${care_request_flat.dc1} = ${diversion_flat.dc1} AND
+          ${care_request_flat.dc2} = ${diversion_flat.dc2} AND
+          ${care_request_flat.dc3} = ${diversion_flat.dc3} AND
+          ${care_request_flat.dc4} = ${diversion_flat.dc4} AND
+          ${care_request_flat.dc5} = ${diversion_flat.dc5} AND
+          ${care_request_flat.dc6} = ${diversion_flat.dc6} AND
+          ${care_request_flat.dc7} = ${diversion_flat.dc7} AND
+          ${care_request_flat.dc8} = ${diversion_flat.dc8} AND
+          ${care_request_flat.dc9} = ${diversion_flat.dc9} AND
+          ${care_request_flat.dc10} = ${diversion_flat.dc10} AND
+          ${care_request_flat.dc11} = ${diversion_flat.dc11} AND
+          ${care_request_flat.dc12} = ${diversion_flat.dc12} AND
+          ${care_request_flat.dc13} = ${diversion_flat.dc13} AND
+          ${care_request_flat.dc14} = ${diversion_flat.dc14} AND
+          ${care_request_flat.dc15} = ${diversion_flat.dc15} AND
+          ${care_request_flat.dc16} = ${diversion_flat.dc16} AND
+          ${care_request_flat.dc17} = ${diversion_flat.dc17} AND
+          ${care_request_flat.dc18} = ${diversion_flat.dc18} AND
+          ${care_request_flat.dc19} = ${diversion_flat.dc19} AND
+          ${care_request_flat.dc20} = ${diversion_flat.dc20} AND
+          ${care_request_flat.dc21} = ${diversion_flat.dc21} AND
+          ${care_request_flat.dc22} = ${diversion_flat.dc22} AND
+          ${care_request_flat.dc23} = ${diversion_flat.dc23} AND
+          ${care_request_flat.dc24} = ${diversion_flat.dc24} AND
+          ${care_request_flat.dc25} = ${diversion_flat.dc25} AND
+          ${care_request_flat.dc26} = ${diversion_flat.dc26} AND
+          ${care_request_flat.dc27} = ${diversion_flat.dc27} AND
+          ${care_request_flat.dc28} = ${diversion_flat.dc28} AND
+          ${care_request_flat.dc29} = ${diversion_flat.dc29} AND
+          ${care_request_flat.dc30} = ${diversion_flat.dc30} AND
+          ${care_request_flat.dc31} = ${diversion_flat.dc31} AND
+          ${care_request_flat.dc32} = ${diversion_flat.dc32} AND
+          ${care_request_flat.dc33} = ${diversion_flat.dc33} AND
+          ${care_request_flat.dc34} = ${diversion_flat.dc34} AND
+          ${care_request_flat.dc35} = ${diversion_flat.dc35} AND
+          ${care_request_flat.dc36} = ${diversion_flat.dc36} AND
+          ${care_request_flat.dc37} = ${diversion_flat.dc37} AND
+          ${care_request_flat.dc38} = ${diversion_flat.dc38} AND
+          ${care_request_flat.dc39} = ${diversion_flat.dc39} AND
+          ${care_request_flat.dc40} = ${diversion_flat.dc40} AND
+          ${care_request_flat.dc41} = ${diversion_flat.dc41} ;;
+  }
+
   join: diversion_type {
     relationship: many_to_one
-    sql_on: ${diversion.diversion_type_id} = ${diversion_type.id} ;;
+    sql_on: ${diversion_flat.diversion_type_id} = ${diversion_type.id} ;;
   }
 
   join: diversion_category {
     relationship: many_to_one
     sql_on: ${diversion.diversion_category_id} = ${diversion_category.id} ;;
-  }
-
-  join: diversion_flat {
-    relationship: one_to_many
-    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion_flat.diagnosis_code} AND
-          ${icd_visit_joins_clone.sequence_number} <= 3 AND
-          ${care_request_flat.dc1} = ${diversion_flat.dc1} ;;
   }
 
   join: letter_recipient_dimensions_clone {
