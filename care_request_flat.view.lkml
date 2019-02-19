@@ -2782,6 +2782,10 @@ view: care_request_flat {
     ${care_request_flat.weekend_after_3pm} THEN 41 ELSE NULL END ;;
   }
 
+  # measure: 911_diversion_v2 {
+  #   type: number
+
+  # }
 
 
   dimension: diversion_category {
@@ -2910,7 +2914,6 @@ view: care_request_flat {
     sql: ${ed_diversion_adj} * 2000;;
 
   }
-
 
   measure: est_911_diversion_savings {
     type: sum_distinct
