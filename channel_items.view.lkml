@@ -136,6 +136,18 @@ view: channel_items {
     sql: ${TABLE}.type_name ;;
   }
 
+  dimension: type_name_direct_access {
+    type: string
+    sql: case
+    when ${name_no_tabs} in ('Healthcare Provider','Provider Group') or ${type_name} = 'Provider Group' then 'Provider or Provider Group'
+    when ${name_no_tabs} = 'Family Or Friend' then 'Family Or Friend'
+    when ${name_no_tabs} in('Employer', 'Employer Organization') then 'Employer'
+     when ${name_no_tabs} = 'Health Insurance Company' then 'Payer'
+    when ${name_no_tabs} in('West Metro Fire Rescue', 'South Metro Fire Rescue', '911 channel') then '911 channel'
+    when ${type_name} is null then 'Direct to Consumer'
+    else ${type_name} end ;;
+  }
+
   dimension: sub_type {
     type: string
     sql: CASE
