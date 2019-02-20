@@ -59,6 +59,11 @@ view: eligible_patients {
     sql: ${TABLE}.patient_id ;;
   }
 
+  dimension: population_health_patient {
+    type: yesno
+    sql: ${patient_id} IS NOT NULL ;;
+  }
+
   dimension: pcp {
     type: string
     sql: ${TABLE}.pcp ;;

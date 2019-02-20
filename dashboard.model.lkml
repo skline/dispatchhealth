@@ -902,15 +902,15 @@ explore: care_requests {
     sql_on: ${patients.id} = ${dtc_ff_patients.patient_id} ;;
   }
 
+  join: population_health_channels {
+    from: channel_items
+    relationship: many_to_one
+    sql_on: ${eligible_patients.channel_item_id} = ${population_health_channels.id} ;;
+  }
+
   join: eligible_patients {
     relationship: one_to_one
-    sql_on:
-    UPPER(concat(${eligible_patients.first_name}::text, ${eligible_patients.last_name}::text, to_char(${eligible_patients.dob_raw}, 'MM/DD/YY'), ${eligible_patients.gender}::text)) =
-    UPPER(concat(${patients.first_name}::text, ${patients.last_name}::text, to_char(${patients.dob}, 'MM/DD/YY'),
-      CASE WHEN ${patients.gender} = 'Female' THEN 'F'
-      WHEN ${patients.gender} = 'Male' THEN 'M'
-      ELSE ''
-      END)) ;;
+    sql_on: ${patients.id} = ${eligible_patients.patient_id} ;;
   }
 
   join: baycare_eligibility {
