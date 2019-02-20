@@ -2789,6 +2789,150 @@ view: care_request_flat {
     ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
 
+  dimension: diversion_cats_met {
+    type: number
+    sql: COALESCE(${dc1}, 0)*COALESCE(${diversion_flat.dc1}, 0) +
+    COALESCE(${dc2}, 0)*COALESCE(${diversion_flat.dc2}, 0) +
+    COALESCE(${dc3}, 0)*COALESCE(${diversion_flat.dc3}, 0) +
+    COALESCE(${dc4}, 0)*COALESCE(${diversion_flat.dc4}, 0) +
+    COALESCE(${dc5}, 0)*COALESCE(${diversion_flat.dc5}, 0) +
+    COALESCE(${dc6}, 0)*COALESCE(${diversion_flat.dc6}, 0) +
+    COALESCE(${dc7}, 0)*COALESCE(${diversion_flat.dc7}, 0) +
+    COALESCE(${dc8}, 0)*COALESCE(${diversion_flat.dc8}, 0) +
+    COALESCE(${dc9}, 0)*COALESCE(${diversion_flat.dc9}, 0) +
+    COALESCE(${dc10}, 0)*COALESCE(${diversion_flat.dc10}, 0) +
+    COALESCE(${dc11}, 0)*COALESCE(${diversion_flat.dc11}, 0) +
+    COALESCE(${dc12}, 0)*COALESCE(${diversion_flat.dc12}, 0) +
+    COALESCE(${dc13}, 0)*COALESCE(${diversion_flat.dc13}, 0) +
+    COALESCE(${dc14}, 0)*COALESCE(${diversion_flat.dc14}, 0) +
+    COALESCE(${dc15}, 0)*COALESCE(${diversion_flat.dc15}, 0) +
+    COALESCE(${dc16}, 0)*COALESCE(${diversion_flat.dc16}, 0) +
+    COALESCE(${dc17}, 0)*COALESCE(${diversion_flat.dc17}, 0) +
+    COALESCE(${dc18}, 0)*COALESCE(${diversion_flat.dc18}, 0) +
+    COALESCE(${dc19}, 0)*COALESCE(${diversion_flat.dc19}, 0) +
+    COALESCE(${dc20}, 0)*COALESCE(${diversion_flat.dc20}, 0) +
+    COALESCE(${dc21}, 0)*COALESCE(${diversion_flat.dc21}, 0) +
+    COALESCE(${dc22}, 0)*COALESCE(${diversion_flat.dc22}, 0) +
+    COALESCE(${dc23}, 0)*COALESCE(${diversion_flat.dc23}, 0) +
+    COALESCE(${dc24}, 0)*COALESCE(${diversion_flat.dc24}, 0) +
+    COALESCE(${dc25}, 0)*COALESCE(${diversion_flat.dc25}, 0) +
+    COALESCE(${dc26}, 0)*COALESCE(${diversion_flat.dc26}, 0) +
+    COALESCE(${dc27}, 0)*COALESCE(${diversion_flat.dc27}, 0) +
+    COALESCE(${dc28}, 0)*COALESCE(${diversion_flat.dc28}, 0) +
+    COALESCE(${dc29}, 0)*COALESCE(${diversion_flat.dc29}, 0) +
+    COALESCE(${dc30}, 0)*COALESCE(${diversion_flat.dc30}, 0) +
+    COALESCE(${dc31}, 0)*COALESCE(${diversion_flat.dc31}, 0) +
+    COALESCE(${dc32}, 0)*COALESCE(${diversion_flat.dc32}, 0) +
+    COALESCE(${dc33}, 0)*COALESCE(${diversion_flat.dc33}, 0) +
+    COALESCE(${dc34}, 0)*COALESCE(${diversion_flat.dc34}, 0) +
+    COALESCE(${dc35}, 0)*COALESCE(${diversion_flat.dc35}, 0) +
+    COALESCE(${dc36}, 0)*COALESCE(${diversion_flat.dc36}, 0) +
+    COALESCE(${dc37}, 0)*COALESCE(${diversion_flat.dc37}, 0) +
+    COALESCE(${dc38}, 0)*COALESCE(${diversion_flat.dc38}, 0) +
+    COALESCE(${dc39}, 0)*COALESCE(${diversion_flat.dc39}, 0) +
+    COALESCE(${dc40}, 0)*COALESCE(${diversion_flat.dc40}, 0) +
+    COALESCE(${dc41}, 0)*COALESCE(${diversion_flat.dc41}, 0);;
+  }
+
+  dimension: diversion_flag {
+    type: yesno
+    sql: ${diversion_cats_met} > 0 ;;
+  }
+
+  measure: count_er_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_er
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+
+  dimension: diversion_er {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_er} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+
+  measure: diversion_savings_er {
+    type: number
+    sql: ${count_er_diversions} * 2000 ;;
+    value_format: "$#,##0"
+  }
+
+  measure: count_911_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_911
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+  dimension: diversion_911 {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_911} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+  measure: diversion_savings_911 {
+    type: number
+    sql: ${count_911_diversions} * 750 ;;
+    value_format: "$#,##0"
+  }
+
+  measure: count_hospitalization_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_hospitalization
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+  measure: diversion_savings_hospitalization {
+    type: number
+    sql: ${count_hospitalization_diversions} * 12000 ;;
+    value_format: "$#,##0"
+  }
+
+  dimension: diversion_hospitalization {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_hospitalization} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+
+  measure: count_observation_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_observation
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+  measure: diversion_savings_observation {
+    type: number
+    sql: ${count_observation_diversions} * 3000 ;;
+    value_format: "$#,##0"
+  }
+  dimension: diversion_observation {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_observation} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+
+
+
+
   dimension: diversion_category {
     type: string
     sql: CASE
@@ -2929,7 +3073,6 @@ view: care_request_flat {
     sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
     value_format: "$#,##0"
     sql: ${hospital_diversion} * 12000;;
-
   }
 
   measure: est_diversion_savings {

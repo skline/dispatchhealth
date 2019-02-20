@@ -422,10 +422,16 @@ view: diversion_flat {
   ON d.diagnosis_code = dc41.diagnosis_code AND d.diversion_type_id = dc41.diversion_type_id
   GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,
            35,36,37,38,39,40,41,42,43
-  ORDER BY 1,2;
-;;
+  ORDER BY 1,2 ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM looker_scratch.diversion ;;
+  }
+
+  dimension: compound_primary_key {
+    type: string
+    hidden: yes
+    primary_key: yes
+    sql: CONCAT(${diagnosis_code}, ${diversion_type_id}) ;;
   }
 
   dimension: diagnosis_code {

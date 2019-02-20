@@ -62,29 +62,29 @@ view: diversion {
     sql: ${TABLE}.updated_at ;;
   }
 
-  dimension: er_diversion_type {
-    type: yesno
-    sql: ${diversion_type.id} = 1 ;;
-  }
-
-  measure: diversion_flag {
-    type: yesno
-    sql: bool_or(${diversion}) ;;
-  }
-
-  measure: er_diversion_count {
-    type: sum
-    sql: CASE WHEN ${diversion} THEN 1 ELSE 0 END ;;
-    filters: {
-      field: er_diversion_type
-      value: "yes"
-    }
-  }
-
-  measure: er_diversion_savings {
-    type: number
-    sql: 2000 * SUM(CASE WHEN ${er_diversion_count} > 0 THEN 1 ELSE 0 END)  ;;
-  }
+#   dimension: er_diversion_type {
+#     type: yesno
+#     sql: ${diversion_type.id} = 1 ;;
+#   }
+#
+#   measure: diversion_flag {
+#     type: yesno
+#     sql: bool_or(${diversion}) ;;
+#   }
+#
+#   measure: er_diversion_count {
+#     type: sum
+#     sql: CASE WHEN ${diversion} THEN 1 ELSE 0 END ;;
+#     filters: {
+#       field: er_diversion_type
+#       value: "yes"
+#     }
+#   }
+#
+#   measure: er_diversion_savings {
+#     type: number
+#     sql: 2000 * SUM(CASE WHEN ${er_diversion_count} > 0 THEN 1 ELSE 0 END)  ;;
+#   }
 
   measure: count {
     type: count
