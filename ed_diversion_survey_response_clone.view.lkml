@@ -78,5 +78,11 @@ ON v1.care_request_id = v2.care_request_id) ;;
     sql: ${TABLE}.answer_selection_value ;;
   }
 
+  dimension: survey_yes_to_er {
+    type: yesno
+    description: "Patient indicates they would have gone to ER if DH not available"
+    sql: ${answer_selection_value} = 'Emergency Room' ;;
+  }
+
 
 }

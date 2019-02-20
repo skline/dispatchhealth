@@ -8,6 +8,16 @@ view: eligible_patients {
     sql: ${TABLE}.id ;;
   }
 
+  dimension: distinct_patient {
+    type: string
+    sql: UPPER(concat(replace(${last_name}, '''', '')::text, to_char(${dob_date}, 'MM/DD/YYYY'), ${gender})) ;;
+  }
+
+  measure: count_distinct_patients {
+    type: count_distinct
+    sql: ${distinct_patient} ;;
+  }
+
   dimension: channel_item_id {
     type: number
     sql: ${TABLE}.channel_item_id ;;

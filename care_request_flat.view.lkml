@@ -2256,6 +2256,13 @@ view: care_request_flat {
     sql: ${complete_date} is not null ;;
   }
 
+  dimension: prior_complete_week_flag {
+    description: "The complete date is in the past complete week"
+    type: yesno
+    sql: ((((${complete_date}) >= ((SELECT (DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL))) AND
+         (${complete_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
+  }
+
   dimension: resolved {
     type: yesno
     sql: ${archive_comment} is not null or ${complete_comment} is not null  ;;
@@ -2519,6 +2526,412 @@ view: care_request_flat {
     sql: max(${complete_raw}) ;;
   }
 
+  dimension: weekend_after_3pm {
+    description: "A flag indicating the care request took place after 3PM or on the weekend"
+    type: yesno
+    sql: ${on_scene_hour_of_day} > 15 OR ${on_scene_day_of_week_index} IN (5, 6)  ;;
+  }
+
+  dimension: dc1 {
+    description: "Diversion category 1"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${diversion.icd_code_id} IS NOT NULL THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc2 {
+    description: "Diversion category 2"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${ed_diversion_survey_response_clone.survey_yes_to_er} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc3 {
+    description: "Diversion category 3"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${channel_items.divert_from_911} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc4 {
+    description: "Diversion category 4"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_snf} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc5 {
+    description: "Diversion category 5"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_al} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc6 {
+    description: "Diversion category 6"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc7 {
+    description: "Diversion category 7"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc8 {
+    description: "Diversion category 8"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${vitals_flat.abnormal_vitals} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc9 {
+    description: "Diversion category 9"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${icd_code_dimensions_clone.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc10 {
+    description: "Diversion category 10"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${icd_code_dimensions_clone.wheelchair_homebound} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc11 {
+    description: "Diversion category 11"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.ekg_performed} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc12 {
+    description: "Diversion category 12"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.nebulizer} THEN 12 ELSE NULL END ;;
+  }
+  dimension: dc13 {
+    description: "Diversion category 13"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.iv_fluids} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc14 {
+    description: "Diversion category 14"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.blood_tests} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc15 {
+    description: "Diversion category 15"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.catheter_placement} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc16 {
+    description: "Diversion category 16"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.laceration_repair} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc17 {
+    description: "Diversion category 17"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.epistaxis} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc18 {
+    description: "Diversion category 18"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.hernia_rp_reduction} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc19 {
+    description: "Diversion category 19"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.joint_reduction} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc20 {
+    description: "Diversion category 20"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.gastronomy_tube} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc21 {
+    description: "Diversion category 21"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${cpt_code_dimensions_clone.abscess_drain} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc22 {
+    description: "Diversion category 22"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc23 {
+    description: "Diversion category 23"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_snf} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc24 {
+    description: "Diversion category 24"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_snf} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc25 {
+    description: "Diversion category 25"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    ${cpt_code_dimensions_clone.any_cs_procedure} THEN 25 ELSE NULL END ;;
+  }
+  dimension: dc26 {
+    description: "Diversion category 26"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc27 {
+    description: "Diversion category 27"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc28 {
+    description: "Diversion category 28"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_al} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc29 {
+    description: "Diversion category 29"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_al} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc30 {
+    description: "Diversion category 30"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc31 {
+    description: "Diversion category 31"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc32 {
+    description: "Diversion category 32"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc33 {
+    description: "Diversion category 33"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc34 {
+    description: "Diversion category 34"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc35 {
+    description: "Diversion category 35"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc36 {
+    description: "Diversion category 36"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc37 {
+    description: "Diversion category 37"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc38 {
+    description: "Diversion category 38"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc39 {
+    description: "Diversion category 39"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc40 {
+    description: "Diversion category 40"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${icd_code_dimensions_clone.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+  }
+  dimension: dc41 {
+    description: "Diversion category 41"
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${icd_code_dimensions_clone.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND
+    ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
+  }
+
+  dimension: diversion_cats_met {
+    type: number
+    sql: COALESCE(${dc1}, 0)*COALESCE(${diversion_flat.dc1}, 0) +
+    COALESCE(${dc2}, 0)*COALESCE(${diversion_flat.dc2}, 0) +
+    COALESCE(${dc3}, 0)*COALESCE(${diversion_flat.dc3}, 0) +
+    COALESCE(${dc4}, 0)*COALESCE(${diversion_flat.dc4}, 0) +
+    COALESCE(${dc5}, 0)*COALESCE(${diversion_flat.dc5}, 0) +
+    COALESCE(${dc6}, 0)*COALESCE(${diversion_flat.dc6}, 0) +
+    COALESCE(${dc7}, 0)*COALESCE(${diversion_flat.dc7}, 0) +
+    COALESCE(${dc8}, 0)*COALESCE(${diversion_flat.dc8}, 0) +
+    COALESCE(${dc9}, 0)*COALESCE(${diversion_flat.dc9}, 0) +
+    COALESCE(${dc10}, 0)*COALESCE(${diversion_flat.dc10}, 0) +
+    COALESCE(${dc11}, 0)*COALESCE(${diversion_flat.dc11}, 0) +
+    COALESCE(${dc12}, 0)*COALESCE(${diversion_flat.dc12}, 0) +
+    COALESCE(${dc13}, 0)*COALESCE(${diversion_flat.dc13}, 0) +
+    COALESCE(${dc14}, 0)*COALESCE(${diversion_flat.dc14}, 0) +
+    COALESCE(${dc15}, 0)*COALESCE(${diversion_flat.dc15}, 0) +
+    COALESCE(${dc16}, 0)*COALESCE(${diversion_flat.dc16}, 0) +
+    COALESCE(${dc17}, 0)*COALESCE(${diversion_flat.dc17}, 0) +
+    COALESCE(${dc18}, 0)*COALESCE(${diversion_flat.dc18}, 0) +
+    COALESCE(${dc19}, 0)*COALESCE(${diversion_flat.dc19}, 0) +
+    COALESCE(${dc20}, 0)*COALESCE(${diversion_flat.dc20}, 0) +
+    COALESCE(${dc21}, 0)*COALESCE(${diversion_flat.dc21}, 0) +
+    COALESCE(${dc22}, 0)*COALESCE(${diversion_flat.dc22}, 0) +
+    COALESCE(${dc23}, 0)*COALESCE(${diversion_flat.dc23}, 0) +
+    COALESCE(${dc24}, 0)*COALESCE(${diversion_flat.dc24}, 0) +
+    COALESCE(${dc25}, 0)*COALESCE(${diversion_flat.dc25}, 0) +
+    COALESCE(${dc26}, 0)*COALESCE(${diversion_flat.dc26}, 0) +
+    COALESCE(${dc27}, 0)*COALESCE(${diversion_flat.dc27}, 0) +
+    COALESCE(${dc28}, 0)*COALESCE(${diversion_flat.dc28}, 0) +
+    COALESCE(${dc29}, 0)*COALESCE(${diversion_flat.dc29}, 0) +
+    COALESCE(${dc30}, 0)*COALESCE(${diversion_flat.dc30}, 0) +
+    COALESCE(${dc31}, 0)*COALESCE(${diversion_flat.dc31}, 0) +
+    COALESCE(${dc32}, 0)*COALESCE(${diversion_flat.dc32}, 0) +
+    COALESCE(${dc33}, 0)*COALESCE(${diversion_flat.dc33}, 0) +
+    COALESCE(${dc34}, 0)*COALESCE(${diversion_flat.dc34}, 0) +
+    COALESCE(${dc35}, 0)*COALESCE(${diversion_flat.dc35}, 0) +
+    COALESCE(${dc36}, 0)*COALESCE(${diversion_flat.dc36}, 0) +
+    COALESCE(${dc37}, 0)*COALESCE(${diversion_flat.dc37}, 0) +
+    COALESCE(${dc38}, 0)*COALESCE(${diversion_flat.dc38}, 0) +
+    COALESCE(${dc39}, 0)*COALESCE(${diversion_flat.dc39}, 0) +
+    COALESCE(${dc40}, 0)*COALESCE(${diversion_flat.dc40}, 0) +
+    COALESCE(${dc41}, 0)*COALESCE(${diversion_flat.dc41}, 0);;
+  }
+
+  dimension: diversion_flag {
+    type: yesno
+    sql: ${diversion_cats_met} > 0 ;;
+  }
+
+  measure: count_er_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_er
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+
+  dimension: diversion_er {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_er} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+
+  measure: diversion_savings_er {
+    type: number
+    sql: ${count_er_diversions} * 2000 ;;
+    value_format: "$#,##0"
+  }
+
+  measure: count_911_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_911
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+  dimension: diversion_911 {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_911} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+  measure: diversion_savings_911 {
+    type: number
+    sql: ${count_911_diversions} * 750 ;;
+    value_format: "$#,##0"
+  }
+
+  measure: count_hospitalization_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_hospitalization
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+  measure: diversion_savings_hospitalization {
+    type: number
+    sql: ${count_hospitalization_diversions} * 12000 ;;
+    value_format: "$#,##0"
+  }
+
+  dimension: diversion_hospitalization {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_hospitalization} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+
+  measure: count_observation_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_type.diversion_type_observation
+      value: "yes"
+    }
+    filters: {
+      field:diversion_flag
+      value: "yes"
+    }
+  }
+  measure: diversion_savings_observation {
+    type: number
+    sql: ${count_observation_diversions} * 4000 ;;
+    value_format: "$#,##0"
+  }
+  dimension: diversion_observation {
+    type: number
+    sql: CASE WHEN ${diversion_type.diversion_type_observation} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+
+
+
 
   dimension: diversion_category {
     type: string
@@ -2614,7 +3027,6 @@ view: care_request_flat {
   }
 
 
-
   measure: est_vol_ed_diversion {
     type: sum_distinct
     sql_distinct_key:  concat(${care_request_id}, ${followup_30day}) ;;
@@ -2648,7 +3060,6 @@ view: care_request_flat {
 
   }
 
-
   measure: est_911_diversion_savings {
     type: sum_distinct
     sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
@@ -2662,7 +3073,6 @@ view: care_request_flat {
     sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
     value_format: "$#,##0"
     sql: ${hospital_diversion} * 12000;;
-
   }
 
   measure: est_diversion_savings {

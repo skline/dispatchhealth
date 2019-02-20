@@ -81,6 +81,71 @@ view: cpt_code_dimensions_clone {
     sql: ${TABLE}.e_and_m_code ;;
   }
 
+  dimension: ekg_performed {
+    type: yesno
+    sql: ${cpt_code} IN ('93005', '93010', '93000') ;;
+  }
+
+  dimension: nebulizer {
+    type: yesno
+    sql: ${cpt_code} = '94640' ;;
+  }
+
+  dimension: iv_fluids {
+    type: yesno
+    sql: ${cpt_code} IN ('96360', '96361') ;;
+  }
+
+  dimension: blood_tests {
+    type: yesno
+    sql: ${cpt_code} IN ('80047', '36415', '36410', '85014', '83605', '85610', '34616') ;;
+  }
+
+  dimension: catheter_placement {
+    type: yesno
+    sql: ${cpt_code} IN ('51702', '51701', '51703', '51705') ;;
+  }
+
+  dimension: laceration_repair {
+    type: yesno
+    sql: ${cpt_code} IN ('12001', '12002', '12004', '12011', '12013', '12014', '12015', '12031', '12032', '12034', '12035', '12036', '12041', '12042', '12044', '12051', '12052', '12053', '12054') ;;
+  }
+
+  dimension: epistaxis {
+    type: yesno
+    sql: ${cpt_code} IN ('30901', '30903', '30905', '30906') ;;
+  }
+
+  dimension: hernia_rp_reduction {
+    type: yesno
+    sql: ${cpt_code} IN ('49999') ;;
+  }
+
+  dimension: joint_reduction {
+    type: yesno
+    sql: ${cpt_code} IN ('24640', '26770') ;;
+  }
+
+  dimension: gastronomy_tube {
+    type: yesno
+    sql: ${cpt_code} IN ('49450', '43760') ;;
+  }
+
+  dimension: abscess_drain {
+    type: yesno
+    sql: ${cpt_code} IN ('10060', '10061') ;;
+  }
+
+  dimension: any_cs_procedure {
+    description: "Any procedure that impacts cost savings calculation"
+    type: yesno
+    sql: ${ekg_performed} OR ${nebulizer} OR ${iv_fluids} OR ${blood_tests} OR ${catheter_placement} OR ${laceration_repair} OR ${epistaxis} OR
+    ${hernia_rp_reduction} OR ${joint_reduction} OR ${gastronomy_tube} OR ${abscess_drain} ;;
+  }
+
+
+
+
   dimension: e_and_m_flag {
     label: "E&M CPT code flag"
     description: "Flag to indicate whether the CPT code is an E&M code"

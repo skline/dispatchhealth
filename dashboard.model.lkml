@@ -355,9 +355,121 @@ explore: care_requests {
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 2 ;;
   }
 
+  join: icd_tertiary_code_dimensions_clone {
+    from: icd_code_dimensions_clone
+    view_label: "ICD Tertiary Code Dimensions Clone"
+    relationship: many_to_one
+    sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 3 ;;
+  }
+
   join: drg_to_icd10_crosswalk {
     relationship: one_to_one
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
+  }
+
+  ### Diversion tables for cost savings model - 2/13/2019
+  join: diversion {
+    relationship: one_to_many
+    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion.diagnosis_code} AND
+    ${icd_visit_joins_clone.sequence_number} <= 3 AND (
+    ${care_request_flat.dc1} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc2} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc3} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc4} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc5} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc6} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc7} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc8} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc9} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc10} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc11} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc12} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc13} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc14} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc15} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc16} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc17} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc18} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc19} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc20} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc21} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc22} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc23} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc24} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc25} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc26} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc27} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc28} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc29} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc30} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc31} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc32} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc33} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc34} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc35} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc36} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc37} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc38} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc39} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc40} = ${diversion.diversion_category_id} OR
+    ${care_request_flat.dc41} = ${diversion.diversion_category_id}) ;;
+  }
+
+  join: diversion_flat {
+    relationship: one_to_many
+    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion_flat.diagnosis_code} AND
+          ${icd_visit_joins_clone.sequence_number} <= 3 AND (
+          ${care_request_flat.dc1} = ${diversion_flat.dc1} OR
+          ${care_request_flat.dc2} = ${diversion_flat.dc2} OR
+          ${care_request_flat.dc3} = ${diversion_flat.dc3} OR
+          ${care_request_flat.dc4} = ${diversion_flat.dc4} OR
+          ${care_request_flat.dc5} = ${diversion_flat.dc5} OR
+          ${care_request_flat.dc6} = ${diversion_flat.dc6} OR
+          ${care_request_flat.dc7} = ${diversion_flat.dc7} OR
+          ${care_request_flat.dc8} = ${diversion_flat.dc8} OR
+          ${care_request_flat.dc9} = ${diversion_flat.dc9} OR
+          ${care_request_flat.dc10} = ${diversion_flat.dc10} OR
+          ${care_request_flat.dc11} = ${diversion_flat.dc11} OR
+          ${care_request_flat.dc12} = ${diversion_flat.dc12} OR
+          ${care_request_flat.dc13} = ${diversion_flat.dc13} OR
+          ${care_request_flat.dc14} = ${diversion_flat.dc14} OR
+          ${care_request_flat.dc15} = ${diversion_flat.dc15} OR
+          ${care_request_flat.dc16} = ${diversion_flat.dc16} OR
+          ${care_request_flat.dc17} = ${diversion_flat.dc17} OR
+          ${care_request_flat.dc18} = ${diversion_flat.dc18} OR
+          ${care_request_flat.dc19} = ${diversion_flat.dc19} OR
+          ${care_request_flat.dc20} = ${diversion_flat.dc20} OR
+          ${care_request_flat.dc21} = ${diversion_flat.dc21} OR
+          ${care_request_flat.dc22} = ${diversion_flat.dc22} OR
+          ${care_request_flat.dc23} = ${diversion_flat.dc23} OR
+          ${care_request_flat.dc24} = ${diversion_flat.dc24} OR
+          ${care_request_flat.dc25} = ${diversion_flat.dc25} OR
+          ${care_request_flat.dc26} = ${diversion_flat.dc26} OR
+          ${care_request_flat.dc27} = ${diversion_flat.dc27} OR
+          ${care_request_flat.dc28} = ${diversion_flat.dc28} OR
+          ${care_request_flat.dc29} = ${diversion_flat.dc29} OR
+          ${care_request_flat.dc30} = ${diversion_flat.dc30} OR
+          ${care_request_flat.dc31} = ${diversion_flat.dc31} OR
+          ${care_request_flat.dc32} = ${diversion_flat.dc32} OR
+          ${care_request_flat.dc33} = ${diversion_flat.dc33} OR
+          ${care_request_flat.dc34} = ${diversion_flat.dc34} OR
+          ${care_request_flat.dc35} = ${diversion_flat.dc35} OR
+          ${care_request_flat.dc36} = ${diversion_flat.dc36} OR
+          ${care_request_flat.dc37} = ${diversion_flat.dc37} OR
+          ${care_request_flat.dc38} = ${diversion_flat.dc38} OR
+          ${care_request_flat.dc39} = ${diversion_flat.dc39} OR
+          ${care_request_flat.dc40} = ${diversion_flat.dc40} OR
+          ${care_request_flat.dc41} = ${diversion_flat.dc41}) ;;
+  }
+
+  join: diversion_type {
+    relationship: many_to_one
+    sql_on: ${diversion_flat.diversion_type_id} = ${diversion_type.id} ;;
+  }
+
+  join: diversion_category {
+    relationship: many_to_one
+    sql_on: ${diversion.diversion_category_id} = ${diversion_category.id} ;;
   }
 
   join: letter_recipient_dimensions_clone {
