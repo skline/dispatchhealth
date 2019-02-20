@@ -2922,7 +2922,7 @@ view: care_request_flat {
   }
   measure: diversion_savings_observation {
     type: number
-    sql: ${count_observation_diversions} * 3000 ;;
+    sql: ${count_observation_diversions} * 4000 ;;
     value_format: "$#,##0"
   }
   dimension: diversion_observation {
