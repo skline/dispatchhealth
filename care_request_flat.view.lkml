@@ -2263,6 +2263,13 @@ view: care_request_flat {
          (${complete_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
   }
 
+  dimension: prior_archive_week_flag {
+    description: "The archive date is in the past complete week"
+    type: yesno
+    sql: ((((${archive_date}) >= ((SELECT (DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL))) AND
+      (${archive_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
+  }
+
   dimension: resolved {
     type: yesno
     sql: ${archive_comment} is not null or ${complete_comment} is not null  ;;
