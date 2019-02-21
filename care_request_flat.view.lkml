@@ -183,6 +183,28 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  dimension: created_to_resolved_minutes {
+    type: number
+    description: "The number of minutes between created time and archived time"
+    sql: CASE
+          WHEN ABS((EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0) < 241
+          THEN (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0
+          ELSE NULL
+        END ;;
+    value_format: "0.00"
+  }
+
+  dimension: accepted_to_resolved_minutes {
+    type: number
+    description: "The number of minutes between accepted time and archived time"
+    sql: CASE
+          WHEN ABS((EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0) < 241
+          THEN (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0
+          ELSE NULL
+        END ;;
+    value_format: "0.00"
+  }
+
   dimension: on_scene_time_tier {
     type: tier
     tiers: [10,20,30,40,50,60,70,80,90,100]
@@ -485,6 +507,32 @@ view: care_request_flat {
       value: "yes"
     }
   }
+
+  measure:  average_created_to_resolved_minutes{
+    type: average_distinct
+    description: "The average minutes between created time and archive time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${created_to_resolved_minutes} ;;
+  }
+
+  measure:  average_accepted_to_initial_eta_minutes{
+    type: average_distinct
+    description: "The average minutes between accepted time and initial ETA"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${accepted_to_initial_eta_minutes} ;;
+  }
+
+  measure: average_accepted_to_resolved_minutes{
+    type: average_distinct
+    description: "The average minutes between accepted time and Resolved Time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${accepted_to_resolved_minutes} ;;
+  }
+
+
 
   measure:  total_on_scene_time_minutes{
     type: sum_distinct
