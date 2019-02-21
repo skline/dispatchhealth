@@ -425,6 +425,7 @@ view: diversion_flat {
   ORDER BY 1,2 ;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM looker_scratch.diversion ;;
+    indexes: ["diagnosis_code", "diversion_type_id"]
   }
 
   dimension: compound_primary_key {

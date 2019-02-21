@@ -2536,7 +2536,7 @@ view: care_request_flat {
     description: "Diversion category 1"
     type: number
     hidden: yes
-    sql: CASE WHEN ${diversion.icd_code_id} IS NOT NULL THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${diversion.diagnosis_code} IS NOT NULL THEN 1 ELSE 0 END ;;
   }
   dimension: dc2 {
     description: "Diversion category 2"
