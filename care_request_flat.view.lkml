@@ -2588,255 +2588,255 @@ view: care_request_flat {
   }
 
   dimension: dc1 {
-    description: "Diversion category 1"
+    description: "Diagnosis Only"
     type: number
     hidden: yes
     sql: CASE WHEN ${diversion.diagnosis_code} IS NOT NULL THEN 1 ELSE 0 END ;;
   }
   dimension: dc2 {
-    description: "Diversion category 2"
+    description: "Survey Response YES to ER"
     type: number
     hidden: yes
     sql: CASE WHEN ${ed_diversion_survey_response_clone.survey_yes_to_er} THEN 1 ELSE 0 END ;;
   }
   dimension: dc3 {
-    description: "Diversion category 3"
+    description: "911 Diversion Program"
     type: number
     hidden: yes
-    sql: CASE WHEN ${channel_items.divert_from_911} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${cars.name} SIMILAR TO '%(SMFR|WMFR)%' THEN 1 ELSE 0 END ;;
   }
   dimension: dc4 {
-    description: "Diversion category 4"
+    description: "POS SNF"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} THEN 1 ELSE 0 END ;;
   }
   dimension: dc5 {
-    description: "Diversion category 5"
+    description: "POS Assisted Living"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} THEN 1 ELSE 0 END ;;
   }
   dimension: dc6 {
-    description: "Diversion category 6"
+    description: "Referred from Home Health, PCP or Care Mgmt"
     type: number
     hidden: yes
     sql: CASE WHEN ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc7 {
-    description: "Diversion category 7"
+    description: "Weekends or After 3 PM"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc8 {
-    description: "Diversion category 8"
+    description: "Abnormal Vitals (O2 sat < 90%, HR > 100, SBP < 90 for adults)"
     type: number
     hidden: yes
     sql: CASE WHEN ${vitals_flat.abnormal_vitals} THEN 1 ELSE 0 END ;;
   }
   dimension: dc9 {
-    description: "Diversion category 9"
+    description: "Additional Dx of Confusion or Altered Awareness"
     type: number
     hidden: yes
     sql: CASE WHEN ${icd_code_dimensions_clone.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
   }
   dimension: dc10 {
-    description: "Diversion category 10"
+    description: "Wheelchair or Homebound"
     type: number
     hidden: yes
     sql: CASE WHEN ${icd_code_dimensions_clone.wheelchair_homebound} THEN 1 ELSE 0 END ;;
   }
   dimension: dc11 {
-    description: "Diversion category 11"
+    description: "EKG Performed"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.ekg_performed} THEN 1 ELSE 0 END ;;
   }
   dimension: dc12 {
-    description: "Diversion category 12"
+    description: "Nebulizer Treatment"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.nebulizer} THEN 12 ELSE NULL END ;;
   }
   dimension: dc13 {
-    description: "Diversion category 13"
+    description: "IV/Fluids Administered"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.iv_fluids} THEN 1 ELSE 0 END ;;
   }
   dimension: dc14 {
-    description: "Diversion category 14"
+    description: "Blood Tests Performed"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.blood_tests} THEN 1 ELSE 0 END ;;
   }
   dimension: dc15 {
-    description: "Diversion category 15"
+    description: "Catheter Adjustment or Placement"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.catheter_placement} THEN 1 ELSE 0 END ;;
   }
   dimension: dc16 {
-    description: "Diversion category 16"
+    description: "Laceration Repair"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.laceration_repair} THEN 1 ELSE 0 END ;;
   }
   dimension: dc17 {
-    description: "Diversion category 17"
+    description: "Epistaxis Tx"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.epistaxis} THEN 1 ELSE 0 END ;;
   }
   dimension: dc18 {
-    description: "Diversion category 18"
+    description: "Rectal Prolapse Reduction or Hernia Reduction"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.hernia_rp_reduction} THEN 1 ELSE 0 END ;;
   }
   dimension: dc19 {
-    description: "Diversion category 19"
+    description: "Nursemaids elbow reduction or other joint reduction"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.joint_reduction} THEN 1 ELSE 0 END ;;
   }
   dimension: dc20 {
-    description: "Diversion category 20"
+    description: "Gastrostomy Tube replacement or repair"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.gastronomy_tube} THEN 1 ELSE 0 END ;;
   }
   dimension: dc21 {
-    description: "Diversion category 21"
+    description: "I&D of Abscess"
     type: number
     hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.abscess_drain} THEN 1 ELSE 0 END ;;
   }
   dimension: dc22 {
-    description: "Diversion category 22"
+    description: "POS SNF AND (abnormal vital signs  OR altered mental status)"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc23 {
-    description: "Diversion category 23"
+    description: "POS SNF AND any procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc24 {
-    description: "Diversion category 24"
+    description: "POS SNF AND referral"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc25 {
-    description: "Diversion category 25"
+    description: "POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 25 ELSE NULL END ;;
   }
   dimension: dc26 {
-    description: "Diversion category 26"
+    description: "POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc27 {
-    description: "Diversion category 27"
+    description: "POS AL AND (abnormal vital signs OR altered mental status)"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc28 {
-    description: "Diversion category 28"
+    description: "POS AL AND procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc29 {
-    description: "Diversion category 29"
+    description: "POS AL AND referral"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc30 {
-    description: "Diversion category 30"
+    description: "POS AL AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc31 {
-    description: "Diversion category 31"
+    description: "POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc32 {
-    description: "Diversion category 32"
+    description: "POS HOME AND (abnormal vital signs OR altered mental status)"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc33 {
-    description: "Diversion category 33"
+    description: "POS HOME AND any procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc34 {
-    description: "Diversion category 34"
+    description: "POS HOME AND referral"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc35 {
-    description: "Diversion category 35"
+    description: "POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc36 {
-    description: "Diversion category 36"
+    description: "POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc37 {
-    description: "Diversion category 37"
+    description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
     ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc38 {
-    description: "Diversion category 38"
+    description: "POS HOME AND wheelchair/homebound AND any procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc39 {
-    description: "Diversion category 39"
+    description: "POS HOME AND wheelchair/homebound AND referral"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc40 {
-    description: "Diversion category 40"
+    description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
     ${icd_code_dimensions_clone.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc41 {
-    description: "Diversion category 41"
+    description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
@@ -2845,6 +2845,7 @@ view: care_request_flat {
   }
 
   dimension: diversion_cats_met {
+    description: "The number of diversion categories met"
     type: number
     sql: COALESCE(${dc1}, 0)*COALESCE(${diversion_flat.dc1}, 0) +
     COALESCE(${dc2}, 0)*COALESCE(${diversion_flat.dc2}, 0) +
