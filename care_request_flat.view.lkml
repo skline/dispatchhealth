@@ -2591,7 +2591,7 @@ view: care_request_flat {
     description: "Diagnosis Only"
     type: number
     hidden: yes
-    sql: CASE WHEN ${diversion.diagnosis_code} IS NOT NULL THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${diversion_flat.diagnosis_code} IS NOT NULL THEN 1 ELSE 0 END ;;
   }
   dimension: dc2 {
     description: "Survey Response YES to ER"
@@ -2603,7 +2603,7 @@ view: care_request_flat {
     description: "911 Diversion Program"
     type: number
     hidden: yes
-    sql: CASE WHEN ${cars.name} SIMILAR TO '%(SMFR|WMFR)%' THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${channel_items.divert_from_911} THEN 1 ELSE 0 END ;;
   }
   dimension: dc4 {
     description: "POS SNF"
