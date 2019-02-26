@@ -133,6 +133,7 @@ view: athenadwh_patient_medication_clone {
     sql: ${TABLE}.medication_name ;;
   }
 
+
   measure: medications_list {
     label: "List of all medications"
     type: string
@@ -204,4 +205,5 @@ view: athenadwh_patient_medication_clone {
     #   value: "yes"
     # }
   }
+
 }
