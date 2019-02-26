@@ -136,6 +136,28 @@ view: risk_assessments {
     sql: ${risk_category} = 'Yellow - Medium Risk' ;;
   }
 
+  dimension: worst_case_score {
+    type: number
+    description: "The worst case score if certain risk questions are not answered"
+    sql: ${TABLE}.worst_case_score ;;
+  }
+
+  dimension: requires_secondary_screening {
+    type: yesno
+    description: "The risk score OR the worst case score is between 5.5 and 9.99"
+    sql: ${yellow_category} OR (${worst_case_score} >= 5.5 AND ${worst_case_score} < 10) ;;
+  }
+
+  measure: count_requires_secondary_screening {
+    description: "Count of all care requests that require secondary screening"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: requires_secondary_screening
+      value: "yes"
+    }
+  }
+
   dimension: yellow_category_old {
     type: yesno
     sql: ${risk_category_old} = 'Yellow - Medium Risk' ;;
