@@ -84,9 +84,28 @@ view: athenadwh_patient_current_medications {
       sql: string_agg(DISTINCT ${medication_name}, ' | ') ;;
     }
 
+  dimension: medication_name_short {
+    description: "The first word of the medication name"
+    type: string
+    sql: split_part(${medication_name}, ' ', 1) ;;
+  }
+
+  measure: medications_list_short {
+    description: "List of all medications (first word only)"
+    type: string
+    sql: string_agg(DISTINCT ${medication_name_short}, ' | ') ;;
+  }
+
     dimension: patient_id {
       type: number
       sql: ${TABLE}.patient_id ;;
+    }
+
+    dimension: patient_id_short_med_name {
+      description: "Concatenate patient ID and medication short name for counting"
+      hidden: yes
+      type: string
+      sql: CONCAT(${patient_id}::varchar,' ', ${medication_name_short}) ;;
     }
 
     dimension: valid_patient_id {
@@ -109,6 +128,28 @@ view: athenadwh_patient_current_medications {
         value: "yes"
       }
     }
+
+  measure: count_medications_short {
+    type: count_distinct
+    sql: ${patient_id_short_med_name} ;;
+    filters: {
+      field: valid_patient_id
+      value: "yes"
+    }
+  }
+
+  measure: count_dme_equipment_medications_short {
+    type: count_distinct
+    sql: ${patient_id_short_med_name} ;;
+    filters: {
+      field: valid_patient_id
+      value: "yes"
+    }
+    filters: {
+      field: dme_equipment_medicine
+      value: "yes"
+    }
+  }
 
   measure: count_dme_equipment_medications {
     type: count_distinct
