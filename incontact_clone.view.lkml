@@ -229,7 +229,8 @@ group by 1,2,3,4,5,6,7,8,9)lq
       year,
       hour_of_day,
       day_of_month,
-      day_of_week_index
+      day_of_week_index,
+      day_of_week
     ]
     sql: ${TABLE}.start_time ;;
   }
@@ -874,5 +875,36 @@ group by 1,2,3,4,5,6,7,8,9)lq
     label: "Care Request Created Rate"
     sql: ${requesting_care_calls}::float/nullif(${possible_intent_calls}::float,0) ;;
   }
+
+  dimension: now_mountain_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${care_request_flat.now_mountain_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${care_request_flat.now_mountain_raw} ) AS FLOAT)) / 60);;
+  }
+
+  dimension: start_decimal {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM ${start_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${start_raw} ) AS FLOAT)) / 60);;
+  }
+
+  dimension: before_now {
+    type: yesno
+    sql: ${start_decimal} <= ${care_request_flat.now_mountain_decimal};;
+  }
+  dimension:  same_day_of_week_created_today {
+    type: yesno
+    sql:  ${care_request_flat.today_mountain_day_of_week_index} = ${start_day_of_week_index};;
+  }
+
+  measure: distinct_days_start_dates {
+    type: number
+    sql: count(DISTINCT ${start_date}) ;;
+  }
+
 
 }

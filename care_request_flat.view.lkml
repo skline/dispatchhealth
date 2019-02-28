@@ -2251,6 +2251,19 @@ view: care_request_flat {
     }
   }
 
+  measure: non_screened_escalated_on_phone_ed_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone_ed
+      value: "yes"
+    }
+    filters: {
+      field: secondary_screening
+      value: "no"
+    }
+  }
+
   measure: escalated_on_phone_ed_count {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -2259,6 +2272,13 @@ view: care_request_flat {
       value: "yes"
     }
   }
+
+  measure: non_screeened_escalated_on_phone_ed_percent{
+    type: number
+    sql: ${non_screened_escalated_on_phone_ed_count}::float/(nullif(${care_request_count},0))::float ;;
+    value_format: "0%"
+  }
+
 
   measure: escalated_on_phone_ed_percent{
     type: number
@@ -2272,16 +2292,38 @@ view: care_request_flat {
     value_format: "0%"
   }
 
+  measure:  non_screeened_escalated_on_phone_ed_percent_green{
+    type: number
+    sql: ${risk_assessments.non_screened_count_green_escalated_phone}::float/(nullif(${risk_assessments.count_green},0))::float  ;;
+    value_format: "0%"
+  }
+
+
   measure: escalated_on_phone_ed_percent_yellow{
     type: number
     sql: ${risk_assessments.count_yellow_escalated_phone}::float/(nullif(${risk_assessments.count_yellow},0))::float ;;
     value_format: "0%"
   }
 
+  measure: non_screened_escalated_on_phone_ed_percent_yellow{
+    type: number
+    sql: ${risk_assessments.non_screened_count_yellow_escalated_phone}::float/(nullif(${risk_assessments.count_yellow},0))::float ;;
+    value_format: "0%"
+  }
+
+
+
+
 
   measure: escalated_on_phone_ed_percent_red{
     type: number
     sql:  ${risk_assessments.count_red_escalated_phone}::float/(nullif(${risk_assessments.count_red},0))::float ;;
+    value_format: "0%"
+  }
+
+  measure: non_screened_escalated_on_phone_ed_percent_red{
+    type: number
+    sql:  ${risk_assessments.non_screened_count_red_escalated_phone}::float/(nullif(${risk_assessments.count_red},0))::float ;;
     value_format: "0%"
   }
 
@@ -2316,6 +2358,13 @@ view: care_request_flat {
     type: yesno
     sql: ((((${archive_date}) >= ((SELECT (DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL))) AND
       (${archive_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
+  }
+
+  dimension: prior_created_week_flag {
+    description: "The created date is in the past complete week"
+    type: yesno
+    sql: ((((${created_date}) >= ((SELECT (DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL))) AND
+      (${created_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
   }
 
   dimension: resolved {

@@ -219,6 +219,72 @@ view: risk_assessments {
 
   }
 
+  measure: non_screened_count_green_escalated_phone {
+    type: count_distinct
+    label: "Non-Screened Count Green Escalated Phone ED"
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_phone_ed
+      value: "yes"
+    }
+
+    filters: {
+      field: care_request_flat.secondary_screening
+      value: "no"
+    }
+
+    filters: {
+      field: green_category
+      value: "yes"
+    }
+    sql_distinct_key: ${care_request_id} ;;
+
+  }
+
+  measure: non_screened_count_yellow_escalated_phone {
+    type: count_distinct
+    label: "Non-Screened Count Yellow Escalated Phone ED"
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_phone_ed
+      value: "yes"
+    }
+
+    filters: {
+      field: care_request_flat.secondary_screening
+      value: "no"
+    }
+
+    filters: {
+      field: yellow_category
+      value: "yes"
+    }
+    sql_distinct_key: ${care_request_id} ;;
+
+  }
+
+  measure: non_screened_count_red_escalated_phone {
+    type: count_distinct
+    label: "Non-Screened Count Red Escalated Phone ED"
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_phone_ed
+      value: "yes"
+    }
+
+    filters: {
+      field: care_request_flat.secondary_screening
+      value: "no"
+    }
+
+    filters: {
+      field: red_category
+      value: "yes"
+    }
+    sql_distinct_key: ${care_request_id} ;;
+
+  }
+
 
   measure: count_yellow_escalated_phone {
     type: count_distinct
