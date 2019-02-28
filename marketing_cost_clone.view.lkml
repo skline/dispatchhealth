@@ -90,6 +90,14 @@ view: marketing_cost_clone {
     sql: ${TABLE}.date ;;
   }
 
+
+  dimension: prior_complete_week_flag {
+    description: "The complete date is in the past complete week"
+    type: yesno
+    sql: ((((${date_date}) >= ((SELECT (DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL))) AND
+      (${date_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
+  }
+
   dimension: impressions {
     type: number
     sql: ${TABLE}.impressions ;;
