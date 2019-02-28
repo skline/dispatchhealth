@@ -87,7 +87,7 @@ view: athenadwh_patient_current_medications {
   dimension: medication_name_short {
     description: "The first word of the medication name"
     type: string
-    sql: split_part(${medication_name}, ' ', 1) ;;
+    sql: INITCAP(split_part(${medication_name}, ' ', 1)) ;;
   }
 
   measure: medications_list_short {
