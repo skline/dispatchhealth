@@ -1065,10 +1065,17 @@ explore: shift_planning_facts_clone {
     relationship: one_to_one
     sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
   }
-
-
-
 }
+
+explore: shift_planning_hourly_capacity {
+
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.humanity_id} = ${shift_planning_hourly_capacity.schedule_location_id} ;;
+  }
+}
+
+
 
 explore: care_request_3day_bb {
   from: care_request_statuses
