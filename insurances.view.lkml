@@ -262,8 +262,9 @@ view: insurances {
   }
 
   dimension: out_of_network_insurance {
+    description: "The insurance package ID is not in the list of in-network packages for a state, or the patient is self-pay"
     type: yesno
-    sql: ${insurance_plans.package_id} IS NULL ;;
+    sql: ${insurance_plans.package_id} IS NULL AND ${athenadwh_patient_insurances_clone.insurance_package_id} <> '-100' ;;
   }
 
   dimension_group: updated {
