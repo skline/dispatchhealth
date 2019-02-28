@@ -69,7 +69,7 @@ SELECT
   }
 
   measure: sum_capacity_hrs {
-    type: count
+    type: sum
     sql: ${capacity_hrs} ;;
     sql_distinct_key: ${compound_primary_key} ;;
   }
