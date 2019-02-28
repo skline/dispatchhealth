@@ -35,6 +35,12 @@ view: icd_visit_joins_clone {
     sql: ${TABLE}.icd_dim_id ;;
   }
 
+  measure: count_distinct_icds {
+    type: count_distinct
+    sql: ${icd_dim_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
   dimension: sequence_number {
     description: "The ordered number for the ICD code used in the claim"
     type: number

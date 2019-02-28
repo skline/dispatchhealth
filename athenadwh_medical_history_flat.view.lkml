@@ -124,6 +124,7 @@ view: athenadwh_medical_history_flat {
     sql: ${TABLE}.chart_id ;;
   }
 
+
   dimension: review_date {
     type: date
     sql: ${TABLE}.review_date ;;

@@ -798,6 +798,20 @@ view: care_requests {
     ]
   }
 
+  measure: count_complete_out_of_network_ins {
+    type: count_distinct
+    description: "Count of completed care requests with out of network insurance"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: insurances.out_of_network_insurance
+      value: "yes"
+    }
+  }
+
   measure: count_billable_est_phone {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations"

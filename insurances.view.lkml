@@ -261,6 +261,11 @@ view: insurances {
     sql: ${TABLE}.subscriber_zipcode ;;
   }
 
+  dimension: out_of_network_insurance {
+    type: yesno
+    sql: ${insurance_plans.package_id} IS NULL ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
