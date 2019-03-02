@@ -145,7 +145,7 @@ view: risk_assessments {
   dimension: requires_secondary_screening {
     type: yesno
     description: "The risk score OR the worst case score is between 5.5 and 9.99"
-    sql: ${yellow_category} OR (${worst_case_score} >= 5.5 AND ${worst_case_score} < 10) ;;
+    sql: ${yellow_category} OR (${worst_case_score} >= 5.5 AND NOT ${red_category}) ;;
   }
 
   measure: count_requires_secondary_screening {
