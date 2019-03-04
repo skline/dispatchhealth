@@ -144,8 +144,8 @@ view: risk_assessments {
 
   dimension: requires_secondary_screening {
     type: yesno
-    description: "The risk score OR the worst case score is between 5.5 and 9.99"
-    sql: ${yellow_category} OR (${worst_case_score} >= 5.5 AND NOT ${red_category}) ;;
+    description: "The risk score OR the worst case score is between 5.5 and 9.99 OR the visit ID is in the secondary screenings table"
+    sql: ${yellow_category} OR (${worst_case_score} >= 5.5 AND NOT ${red_category}) OR ${secondary_screenings.care_request_id} IS NOT NULL ;;
   }
 
   measure: count_requires_secondary_screening {
