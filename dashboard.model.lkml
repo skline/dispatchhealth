@@ -77,7 +77,7 @@ explore: care_requests {
   join: athenadwh_patient_prescriptions {
     from: athenadwh_patient_medication_clone
     relationship: one_to_one
-    sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_patient_prescriptions.document_id} AND
+    sql_on: ${athenadwh_prescriptions.document_id} = ${athenadwh_patient_prescriptions.document_id} AND
           ${athenadwh_patient_prescriptions.medication_type} = 'CLINICALPRESCRIPTION' ;;
   }
 

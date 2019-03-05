@@ -2,6 +2,7 @@ view: athenadwh_patient_medication_clone {
   sql_table_name: looker_scratch.athenadwh_patient_medication_clone ;;
 
   dimension: administered_yn {
+    hidden: yes
     type: string
     sql: ${TABLE}.administered_yn ;;
   }
@@ -174,7 +175,12 @@ view: athenadwh_patient_medication_clone {
 
   dimension: prescription_flag {
     type: yesno
-    sql: ${prescribed_yn} LIKE '%Y%' ;;
+    sql: ${prescribed_yn} = 'Y' ;;
+  }
+
+  dimension: administered_flag {
+    type: yesno
+    sql: ${administered_yn} = 'Y' ;;
   }
 
   dimension: valid_prescription {
@@ -198,7 +204,7 @@ view: athenadwh_patient_medication_clone {
   }
 
   measure: count_medications {
-    type: count
+    type: count_distinct
     sql: ${patient_medication_id} ;;
     # filters: {
     #   field:valid_prescription
