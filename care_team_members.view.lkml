@@ -66,6 +66,11 @@ view: care_team_members {
     sql: ${TABLE}.provider_type ;;
   }
 
+  dimension: pcp_provider_flag {
+    type: yesno
+    sql: ${provider_type} = 'Primary Care Provider' ;;
+  }
+
   dimension: source {
     type: string
     sql: ${TABLE}.source ;;
