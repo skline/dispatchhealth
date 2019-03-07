@@ -98,6 +98,13 @@ view: marketing_cost_clone {
       (${date_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
   }
 
+  dimension: prior_complete_month_flag {
+    description: "The complete date is in the past complete month"
+    type: yesno
+    sql: ((((${date_date}) >= ((SELECT (DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL))) AND
+      (${date_date}) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL)))))) ;;
+  }
+
   dimension: impressions {
     type: number
     sql: ${TABLE}.impressions ;;

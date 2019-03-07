@@ -2353,6 +2353,13 @@ view: care_request_flat {
          (${complete_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
   }
 
+  dimension: prior_complete_month_flag {
+    description: "The complete date is in the past complete month"
+    type: yesno
+    sql: ((((${complete_date}) >= ((SELECT (DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL))) AND
+      (${complete_date}) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL)))))) ;;
+  }
+
   dimension: prior_archive_week_flag {
     description: "The archive date is in the past complete week"
     type: yesno
@@ -2366,6 +2373,14 @@ view: care_request_flat {
     sql: ((((${created_date}) >= ((SELECT (DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL))) AND
       (${created_date}) < ((SELECT ((DATE_TRUNC('week', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' week')::INTERVAL) + (1 || ' week')::INTERVAL)))))) ;;
   }
+
+  dimension: prior_created_month_flag {
+    description: "The created date is in the past complete month"
+    type: yesno
+    sql: ((((${created_date}) >= ((SELECT (DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL))) AND
+      (${created_date}) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL)))))) ;;
+  }
+
 
   dimension: resolved {
     type: yesno
@@ -2501,6 +2516,16 @@ view: care_request_flat {
     type: number
     value_format: "0%"
     sql: ${complete_count}::float/nullif(${care_request_count}::float,0) ;;
+  }
+
+  measure: max_on_scene_day_of_month {
+    type: number
+    sql: max(${on_scene_day_of_month}) ;;
+  }
+
+  measure: max_created_day_of_month {
+    type: number
+    sql: max(${created_day_of_month}) ;;
   }
 
   measure: month_percent {
