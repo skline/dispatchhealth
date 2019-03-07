@@ -21,6 +21,18 @@ view: cpt_code_dimensions_clone {
     sql: CASE WHEN ${TABLE}.cpt_code = 'S9083' THEN NULL ELSE ${TABLE}.cpt_code END ;;
   }
 
+  dimension: cpt_code_acuity_category {
+    description: "Category of CPT code based on high/low acuity and new/existing patient"
+    type: string
+    sql: CASE
+          WHEN ${cpt_code} = '99345' THEN 'High Acuity New Patient'
+          WHEN ${cpt_code} = '99350' THEN 'High Acuity Existing Patient'
+          WHEN ${cpt_code} = '99342' THEN 'Low Acuity New Patient'
+          WHEN ${cpt_code} = '99348' THEN 'Low Acuity Existing Patient'
+          ELSE 'Other'
+        END ;;
+  }
+
   measure: cpt_code_concat {
     label: "CPT Codes"
     type: string
