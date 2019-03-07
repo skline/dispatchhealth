@@ -14,7 +14,7 @@ view: clinical_encounter_icd_codes {
   GROUP BY 1,2,3 ;;
 
       sql_trigger_value: SELECT MAX(created_at) FROM athenadwh_clinicalencounter_diagnosis ;;
-      indexes: ["chart_id"]
+      indexes: ["clinical_encounter_id", "icd_code_id"]
     }
 
 
