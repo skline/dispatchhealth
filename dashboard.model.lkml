@@ -362,6 +362,43 @@ explore: care_requests {
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 3 ;;
   }
 
+  # Join new ICD code data
+  join: athenadwh_clinicalencounter_diagnosis {
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinicalencounter_diagnosis.clinical_encounter_id} ;;
+  }
+
+  join: athenadwh_clinicalencounter_dxicd10 {
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinicalencounter_diagnosis.clinical_encounter_dx_id} = ${athenadwh_clinicalencounter_dxicd10.clinical_encounter_dx_id} ;;
+  }
+
+  join: athenadwh_icdcodeall {
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} ;;
+  }
+
+  join: icd_primary_diagnosis_code {
+    from: athenadwh_icdcodeall
+    view_label: "ICD Primary Diagnosis Code"
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.sequence_number} = 1 ;;
+  }
+
+  join: icd_secondary_diagnosis_code{
+    from: athenadwh_icdcodeall
+    view_label: "ICD Secondary Diagnosis Code"
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.sequence_number} = 2 ;;
+  }
+
+  join: icd_tertiary_diagnosis_code {
+    from: athenadwh_icdcodeall
+    view_label: "ICD Tertiary Diagnosis Code"
+    relationship: many_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.sequence_number} = 3 ;;
+  }
+
   join: drg_to_icd10_crosswalk {
     relationship: one_to_one
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
