@@ -18,5 +18,10 @@ view: clinical_encounter_icd_codes {
     }
 
 
+dimension: clinical_encounter_id {
+  primary_key: yes
+
+}
+
 
 }

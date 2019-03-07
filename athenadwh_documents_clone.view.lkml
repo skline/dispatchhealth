@@ -231,6 +231,44 @@ view: athenadwh_documents_clone {
     }
   }
 
+  measure: count_pcp_letters {
+    type: count_distinct
+    description: "Count of clinical notes sent to PCP"
+    sql: ${care_request_flat.care_request_id} ;;
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: clinical_letter_flag
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_team_members.pcp_provider_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_non_pcp_letters {
+    type: count_distinct
+    description: "Count of clinical notes sent to someone other than PCP"
+    sql: ${care_request_flat.care_request_id} ;;
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: clinical_letter_flag
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_team_members.pcp_provider_flag
+      value: "no"
+    }
+  }
+
   measure: clinical_notes_boolean {
     type: yesno
     description: "A flag indicating that any clinical note was sent to a provider or specialist"
