@@ -43,6 +43,10 @@ view: incontact_aggregated_clone {
       (${date_date}) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL)))))) ;;
   }
 
+  measure: max_date {
+    type: number
+    sql: max(${date_day_of_month}) ;;
+  }
 
 
 

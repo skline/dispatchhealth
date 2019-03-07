@@ -2360,6 +2360,13 @@ view: care_request_flat {
       (${complete_date}) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL)))))) ;;
   }
 
+  dimension: prior_on_scene_month_flag {
+    description: "The complete date is in the past complete month"
+    type: yesno
+    sql: ((((${on_scene_date}) >= ((SELECT (DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL))) AND
+      (${on_scene_date}) < ((SELECT ((DATE_TRUNC('month', DATE_TRUNC('day', CURRENT_TIMESTAMP AT TIME ZONE 'America/Denver')) + (-1 || ' month')::INTERVAL) + (1 || ' month')::INTERVAL)))))) ;;
+  }
+
   dimension: prior_archive_week_flag {
     description: "The archive date is in the past complete week"
     type: yesno
