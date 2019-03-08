@@ -80,7 +80,7 @@ view: athenadwh_documents_clone {
 
   dimension: clinical_letter_flag {
     type: yesno
-    sql: ${document_class} = 'LETTER' ;;
+    sql: ${document_class} LIKE '%LETTER%' ;;
   }
 
   dimension: medicine_administered_onscene {

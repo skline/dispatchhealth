@@ -137,8 +137,8 @@ explore: care_requests {
     relationship:  one_to_many
     sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
             ${athenadwh_letters_encounters.document_class} IN ('LETTER', 'ENCOUNTERDOCUMENT') AND
-            ${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' AND
-            ${athenadwh_letters_encounters.status} != 'DELETED';;
+            (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
+            (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
   }
 
   join: athenadwh_prescriptions {
