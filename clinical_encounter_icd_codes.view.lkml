@@ -17,11 +17,38 @@ view: clinical_encounter_icd_codes {
       indexes: ["clinical_encounter_id", "icd_code_id"]
     }
 
+  dimension: compound_primary_key {
+    primary_key: yes
+    hidden: yes
+    type: string
+    sql: CONCAT(${TABLE}.clinical_encounter_id::varchar, ' ', ${TABLE}.icd_code_id::varchar) ;;
+  }
 
-dimension: clinical_encounter_id {
-  primary_key: yes
+  dimension: clinical_encounter_id {
+    type: number
+    sql: ${TABLE}.clinical_encounter_id ;;
+  }
 
-}
+  dimension: icd_code_id {
+    type: number
+    sql: ${TABLE}.icd_code_id ;;
+  }
+
+  dimension: sequence_number {
+    type: number
+    sql: ${TABLE}.sequence_number ;;
+  }
+
+  dimension: created_datetime {
+    type: date_time
+    sql: ${TABLE}.created_datetime ;;
+  }
+
+  measure: count_distinct_icds {
+    type: count_distinct
+    sql: ${compound_primary_key} ;;
+    sql_distinct_key: ${clinical_encounter_id} ;;
+  }
 
 
 }
