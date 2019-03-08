@@ -2901,7 +2901,7 @@ view: care_request_flat {
     description: "POS HOME AND wheelchair/homebound AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc39 {
     description: "POS HOME AND wheelchair/homebound AND referral"
