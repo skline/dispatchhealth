@@ -50,5 +50,10 @@ view: clinical_encounter_icd_codes {
     sql_distinct_key: ${clinical_encounter_id} ;;
   }
 
+  measure: count_distinct_encounters {
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+  }
+
 
 }
