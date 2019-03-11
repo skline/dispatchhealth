@@ -2455,7 +2455,7 @@ view: care_request_flat {
       value: "yes"
     }
     filters: {
-      field: icd_code_dimensions_clone.likely_flu_diganosis
+      field: athenadwh_icdcodeall.likely_flu_diganosis
       value: "yes"
     }
   }
@@ -2720,13 +2720,13 @@ view: care_request_flat {
     description: "Additional Dx of Confusion or Altered Awareness"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${icd_code_dimensions_clone.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${athenadwh_icdcodeall.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
   }
   dimension: dc10 {
     description: "Wheelchair or Homebound"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${icd_code_dimensions_clone.wheelchair_homebound} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${athenadwh_icdcodeall.wheelchair_homebound} THEN 1 ELSE 0 END ;;
   }
   dimension: dc11 {
     description: "EKG Performed"
@@ -2798,7 +2798,7 @@ view: care_request_flat {
     description: "POS SNF AND (abnormal vital signs  OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc23 {
     description: "POS SNF AND any procedures"
@@ -2816,21 +2816,21 @@ view: care_request_flat {
     description: "POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc26 {
     description: "POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc27 {
     description: "POS AL AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc28 {
     description: "POS AL AND procedures"
@@ -2848,21 +2848,21 @@ view: care_request_flat {
     description: "POS AL AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc31 {
     description: "POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc32 {
     description: "POS HOME AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc33 {
     description: "POS HOME AND any procedures"
@@ -2880,28 +2880,28 @@ view: care_request_flat {
     description: "POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc36 {
     description: "POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc37 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc38 {
     description: "POS HOME AND wheelchair/homebound AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc39 {
     description: "POS HOME AND wheelchair/homebound AND referral"
@@ -2913,15 +2913,15 @@ view: care_request_flat {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${icd_code_dimensions_clone.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${athenadwh_icdcodeall.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc41 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${icd_code_dimensions_clone.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${athenadwh_icdcodeall.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND
     ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
 

@@ -461,8 +461,8 @@ explore: care_requests {
 
   join: diversion_flat {
     relationship: many_to_many
-    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion_flat.diagnosis_code} ;;
-    sql_where: ${icd_visit_joins_clone.sequence_number} <= 3 ;;
+    sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${diversion_flat.diagnosis_code} ;;
+    sql_where: ${clinical_encounter_icd_codes.sequence_number} <= 3 ;;
   }
 
   join: diversion_type {
