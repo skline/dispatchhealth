@@ -2974,6 +2974,12 @@ view: care_request_flat {
   END;;
   }
 
+  measure: diversion_categories_met {
+    description: "A list of the diversion categories that have been met"
+    type: string
+    sql: array_to_string(array_agg(${diversion_category_first_met}), ' | ') ;;
+  }
+
   dimension: diversion_cats_met {
     description: "The number of diversion categories met"
     type: number
