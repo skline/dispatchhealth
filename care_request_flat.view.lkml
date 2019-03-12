@@ -2925,6 +2925,55 @@ view: care_request_flat {
     ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
 
+  dimension: diversion_category_first_met {
+    description: "The first diversion category that was met"
+    type: string
+    sql: CASE
+          WHEN ${dc1} = 1 AND ${diversion_flat.dc1} = 1 THEN 'Diagnosis Only'
+          WHEN ${dc2} = 1 AND ${diversion_flat.dc2} = 1 THEN 'Survey Response Yes to ER'
+          WHEN ${dc3} = 1 AND ${diversion_flat.dc3} = 1 THEN '911 Diversion Program'
+          WHEN ${dc4} = 1 AND ${diversion_flat.dc4} = 1 THEN 'POS SNF'
+          WHEN ${dc5} = 1 AND ${diversion_flat.dc5} = 1 THEN 'POS Assisted Living'
+          WHEN ${dc6} = 1 AND ${diversion_flat.dc6} = 1 THEN 'Referred from HH, PCP or CM'
+          WHEN ${dc7} = 1 AND ${diversion_flat.dc7} = 1 THEN 'Weekends or After 3 PM'
+          WHEN ${dc8} = 1 AND ${diversion_flat.dc8} = 1 THEN 'Abnormal Vitals'
+          WHEN ${dc9} = 1 AND ${diversion_flat.dc9} = 1 THEN 'Confusion or Altered Awareness'
+          WHEN ${dc10} = 1 AND ${diversion_flat.dc10} = 1 THEN 'Wheelchair/Homebound'
+          WHEN ${dc11} = 1 AND ${diversion_flat.dc11} = 1 THEN 'EKG Performed'
+          WHEN ${dc12} = 1 AND ${diversion_flat.dc12} = 1 THEN 'Nebulizer Treatment'
+          WHEN ${dc13} = 1 AND ${diversion_flat.dc13} = 1 THEN 'IV/Fluids Administered'
+          WHEN ${dc14} = 1 AND ${diversion_flat.dc14} = 1 THEN 'Blood Tests Performed'
+          WHEN ${dc15} = 1 AND ${diversion_flat.dc15} = 1 THEN 'Catheter Adjustment/Placement'
+          WHEN ${dc16} = 1 AND ${diversion_flat.dc16} = 1 THEN 'Laceration Repair'
+          WHEN ${dc17} = 1 AND ${diversion_flat.dc17} = 1 THEN 'Epistaxis'
+          WHEN ${dc18} = 1 AND ${diversion_flat.dc18} = 1 THEN 'Hernia/Rectal Prolapse Reduction'
+          WHEN ${dc19} = 1 AND ${diversion_flat.dc19} = 1 THEN 'Nursemaids Elbow/Other Joint Reduction'
+          WHEN ${dc20} = 1 AND ${diversion_flat.dc20} = 1 THEN 'Gastronomy Tube Replacement or Repair'
+          WHEN ${dc21} = 1 AND ${diversion_flat.dc21} = 1 THEN 'I&D of Abscess'
+          WHEN ${dc22} = 1 AND ${diversion_flat.dc22} = 1 THEN 'POS SNF AND (abnormal vital signs  OR altered mental status)'
+          WHEN ${dc23} = 1 AND ${diversion_flat.dc23} = 1 THEN 'POS SNF AND any procedures'
+          WHEN ${dc24} = 1 AND ${diversion_flat.dc24} = 1 THEN 'POS SNF AND referral'
+          WHEN ${dc25} = 1 AND ${diversion_flat.dc25} = 1 THEN 'POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc26} = 1 AND ${diversion_flat.dc26} = 1 THEN 'POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          WHEN ${dc27} = 1 AND ${diversion_flat.dc27} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status)'
+          WHEN ${dc28} = 1 AND ${diversion_flat.dc28} = 1 THEN 'POS AL AND procedures'
+          WHEN ${dc29} = 1 AND ${diversion_flat.dc29} = 1 THEN 'POS AL AND referral'
+          WHEN ${dc30} = 1 AND ${diversion_flat.dc30} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc31} = 1 AND ${diversion_flat.dc31} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          WHEN ${dc32} = 1 AND ${diversion_flat.dc32} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status)'
+          WHEN ${dc33} = 1 AND ${diversion_flat.dc33} = 1 THEN 'POS HOME AND any procedures'
+          WHEN ${dc34} = 1 AND ${diversion_flat.dc34} = 1 THEN 'POS HOME AND referral'
+          WHEN ${dc35} = 1 AND ${diversion_flat.dc35} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc36} = 1 AND ${diversion_flat.dc36} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          WHEN ${dc37} = 1 AND ${diversion_flat.dc37} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)'
+          WHEN ${dc38} = 1 AND ${diversion_flat.dc38} = 1 THEN 'POS HOME AND wheelchair/homebound AND any procedures'
+          WHEN ${dc39} = 1 AND ${diversion_flat.dc39} = 1 THEN 'POS HOME AND wheelchair/homebound AND referral'
+          WHEN ${dc40} = 1 AND ${diversion_flat.dc40} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc41} = 1 AND ${diversion_flat.dc41} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          ELSE 'No Diversion Criteria Met'
+  END;;
+  }
+
   dimension: diversion_cats_met {
     description: "The number of diversion categories met"
     type: number
