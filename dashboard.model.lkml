@@ -541,7 +541,7 @@ explore: care_requests {
 
   join: survey_responses_flat_clone {
     relationship: one_to_one
-    sql_on: ${survey_responses_flat_clone.visit_dim_number} = ${visit_facts_clone.visit_dim_number};;
+    sql_on: ${care_requests.id} = ${survey_responses_flat_clone.care_request_id};;
   }
 
   # End cloned BI table joins
