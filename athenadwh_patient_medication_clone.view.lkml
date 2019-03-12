@@ -85,6 +85,7 @@ view: athenadwh_patient_medication_clone {
     sql: ${TABLE}.dosage_strength ;;
   }
 
+
   dimension: dosage_strength_units {
     type: string
     sql: ${TABLE}.dosage_strength_units ;;
