@@ -67,6 +67,14 @@ view: athenadwh_documents_clone {
     sql: string_agg(DISTINCT ${clinical_order_type}, ' | ') ;;
   }
 
+  measure: prescription_info_concat {
+    label: "Description Of Prescriptions"
+    type: string
+    sql:   array_to_string(array_agg(DISTINCT CONCAT(${clinical_order_type}, ': ',
+           ${athenadwh_patient_prescriptions.dosage_route}, ': ',
+          ${athenadwh_patient_prescriptions.frequency})), ' | ') ;;
+  }
+
   measure: genus_type_concat {
     label: "Genus Of Items Ordered"
     type: string

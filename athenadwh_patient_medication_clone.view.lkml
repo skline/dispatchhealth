@@ -80,6 +80,12 @@ view: athenadwh_patient_medication_clone {
     sql: ${TABLE}.dosage_route ;;
   }
 
+  measure: dosage_routes {
+    description: "Concatenated list of dosage routes"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${dosage_route}), ' | ') ;;
+  }
+
   dimension: dosage_strength {
     type: string
     sql: ${TABLE}.dosage_strength ;;
@@ -109,6 +115,12 @@ view: athenadwh_patient_medication_clone {
   dimension: frequency {
     type: string
     sql: ${TABLE}.frequency ;;
+  }
+
+  measure: medication_frequencies {
+    description: "Concatenated list of medication frequencies"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${frequency}), ' | ') ;;
   }
 
   dimension_group: med_administered_datetime {
