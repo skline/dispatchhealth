@@ -68,11 +68,15 @@ view: athenadwh_documents_clone {
   }
 
   measure: prescription_info_concat {
-    label: "Description Of Prescriptions"
+    label: "Description Of Prescription Medications"
     type: string
-    sql:   array_to_string(array_agg(DISTINCT CONCAT(${clinical_order_type}, ': ',
-           ${athenadwh_patient_prescriptions.dosage_route}, ': ',
-          ${athenadwh_patient_prescriptions.frequency})), ' | ') ;;
+    sql: array_to_string(array_agg(DISTINCT
+         CASE WHEN ${athenadwh_patient_prescriptions.prescribed_yn} = 'Y' THEN
+            CONCAT(${clinical_order_type}, ': ',
+             ${athenadwh_patient_prescriptions.dosage_route}, ': ',
+             ${athenadwh_patient_prescriptions.frequency})
+            ELSE NULL END
+            ), ' | ')  ;;
   }
 
   measure: genus_type_concat {
