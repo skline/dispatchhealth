@@ -2907,7 +2907,7 @@ view: care_request_flat {
     description: "POS HOME AND wheelchair/homebound AND referral"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc40 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures"
@@ -3028,7 +3028,7 @@ view: care_request_flat {
 
   dimension: diversion_flag {
     type: yesno
-    sql: ${diversion_cats_met} > 0 ;;
+    sql: ${diversion_cats_met} > 0;;
   }
 
   measure: count_er_diversions {
@@ -3041,6 +3041,10 @@ view: care_request_flat {
     filters: {
       field:diversion_flag
       value: "yes"
+    }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
     }
   }
 
@@ -3066,6 +3070,10 @@ view: care_request_flat {
       field:diversion_flag
       value: "yes"
     }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
   }
   dimension: diversion_911 {
     type: number
@@ -3087,6 +3095,10 @@ view: care_request_flat {
     filters: {
       field:diversion_flag
       value: "yes"
+    }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
     }
   }
   measure: diversion_savings_hospitalization {
@@ -3110,6 +3122,10 @@ view: care_request_flat {
     filters: {
       field:diversion_flag
       value: "yes"
+    }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
     }
   }
   measure: diversion_savings_observation {
