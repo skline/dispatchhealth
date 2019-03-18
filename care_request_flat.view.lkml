@@ -1079,7 +1079,8 @@ view: care_request_flat {
       day_of_week,
       day_of_week_index,
       day_of_month,quarter,
-      hour
+      hour,
+      year
       ]
     sql: ${TABLE}.on_scene_date ;;
   }
