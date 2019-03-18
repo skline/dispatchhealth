@@ -461,8 +461,8 @@ explore: care_requests {
 
   join: diversion_flat {
     relationship: many_to_many
-    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${diversion_flat.diagnosis_code} ;;
-    sql_where: ${icd_visit_joins_clone.sequence_number} <= 3 ;;
+    sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${diversion_flat.diagnosis_code} ;;
+    sql_where: ${clinical_encounter_icd_codes.sequence_number} <= 3 ;;
   }
 
   join: diversion_type {
@@ -541,7 +541,7 @@ explore: care_requests {
 
   join: survey_responses_flat_clone {
     relationship: one_to_one
-    sql_on: ${survey_responses_flat_clone.visit_dim_number} = ${visit_facts_clone.visit_dim_number};;
+    sql_on: ${care_requests.id} = ${survey_responses_flat_clone.care_request_id};;
   }
 
   # End cloned BI table joins

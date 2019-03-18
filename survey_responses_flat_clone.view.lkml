@@ -8,32 +8,40 @@ view: survey_responses_flat_clone {
           nps.answer_range_value AS nps_response,
           alt.answer_selection_value AS alternative_dh_response,
           ovr.answer_selection_value AS overall_rating_response
-          FROM survey_response_facts_clone srf
+          FROM (
+            SELECT DISTINCT
+              visit_dim_number,
+              care_request_id,
+              MAX(visit_date) AS visit_date
+            FROM survey_response_facts_clone
+            WHERE care_request_id IS NOT NULL
+            GROUP BY 1,2
+          ) srf
           LEFT JOIN survey_response_facts_clone nps
-            ON srf.visit_dim_number = nps.visit_dim_number  AND nps.question_dim_id = 4
+            ON srf.care_request_id = nps.care_request_id AND nps.question_dim_id = 4
           LEFT JOIN survey_response_facts_clone alt
-            ON srf.visit_dim_number  = alt.visit_dim_number  AND alt.question_dim_id = 3
+            ON srf.care_request_id = alt.care_request_id AND alt.question_dim_id = 3
           LEFT JOIN survey_response_facts_clone ovr
-            ON srf.visit_dim_number  = ovr.visit_dim_number  AND ovr.question_dim_id = 5 ;;
-  }
+            ON srf.care_request_id  = ovr.care_request_id AND ovr.question_dim_id = 5
+          ORDER BY care_request_id DESC ;;
 
-  dimension: visit_dim_number {
-    type: number
-    primary_key: yes
-    description: "Athena EHR ID"
-    sql: ${TABLE}.visit_dim_number ;;
+    sql_trigger_value: SELECT MAX(care_request_id) FROM survey_response_facts_clone ;;
+    indexes: ["visit_dim_number", "care_request_id"]
   }
 
   dimension: care_request_id {
     type: number
+    primary_key: yes
     sql: ${TABLE}.care_request_id ;;
   }
 
-#   dimension: answer_open_ended_value {
-#     label: "Open End Value Answer"
-#     type: string
-#     sql: ${TABLE}.answer_open_ended_value ;;
-#   }
+  dimension: visit_dim_number {
+    type: number
+
+    description: "Athena EHR ID"
+    sql: ${TABLE}.visit_dim_number ;;
+  }
+
 
   dimension: answer_range_value {
     label: "NPS Selected Range Value"

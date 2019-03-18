@@ -179,6 +179,14 @@ SELECT DISTINCT
     sql: ${TABLE}.bloodpressure_type ;;
   }
 
+  dimension: bloodpressure {
+    type: string
+    sql: CASE
+          WHEN ${bloodpressure_systolic} IS NOT NULL THEN CONCAT(${bloodpressure_systolic}::varchar, '/', ${bloodpressure_diastolic}::varchar)
+          ELSE NULL
+        END ;;
+  }
+
   dimension: o2saturation {
     type: number
     sql: ${TABLE}.o2saturation ;;
@@ -197,6 +205,7 @@ SELECT DISTINCT
   dimension: weight_lbs {
     type: number
     sql: ${TABLE}.weight_lbs ;;
+    value_format: "0.0"
   }
 
   dimension: user_id {

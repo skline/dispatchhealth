@@ -1200,7 +1200,7 @@ measure: distinct_day_of_week {
   measure: shift_end_last_cr_diff{
     label: "Hours between Last Patient Seen and Shift End "
     type: number
-    sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time}::timestamp - ${care_request_flat.shift_end_time}::timestamp))/3600)::decimal,2);;
+    sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time}::timestamp - max(${care_request_flat.shift_end_time}::timestamp)))/3600)::decimal,2);;
   }
 
   measure: shift_start_first_on_route_diff{

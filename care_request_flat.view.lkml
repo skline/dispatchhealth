@@ -2456,7 +2456,7 @@ view: care_request_flat {
       value: "yes"
     }
     filters: {
-      field: icd_code_dimensions_clone.likely_flu_diganosis
+      field: athenadwh_icdcodeall.likely_flu_diganosis
       value: "yes"
     }
   }
@@ -2721,13 +2721,13 @@ view: care_request_flat {
     description: "Additional Dx of Confusion or Altered Awareness"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${icd_code_dimensions_clone.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${athenadwh_icdcodeall.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
   }
   dimension: dc10 {
     description: "Wheelchair or Homebound"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${icd_code_dimensions_clone.wheelchair_homebound} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${athenadwh_icdcodeall.wheelchair_homebound} THEN 1 ELSE 0 END ;;
   }
   dimension: dc11 {
     description: "EKG Performed"
@@ -2799,7 +2799,7 @@ view: care_request_flat {
     description: "POS SNF AND (abnormal vital signs  OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc23 {
     description: "POS SNF AND any procedures"
@@ -2817,21 +2817,21 @@ view: care_request_flat {
     description: "POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc26 {
     description: "POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc27 {
     description: "POS AL AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc28 {
     description: "POS AL AND procedures"
@@ -2849,21 +2849,21 @@ view: care_request_flat {
     description: "POS AL AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc31 {
     description: "POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc32 {
     description: "POS HOME AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc33 {
     description: "POS HOME AND any procedures"
@@ -2881,49 +2881,104 @@ view: care_request_flat {
     description: "POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness}) AND
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc36 {
     description: "POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${icd_code_dimensions_clone.confusion_altered_awareness} OR
+    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc37 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${icd_code_dimensions_clone.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
   dimension: dc38 {
     description: "POS HOME AND wheelchair/homebound AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc39 {
     description: "POS HOME AND wheelchair/homebound AND referral"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
   dimension: dc40 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${icd_code_dimensions_clone.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${athenadwh_icdcodeall.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
   dimension: dc41 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${icd_code_dimensions_clone.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${icd_code_dimensions_clone.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND
+    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
+    ${athenadwh_icdcodeall.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND
     ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
+  }
+
+  dimension: diversion_category_first_met {
+    description: "The first diversion category that was met"
+    type: string
+    sql: CASE
+          WHEN ${dc1} = 1 AND ${diversion_flat.dc1} = 1 THEN 'Diagnosis Only'
+          WHEN ${dc2} = 1 AND ${diversion_flat.dc2} = 1 THEN 'Survey Response Yes to ER'
+          WHEN ${dc3} = 1 AND ${diversion_flat.dc3} = 1 THEN '911 Diversion Program'
+          WHEN ${dc4} = 1 AND ${diversion_flat.dc4} = 1 THEN 'POS SNF'
+          WHEN ${dc5} = 1 AND ${diversion_flat.dc5} = 1 THEN 'POS Assisted Living'
+          WHEN ${dc6} = 1 AND ${diversion_flat.dc6} = 1 THEN 'Referred from HH, PCP or CM'
+          WHEN ${dc7} = 1 AND ${diversion_flat.dc7} = 1 THEN 'Weekends or After 3 PM'
+          WHEN ${dc8} = 1 AND ${diversion_flat.dc8} = 1 THEN 'Abnormal Vitals'
+          WHEN ${dc9} = 1 AND ${diversion_flat.dc9} = 1 THEN 'Confusion or Altered Awareness'
+          WHEN ${dc10} = 1 AND ${diversion_flat.dc10} = 1 THEN 'Wheelchair/Homebound'
+          WHEN ${dc11} = 1 AND ${diversion_flat.dc11} = 1 THEN 'EKG Performed'
+          WHEN ${dc12} = 1 AND ${diversion_flat.dc12} = 1 THEN 'Nebulizer Treatment'
+          WHEN ${dc13} = 1 AND ${diversion_flat.dc13} = 1 THEN 'IV/Fluids Administered'
+          WHEN ${dc14} = 1 AND ${diversion_flat.dc14} = 1 THEN 'Blood Tests Performed'
+          WHEN ${dc15} = 1 AND ${diversion_flat.dc15} = 1 THEN 'Catheter Adjustment/Placement'
+          WHEN ${dc16} = 1 AND ${diversion_flat.dc16} = 1 THEN 'Laceration Repair'
+          WHEN ${dc17} = 1 AND ${diversion_flat.dc17} = 1 THEN 'Epistaxis'
+          WHEN ${dc18} = 1 AND ${diversion_flat.dc18} = 1 THEN 'Hernia/Rectal Prolapse Reduction'
+          WHEN ${dc19} = 1 AND ${diversion_flat.dc19} = 1 THEN 'Nursemaids Elbow/Other Joint Reduction'
+          WHEN ${dc20} = 1 AND ${diversion_flat.dc20} = 1 THEN 'Gastronomy Tube Replacement or Repair'
+          WHEN ${dc21} = 1 AND ${diversion_flat.dc21} = 1 THEN 'I&D of Abscess'
+          WHEN ${dc22} = 1 AND ${diversion_flat.dc22} = 1 THEN 'POS SNF AND (abnormal vital signs  OR altered mental status)'
+          WHEN ${dc23} = 1 AND ${diversion_flat.dc23} = 1 THEN 'POS SNF AND any procedures'
+          WHEN ${dc24} = 1 AND ${diversion_flat.dc24} = 1 THEN 'POS SNF AND referral'
+          WHEN ${dc25} = 1 AND ${diversion_flat.dc25} = 1 THEN 'POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc26} = 1 AND ${diversion_flat.dc26} = 1 THEN 'POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          WHEN ${dc27} = 1 AND ${diversion_flat.dc27} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status)'
+          WHEN ${dc28} = 1 AND ${diversion_flat.dc28} = 1 THEN 'POS AL AND procedures'
+          WHEN ${dc29} = 1 AND ${diversion_flat.dc29} = 1 THEN 'POS AL AND referral'
+          WHEN ${dc30} = 1 AND ${diversion_flat.dc30} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc31} = 1 AND ${diversion_flat.dc31} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          WHEN ${dc32} = 1 AND ${diversion_flat.dc32} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status)'
+          WHEN ${dc33} = 1 AND ${diversion_flat.dc33} = 1 THEN 'POS HOME AND any procedures'
+          WHEN ${dc34} = 1 AND ${diversion_flat.dc34} = 1 THEN 'POS HOME AND referral'
+          WHEN ${dc35} = 1 AND ${diversion_flat.dc35} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc36} = 1 AND ${diversion_flat.dc36} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          WHEN ${dc37} = 1 AND ${diversion_flat.dc37} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)'
+          WHEN ${dc38} = 1 AND ${diversion_flat.dc38} = 1 THEN 'POS HOME AND wheelchair/homebound AND any procedures'
+          WHEN ${dc39} = 1 AND ${diversion_flat.dc39} = 1 THEN 'POS HOME AND wheelchair/homebound AND referral'
+          WHEN ${dc40} = 1 AND ${diversion_flat.dc40} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures'
+          WHEN ${dc41} = 1 AND ${diversion_flat.dc41} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
+          ELSE 'No Diversion Criteria Met'
+  END;;
+  }
+
+  measure: diversion_categories_met {
+    description: "A list of the diversion categories that have been met"
+    type: string
+    sql: array_to_string(array_agg(${diversion_category_first_met}), ' | ') ;;
   }
 
   dimension: diversion_cats_met {
@@ -2974,7 +3029,7 @@ view: care_request_flat {
 
   dimension: diversion_flag {
     type: yesno
-    sql: ${diversion_cats_met} > 0 ;;
+    sql: ${diversion_cats_met} > 0;;
   }
 
   measure: count_er_diversions {
@@ -2987,6 +3042,10 @@ view: care_request_flat {
     filters: {
       field:diversion_flag
       value: "yes"
+    }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
     }
   }
 
@@ -3012,6 +3071,10 @@ view: care_request_flat {
       field:diversion_flag
       value: "yes"
     }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
   }
   dimension: diversion_911 {
     type: number
@@ -3033,6 +3096,10 @@ view: care_request_flat {
     filters: {
       field:diversion_flag
       value: "yes"
+    }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
     }
   }
   measure: diversion_savings_hospitalization {
@@ -3056,6 +3123,10 @@ view: care_request_flat {
     filters: {
       field:diversion_flag
       value: "yes"
+    }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
     }
   }
   measure: diversion_savings_observation {
