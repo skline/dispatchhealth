@@ -26,6 +26,9 @@ explore:  intraday_shift_teams {
   join: timezones_intra {
     sql_on: ${markets_intra.sa_time_zone}=${timezones_intra.rails_tz} ;;
   }
+  join: channel_items_intra {
+    sql_on: ${intraday_care_requests.channel_item_id} =${channel_items_intra.id} ;;
+  }
 }
 
 explore:  intraday_care_requests {
@@ -52,6 +55,9 @@ explore:  intraday_care_requests {
   join: timezones_intra {
     sql_on: ${markets_intra.sa_time_zone}=${timezones_intra.rails_tz} ;;
   }
+  join: channel_items_intra {
+    sql_on: ${intraday_care_requests.channel_item_id} =${channel_items_intra.id} ;;
+  }
 }
 
 explore:  intraday_care_requests_full {
@@ -77,5 +83,8 @@ explore:  intraday_care_requests_full {
   }
   join: timezones_intra {
     sql_on: ${markets_intra.sa_time_zone}=${timezones_intra.rails_tz} ;;
+  }
+  join: channel_items_intra {
+    sql_on: ${intraday_care_requests_full.channel_item_id} =${channel_items_intra.id} ;;
   }
 }

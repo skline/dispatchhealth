@@ -290,6 +290,13 @@ view: athenadwh_medical_history_flat {
     sql: ${number_comorbidities} ;;
   }
 
+  measure: avg_distinct_num_comorbidities {
+    type: average_distinct
+    value_format: "0.00"
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
+    sql: ${number_comorbidities} ;;
+  }
+
   measure: count {
     type: count
   }
