@@ -259,7 +259,7 @@ SELECT DISTINCT
 
   dimension: o2saturation_initial {
     type: number
-    sql: ${TABLE}.o2saturation ;;
+    sql: ${TABLE}.o2saturation_initial ;;
   }
 
   dimension: low_o2_saturation {
