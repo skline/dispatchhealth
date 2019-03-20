@@ -2679,13 +2679,13 @@ view: care_request_flat {
     description: "Survey Response YES to ER"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${ed_diversion_survey_response_clone.survey_yes_to_er} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${ed_diversion_survey_response_clone.survey_yes_to_er} OR ${medical_necessity_notes.er_911_alternative} THEN 1 ELSE 0 END ;;
   }
   dimension: dc3 {
     description: "911 Diversion Program"
     type: number
     #hidden: yes
-    sql: CASE WHEN ${channel_items.divert_from_911} THEN 1 ELSE 0 END ;;
+    sql: CASE WHEN ${channel_items.divert_from_911} OR ${medical_necessity_notes.er_911_alternative} THEN 1 ELSE 0 END ;;
   }
   dimension: dc4 {
     description: "POS SNF"

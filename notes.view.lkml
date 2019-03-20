@@ -70,6 +70,12 @@ view: notes {
     sql: ${TABLE}.note_type ;;
   }
 
+  dimension: er_911_alternative {
+    description: "Medical necessity note is that patient would have called 911 or gone to ED"
+    type: yesno
+    sql: ${note} = 'The patient would have called 911 or gone to ED.' ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
