@@ -375,35 +375,65 @@ explore: care_requests {
   }
 
   # Join new ICD code data
-  join: clinical_encounter_icd_codes {
+  # join: clinical_encounter_icd_codes {
+  #   relationship: one_to_many
+  #   sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${clinical_encounter_icd_codes.clinical_encounter_id} ;;
+  # }
+
+  # join: athenadwh_icdcodeall {
+  #   relationship: many_to_one
+  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} ;;
+  # }
+
+  # join: icd_primary_diagnosis_code {
+  #   from: athenadwh_icdcodeall
+  #   view_label: "ICD Primary Diagnosis Codes"
+  #   relationship: many_to_one
+  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 1 ;;
+  # }
+
+  # join: icd_secondary_diagnosis_code {
+  #   from: athenadwh_icdcodeall
+  #   view_label: "ICD Secondary Diagnosis Codes"
+  #   relationship: many_to_one
+  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_secondary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 2 ;;
+  # }
+
+  # join: icd_tertiary_diagnosis_code {
+  #   from: athenadwh_icdcodeall
+  #   view_label: "ICD Tertiary Diagnosis Codes"
+  #   relationship: many_to_one
+  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_tertiary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 3 ;;
+  # }
+
+  join: athenadwh_clinicalencounter_diagnosis {
     relationship: one_to_many
-    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${clinical_encounter_icd_codes.clinical_encounter_id} ;;
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinicalencounter_diagnosis.clinical_encounter_id} ;;
+  }
+
+  join: athenadwh_clinicalencounter_dxicd10 {
+    relationship: one_to_one
+    type: inner
+    sql_on: ${athenadwh_clinicalencounter_diagnosis.clinical_encounter_dx_id} = ${athenadwh_clinicalencounter_dxicd10.clinical_encounter_dx_id} ;;
   }
 
   join: athenadwh_icdcodeall {
     relationship: many_to_one
-    sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} ;;
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} ;;
   }
 
   join: icd_primary_diagnosis_code {
     from: athenadwh_icdcodeall
     view_label: "ICD Primary Diagnosis Codes"
-    relationship: many_to_one
-    sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 1 ;;
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
   }
 
   join: icd_secondary_diagnosis_code {
     from: athenadwh_icdcodeall
     view_label: "ICD Secondary Diagnosis Codes"
-    relationship: many_to_one
-    sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_secondary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 2 ;;
-  }
-
-  join: icd_tertiary_diagnosis_code {
-    from: athenadwh_icdcodeall
-    view_label: "ICD Tertiary Diagnosis Codes"
-    relationship: many_to_one
-    sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_tertiary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 3 ;;
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_secondary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 1 ;;
   }
 
   join: drg_to_icd10_crosswalk {
@@ -462,7 +492,8 @@ explore: care_requests {
   join: diversion_flat {
     relationship: many_to_many
     sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${diversion_flat.diagnosis_code} ;;
-    sql_where: ${clinical_encounter_icd_codes.sequence_number} <= 3 ;;
+    #sql_where: ${clinical_encounter_icd_codes.sequence_number} <= 3 ;;
+    sql_where: ${athenadwh_clinicalencounter_dxicd10.ordering} <= 2 ;;
   }
 
   join: diversion_type {

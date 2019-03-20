@@ -9,8 +9,8 @@ view: clinical_encounter_icd_codes {
   FROM athenadwh_clinicalencounter_diagnosis d
     JOIN athenadwh_clinicalencounter_dxicd10 x
       ON d.clinical_encounter_dx_id = x.clinical_encounter_dx_id AND d.deleted_datetime IS NULL
-    JOIN athenadwh_icdcodeall i
-      ON x.icd_code_id = i.icd_code_id
+    --JOIN athenadwh_icdcodeall i
+      --ON x.icd_code_id = i.icd_code_id
   GROUP BY 1,2,3 ;;
 
       sql_trigger_value: SELECT MAX(created_at) FROM athenadwh_clinicalencounter_diagnosis ;;
