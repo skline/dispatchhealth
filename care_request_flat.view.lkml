@@ -2511,6 +2511,16 @@ view: care_request_flat {
     sql: ${care_request_id} ;;
   }
 
+  measure: care_request_count_uhc {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: channel_items.uhc_care_request
+      value: "yes"
+    }
+  }
+
+
   measure: resolved_count {
     type: count_distinct
     sql: ${care_request_id} ;;
