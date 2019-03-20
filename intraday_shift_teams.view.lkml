@@ -266,6 +266,23 @@ view: intraday_shift_teams {
     }
   }
 
+  measure: accepted_crs_uhc {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: intraday_care_requests.accepted
+      value: "yes"
+    }
+    filters: {
+      field: intraday_care_requests.uhc_care_request
+      value: "yes"
+    }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "no"
+    }
+  }
+
 
   measure: complete_crs {
     type: count_distinct
@@ -301,6 +318,20 @@ view: intraday_shift_teams {
       value: "(TC)TRICARE"
     }
   }
+
+  measure: complete_crs_uhc {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: intraday_care_requests.complete
+      value: "yes"
+    }
+    filters: {
+      field: intraday_care_requests.uhc_care_request
+      value: "yes"
+    }
+  }
+
 
   measure: complete_crs_medicaid_tricare {
     type: number

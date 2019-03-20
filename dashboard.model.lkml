@@ -566,6 +566,10 @@ explore: care_requests {
     sql_on: ${addresses.zipcode_short} = ${postal_codes.postalcode} ;;
   }
 
+  join: slc_data {
+    sql_on: ${addresses.zipcode_short}=${slc_data.zip_code}::varchar and ${slc_data.denver_comb_psa}='X' ;;
+  }
+
   join: credit_cards {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${credit_cards.care_request_id} ;;
@@ -1837,6 +1841,7 @@ explore: ga_pageviews_clone {
       }
 
 
+
         }
 
         explore: zipcodes {
@@ -2329,7 +2334,7 @@ explore: provider_address {
 explore: slc_data {
   sql_always_where: ${slc_data.denver_comb_psa}='X' ;;
   join: zipcodes {
-    sql_on: ${zipcodes.zip}=${slc_data.zip_code} ;;
+    sql_on: ${zipcodes.zip}::int=${slc_data.zip_code} and ${zipcodes.market_id}=159 ;;
   }
   }
 

@@ -232,6 +232,63 @@ view: intraday_care_requests {
 
   }
 
+  dimension: uhc_care_request {
+    type: yesno
+    sql: ${channel_items_intra.name} not in('HPN Access Center (Health Plan of Nevada)');;
+  }
+
+  measure: inqueue_crs_uhc {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: uhc_care_request
+      value: "yes"
+    }
+
+  }
+
+  measure: accepted_crs_uhc {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: accepted
+      value: "yes"
+    }
+    filters: {
+      field: uhc_care_request
+      value: "yes"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+  }
+
+  measure: complete_crs_uhc {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: uhc_care_request
+      value: "yes"
+    }
+  }
+
   measure: inqueue_crs_medicaid {
     type: count_distinct
     sql: ${care_request_id};;

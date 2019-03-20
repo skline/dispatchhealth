@@ -258,4 +258,9 @@ view: channel_items {
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
 
+  dimension: uhc_care_request {
+    type: yesno
+    sql: ${name} not in('HPN Access Center (Health Plan of Nevada)');;
+  }
+
 }
