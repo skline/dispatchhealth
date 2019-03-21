@@ -374,41 +374,10 @@ explore: care_requests {
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 3 ;;
   }
 
-  # Join new ICD code data
-  # join: clinical_encounter_icd_codes {
-  #   relationship: one_to_many
-  #   sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${clinical_encounter_icd_codes.clinical_encounter_id} ;;
-  # }
-
-  # join: athenadwh_icdcodeall {
-  #   relationship: many_to_one
-  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} ;;
-  # }
-
-  # join: icd_primary_diagnosis_code {
-  #   from: athenadwh_icdcodeall
-  #   view_label: "ICD Primary Diagnosis Codes"
-  #   relationship: many_to_one
-  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 1 ;;
-  # }
-
-  # join: icd_secondary_diagnosis_code {
-  #   from: athenadwh_icdcodeall
-  #   view_label: "ICD Secondary Diagnosis Codes"
-  #   relationship: many_to_one
-  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_secondary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 2 ;;
-  # }
-
-  # join: icd_tertiary_diagnosis_code {
-  #   from: athenadwh_icdcodeall
-  #   view_label: "ICD Tertiary Diagnosis Codes"
-  #   relationship: many_to_one
-  #   sql_on: ${clinical_encounter_icd_codes.icd_code_id} = ${icd_tertiary_diagnosis_code.icd_code_id} AND ${clinical_encounter_icd_codes.sequence_number} = 3 ;;
-  # }
-
   join: athenadwh_clinicalencounter_diagnosis {
     relationship: one_to_many
-    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinicalencounter_diagnosis.clinical_encounter_id} ;;
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinicalencounter_diagnosis.clinical_encounter_id}
+    AND ${athenadwh_clinicalencounter_diagnosis.deleted_datetime_raw} IS NULL;;
   }
 
   join: athenadwh_clinicalencounter_dxicd10 {
@@ -434,6 +403,13 @@ explore: care_requests {
     view_label: "ICD Secondary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_secondary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 1 ;;
+  }
+
+  join: icd_tertiary_diagnosis_code {
+    from: athenadwh_icdcodeall
+    view_label: "ICD Tertiary Diagnosis Codes"
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_tertiary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 2 ;;
   }
 
   join: drg_to_icd10_crosswalk {
@@ -492,19 +468,13 @@ explore: care_requests {
   join: diversion_flat {
     relationship: many_to_many
     sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${diversion_flat.diagnosis_code} ;;
-    #sql_where: ${clinical_encounter_icd_codes.sequence_number} <= 3 ;;
-    sql_where: ${athenadwh_clinicalencounter_dxicd10.ordering} <= 2 ;;
+    sql_where: ${athenadwh_clinicalencounter_diagnosis.ordering} <= 2 ;;
   }
 
   join: diversion_type {
     relationship: many_to_one
     sql_on: ${diversion_flat.diversion_type_id} = ${diversion_type.id} ;;
   }
-
-  # join: diversion_category {
-  #   relationship: many_to_one
-  #   sql_on: ${diversion.diversion_category_id} = ${diversion_category.id} ;;
-  # }
 
   join: letter_recipient_dimensions_clone {
     relationship:  many_to_one
@@ -963,7 +933,7 @@ explore: care_requests {
   }
 
   join: vitals_flat {
-    relationship: many_to_one
+    relationship: one_to_one
     sql_on: ${care_requests.id} = ${vitals_flat.care_request_id} ;;
   }
 
