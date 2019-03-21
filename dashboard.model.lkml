@@ -860,6 +860,9 @@ explore: care_requests {
     relationship: one_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
+  join: callers {
+    sql_on: ${care_requests.caller_id} =${callers.id} ;;
+  }
 
   join: seasonal_adj {
     sql_on: ${care_request_flat.on_scene_month_num}=${seasonal_adj.month_number} ;;

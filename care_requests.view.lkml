@@ -45,6 +45,11 @@ view: care_requests {
     sql: trim(lower(${chief_complaint})) ;;
   }
 
+  dimension: caller_id {
+    type: number
+    sql: ${TABLE}.caller_id ;;
+  }
+
   dimension: post_acute_follow_up {
     type: yesno
     description: "Chief complaint, risk protocol name, or channel name is post-acute follow-up"
@@ -1253,14 +1258,14 @@ measure: distinct_day_of_week {
 
   dimension: origin_phone {
     type: string
-    sql:  ${TABLE}.origin_phone;;
+    sql:  ${callers.origin_phone};;
   }
 
   dimension: origin_phone_not_populated {
     type: yesno
-    sql: care_requests.origin_phone IS NULL
-         OR LENGTH(care_requests.origin_phone) = 0
-        OR (care_requests.origin_phone) = '';;
+    sql: ${origin_phone} IS NULL
+         OR LENGTH(${origin_phone}) = 0
+        OR (${origin_phone}) = '';;
   }
 
   measure: origin_phone_populated_count {
@@ -1281,9 +1286,7 @@ measure: distinct_day_of_week {
 
   dimension: contact_id_not_populated {
     type: yesno
-    sql: care_requests.contact_id IS NULL
-         OR LENGTH(care_requests.contact_id) = 0
-        OR (care_requests.contact_id) = '';;
+    sql: ${contact_id} IS NULL;;
   }
 
   measure: contact_id_populated_count {
@@ -1291,7 +1294,7 @@ measure: distinct_day_of_week {
     sql_distinct_key: ${id} ;;
     sql: ${id} ;;
     filters: {
-      field: origin_phone_not_populated
+      field: contact_id_not_populated
       value: "no"
     }
   }
@@ -1424,8 +1427,8 @@ measure: distinct_day_of_week {
   dimension: contact_id {
     type: number
     sql: case
-          when ${TABLE}.contact_id ='' then null
-          else ${TABLE}.contact_id::bigint
+          when ${callers.contact_id} ='' then null
+          else ${callers.contact_id}::bigint
          end;;
   }
 
