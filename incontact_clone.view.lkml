@@ -583,8 +583,8 @@ group by 1,2,3,4,5,6,7,8,9)lq
   measure:  count_wait_time_greater_30s{
     type: count_distinct
     value_format: "0"
-    sql_distinct_key: ${care_request_flat.care_request_id} ;;
-    sql: ${care_request_flat.care_request_id} ;;
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
     filters: {
       field: wait_time_greater_30
       value: "yes"
