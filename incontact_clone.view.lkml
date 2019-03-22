@@ -34,6 +34,11 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${TABLE}.contact_time_sec ;;
   }
 
+  dimension: ivr_time_sec {
+    type: number
+    sql: ${TABLE}.ivr_time ;;
+  }
+
   measure: avg_contact_time_sec {
     value_format: "0.0"
     type: average_distinct
