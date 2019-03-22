@@ -621,11 +621,6 @@ view: care_request_flat {
     }
   }
 
-  dimension: last_care_request {
-    type: yesno
-    sql: MAX(${complete_raw}) ;;
-  }
-
   dimension: pre_post {
     type: yesno
     description: "A flag indicating the Denver shift-ladder experiment (4/2/2018 - 4/13/2018)"

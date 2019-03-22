@@ -553,6 +553,11 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${survey_response_facts_clone.care_request_id} ;;
   }
 
+  join: last_care_request {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${last_care_request.last_care_request_id} ;;
+  }
+
   join: addressable_items {
     relationship: one_to_one
     sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;
