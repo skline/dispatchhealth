@@ -749,6 +749,11 @@ view: care_requests {
     sql: ${care_request_flat.complete_date} is not null;;
   }
 
+  dimension:  complete_non_escalated_visit {
+    type: yesno
+    sql: ${care_request_flat.complete_date} is not null AND ${primary_resolved_reason} IS NULL;;
+  }
+
   dimension:  archived_visit {
     type: yesno
     sql: ${care_request_flat.archive_date} is not null;;

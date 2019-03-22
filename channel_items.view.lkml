@@ -108,6 +108,20 @@ view: channel_items {
     sql: ${type_name} SIMILAR TO '%(Home Health|Provider Group)%' OR LOWER(${care_requests.activated_by}) SIMILAR TO '%(home health|s clinician)%' ;;
   }
 
+  dimension: uhc_hpn_channel {
+    description: "The business line acronym for UHC Health Plan of Nevada patients"
+    type: string
+    sql: CASE
+          WHEN ${name} LIKE '%HPN Access Center%' THEN 'AC'
+          WHEN ${name} LIKE '%HPN Willing Hands%' THEN 'WH'
+          WHEN ${name} LIKE '%HPN ED Education%' THEN 'EDED'
+          WHEN ${name} LIKE '%HPN Asthma Education%' THEN 'ASTH'
+          WHEN ${name} LIKE '%HPN HEDIS%' THEN 'HEDG'
+          WHEN ${name} LIKE '%HPN Post Acute Followup%' THEN 'PAFU'
+          ELSE ${name}
+        END;;
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;
