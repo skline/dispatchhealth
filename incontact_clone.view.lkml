@@ -89,7 +89,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
   measure: avg_inqueuetime {
     label: "Average InQueue Time (s)"
     type: average_distinct
-    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    sql_distinct_key: concat(${master_contact_id}, ${end_date}, ${skll_name}, ${agent_name}, ${start_date}) ;;
     value_format: "#.0"
     sql: ${inqueuetime} ;;
   }
@@ -97,7 +97,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
   measure: median_inqueuetime {
     label: "Median InQueue Time (s)"
     type: median_distinct
-    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    sql_distinct_key: concat(${master_contact_id}, ${end_date}, ${skll_name}, ${agent_name}, ${start_date}) ;;
     value_format: "#.0"
     sql: ${inqueuetime} ;;
   }
@@ -587,7 +587,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
     label: "Average Wait Time (s)"
     type: average_distinct
     value_format: "0.0"
-    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    sql_distinct_key: concat(${master_contact_id}, ${end_date}, ${skll_name}, ${agent_name}, ${start_date}) ;;
     sql: ${wait_time} ;;
   }
 
@@ -620,7 +620,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
     label: "Median Wait Time (s)"
     type: median_distinct
     value_format: "0.0"
-    sql_distinct_key: concat(${master_contact_id}, ${end_time}, ${skll_name}, ${agent_name}, ${start_time}) ;;
+    sql_distinct_key: concat(${master_contact_id}, ${end_date}, ${skll_name}, ${agent_name}, ${start_date}) ;;
     sql: ${wait_time} ;;
   }
 
