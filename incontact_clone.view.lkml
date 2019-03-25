@@ -571,6 +571,12 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${wait_time}>30 ;;
   }
 
+  dimension:  inqueue_time_greater_30{
+    type: yesno
+    sql: ${inqueuetime}>30 ;;
+  }
+
+
   dimension:  wait_time_band{
     type: string
     sql:round(ln(${wait_time}),0)
@@ -592,6 +598,18 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${master_contact_id} ;;
     filters: {
       field: wait_time_greater_30
+      value: "yes"
+    }
+
+  }
+
+  measure:  count_inqeue_time_greater_30s{
+    type: count_distinct
+    value_format: "0"
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: inqueue_time_greater_30
       value: "yes"
     }
 
