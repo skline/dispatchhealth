@@ -298,7 +298,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
 
   dimension: anthem_eligible {
     type: yesno
-    sql: ${contact_type} = 'Original' and ${call_back} = 0 and ${markets.name_adj} = 'Richmond' and ${campaign} = 'Care Phone';;
+    sql: ${contact_type} = 'Original' and ${markets.name_adj} = 'Richmond' and ${campaign} = 'Care Phone' and ${skll_name} in('RIC Care', 'RIC MVP Customer Care');;
   }
 
   dimension: abandons {
