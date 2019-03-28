@@ -234,7 +234,7 @@ view: intraday_care_requests {
 
   dimension: uhc_care_request {
     type: yesno
-    sql: ${channel_items_intra.name} not in('HPN Access Center (Health Plan of Nevada)');;
+    sql:${channel_item_id} in(992, 2851, 2849, 2850, 2852, 2848);;
   }
 
   measure: inqueue_crs_uhc {

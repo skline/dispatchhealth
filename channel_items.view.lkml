@@ -274,7 +274,7 @@ view: channel_items {
 
   dimension: uhc_care_request {
     type: yesno
-    sql: ${name} not in('HPN Access Center (Health Plan of Nevada)');;
+    sql: ${id} in(992, 2851, 2849, 2850, 2852, 2848);;
   }
 
 }
