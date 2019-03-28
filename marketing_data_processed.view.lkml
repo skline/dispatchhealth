@@ -91,10 +91,17 @@ from looker_scratch.ga_pageviews_clone
     sql: ${TABLE}.term_final ;;
   }
 
+dimension: content_final {
+  type: string
+  sql: ${TABLE}.content_final ;;
+}
+
   dimension: marketing_cost_date {
     type: date
     sql: ${TABLE}.marketing_cost_date ;;
   }
+
+
 
   dimension: marketing_cost_ad_group_name {
     type: string
@@ -333,6 +340,8 @@ from looker_scratch.ga_pageviews_clone
     sql: concat(${source_final}, ': ', ${medium_final}) ;;
 
   }
+
+
 
   measure: care_request_rate {
     type: number

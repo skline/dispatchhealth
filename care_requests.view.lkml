@@ -1261,54 +1261,6 @@ measure: distinct_day_of_week {
     sql: (${TABLE}.marketing_meta_data->>'ga_client_id')::text ;;
   }
 
-  dimension: origin_phone {
-    type: string
-    sql:  ${callers.origin_phone};;
-  }
-
-  dimension: origin_phone_not_populated {
-    type: yesno
-    sql: ${origin_phone} IS NULL
-         OR LENGTH(${origin_phone}) = 0
-        OR (${origin_phone}) = '';;
-  }
-
-  measure: origin_phone_populated_count {
-    type: count_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${id} ;;
-    filters: {
-      field: origin_phone_not_populated
-      value: "no"
-    }
-  }
-  measure: percent_origin_phone_populated {
-    type: number
-    value_format: "0%"
-    sql: ${origin_phone_populated_count}::float/${count}::float ;;
-
-  }
-
-  dimension: contact_id_not_populated {
-    type: yesno
-    sql: ${contact_id} IS NULL;;
-  }
-
-  measure: contact_id_populated_count {
-    type: count_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${id} ;;
-    filters: {
-      field: contact_id_not_populated
-      value: "no"
-    }
-  }
-  measure: percent_contact_id_populated {
-    type: number
-    value_format: "0%"
-    sql: ${contact_id_populated_count}::float/${count}::float ;;
-
-  }
 
 
   dimension: days_in_month {
@@ -1428,13 +1380,6 @@ measure: distinct_day_of_week {
           WHEN ${escalated_on_phone} THEN split_part(${care_request_complete.comment}, ':', 2)
           ELSE NULL
         END ;;
-  }
-  dimension: contact_id {
-    type: number
-    sql: case
-          when ${callers.contact_id} ='' then null
-          else ${callers.contact_id}::bigint
-         end;;
   }
 
   dimension: no_credit_card_reason {

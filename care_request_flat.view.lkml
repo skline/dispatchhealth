@@ -45,7 +45,10 @@ view: care_request_flat {
         as reorder_reason,
         cr.shift_team_id,
         min(to_date(schedule.comment, 'DD Mon YYYY')) as scheduled_care_date,
-        insurances.package_id
+        insurances.package_id,
+        callers.origin_phone,
+        callers.contact_id,
+        cr.patient_id as patient_id
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
@@ -113,6 +116,8 @@ view: care_request_flat {
       ON cr.market_id = markets.id
       JOIN looker_scratch.timezones AS t
       ON markets.sa_time_zone = t.rails_tz
+      LEFT join callers
+      on callers.id = cr.caller_id
       left join(select  care_requests.id as care_request_id, package_id,  ROW_NUMBER() OVER(PARTITION BY care_requests.id
                                 ORDER BY insurances.created_at desc) as rn
         FROM care_requests
@@ -125,10 +130,11 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32, insurances.package_id ;;
+
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32, insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
-    indexes: ["care_request_id"]
+    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date"]
   }
 
   dimension: care_request_id {
@@ -142,6 +148,24 @@ view: care_request_flat {
     sql: ${TABLE}.package_id ;;
   }
 
+  dimension: patient_id {
+    type: number
+    sql: ${TABLE}.patient_id ;;
+  }
+
+  dimension: origin_phone {
+    type: string
+    sql: ${TABLE}.origin_phone ;;
+  }
+
+  dimension: contact_id {
+    type: number
+    sql:
+    case
+          when ${TABLE}.contact_id  ='' then null
+          else ${TABLE}.contact_id::bigint
+         end;;
+  }
 
   measure: complete_count_seasonal_adj {
     type: number
@@ -3355,5 +3379,51 @@ view: care_request_flat {
     type: yesno
     sql: ${created_mountain_decimal} < ${max_time_mountain_predictions} ;;
   }
+
+  dimension: origin_phone_not_populated {
+    type: yesno
+    sql: ${origin_phone} IS NULL
+         OR LENGTH(${origin_phone}) = 0
+        OR (${origin_phone}) = '';;
+  }
+
+  measure: origin_phone_populated_count {
+    type: count_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    sql: ${care_request_id} ;;
+    filters: {
+      field: origin_phone_not_populated
+      value: "no"
+    }
+  }
+  measure: percent_origin_phone_populated {
+    type: number
+    value_format: "0%"
+    sql: ${origin_phone_populated_count}::float/${care_request_count}::float ;;
+
+  }
+
+  dimension: contact_id_not_populated {
+    type: yesno
+    sql: ${contact_id} IS NULL;;
+  }
+
+  measure: contact_id_populated_count {
+    type: count_distinct
+    sql_distinct_key: ${care_request_id} ;;
+    sql: ${care_request_id} ;;
+    filters: {
+      field: contact_id_not_populated
+      value: "no"
+    }
+  }
+  measure: percent_contact_id_populated {
+    type: number
+    value_format: "0%"
+    sql: ${contact_id_populated_count}::float/${care_request_count}::float ;;
+
+  }
+
+
 
 }

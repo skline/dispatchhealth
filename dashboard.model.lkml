@@ -971,9 +971,9 @@ explore: care_requests {
 
 join: invoca_clone {
 sql_on: ((${patients.mobile_number} = ${invoca_clone.caller_id} and ${patients.mobile_number} is not null)
-        OR (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null)
+        OR (${care_request_flat.origin_phone} = ${invoca_clone.caller_id} and ${care_request_flat.origin_phone} is not null)
         )
-        and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+        and abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
         ;;
 
 }
@@ -993,7 +993,7 @@ join: ga_pageviews_clone {
     }
 
   join: incontact_clone {
-    sql_on: ${care_requests.contact_id} = ${incontact_clone.contact_id}
+    sql_on: ${care_request_flat.contact_id} = ${incontact_clone.contact_id}
                   ;;
   }
   join: ga_experiments {
@@ -1296,16 +1296,16 @@ explore: invoca_clone {
              and ${patients.mobile_number} is not null   ;;
   }
 
-  join: care_requests {
-    sql_on: (${patients.id} = ${care_requests.patient_id}  OR ${care_requests.origin_phone} = ${invoca_clone.caller_id} or ${care_requests.origin_phone} = ${incontact_clone.from_number})
+  join: care_request_flat {
+    sql_on: (${patients.id} = ${care_request_flat.patient_id}  OR ${care_request_flat.origin_phone} = ${invoca_clone.caller_id} or ${care_request_flat.origin_phone} = ${incontact_clone.from_number})
       and (
-            abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+            abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
             OR
-           abs(EXTRACT(EPOCH FROM ${incontact_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+           abs(EXTRACT(EPOCH FROM ${incontact_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
           );;
   }
 
-  join: care_request_flat {
+  join: care_requests {
     relationship: many_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
@@ -1441,34 +1441,34 @@ explore: ga_pageviews_full_clone {
          ) ;;
   }
 
-  join: care_requests {
+  join: care_request_flat {
     sql_on:
         (
           (
-            ${patients.id} = ${care_requests.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+            ${patients.id} = ${care_request_flat.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_request_flat.care_request_id})
           OR
           (
-            ${care_requests.origin_phone} = ${invoca_clone.caller_id}
+            ${care_request_flat.origin_phone} = ${invoca_clone.caller_id}
             and
-            ${care_requests.origin_phone} is not null
+            ${care_request_flat.origin_phone} is not null
           )
         )
         AND
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
         );;
   }
+
+  join: care_requests  {
+    relationship: many_to_one
+    sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
 
   join: dtc_ff_patients {
     sql_on: ${patients.id} = ${care_requests.patient_id}
          OR ${patients.id} = ${web_care_requests.patient_id} ;;
   }
 
-
-
-  join: care_request_flat {
-    relationship: many_to_one
-    sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
-  }
 
   join: web_care_request_flat {
     from: care_request_flat
@@ -1580,21 +1580,21 @@ explore: ga_pageviews_clone {
       ) ;;
     }
 
-  join: care_requests {
+  join: care_request_flat {
     sql_on:
       (
         (
-          ${patients.id} = ${care_requests.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+          ${patients.id} = ${care_request_flat.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_request_flat.care_request_id})
           OR
-          (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+          (${care_request_flat.origin_phone} = ${invoca_clone.caller_id} and ${care_request_flat.origin_phone} is not null )
         )
         AND
-        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+        abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
       );;
   }
 
 
-    join: care_request_flat {
+    join: care_requests  {
       relationship: many_to_one
       sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
     }
@@ -1692,19 +1692,19 @@ explore: ga_pageviews_clone {
             ) ;;
       }
 
-    join: care_requests {
+    join: care_request_flat {
       sql_on:
             (
               (
-                ${patients.id} = ${care_requests.patient_id} and (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+                ${patients.id} = ${care_request_flat.patient_id} and (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_request_flat.care_request_id})
                 OR
-                (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+                (${care_request_flat.origin_phone} = ${invoca_clone.caller_id} and ${care_request_flat.origin_phone} is not null )
               )
               AND
-              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
             );;
     }
-      join: care_request_flat {
+      join: care_requests {
         relationship: many_to_one
         sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
       }
@@ -1808,23 +1808,23 @@ explore: ga_pageviews_clone {
 
         }
 
-      join: care_requests {
+      join: care_request_flat {
         sql_on:
             (
               (
-                ${patients.id} = ${care_requests.patient_id} and (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+                ${patients.id} = ${care_request_flat.patient_id} and (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_request_flat.care_request_id})
                 OR
-                (${care_requests.origin_phone} = ${invoca_clone.caller_id} and ${care_requests.origin_phone} is not null )
+                (${care_request_flat.origin_phone} = ${invoca_clone.caller_id} and ${care_request_flat.origin_phone} is not null )
               )
               AND
-              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+              abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
 
             );;
 
         }
 
 
-          join: care_request_flat {
+          join: care_requests  {
             relationship: many_to_one
             sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
           }
@@ -1938,28 +1938,30 @@ explore: ga_pageviews_clone {
           }
 
 
-          join: care_requests_exact {
-            from: care_requests
-            sql_on: (${patients.id} = ${care_requests_exact.patient_id}  OR ${care_requests_exact.origin_phone} = ${incontact_clone.from_number})
+          join: care_request_flat_exact {
+            from:  care_request_flat
+            sql_on: (${patients.id} = ${care_request_flat_exact.patient_id}  OR ${care_request_flat_exact.origin_phone} = ${incontact_clone.from_number})
             and (
-                   abs(EXTRACT(EPOCH FROM ${incontact_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_requests_exact.created_mountain_raw})) < (60*60*24)
+                   abs(EXTRACT(EPOCH FROM ${incontact_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat_exact.created_mountain_raw})) < (60*60*24)
             );;
             }
 
-          join: care_request_flat_exact {
-            from: care_request_flat
+          join: care_requests_exact {
+            from: care_requests
             relationship: many_to_one
             sql_on: ${care_request_flat_exact.care_request_id} = ${care_requests_exact.id} ;;
           }
 
 
-          join: care_requests_contact_id {
-            from: care_requests
-            sql_on: ${care_requests_contact_id.contact_id} = ${incontact_clone.contact_id};;
+
+
+          join:   care_request_flat_contact_id{
+            from: care_request_flat
+            sql_on: ${care_request_flat_contact_id.contact_id} = ${incontact_clone.contact_id};;
           }
 
-          join: care_request_flat_contact_id {
-            from: care_request_flat
+          join: care_requests_contact_id {
+            from: care_requests
             relationship: many_to_one
             sql_on: ${care_request_flat_contact_id.care_request_id} = ${care_requests_contact_id.id} ;;
           }
@@ -2221,20 +2223,20 @@ explore: marketing_data_processed {
          ) ;;
   }
 
-  join: care_requests {
+  join: care_request_flat {
     sql_on:
         (
           (
-            ${patients.id} = ${care_requests.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_requests.id})
+            ${patients.id} = ${care_request_flat.patient_id} and  (${web_care_requests.id} is null OR ${web_care_requests.id} != ${care_request_flat.care_request_id})
           OR
           (
-            ${care_requests.origin_phone} = ${marketing_data_processed.invoca_phone_number}
+            ${care_request_flat.origin_phone} = ${marketing_data_processed.invoca_phone_number}
             and
-            ${care_requests.origin_phone} is not null
+            ${care_request_flat.origin_phone} is not null
           )
         )
         AND
-        abs(EXTRACT(EPOCH FROM ${marketing_data_processed.invoca_start_raw})-EXTRACT(EPOCH FROM ${care_requests.created_mountain_raw})) < (60*60*1.5)
+        abs(EXTRACT(EPOCH FROM ${marketing_data_processed.invoca_start_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
         );;
   }
 
@@ -2245,7 +2247,7 @@ explore: marketing_data_processed {
 
 
 
-  join: care_request_flat {
+  join: care_requests  {
     relationship: many_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }

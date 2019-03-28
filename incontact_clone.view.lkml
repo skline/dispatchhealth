@@ -282,11 +282,11 @@ group by 1,2,3,4,5,6,7,8,9)lq
            when lower(${skll_name}) like '%ric%'  then 164
            when lower(${skll_name})  like '%las%' then 162
            when lower(${skll_name})  like '%hou%' then 165
-          when lower(${skll_name})  like '%okla%' or lower(${skll_name})  like '%okc%' then 166
-         when lower(${skll_name})  like 'spr%' or trim(lower(${skll_name}))  like '%spi%' then 168
+           when lower(${skll_name})  like '%okla%' or lower(${skll_name})  like '%okc%' then 166
+           when lower(${skll_name})  like 'spr%' or trim(lower(${skll_name}))  like '%spi%' then 168
            when lower(${skll_name})  like '%tac%'  then 170
-          when lower(${skll_name})  like '%dal%'  then 169
-           else null end ;;
+           when lower(${skll_name})  like '%dal%'  then 169
+          else null end ;;
   }
   dimension: skill_category {
     type:  string
@@ -367,35 +367,35 @@ group by 1,2,3,4,5,6,7,8,9)lq
   measure: cr_create_rate {
     type: number
     value_format: "0.0%"
-    sql: ((${care_requests.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat.care_request_count}::float/${count_distinct}::float));;
 
   }
 
   measure: cr_create_rate_exact {
     type: number
     value_format: "0.0%"
-    sql: ((${care_requests_exact.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat_exact.care_request_count}::float/${count_distinct}::float));;
 
   }
 
   measure: cr_create_rate_exact_answer {
     type: number
     value_format: "0.0%"
-    sql: ((${care_requests_exact.count_distinct_intended_care_requests}::float/nullif(${count_distinct_live_answers}::float,0)));;
+    sql: ((${care_request_flat_exact.care_request_count}::float/nullif(${count_distinct_live_answers}::float,0)));;
 
   }
 
   measure: cr_create_rate_exact_phone {
     type: number
     value_format: "0.0%"
-    sql: ((${care_requests_exact.count_distinct_intended_care_requests}::float/nullif(${count_distinct_phone_number}::float,0)));;
+    sql: ((${care_request_flat_exact.care_request_count}::float/nullif(${count_distinct_phone_number}::float,0)));;
 
   }
 
   measure: cr_create_rate_contact_id {
     type: number
     value_format: "0.0%"
-    sql: ((${care_requests_contact_id.count_distinct_intended_care_requests}::float/${count_distinct}::float));;
+    sql: ((${care_request_flat_contact_id.care_request_count}::float/${count_distinct}::float));;
 
   }
 
