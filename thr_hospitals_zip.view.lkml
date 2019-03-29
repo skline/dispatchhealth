@@ -14,7 +14,7 @@ view: thr_hospitals_zip {
   measure: count_distinct {
     type: count_distinct
     sql_distinct_key: ${zipcode} ;;
-    sql: ${zipcodec} ;;
+    sql: ${zipcode} ;;
 
   }
 
