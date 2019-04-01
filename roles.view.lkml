@@ -26,6 +26,12 @@ view: roles {
     sql: ${TABLE}.name ;;
   }
 
+  measure: roles_list {
+    description: "The list of roles granted to the user"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${name}), ' | ') ;;
+  }
+
   dimension_group: updated {
     type: time
     timeframes: [
