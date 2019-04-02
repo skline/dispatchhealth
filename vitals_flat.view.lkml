@@ -159,7 +159,7 @@ SELECT DISTINCT
     ON vitals.care_request_id = wt.care_request_id AND wt.rownum = 1
   GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,20 ;;
 
-    sql_trigger_value: SELECT MAX(care_request_id) FROM care_requests ;;
+    sql_trigger_value: SELECT MAX(care_request_id) FROM vitals ;;
     indexes: ["care_request_id"]
   }
 
