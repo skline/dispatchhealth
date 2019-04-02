@@ -869,6 +869,10 @@ explore: care_requests {
     sql_on: ${care_requests.caller_id} =${callers.id} ;;
   }
 
+  join: service_lines {
+    sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+
   join: seasonal_adj {
     sql_on: ${care_request_flat.on_scene_month_num}=${seasonal_adj.month_number} ;;
   }

@@ -1414,6 +1414,11 @@ measure: distinct_day_of_week {
     sql: case when ${market_id} = 167 then 159 else ${market_id} end;;
   }
 
+  dimension: service_line_id {
+    type: number
+    sql: ${TABLE}.service_line_id ;;
+  }
+
 
   # ----- Sets of fields for drilling ------
   set: detail {
