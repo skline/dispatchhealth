@@ -274,7 +274,7 @@ view: channel_items {
 
   dimension: uhc_care_request {
     type: yesno
-    sql: ${id} in(992, 2851, 2849, 2850, 2852, 2848);;
+    sql: ${id} in(2851, 2849, 2850, 2852, 2848);;
   }
 
 }
