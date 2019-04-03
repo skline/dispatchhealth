@@ -786,7 +786,8 @@ explore: care_requests {
     relationship: many_to_one
     sql_on: ${care_requests.patient_id} = ${insurances.patient_id} AND
             ${insurances.priority} = '1' AND
-            ${insurances.patient_id} IS NOT NULL ;;
+            ${insurances.patient_id} IS NOT NULL AND
+            (${care_request_flat.on_scene_date} <= ${insurances.end_date} OR ${insurances.end_date} IS NULL);;
   }
 
   join: insurance_plans {
