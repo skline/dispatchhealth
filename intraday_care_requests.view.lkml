@@ -259,6 +259,20 @@ view: intraday_care_requests {
 
   }
 
+  measure: resolved_crs_uhc {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: resolved
+      value: "yes"
+    }
+    filters: {
+      field: uhc_care_request
+      value: "yes"
+    }
+
+  }
+
   measure: accepted_crs_uhc {
     type: count_distinct
     sql: ${care_request_id};;
