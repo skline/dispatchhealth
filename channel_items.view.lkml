@@ -112,12 +112,12 @@ view: channel_items {
     description: "The business line acronym for UHC Health Plan of Nevada patients"
     type: string
     sql: CASE
-          WHEN ${name} LIKE '%HPN Access Center%' THEN 'AC'
-          WHEN ${name} LIKE '%HPN Willing Hands%' THEN 'WH'
-          WHEN ${name} LIKE '%HPN ED Education%' THEN 'EDED'
-          WHEN ${name} LIKE '%HPN Asthma Education%' THEN 'ASTH'
-          WHEN ${name} LIKE '%HPN HEDIS%' THEN 'HEDG'
-          WHEN ${name} LIKE '%HPN Post Acute Followup%' THEN 'PAFU'
+          WHEN lower(${name}) = 'hpn/shl access center (health plan of nevada)' THEN 'AC'
+          WHEN lower(${name}) = 'Hpn/Shl Willing Hands (health plan of nevada)' THEN 'WH'
+          WHEN lower(${name}) = 'hpn/shl ed education (health plan of nevada)' THEN 'EDED'
+          WHEN lower(${name}) = 'hpn/shlasthma education (health plan of nevada)' THEN 'ASTH'
+          WHEN lower(${name}) = 'hpn/shl hedis (health plan of nevada)' THEN 'HEDG'
+          WHEN lower(${name}) = 'hpn/shl post acute followup (health plan of nevada)' THEN 'PAFU'
           ELSE ${name}
         END;;
   }
