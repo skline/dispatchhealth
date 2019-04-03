@@ -190,12 +190,30 @@ SELECT DISTINCT
 
   dimension: elevated_hr {
     type: yesno
-    sql: ${heartrate} > 100 OR ${heartrate_initial} > 100 ;;
+    sql: (${patients.age} < 1 AND
+         (${heartrate} < 90 OR ${heartrate_initial} < 90 OR ${heartrate} > 160 OR ${heartrate_initial} > 160))
+    OR (${patients.age} >=1 AND ${patients.age} < 3 AND
+       (${heartrate} < 80 OR ${heartrate_initial} < 80 OR ${heartrate} > 150 OR ${heartrate_initial} > 150))
+    OR (${patients.age} >=3 AND ${patients.age} < 6 AND
+       (${heartrate} < 70 OR ${heartrate_initial} < 70 OR ${heartrate} > 120 OR ${heartrate_initial} > 120))
+    OR (${patients.age} >=6 AND ${patients.age} < 12 AND
+       (${heartrate} < 60 OR ${heartrate_initial} < 60 OR ${heartrate} > 110 OR ${heartrate_initial} > 110))
+    OR (${patients.age} >=12 AND
+       (${heartrate} < 60 OR ${heartrate_initial} < 60 OR ${heartrate} > 100 OR ${heartrate_initial} > 100)) ;;
   }
 
   dimension: respiration_rate {
     type: number
     sql: ${TABLE}.respiration_rate ;;
+  }
+
+  dimension: abnormal_respiration_rate {
+    type: yesno
+    sql: (${patients.age} < 1 AND (${respiration_rate} < 22 OR ${respiration_rate} > 40))
+    OR (${patients.age} >=1 AND ${patients.age} < 3 AND (${respiration_rate} < 22 OR ${respiration_rate} > 30))
+    OR (${patients.age} >=3 AND ${patients.age} < 6 AND ${respiration_rate} > 24)
+    OR (${patients.age} >=6 AND ${patients.age} < 12 AND ${respiration_rate} > 22)
+    OR (${patients.age} >=12 AND ${respiration_rate} > 20) ;;
   }
 
   dimension: bloodpressure_systolic {
@@ -210,8 +228,8 @@ SELECT DISTINCT
 
   dimension: low_systolic_bp {
     type: yesno
-    description: "Systolic BP is < 90 AND patient age is 18+"
-    sql: (${bloodpressure_systolic} < 90 OR ${bloodpressure_systolic_initial} < 90) AND ${patients.age} >= 18 ;;
+    description: "Systolic BP is < 90 AND patient age is 12+"
+    sql: (${bloodpressure_systolic} < 90 OR ${bloodpressure_systolic_initial} < 90) AND ${patients.age} >= 12 ;;
   }
 
   dimension: hypotension {
@@ -264,7 +282,7 @@ SELECT DISTINCT
 
   dimension: low_o2_saturation {
     type: yesno
-    sql: ${o2saturation} < 90 OR ${o2saturation_initial} < 90 ;;
+    sql: ${patients.age} >=12 AND (${o2saturation} < 90 OR ${o2saturation_initial} < 90) ;;
   }
 
   dimension: o2saturation_airtype {
@@ -285,7 +303,7 @@ SELECT DISTINCT
 
   dimension: abnormal_vitals {
     type: yesno
-    sql: ${low_o2_saturation} OR ${low_systolic_bp} OR ${elevated_hr} ;;
+    sql: ${low_o2_saturation} OR ${low_systolic_bp} OR ${elevated_hr} OR ${abnormal_respiration_rate} ;;
   }
 
   dimension_group: created {
