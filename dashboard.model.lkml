@@ -468,8 +468,8 @@ explore: care_requests {
 
   join: diversion_flat {
     relationship: many_to_many
-    sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${diversion_flat.diagnosis_code} ;;
-    sql_where: ${athenadwh_clinicalencounter_diagnosis.ordering} <= 2 ;;
+    sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${diversion_flat.diagnosis_code} AND
+           (${athenadwh_clinicalencounter_diagnosis.ordering} <= 2 OR ${athenadwh_clinicalencounter_diagnosis.ordering} IS NULL) ;;
   }
 
   join: diversion_type {
