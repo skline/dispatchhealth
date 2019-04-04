@@ -382,7 +382,7 @@ explore: care_requests {
 
   join: athenadwh_clinicalencounter_dxicd10 {
     relationship: one_to_one
-    type: inner
+    #type: inner
     sql_on: ${athenadwh_clinicalencounter_diagnosis.clinical_encounter_dx_id} = ${athenadwh_clinicalencounter_dxicd10.clinical_encounter_dx_id} ;;
   }
 
@@ -395,7 +395,8 @@ explore: care_requests {
     from: athenadwh_icdcodeall
     view_label: "ICD Primary Diagnosis Codes"
     relationship: one_to_one
-    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND
+    ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
   }
 
   join: icd_secondary_diagnosis_code {
