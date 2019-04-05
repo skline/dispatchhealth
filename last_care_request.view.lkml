@@ -31,7 +31,7 @@ view: last_care_request {
     GROUP BY 1,2) crs
     ON cr.last_care_request_id = crs.care_request_id AND cr.rn = 1 ;;
 
-      sql_trigger_value: SELECT MAX(last_care_request_id) FROM last_care_request ;;
+      sql_trigger_value: SELECT MAX(id) FROM care_requests ;;
       indexes: ["last_care_request_id"]
     }
 

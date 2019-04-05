@@ -808,6 +808,20 @@ view: care_requests {
     ]
   }
 
+  measure: count_billable_visits_no_diversions {
+    type: count_distinct
+    description: "Count of completed care requests with no diversions (ER, 911, obs or hospitalization)"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.diversion_flag
+      value: "no"
+    }
+  }
+
   measure: count_complete_out_of_network_ins {
     type: count_distinct
     description: "Count of completed care requests with out of network insurance"
