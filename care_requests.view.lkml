@@ -808,17 +808,17 @@ view: care_requests {
     ]
   }
 
-  measure: count_billable_visits_no_diversions {
+  measure: count_post_acute_followups {
     type: count_distinct
-    description: "Count of completed care requests with no diversions (ER, 911, obs or hospitalization)"
+    description: "Count of post-acute follow-up visits"
     sql: ${id} ;;
     filters: {
       field: billable_est
       value: "yes"
     }
     filters: {
-      field: care_request_flat.diversion_flag
-      value: "no"
+      field: post_acute_follow_up
+      value: "yes"
     }
   }
 
