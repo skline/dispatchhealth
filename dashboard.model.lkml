@@ -467,7 +467,7 @@ explore: care_requests {
   # }
 
   join: diversion_flat {
-    relationship: many_to_many
+    relationship: many_to_one
     sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${diversion_flat.diagnosis_code} AND
            (${athenadwh_clinicalencounter_diagnosis.ordering} <= 2 OR ${athenadwh_clinicalencounter_diagnosis.ordering} IS NULL) ;;
   }
