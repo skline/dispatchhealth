@@ -59,6 +59,11 @@ view: eligible_patients {
     sql: ${TABLE}.patient_id ;;
   }
 
+  measure: count_at_risk_patients {
+    type: count_distinct
+    sql: ${patient_id} ;;
+  }
+
   dimension: population_health_patient {
     type: yesno
     sql: ${patient_id} IS NOT NULL ;;

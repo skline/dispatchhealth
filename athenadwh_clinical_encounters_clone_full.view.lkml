@@ -26,6 +26,15 @@ view: athenadwh_clinical_encounters_clone_full {
     sql: ${closed_by} IS NOT NULL AND ${closed_by} = ${athenadwh_supervising_provider_clone.provider_user_name} ;;
   }
 
+  # measure: count_closed_by_supervisor {
+  #   type: count_distinct
+  #   sql: ${clinical_encounter_id} ;;
+  #   filters: {
+  #     field: closed_by_supervisor
+  #     value: "yes"
+  #   }
+  # }
+
   dimension_group: closed_datetime {
     type: time
     timeframes: [
