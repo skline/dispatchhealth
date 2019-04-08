@@ -138,6 +138,20 @@ view: incontact_aggregated_clone {
     sql: ${long_abandons} ;;
   }
 
+  measure: sum_abandons {
+    type: sum_distinct
+    label: "Total Abandons"
+    sql_distinct_key: concat(${date_raw}, ${skill}, ${campaign_name}, ${disposition}) ;;
+    sql: ${long_abandons}+${short_abandons}+${prequeue_abandons} ;;
+  }
+
+  measure:abandon_rate  {
+    label: "Total Abandon-rate"
+    type: number
+    value_format: "0.0%"
+    sql: ${sum_abandons}/${sum_inbound_calls} ;;
+  }
+
   measure: sum_prequeue_abandons {
     type: sum_distinct
     label: "Prequeue Abandons"
