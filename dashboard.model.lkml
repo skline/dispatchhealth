@@ -38,20 +38,6 @@ explore: care_requests {
     sql_on: ${athenadwh_patient_insurances_clone.insurance_package_id} = ${athenadwh_payers_clone.insurance_package_id} ;;
   }
 
-#   join: athenadwh_clinical_encounters_clone {
-#     relationship:  one_to_one
-#     sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-#     (CASE
-#       WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
-#         ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
-#       WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
-#         (${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} >=
-#         ${care_request_flat.on_scene_date} AND
-#         ${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} <=
-#         ${care_request_flat.on_scene_date} + '2 day'::interval)
-#     END) ;;
-#   }
-
   join: athenadwh_clinical_encounters_clone {
     relationship:  one_to_one
     sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
@@ -69,6 +55,13 @@ explore: care_requests {
     type: inner
     sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_clinical_encounters_clone_full.clinical_encounter_id} AND
             ${athenadwh_clinical_encounters_clone.closed_datetime}::timestamp = ${athenadwh_clinical_encounters_clone_full.closed_datetime_raw}::timestamp ;;
+  }
+
+  join: athenadwh_chart_closing {
+    from: athenadwh_clinical_encounters_clone_full
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_chart_closing.clinical_encounter_id} ;;
+    #AND ${athenadwh_clinical_encounters_clone.encounter_date}::date = ${athenadwh_chart_closing.encounter_date}::date ;;
   }
 
   join: athenadwh_patient_medication_listing {
