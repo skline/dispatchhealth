@@ -58,8 +58,8 @@ explore: care_requests {
   }
 
   join: athenadwh_chart_closing {
-    from: athenadwh_clinical_encounters_clone_full
-    relationship: one_to_many
+    #from: athenadwh_clinical_encounters_clone_full
+    relationship: one_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_chart_closing.clinical_encounter_id} ;;
     #AND ${athenadwh_clinical_encounters_clone.encounter_date}::date = ${athenadwh_chart_closing.encounter_date}::date ;;
   }
