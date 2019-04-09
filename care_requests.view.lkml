@@ -61,7 +61,7 @@ view: care_requests {
   dimension: follow_up {
     type: yesno
     description: "The word follow-up or follow up occurs in Chief Complaint"
-    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(follow-up|follow up)%' ;;
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(follow-up|follow up|dhfu)%' ;;
   }
 
 
