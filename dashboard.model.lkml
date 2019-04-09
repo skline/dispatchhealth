@@ -2412,4 +2412,6 @@ explore: thr_zips {
   join: zipcodes {
     sql_on: ${zipcodes.zip}::int=${thr_zips.zipcode} and ${zipcodes.market_id}= 169 ;;
   }
+
+explore: tacoma_mssp {}
 }
