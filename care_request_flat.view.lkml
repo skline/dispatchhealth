@@ -2464,7 +2464,14 @@ view: care_request_flat {
   dimension: flu_chief_complaint {
     type: yesno
     sql:
-    lower(${care_requests.chief_complaint}) SIMILAR TO '%(flu|uri|cough)%';;
+    lower(${care_requests.chief_complaint}) SIMILAR TO '%(flu|cough)%'
+    OR
+    lower(${care_requests.chief_complaint}) like '%uri'
+    OR
+    lower(${care_requests.chief_complaint}) like '%uri %'
+    OR
+    lower(${care_requests.chief_complaint}) like '%uri/%'
+    or trim(lower(${care_requests.chief_complaint})) = 'uri';;
   }
 
   measure: complete_count_flu {
