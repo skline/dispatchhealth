@@ -106,7 +106,7 @@ view: athenadwh_chart_closing {
       day_of_week,
       day_of_month
     ]
-    sql: ${TABLE}.closed_datetime ;;
+    sql: ${TABLE}.closed_datetime AT TIME ZONE 'US/Eastern' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: closed_by {
