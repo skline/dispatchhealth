@@ -60,6 +60,7 @@ view: eligible_patients {
   }
 
   measure: count_at_risk_patients {
+    label: "Count Distinct At Risk Patients"
     type: count_distinct
     sql: ${patient_id} ;;
   }
