@@ -162,7 +162,7 @@ view: intraday_shift_teams {
   measure: time_alloted_per_patient {
     type: number
     value_format: "0.00"
-    sql: ${booked_out_for}/${accepted_crs_not_complete} ;;
+    sql: ${booked_out_for}/nullif(${accepted_crs_not_complete},0) ;;
   }
 
   measure: inclusive_shift_length  {
