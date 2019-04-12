@@ -100,7 +100,7 @@ view: athenadwh_clinical_providers_clone {
   dimension: multicare_provider_flag {
     description: "A flag indicating the provider is Multicare - Use only with the Athena letter recipient provider view"
     type: yesno
-    sql: COALESCE(${multicare_provider.last_name}, NULL) IS NOT NULL ;;
+    sql: COALESCE(${multicare_providers.last_name}, NULL) IS NOT NULL ;;
   }
 
   dimension: thpg_provider_flag {
