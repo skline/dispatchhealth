@@ -262,6 +262,11 @@ explore: care_requests {
     sql_on: ${athenadwh_letter_recipient_provider.npi}::int = ${thpg_providers.npi} ;;
   }
 
+  join: multicare_providers {
+    relationship: one_to_one
+    sql_on: ${athenadwh_letter_recipient_provider.npi}::int = ${multicare_providers.npi} ;;
+  }
+
   join: athenadwh_primary_care_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
