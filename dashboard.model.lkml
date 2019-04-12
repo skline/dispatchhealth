@@ -1200,7 +1200,7 @@ explore: productivity_data_clone {
 
   join: shifts{
     relationship: one_to_one
-    sql_on:  ${shift_teams.shift_id}  =  ${shifts.id};;
+    sql_on:  ${shift_teams.id}  =  ${shifts.id};;
   }
 
   join: users {
