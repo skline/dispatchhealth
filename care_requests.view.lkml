@@ -1227,6 +1227,12 @@ measure: distinct_day_of_week {
     sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time}::timestamp - max(${care_request_flat.shift_end_time}::timestamp)))/3600)::decimal,2);;
   }
 
+  measure: shift_end_90_mins_early {
+    label: "Hours Btwn Last Pt and Shift End > 90 Mins"
+    type: yesno
+    sql:  round(((EXTRACT(EPOCH FROM ${max_on_scene_time}::timestamp - max(${care_request_flat.shift_end_time}::timestamp)))/3600)::decimal,2) <= -1.50 ;;
+  }
+
   measure: shift_start_first_on_route_diff{
     label: "Hours Between Shift Start and First On Route"
     type: number

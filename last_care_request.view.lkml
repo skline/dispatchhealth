@@ -46,5 +46,26 @@ view: last_care_request {
     sql: ${last_care_request_id} IS NOT NULL ;;
   }
 
+  dimension_group: complete {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_month
+    ]
+    sql: ${TABLE}.complete_time ;;
+  }
+
+  dimension: hrs_btwn_last_cr_eos {
+    label: "Hours Btwn Last Pt and Shift End > 90 Min"
+    type: yesno
+    sql:  (((EXTRACT(EPOCH FROM ${complete_raw}::timestamp - ${care_request_flat.shift_end_time}::timestamp)))/3600)::decimal <= -1.50 ;;
+  }
 
 }

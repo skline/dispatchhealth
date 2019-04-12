@@ -627,7 +627,7 @@ explore: care_requests {
 
   join: shifts{
     relationship: many_to_one
-    sql_on:  ${shift_teams.shift_id}  =  ${shifts.id};;
+    sql_on:  ${shift_teams.id}  =  ${shifts.id};;
   }
 
   join: cars {

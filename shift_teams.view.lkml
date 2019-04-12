@@ -58,12 +58,6 @@ view: shift_teams {
     sql: ${TABLE}.end_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
-
-  dimension: shift_id {
-    type: number
-    sql: ${TABLE}.shift_id ;;
-  }
-
   dimension_group: start {
     type: time
     convert_tz: no
@@ -117,8 +111,6 @@ view: shift_teams {
       year
     ]
     sql: ${TABLE}.updated_at ;;
-
-
   }
 
   dimension: car_date_id {
@@ -131,6 +123,10 @@ view: shift_teams {
     sql: CONCAT(${cars.name}, ${start_mountain_date}, ${dates_hours_reference_clone.datehour_timezone_hour_of_day});;
   }
 
+  measure: count_distinct_shifts {
+    type: count_distinct
+    sql: ${id} ;;
+  }
 
   measure: count_distinct_car_date_shift {
     label: "Count of Distinct Cars by Date (Shift Teams)"
