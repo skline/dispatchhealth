@@ -266,6 +266,7 @@ dimension: content_final {
            when lower(${invoca_profile_campaign}) like '%ric%'  then 164
            when lower(${invoca_profile_campaign})  like '%las%' then 162
            when lower(${invoca_profile_campaign})  like '%hou%' then 165
+          when lower(${invoca_profile_campaign})  like '%okl%' then 166
                when lower(${invoca_profile_campaign})  like '%springfield%' then 168
      when lower(${invoca_profile_campaign})  like '%dal%' then 169
     when lower(${invoca_profile_campaign})  like '%tac%' then 170
