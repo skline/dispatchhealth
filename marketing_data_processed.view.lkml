@@ -244,7 +244,7 @@ dimension: content_final {
   dimension: marketing_cost_market_id {
     type: string
     sql: case when lower(${marketing_cost_campaign_name}) like '%den%' then 159
-           when lower(${marketing_cost_campaign_name}) like '%colo%' or  lower(${marketing_cost_campaign_name}) like '%springs%' then 160
+           when lower(${marketing_cost_campaign_name}) like '%colo%' or  lower(${marketing_cost_campaign_name}) like '%springs%' or  lower(${marketing_cost_campaign_name}) like '%cos%' then 160
            when lower(${marketing_cost_campaign_name}) like '%phoe%'or lower(${marketing_cost_campaign_name}) like '%phx%' then 161
            when lower(${marketing_cost_campaign_name}) like '%ric%'  then 164
            when lower(${marketing_cost_campaign_name})  like '%las%' or lower(${marketing_cost_campaign_name})  like '%las%' then 162
