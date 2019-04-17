@@ -391,7 +391,7 @@ view: care_request_flat {
   dimension: is_reasonable_in_queue_time {
     type: yesno
     hidden: yes
-    sql: ${in_queue_time_minutes} < 720  ;;
+    sql: ${in_queue_time_minutes} < 240  ;;
   }
 
   dimension: assigned_time_minutes {
