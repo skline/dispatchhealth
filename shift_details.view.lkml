@@ -47,6 +47,7 @@ view: shift_details {
 
   dimension_group: local_actual_end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -61,6 +62,7 @@ view: shift_details {
 
   dimension_group: local_actual_start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -75,6 +77,7 @@ view: shift_details {
 
   dimension_group: local_expected_end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -89,6 +92,7 @@ view: shift_details {
 
   dimension_group: local_expected_start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
