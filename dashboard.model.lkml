@@ -39,16 +39,25 @@ explore: care_requests {
   }
 
   join: athenadwh_clinical_encounters_clone {
-    relationship:  one_to_one
+    relationship:  one_to_many
     sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-          (CASE
-            WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
-              ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
-            WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
-              (${athenadwh_clinical_encounters_clone.encounter_date}::date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} =
-              ${care_request_flat.on_scene_date})
-          END) ;;
+    (CASE
+    WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
+    ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
+    WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
+    (${athenadwh_clinical_encounters_clone.encounter_date}::date  >=
+    ${care_request_flat.on_scene_date}::date - interval '1' day and
+    ${athenadwh_clinical_encounters_clone.encounter_date}::date  <=
+    ${care_request_flat.on_scene_date} + interval '1' day)
+    END) ;;
   }
+
+#   join: athenadwh_case_mgmt_referrals {
+#     from: athenadwh_clinical_encounters_clone
+#     relationship:  one_to_many
+#     sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
+#     ${athenadwh_documents_clone.clinical_order_type} = 'CASE MANAGEMENT REFERRAL' AND ${athenadwh_documents_clone.status} != 'DELETED';;
+#   }
 
   join: athenadwh_clinical_encounters_clone_full {
     relationship: one_to_one
@@ -207,7 +216,6 @@ explore: care_requests {
       ${athenadwh_referrals.clinical_order_type} LIKE '%REFERRAL%' AND
       ${athenadwh_referrals.status} != 'DELETED' ;;
   }
-
 
   join: athenadwh_homehealth_referrals {
     from:  athenadwh_documents_clone
