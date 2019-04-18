@@ -384,14 +384,14 @@ view: care_request_flat {
   dimension: in_queue_time_minutes {
     type: number
     description: "The number of minutes between requested time and accepted time"
-    sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0 ;;
+    sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
     value_format: "0.00"
   }
 
   dimension: is_reasonable_in_queue_time {
     type: yesno
     hidden: yes
-    sql: ${in_queue_time_minutes} < 720  ;;
+    sql: ${in_queue_time_minutes} < 240  ;;
   }
 
   dimension: assigned_time_minutes {
