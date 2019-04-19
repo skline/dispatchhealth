@@ -112,13 +112,13 @@ view: channel_items {
     description: "The business line acronym for UHC Health Plan of Nevada patients"
     type: string
     sql: CASE
-          WHEN lower(${name}) = 'hpn/shl access center (health plan of nevada)' THEN 'AC'
-          WHEN lower(${name}) = 'hpn/shl willing hands (health plan of nevada)' THEN 'WH'
-          WHEN lower(${name}) = 'hpn/shl ed education (health plan of nevada)' THEN 'EDED'
-          WHEN lower(${name}) = 'hpn/shl asthma education (health plan of nevada)' THEN 'ASTH'
-          WHEN lower(${name}) = 'hpn/shl hedis (health plan of nevada)' THEN 'HEDG'
-          WHEN lower(${name}) = 'hpn/shl post acute follow up (health plan of nevada)' THEN 'PAFU'
-          WHEN lower(${name}) LIKE 'hpn/shl opcm - outpatient case management%' THEN 'OPCM'
+          WHEN lower(${name}) LIKE 'hpn/shl access center%' THEN 'AC'
+          WHEN lower(${name}) LIKE 'hpn/shl willing hands%' THEN 'WH'
+          WHEN lower(${name}) LIKE 'hpn/shl ed education%' THEN 'EDED'
+          WHEN lower(${name}) LIKE 'hpn/shl asthma education%' THEN 'ASTH'
+          WHEN lower(${name}) LIKE 'hpn/shl hedis%' THEN 'HEDG'
+          WHEN lower(${name}) LIKE 'hpn/shl post acute follow up%' THEN 'PAFU'
+          WHEN lower(${name}) LIKE 'hpn/shl opcm%' THEN 'OPCM'
           WHEN lower(${name}) LIKE 'hpn/shl tcm%' THEN 'TCM'
           ELSE ${name}
         END;;
