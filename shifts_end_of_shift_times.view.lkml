@@ -57,9 +57,10 @@ SELECT
   }
 
   measure: median_mins_early_late {
-    description: "The median number of minutes between shift end and time back at the office"
+    description: "The median number of minutes between shift end and time back at the office (positive=early, negative=late)"
     type: median
     sql: ${mins_early_or_late} ;;
+    value_format: "0"
   }
 
   dimension: early_late_tier {
