@@ -234,7 +234,7 @@ view: intraday_care_requests {
 
   dimension: uhc_care_request {
     type: yesno
-    sql:${channel_item_id} in(2851, 2849, 2850, 2852, 2848);;
+    sql:${channel_item_id} in(2851, 2849, 2850, 2852, 2848, 2890, 2900);;
   }
 
   measure: inqueue_crs_uhc {
