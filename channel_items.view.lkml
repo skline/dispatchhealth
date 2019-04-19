@@ -118,6 +118,8 @@ view: channel_items {
           WHEN lower(${name}) = 'hpn/shl asthma education (health plan of nevada)' THEN 'ASTH'
           WHEN lower(${name}) = 'hpn/shl hedis (health plan of nevada)' THEN 'HEDG'
           WHEN lower(${name}) = 'hpn/shl post acute follow up (health plan of nevada)' THEN 'PAFU'
+          WHEN lower(${name}) LIKE 'hpn/shl opcm - outpatient case management%' THEN 'OPCM'
+          WHEN lower(${name}) LIKE 'hpn/shl tcm%' THEN 'TCM'
           ELSE ${name}
         END;;
   }
