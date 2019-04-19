@@ -69,7 +69,8 @@ view: primary_payer_dimensions {
     type: string
     sql: case when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SIERRA HEALTH & LIFE - SENIOR DIMENSION (MEDICARE REPLACEMENT HMO)',
                                                 'UHC - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT PPO)',
-                                                'UHC WEST - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT HMO)')
+                                                'UHC WEST - AARP - MEDICARE SOLUTIONS - MEDICARE COMPLETE (MEDICARE REPLACEMENT HMO)',
+                                                'OPTUMCARE NETWORK OF NEVADA - UNITED HEALTHCARE (MEDICARE REPLACEMENT/ADVANTAGE - HMO)')
           then 'HPN Medicare Advantage'
               when ${insurance_package_name} in('HEALTH PLAN OF NEVADA - SMARTCHOICE (MEDICAID HMO)')
           then 'HPN Managed Medicaid'
