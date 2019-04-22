@@ -574,6 +574,10 @@ explore: care_requests {
     sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
   }
 
+  join: income_pop_by_zipcode_small {
+    sql_on: ${income_pop_by_zipcode_small.zipcode} =${addresses.zipcode_short} ;;
+  }
+
   join: postal_codes {
     relationship: many_to_one
     sql_on: ${addresses.zipcode_short} = ${postal_codes.postalcode} ;;
@@ -2388,7 +2392,7 @@ explore: growth_update_channels {
   }
   join: care_request_channel {
     from: care_requests
-    sql_on: ${channel_items.id} =${care_request_channel.channel_item_id} and ${care_request_channel.created_raw} >'2018-10-01'
+    sql_on: ${channel_items.id} =${care_request_channel.channel_item_id} and ${care_request_channel.created_raw} >='2019-01-01'
     and ${care_request_channel.market_id} =${growth_update_channels.market_id};;
   }
 
