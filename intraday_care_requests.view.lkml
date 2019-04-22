@@ -68,7 +68,6 @@ view: intraday_care_requests {
     sql: (${TABLE}.meta_data ->> 'market_id')::int ;;
   }
 
-
   dimension: package_id {
     type: number
     sql: case when (${TABLE}.meta_data ->> 'package_id')='' then 9999999999999999
@@ -88,6 +87,12 @@ view: intraday_care_requests {
   dimension: complete_comment {
     type: string
     sql: ${TABLE}.meta_data ->> 'complete_comment' ;;
+  }
+
+  dimension: care_request_location {
+    type: location
+    sql_latitude: ${TABLE}.meta_data ->> 'latitude' ;;
+    sql_longitude: ${TABLE}.meta_data ->> 'longitude' ;;
   }
 
   dimension_group: etc {
