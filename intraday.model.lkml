@@ -29,6 +29,11 @@ explore:  intraday_shift_teams {
   join: channel_items_intra {
     sql_on: ${intraday_care_requests.channel_item_id} =${channel_items_intra.id} ;;
   }
+  join: last_care_request_etc_intra {
+    relationship: one_to_one
+    sql_on: ${intraday_shift_teams.shift_team_id} = ${last_care_request_etc_intra.shift_team_id} ;;
+  }
+
 }
 
 explore:  intraday_care_requests {

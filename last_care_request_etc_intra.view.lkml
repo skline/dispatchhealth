@@ -1,4 +1,4 @@
-view: shifts_end_of_shift_times {
+view: last_care_request_etc_intra {
   derived_table: {
     sql:
     SELECT DISTINCT
