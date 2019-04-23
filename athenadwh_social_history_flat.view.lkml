@@ -200,6 +200,11 @@ view: athenadwh_social_history_flat {
     sql: ${TABLE}.smoking_status ;;
   }
 
+  dimension: smoking_flag {
+    type: yesno
+    sql: ${smoking_how_much} !='n' and ${smoking_how_much} is not null ;;
+  }
+
   dimension: marital_status {
     type: string
     sql: ${TABLE}.marital_status ;;
@@ -258,6 +263,11 @@ view: athenadwh_social_history_flat {
   dimension: fall_risk_worry_flag {
     type: yesno
     sql: ${fall_risk_worry} = 'Y' ;;
+  }
+
+  dimension: advanced_directive_flag {
+    type: yesno
+    sql: ${advance_directive} = 'Y' ;;
   }
 
   dimension: nutrition_access {
