@@ -260,6 +260,11 @@ view: athenadwh_social_history_flat {
     sql: ${fall_risk_worry} = 'Y' ;;
   }
 
+  dimension: advanced_directive_flag {
+    type: yesno
+    sql: ${advance_directive} = 'Y' ;;
+  }
+
   dimension: nutrition_access {
     type: string
     description: "Nutrition: Do you feel you have access to health foods?"
