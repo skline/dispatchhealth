@@ -171,6 +171,12 @@ view: markets {
     sql: ${TABLE}.short_name ;;
   }
 
+  dimension: short_name_adj {
+    type: string
+    sql: case when ${short_name} = 'WMFR' then 'DEN'
+      else ${short_name} end;;
+  }
+
   dimension: state {
     type: string
     sql: ${TABLE}.state ;;
