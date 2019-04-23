@@ -8,6 +8,13 @@ explore:  intraday_shift_teams {
     and ${intraday_care_requests.accepted_date}=${intraday_shift_teams.start_date}
     and ${intraday_care_requests.updated_raw} > current_date - interval '1 day';;
   }
+
+  join: intraday_potential_care_requests {
+    relationship: one_to_many
+    sql_on: ${markets_intra.id} = ${intraday_potential_care_requests.market_id} AND
+    ${intraday_potential_care_requests.created_raw} > current_date - interval '1 day' ;;
+  }
+
   join: primary_payer_dimensions_intra {
     sql_on: ${intraday_care_requests.package_id} = ${primary_payer_dimensions_intra.insurance_package_id} ;;
   }
@@ -38,10 +45,17 @@ explore:  intraday_shift_teams {
 
 explore:  intraday_care_requests {
   sql_always_where: ${updated_raw} > current_date - interval '1 day';;
+
   join: intraday_shift_teams {
     sql_on: ${intraday_care_requests.shift_team_id} = ${intraday_shift_teams.shift_team_id}
       and ${intraday_care_requests.accepted_date}=${intraday_shift_teams.start_date};;
   }
+
+  join: last_care_request_etc_intra {
+    relationship: one_to_one
+    sql_on: ${intraday_shift_teams.shift_team_id} = ${last_care_request_etc_intra.shift_team_id} ;;
+  }
+
   join: primary_payer_dimensions_intra {
     sql_on: ${intraday_care_requests.package_id} = ${primary_payer_dimensions_intra.insurance_package_id} ;;
   }
