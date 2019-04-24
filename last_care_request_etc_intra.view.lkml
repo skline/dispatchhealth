@@ -41,33 +41,6 @@ view: last_care_request_etc_intra {
   WHERE st.start_time AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' > current_date - interval '1 day'
   GROUP BY 1,2,3,4,5,6,7,8
   ORDER BY st.shift_team_id ;;
-  #   SELECT DISTINCT
-  # st.shift_team_id,
-  # st.car_id,
-  # lcr.market_id,
-  # lcr.last_etc,
-  # lcr.pt_latitude,
-  # lcr.pt_longitude,
-  # lcr.etos
-  # FROM public.intraday_shift_teams st
-  # JOIN
-  #       (SELECT
-  #         care_request_id,
-  #         (meta_data ->> 'market_id')::integer AS market_id,
-  #         (meta_data ->> 'shift_team_id')::integer AS shift_team_id,
-  #         (meta_data ->> 'etc')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS last_etc,
-  #         (meta_data ->> 'latitude')::float8 AS pt_latitude,
-  #         (meta_data ->> 'longitude')::float8 AS pt_longitude,
-  #         (meta_data ->> 'etos')::integer AS etos,
-  #         meta_data,
-  #         ROW_NUMBER() OVER(PARTITION BY (meta_data ->> 'shift_team_id')::integer ORDER BY (meta_data ->> 'etc')::timestamp DESC) AS rn
-  #       FROM public.intraday_care_requests
-  #       WHERE created_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' > current_date - interval '1 day' AND
-  #       (meta_data ->> 'etc')::timestamp IS NOT NULL) AS lcr
-  # ON st.shift_team_id = lcr.shift_team_id AND lcr.rn = 1
-  # WHERE st.start_time AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' > current_date - interval '1 day'
-  # GROUP BY 1,2,3,4,5,6,7
-  # ORDER BY st.shift_team_id ;;
     }
 
   dimension: shift_team_id {
