@@ -103,8 +103,8 @@ explore: care_requests {
   join: dea_schedule_ii_medications  {
     from: athenadwh_medication_clone
     relationship: many_to_one
-    sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1))
-    AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
+    sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1)) ;;
+    #AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
   }
 
   join: athenadwh_provider_clone {
