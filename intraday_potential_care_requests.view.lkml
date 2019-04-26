@@ -16,9 +16,14 @@ view: intraday_potential_care_requests {
   (meta_data ->> 'etos')::integer AS time_on_scene,
   (meta_data ->> 'current_queue') AS current_queue,
   (meta_data ->> 'current_status') AS current_status,
+  (meta_data ->> 'scheduled_status_comments') AS scheduled_comment,
+  sli.name AS service_line,
   (meta_data ->> 'created_at')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS created_at
-  FROM public.intraday_care_requests
+  FROM public.intraday_care_requests icr
+  LEFT JOIN looker_scratch.service_lines_intra sli
+    ON (meta_data ->> 'service_line_id')::integer = sli.id
   WHERE (meta_data ->> 'current_status') IN ('requested','accepted','scheduled') AND
+  sli.name NOT IN ('Post Acute Follow up', 'Post Acute Follow Up (HPN)', '911 Service') AND
   (meta_data ->> 'created_at')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' > current_date - interval '1 day' ;;
   }
 
@@ -36,6 +41,16 @@ view: intraday_potential_care_requests {
   dimension: market_id {
     type: number
     sql: ${TABLE}.market_id ;;
+  }
+
+  dimension: service_line {
+    type: string
+    sql: ${TABLE}.service_line ;;
+  }
+
+  dimension: scheduled_comment {
+    type: string
+    sql: ${TABLE}.scheduled_comment ;;
   }
 
   dimension: address1 {
