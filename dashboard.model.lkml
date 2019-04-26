@@ -299,6 +299,14 @@ explore: care_requests {
     sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_transactions_clone.claim_id} ;;
   }
 
+  join: athenadwh_collectibility_clone {
+    from: athenadwh_transactions_clone
+    relationship: one_to_many
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_collectibility_clone.claim_id} AND
+            ${athenadwh_collectibility_clone.transaction_type} = 'PAYMENT' AND
+            ${athenadwh_collectibility_clone.transaction_created_datetime_date} < ${athenadwh_claims_clone.claim_service_date}::date + interval '10 month';;
+  }
+
   join: athenadwh_social_history_clone {
     relationship: one_to_many
     sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_social_history_clone.patient_id} ;;

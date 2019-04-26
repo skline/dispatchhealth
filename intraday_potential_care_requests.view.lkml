@@ -38,6 +38,31 @@ view: intraday_potential_care_requests {
     sql: ${TABLE}.market_id ;;
   }
 
+  dimension: address1 {
+    type: string
+    sql: ${TABLE}.address1 ;;
+  }
+
+  dimension: address2 {
+    type: string
+    sql: ${TABLE}.address2 ;;
+  }
+
+  dimension: city {
+    type: string
+    sql: ${TABLE}.city ;;
+  }
+
+  dimension: state {
+    type: string
+    sql: ${TABLE}.state ;;
+  }
+
+  dimension: zipcode {
+    type: string
+    sql: ${TABLE}.zipcode ;;
+  }
+
   dimension: time_on_scene {
     type: number
     sql: ${TABLE}.time_on_scene ;;

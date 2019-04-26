@@ -42,8 +42,8 @@ view: athenadwh_claims_clone {
   }
 
   dimension: claim_service_date {
-    type: string
-    sql: ${TABLE}.claim_service_date ;;
+    type: date
+    sql: ${TABLE}.claim_service_date::date ;;
   }
 
   dimension_group: created {
