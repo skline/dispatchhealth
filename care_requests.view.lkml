@@ -801,6 +801,17 @@ view: care_requests {
       field: billable_est
       value: "yes"
     }
+    link: {
+      label: "Patient-Level Details"
+      url: "https://dispatchhealth.looker.com/looks/1124?&f[markets.name]={{ _filters['markets.name'] | url_encode }}
+      &f[markets.name_adj]={{ _filters['markets.name_adj'] | url_encode }}
+      &f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}
+      &f[care_request_flat.complete_resolved_date]={{ _filters['care_request_flat.complete_resolved_date'] | url_encode }}
+      &f[care_request_flat.complete_date]={{ _filters['care_request_flat.complete_date'] | url_encode }}
+      &f[drg_to_icd10_crosswalk.drg_code]={{ _filters['drg_to_icd10_crosswalk.drg_code'] | url_encode }}
+      &f[insurance_coalese_crosswalk.insurance_package_name]={{ _filters['insurance_coalese_crosswalk.insurance_package_name'] | url_encode }}
+      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}"
+    }
     drill_fields: [
       athenadwh_referral_providers.name,
       athenadwh_referral_providers.provider_category,
