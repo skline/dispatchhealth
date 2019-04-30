@@ -43,6 +43,11 @@ view: primary_payer_dimensions_intra {
     sql: ${TABLE}.irc_group ;;
   }
 
+  dimension: kaiser_colorado {
+    type: yesno
+    sql: ${insurance_package_id} in('58390', '12225', '23794') ;;
+  }
+
   dimension: expected_allowable {
     type: number
     sql: case when ${markets_intra.name} = 'Colorado Springs' and ${custom_insurance_grouping} = '(CM)COMMERCIAL' then 252.63
