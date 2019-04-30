@@ -6,7 +6,10 @@ view: survey_responses_flat_clone {
           srf.care_request_id,
           srf.visit_date,
           nps.answer_range_value AS nps_response,
-          alt.answer_selection_value AS alternative_dh_response,
+          CASE
+            WHEN v2.answer_selection_value = 'Yes' THEN 'Emergency Room'
+            ELSE alt.answer_selection_value
+          END AS alternative_dh_response,
           ovr.answer_selection_value AS overall_rating_response
           FROM (
             SELECT DISTINCT
@@ -23,7 +26,9 @@ view: survey_responses_flat_clone {
             ON srf.care_request_id = alt.care_request_id AND alt.question_dim_id = 3
           LEFT JOIN survey_response_facts_clone ovr
             ON srf.care_request_id  = ovr.care_request_id AND ovr.question_dim_id = 5
-          ORDER BY care_request_id DESC ;;
+          LEFT JOIN survey_response_facts_clone v2
+            ON srf.visit_dim_number  = v2.visit_dim_number  AND v2.question_dim_id = 9
+          ORDER BY care_request_id DESC  ;;
 
     sql_trigger_value: SELECT MAX(care_request_id) FROM survey_response_facts_clone ;;
     indexes: ["visit_dim_number", "care_request_id"]

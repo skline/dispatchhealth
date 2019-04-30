@@ -103,8 +103,8 @@ explore: care_requests {
   join: dea_schedule_ii_medications  {
     from: athenadwh_medication_clone
     relationship: many_to_one
-    sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1))
-    AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
+    sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1)) ;;
+    #AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
   }
 
   join: athenadwh_provider_clone {
@@ -297,6 +297,14 @@ explore: care_requests {
   join: athenadwh_transactions_clone {
     relationship: one_to_many
     sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_transactions_clone.claim_id} ;;
+  }
+
+  join: athenadwh_collectibility_clone {
+    from: athenadwh_transactions_clone
+    relationship: one_to_many
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_collectibility_clone.claim_id} AND
+            ${athenadwh_collectibility_clone.transaction_type} = 'PAYMENT' AND
+            ${athenadwh_collectibility_clone.transaction_created_datetime_date} < ${athenadwh_claims_clone.claim_service_date}::date + interval '10 month';;
   }
 
   join: athenadwh_social_history_clone {

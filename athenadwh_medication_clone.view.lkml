@@ -6,6 +6,12 @@ view: athenadwh_medication_clone {
     sql: ${TABLE}.dea_schedule ;;
   }
 
+  measure: dea_schedule_concat {
+    type: string
+    description: "A concatenated list of all DEA medication schedules"
+    sql: array_to_string(array_agg(DISTINCT ${dea_schedule}), ' | ') ;;
+  }
+
   dimension: fdb_med_id {
     type: number
     sql: ${TABLE}.fdb_med_id ;;
