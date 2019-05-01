@@ -142,7 +142,7 @@ explore: care_requests {
     sql_on: CASE
               WHEN ${athenadwh_claims_clone.claim_appointment_id} IS NOT NULL
                 THEN ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id}
-              ELSE ${athenadwh_claims_clone.patient_id} = COALESCE(${athenadwh_patients_clone.new_patient_id},${athenadwh_patients_clone.new_patient_id}) AND
+              ELSE ${athenadwh_claims_clone.patient_id} = COALESCE(${athenadwh_patients_clone.new_patient_id},${athenadwh_patients_clone.patient_id}) AND
                 ${care_request_flat.on_scene_date} = ${athenadwh_claims_clone.claim_service_date}::date
             END;;
   }
