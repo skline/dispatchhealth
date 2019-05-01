@@ -212,6 +212,12 @@ measure: revenue_per_hour {
   value_format: "0.00"
   sql: ${avg_expected_allowable_est_hardcoded}*${care_request_flat.productivity} ;;
 }
+
+  dimension: kaiser_colorado {
+    type: yesno
+    sql: ${insurance_package_id} in('58390', '12225', '23794') ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id, insurance_package_name]

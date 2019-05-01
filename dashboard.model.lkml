@@ -2442,6 +2442,9 @@ explore: primary_payer_dimensions_clone {
   join: states {
     sql_on: ${states.id} = ${insurance_plans.state_id} ;;
   }
+  join: markets {
+    sql_on: lower(${states.abbreviation}) = lower(${markets.state});;
+  }
 }
 explore: thr_zips {
   join: zipcodes {

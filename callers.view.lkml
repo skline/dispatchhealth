@@ -33,17 +33,17 @@ view: callers {
 
   dimension: first_name {
     type: string
-    sql: ${TABLE}.first_name ;;
+    sql: trim(initcap(${TABLE}.first_name)) ;;
   }
 
   dimension: last_name {
     type: string
-    sql: ${TABLE}.last_name ;;
+    sql:trim(initcap(${TABLE}.last_name)) ;;
   }
 
   dimension: organization_name {
     type: string
-    sql: ${TABLE}.organization_name ;;
+    sql: trim(initcap(${TABLE}.organization_name)) ;;
   }
 
   dimension: origin_phone {
@@ -63,7 +63,7 @@ view: callers {
 
   dimension: title {
     type: string
-    sql: ${TABLE}.title ;;
+    sql: trim(initcap(${TABLE}.title)) ;;
   }
 
   dimension_group: updated {
