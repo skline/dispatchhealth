@@ -3149,6 +3149,13 @@ view: care_request_flat {
     sql: CASE WHEN ${diversion_type.diversion_type_hospitalization} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
   }
 
+  dimension: low_acuity_visit {
+    type: yesno
+    sql: ${diversion_911} = 0 AND ${diversion_er} = 0 AND ${diversion_observation} = 0 AND
+    ${diversion_hospitalization} = 0 AND NOT ${escalated_on_scene}
+    AND NOT ${care_requests.post_acute_follow_up} ;;
+  }
+
   measure: count_observation_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -3173,6 +3180,16 @@ view: care_request_flat {
   dimension: diversion_observation {
     type: number
     sql: CASE WHEN ${diversion_type.diversion_type_observation} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
+  }
+
+  measure: count_low_acuity_visits {
+    type: count_distinct
+    description: "Count of visits that did not meet a diversion criteria and were not PAFU or escalated on scene"
+    sql: ${care_request_id} ;;
+    filters: {
+      field: low_acuity_visit
+      value: "yes"
+    }
   }
 
 

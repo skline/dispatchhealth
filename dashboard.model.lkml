@@ -38,26 +38,30 @@ explore: care_requests {
     sql_on: ${athenadwh_patient_insurances_clone.insurance_package_id} = ${athenadwh_payers_clone.insurance_package_id} ;;
   }
 
-  join: athenadwh_clinical_encounters_clone {
-    relationship:  one_to_many
-    sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-    (CASE
-    WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
-    ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
-    WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
-    (${athenadwh_clinical_encounters_clone.encounter_date}::date  >=
-    ${care_request_flat.on_scene_date}::date - interval '1' day and
-    ${athenadwh_clinical_encounters_clone.encounter_date}::date  <=
-    ${care_request_flat.on_scene_date} + interval '1' day)
-    END) ;;
-  }
+  # join: athenadwh_clinical_encounters_clone {
+  #   relationship:  one_to_many
+  #   sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
+  #   (CASE
+  #   WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
+  #   ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
+  #   WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
+  #   (${athenadwh_clinical_encounters_clone.encounter_date}::date  >=
+  #   ${care_request_flat.on_scene_date}::date - interval '1' day and
+  #   ${athenadwh_clinical_encounters_clone.encounter_date}::date  <=
+  #   ${care_request_flat.on_scene_date} + interval '1' day)
+  #   END) ;;
+  # }
 
-#   join: athenadwh_case_mgmt_referrals {
-#     from: athenadwh_clinical_encounters_clone
-#     relationship:  one_to_many
-#     sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-#     ${athenadwh_documents_clone.clinical_order_type} = 'CASE MANAGEMENT REFERRAL' AND ${athenadwh_documents_clone.status} != 'DELETED';;
-#   }
+  join: athenadwh_clinical_encounters_clone {
+    relationship:  one_to_one
+    sql_on: CASE
+              WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL
+                THEN ${care_requests.ehr_id} = ${athenadwh_clinical_encounters_clone.appointment_id}::varchar
+              ELSE
+                ${athenadwh_clinical_encounters_clone.patient_id} = COALESCE(${athenadwh_patients_clone.new_patient_id},${athenadwh_patients_clone.patient_id}) AND
+                ${care_request_flat.on_scene_date} = ${athenadwh_clinical_encounters_clone.encounter_date}::date
+              END;;
+  }
 
   join: athenadwh_clinical_encounters_clone_full {
     relationship: one_to_one
@@ -283,9 +287,14 @@ explore: care_requests {
             ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
   }
 
+  # join: athenadwh_patients_clone {
+  #   relationship: many_to_one
+  #   sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patients_clone.patient_id} ;;
+  # }
+
   join: athenadwh_patients_clone {
-    relationship: many_to_one
-    sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_patients_clone.patient_id} ;;
+    relationship: one_to_one
+    sql_on: ${patients.ehr_id} = ${athenadwh_patients_clone.patient_id}::varchar ;;
   }
 
   join: athenadwh_procedure_codes_clone {
