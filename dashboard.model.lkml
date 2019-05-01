@@ -1103,6 +1103,16 @@ explore: cars {
   }
 }
 
+
+explore: shift_details {
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${shift_details.schedule_location_id::varchar} = ${markets.humanity_id} ;;
+  }
+}
+
+
+
 explore: shift_planning_facts_clone {
   #view_label: "Shift Information"
 
