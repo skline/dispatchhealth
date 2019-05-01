@@ -142,7 +142,13 @@ explore: care_requests {
   join: athenadwh_claims_clone {
     relationship: one_to_one
     type: inner
-    sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id} ;;
+    sql_on: CASE
+              WHEN ${athenadwh_claims_clone.claim_appointment_id} IS NOT NULL
+              THEN ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id}
+              ELSE
+                ${athenadwh_claims_clone.patient_id} = COALESCE(${athenadwh_patients_clone.new_patient_id}, ${athenadwh_patients_clone.patient_id}) AND
+                ${care_request_flat.on_scene_date} = ${athenadwh_claims_clone.claim_service_date}::date
+              END ;;
   }
 
   join: athenadwh_document_crosswalk_clone {
@@ -1104,6 +1110,8 @@ join: ga_pageviews_clone {
     sql_on: ${ed_diversion_survey_response_clone.care_request_id} = ${visit_facts_clone.care_request_id} ;;
   }
 }
+
+
 
 explore: cars {
   join: markets {
