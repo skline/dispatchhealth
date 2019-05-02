@@ -10,6 +10,7 @@ view: survey_responses_flat_clone {
             WHEN v2.answer_selection_value = 'Yes' THEN 'Emergency Room'
             ELSE alt.answer_selection_value
           END AS alternative_dh_response,
+          v2.answer_selection_value AS alternative_emergency_room,
           ovr.answer_selection_value AS overall_rating_response
           FROM (
             SELECT DISTINCT
@@ -27,7 +28,7 @@ view: survey_responses_flat_clone {
           LEFT JOIN survey_response_facts_clone ovr
             ON srf.care_request_id  = ovr.care_request_id AND ovr.question_dim_id = 5
           LEFT JOIN survey_response_facts_clone v2
-            ON srf.visit_dim_number  = v2.visit_dim_number  AND v2.question_dim_id = 9
+            ON srf.care_request_id  = v2.care_request_id  AND v2.question_dim_id = 9
           ORDER BY care_request_id DESC  ;;
 
     sql_trigger_value: SELECT MAX(care_request_id) FROM survey_response_facts_clone ;;
@@ -47,6 +48,16 @@ view: survey_responses_flat_clone {
     sql: ${TABLE}.visit_dim_number ;;
   }
 
+  dimension: alternative_emergency_room {
+    type: string
+    description: "Responses to emergency room alternative"
+    sql: ${TABLE}.alternative_emergency_room ;;
+  }
+
+  dimension: alternative_dh_response {
+    type: string
+    sql: ${TABLE}.alternative_dh_response ;;
+  }
 
   dimension: answer_range_value {
     label: "NPS Selected Range Value"
@@ -72,16 +83,45 @@ view: survey_responses_flat_clone {
     sql: ${answer_range_value} IS NOT NULL;;
   }
 
-#   dimension: nps_survey_id {
-#     type: number
-#     hidden: yes
-#     sql: IF(${answer_range_value} IS NOT NULL, ${care_request_id}, NULL) ;;
-#   }
+  dimension: alternative_dh_respondent {
+    label: "Alternative to DH survey respondent"
+    type: yesno
+    sql: ${alternative_emergency_room} IS NOT NULL OR ${alternative_dh_response} IS NOT NULL ;;
+  }
+
+  dimension: alternative_dh_emergency_room {
+    type: yesno
+    description: "Survey response that alternative to DispatchHealth = Emergency Room is yes"
+    sql: ${alternative_emergency_room} = 'Yes' OR ${alternative_dh_response} = 'Emergency Room' ;;
+  }
 
   measure: count_nps_respondent {
     type: count_distinct
     sql: ${care_request_id} ;;
+    filters: {
+      field: nps_respondent
+      value: "yes"
+    }
   }
+
+  measure: count_alternate_dh_respondent {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: alternative_dh_respondent
+      value: "yes"
+    }
+  }
+
+  measure: count_er_alternative {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: alternative_dh_emergency_room
+      value: "yes"
+    }
+  }
+
 
   dimension: answer_selection_dh_alternative {
     label: "Selected Value Alternative to DH"
