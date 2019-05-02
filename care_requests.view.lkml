@@ -810,7 +810,8 @@ view: care_requests {
       &f[care_request_flat.complete_date]={{ _filters['care_request_flat.complete_date'] | url_encode }}
       &f[drg_to_icd10_crosswalk.drg_code]={{ _filters['drg_to_icd10_crosswalk.drg_code'] | url_encode }}
       &f[insurance_coalese_crosswalk.insurance_package_name]={{ _filters['insurance_coalese_crosswalk.insurance_package_name'] | url_encode }}
-      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}"
+      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}
+      &f[primary_payer_dimensions_clone.insurance_reporting_category]={{ _filters['primary_payer_dimensions_clone.insurance_reporting_category'] | url_encode }}"
     }
     drill_fields: [
       athenadwh_referral_providers.name,
