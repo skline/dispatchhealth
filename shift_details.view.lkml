@@ -179,4 +179,21 @@ view: shift_details {
     sql: ${TABLE}.shift_id;;
   }
 
+  measure: count_validate_app_shifts {
+    type: count_distinct
+    sql: ${TABLE}.shift_id;;
+
+    filters: {
+      field: app_shift
+      value: "yes"
+    }
+
+    filters: {
+      field: valid_shift
+      value: "yes"
+    }
+
+
+  }
+
 }
