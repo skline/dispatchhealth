@@ -4,11 +4,15 @@ view: shift_details {
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}.id ;;
   }
 
   dimension_group: created {
     type: time
+    # Mod SG
+    hidden: yes
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -23,6 +27,8 @@ view: shift_details {
 
   dimension_group: deleted {
     type: time
+    # Mod SG
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -103,6 +109,7 @@ view: shift_details {
       year
     ]
     sql: ${TABLE}.local_expected_start_time ;;
+
   }
 
   dimension: notes {
@@ -120,13 +127,36 @@ view: shift_details {
     sql: ${TABLE}.schedule_name ;;
   }
 
+  dimension: shift_role {
+    type: string
+    description: "Shift parsed from schedule_name"
+        sql: split_part(${TABLE}.schedule_name,':',1) ;;
+  }
+
+  dimension: app_shift {
+    type: yesno
+    description: "NP/PA in schedule_name"
+    # sql: position('NP/PA' in ${TABLE}.schedule_name) > 0 ;;
+    sql: ${schedule_name} LIKE '%NP/PA:%';;
+  }
+
+  dimension: valid_shift {
+    type: yesno
+    description: "Employee is assinged to shift"
+    sql: ${employee_name} IS NOT NULL ;;
+  }
+
   dimension: shift_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.shift_id ;;
   }
 
   dimension_group: updated {
     type: time
+    # Mod SG
+    hidden: yes
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -143,4 +173,10 @@ view: shift_details {
     type: count
     drill_fields: [id, schedule_name, employee_name]
   }
+
+  measure: shift_count {
+    type: count_distinct
+    sql: ${TABLE}.shift_id;;
+  }
+
 }

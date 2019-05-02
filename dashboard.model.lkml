@@ -1111,7 +1111,12 @@ join: ga_pageviews_clone {
   }
 }
 
-
+explore: shift_details {
+  join: markets {
+    relationship: one_to_many
+    sql_on:  ${markets.humanity_id} = ${shift_details.schedule_location_id}::varchar  ;;
+  }
+}
 
 explore: cars {
   join: markets {
