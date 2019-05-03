@@ -146,6 +146,12 @@ view: shift_details {
     sql: ${employee_name} IS NOT NULL ;;
   }
 
+  dimension: holiday_shift {
+    type: yesno
+    description: "Shift occurred on a holiday"
+    sql: ${schedule_name} LIKE '%(H)' ;;
+  }
+
   dimension: shift_id {
     type: number
     hidden: yes
