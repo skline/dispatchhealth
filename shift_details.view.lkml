@@ -132,7 +132,9 @@ view: shift_details {
   dimension: shift_role {
     type: string
     description: "Shift parsed from schedule_name"
-        sql: split_part(${TABLE}.schedule_name,':',1) ;;
+    sql: split_part(split_part(${TABLE}.schedule_name,'(H)',1),':',1);;
+    # sql: split_part(${TABLE}.schedule_name,':',1) ;;
+
   }
 
   dimension: app_shift {
