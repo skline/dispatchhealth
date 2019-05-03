@@ -57,6 +57,7 @@ view: shift_details {
     timeframes: [
       raw,
       time,
+      hour,
       date,
       week,
       month,
@@ -72,6 +73,7 @@ view: shift_details {
     timeframes: [
       raw,
       time,
+      hour,
       date,
       week,
       month,
