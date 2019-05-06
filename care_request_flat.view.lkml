@@ -2455,6 +2455,12 @@ view: care_request_flat {
     }
   }
 
+  dimension: payer_tricare {
+    type:  yesno
+    sql: trim(lower(${insurance_coalese_crosswalk.custom_insurance_grouping})) LIKE '(tc)tricare' ;;
+
+  }
+
   measure: complete_count_medicaid_tricare {
     type: number
     sql: ${complete_count_medicaid}+${complete_count_tricare} ;;
