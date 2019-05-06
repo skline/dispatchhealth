@@ -208,4 +208,15 @@ view: shift_details {
 
   }
 
+measure: count_total_app_shift {
+  type:  count_distinct
+  description: "NP/PA shift Total (invalid and valid)"
+  sql: ${TABLE}.shift_id;;
+
+  filters:  {
+    field: app_shift
+    value: "yes"}
+}
+
+
 }

@@ -1124,6 +1124,14 @@ explore: shift_details {
   }
 }
 
+# Scott test
+explore: test_shift_details {
+  extends: [shift_details]
+  from: shift_details
+  fields: [shift_details.employee_name,markets.name]
+
+}
+
 explore: cars {
   join: markets {
     relationship: one_to_many
