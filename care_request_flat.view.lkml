@@ -2457,6 +2457,7 @@ view: care_request_flat {
 
   dimension: payer_tricare {
     type:  yesno
+    description: "Insurance/Payer custom group is Tricare"
     sql: trim(lower(${insurance_coalese_crosswalk.custom_insurance_grouping})) LIKE '(tc)tricare' ;;
 
   }
