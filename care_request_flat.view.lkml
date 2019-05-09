@@ -3103,6 +3103,12 @@ view: care_request_flat {
     value_format: "$#,##0"
   }
 
+  measure: diversion_savings_er_test {
+    type: number
+    sql: ${count_er_diversions} * COALESCE(${insurance_plans.er_diversion}, ${channel_items.er_diversion}, 2000) ;;
+    value_format: "$#,##0"
+  }
+
   measure: count_911_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -3129,6 +3135,12 @@ view: care_request_flat {
     value_format: "$#,##0"
   }
 
+  measure: diversion_savings_911_test {
+    type: number
+    sql: ${count_911_diversions} * COALESCE(${insurance_plans.nine_one_one_diversion}, ${channel_items.nine_one_one_diversion}, 750) ;;
+    value_format: "$#,##0"
+  }
+
   measure: count_hospitalization_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -3148,6 +3160,12 @@ view: care_request_flat {
   measure: diversion_savings_hospitalization {
     type: number
     sql: ${count_hospitalization_diversions} * 12000 ;;
+    value_format: "$#,##0"
+  }
+
+  measure: diversion_savings_hospitalization_test {
+    type: number
+    sql: ${count_hospitalization_diversions} * COALESCE(${insurance_plans.hospitalization_diversion}, ${channel_items.hospitalization_diversion}, 12000) ;;
     value_format: "$#,##0"
   }
 
@@ -3177,6 +3195,13 @@ view: care_request_flat {
     sql: ${count_observation_diversions} * 4000 ;;
     value_format: "$#,##0"
   }
+
+  measure: diversion_savings_observation_test {
+    type: number
+    sql: ${count_observation_diversions} * COALESCE(${insurance_plans.observation_diversion}, ${channel_items.observation_diversion}, 4000) ;;
+    value_format: "$#,##0"
+  }
+
   dimension: diversion_observation {
     type: number
     sql: CASE WHEN ${diversion_type.diversion_type_observation} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
