@@ -74,6 +74,30 @@ view: insurance_plans {
     sql: ${TABLE}.tertiary ;;
   }
 
+  dimension: er_diversion {
+    type: number
+    description: "The cost savings associated with ER diversions for the insurance package"
+    sql: ${TABLE}.er_diversion ;;
+  }
+
+  dimension: nine_one_one_diversion {
+    type: number
+    description: "The cost savings associated with 911 diversions for the insurance package"
+    sql: ${TABLE}.nine_one_one_diversion ;;
+  }
+
+  dimension: observation_diversion {
+    type: number
+    description: "The cost savings associated with observation diversions for the insurance package"
+    sql: ${TABLE}.observation_diversion ;;
+  }
+
+  dimension: hospitalization_diversion {
+    type: number
+    description: "The cost savings associated with hospitalization diversions for the insurance package"
+    sql: ${TABLE}.hospitalization_diversion ;;
+  }
+
   dimension_group: updated {
     type: time
     hidden: yes
