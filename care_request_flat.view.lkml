@@ -3099,13 +3099,12 @@ view: care_request_flat {
 
   measure: diversion_savings_er {
     type: number
-    sql: ${count_er_diversions} * 2000 ;;
-    value_format: "$#,##0"
-  }
-
-  measure: diversion_savings_er_test {
-    type: number
-    sql: ${count_er_diversions} * COALESCE(${insurance_plans.er_diversion}, ${channel_items.er_diversion}, 2000) ;;
+    sql: ${count_er_diversions} *
+        MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 2000
+        END) ;;
     value_format: "$#,##0"
   }
 
@@ -3129,15 +3128,15 @@ view: care_request_flat {
     type: number
     sql: CASE WHEN ${diversion_type.diversion_type_911} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
   }
+
   measure: diversion_savings_911 {
     type: number
-    sql: ${count_911_diversions} * 750 ;;
-    value_format: "$#,##0"
-  }
-
-  measure: diversion_savings_911_test {
-    type: number
-    sql: ${count_911_diversions} * COALESCE(${insurance_plans.nine_one_one_diversion}, ${channel_items.nine_one_one_diversion}, 750) ;;
+    sql: ${count_911_diversions} *
+        MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 750
+        END) ;;
     value_format: "$#,##0"
   }
 
@@ -3157,15 +3156,15 @@ view: care_request_flat {
       value: "no"
     }
   }
+
   measure: diversion_savings_hospitalization {
     type: number
-    sql: ${count_hospitalization_diversions} * 12000 ;;
-    value_format: "$#,##0"
-  }
-
-  measure: diversion_savings_hospitalization_test {
-    type: number
-    sql: ${count_hospitalization_diversions} * COALESCE(${insurance_plans.hospitalization_diversion}, ${channel_items.hospitalization_diversion}, 12000) ;;
+    sql: ${count_hospitalization_diversions} *
+    MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 12000
+        END) ;;
     value_format: "$#,##0"
   }
 
@@ -3190,15 +3189,15 @@ view: care_request_flat {
       value: "no"
     }
   }
+
   measure: diversion_savings_observation {
     type: number
-    sql: ${count_observation_diversions} * 4000 ;;
-    value_format: "$#,##0"
-  }
-
-  measure: diversion_savings_observation_test {
-    type: number
-    sql: ${count_observation_diversions} * COALESCE(${insurance_plans.observation_diversion}, ${channel_items.observation_diversion}, 4000) ;;
+    sql: ${count_observation_diversions} *
+    MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 4000
+        END) ;;
     value_format: "$#,##0"
   }
 
