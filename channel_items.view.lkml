@@ -281,25 +281,25 @@ view: channel_items {
 
   dimension: er_diversion {
     type: number
-    description: "The cost savings associated with ER diversions for the insurance package"
+    description: "The cost savings associated with ER diversions for the Channel package"
     sql: ${TABLE}.er_diversion ;;
   }
 
   dimension: nine_one_one_diversion {
     type: number
-    description: "The cost savings associated with 911 diversions for the insurance package"
+    description: "The cost savings associated with 911 diversions for the Channel package"
     sql: ${TABLE}.nine_one_one_diversion ;;
   }
 
   dimension: observation_diversion {
     type: number
-    description: "The cost savings associated with observation diversions for the insurance package"
+    description: "The cost savings associated with observation diversions for the Channel package"
     sql: ${TABLE}.observation_diversion ;;
   }
 
   dimension: hospitalization_diversion {
     type: number
-    description: "The cost savings associated with hospitalization diversions for the insurance package"
+    description: "The cost savings associated with hospitalization diversions for the Channel package"
     sql: ${TABLE}.hospitalization_diversion ;;
   }
 
