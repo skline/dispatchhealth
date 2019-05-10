@@ -2130,7 +2130,7 @@ view: care_request_flat {
 
   dimension: booked_shaping_placeholder_resolved {
     type: yesno
-    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|book|medicaid|tricare)%';;
+    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|book|medicaid|tricare)%' and lower(${archive_comment}) not like '%capability%';;
   }
 
   dimension: out_of_service_out_of_scope {
@@ -2140,7 +2140,7 @@ view: care_request_flat {
 
   dimension: shaping_resolved {
     type: yesno
-    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|medicaid|tricare)%';;
+    sql:  lower(${archive_comment}) SIMILAR TO '%( cap|medicaid|tricare)%'  and lower(${archive_comment}) not like '%capability%';;
   }
 
   dimension: booked_resolved {
