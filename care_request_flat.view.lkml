@@ -1761,17 +1761,22 @@ view: care_request_flat {
 
   dimension: lwbs_going_to_ed {
     type: yesno
-    sql: ${archive_comment} LIKE '%Cancelled by Patient: Going to an Emergency Department%' ;;
+    sql: ${archive_comment} SIMILAR TO '%(Cancelled by Patient: Going to an Emergency Department|Going to Emergency Department)%' ;;
   }
 
   dimension: lwbs_going_to_urgent_care {
     type: yesno
-    sql: LOWER(${archive_comment}) LIKE '%going to an urgent care%' ;;
+    sql: LOWER(${archive_comment}) SIMILAR TO '%(going to an urgent care|going to urgent care)%' ;;
   }
 
   dimension: lwbs_wait_time_too_long {
     type: yesno
-    sql: ${archive_comment} LIKE '%Wait time too long%' ;;
+    sql: LOWER(${archive_comment}) LIKE '%wait time too long%' ;;
+  }
+
+  dimension: lwbs_going_to_pcp {
+    type: yesno
+    sql: ${archive_comment} LIKE '%Going to PCP%' ;;
   }
 
   dimension: lwbs_no_longer_need_care {
@@ -1788,7 +1793,7 @@ view: care_request_flat {
     type: yesno
     description: "Going to ED/Urgent Care, Wait Time Too Long, No Longer Need Care"
     sql: (${lwbs_going_to_ed} OR ${lwbs_going_to_urgent_care} OR
-      ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care}) and not ${booked_shaping_placeholder_resolved} ;;
+      ${lwbs_wait_time_too_long} OR ${lwbs_no_longer_need_care} OR ${lwbs_going_to_pcp}) and not ${booked_shaping_placeholder_resolved} ;;
   }
 
   dimension: resolved_no_answer_no_show {
