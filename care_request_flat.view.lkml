@@ -14,7 +14,7 @@ view: care_request_flat {
         max(schedule.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS scheduled_date,
         max(onroute.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_route_date,
         max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_scene_date,
-        MIN(comp.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
+        MIN(coalesce(comp.started_at, esc.started_at)) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
         MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
         fu3.comment AS followup_3day_result,
         fu3.commentor_id AS followup_3day_id,
@@ -98,6 +98,9 @@ view: care_request_flat {
       ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene' and onscene.deleted_at is null
       LEFT JOIN care_request_statuses comp
       ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
+      LEFT JOIN care_request_statuses esc
+      ON cr.id = esc.care_request_id AND esc.name = 'archived' and esc.deleted_at is null
+      and lower(esc.comment) like '%referred - point of care%'
       LEFT JOIN care_request_statuses archive
       ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
       LEFT JOIN care_request_statuses fu3
