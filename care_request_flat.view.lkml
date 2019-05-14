@@ -2118,7 +2118,7 @@ view: care_request_flat {
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: ${archive_comment} LIKE '%Referred - Phone Triage%'  and not ${booked_shaping_placeholder_resolved};;
+    sql: (${archive_comment} LIKE '%Referred - Phone Triage%' or  ${archive_comment} LIKE '%Referred via Phone%') and not ${booked_shaping_placeholder_resolved};;
   }
 
   dimension: escalated_on_phone_ed {
