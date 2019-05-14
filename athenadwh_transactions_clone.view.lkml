@@ -176,7 +176,7 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: fixed_expected_allowable {
-    description: "Expected allowable where GHOST charges are dealt with effectively"
+    description: "Expected allowable where charge reversals are dealt with effectively"
     type: number
     sql: CASE
           WHEN ${reversal_flag} = 1 THEN ${expected_allowed_amount}::float * -1
@@ -186,6 +186,7 @@ view: athenadwh_transactions_clone {
 
   measure: total_expected_allowable_test {
     type: sum
+    description: "Transaction type is CHARGE and transfer type is PRIMARY or patient is self-pay"
     sql: ${fixed_expected_allowable}::float ;;
     value_format: "0.00"
     filters: {
