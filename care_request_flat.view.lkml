@@ -3115,6 +3115,10 @@ end  ;;
       field: escalated_on_scene
       value: "no"
     }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
   }
 
   dimension: diversion_er {
@@ -3146,6 +3150,10 @@ end  ;;
     }
     filters: {
       field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
       value: "no"
     }
   }
@@ -3180,6 +3188,10 @@ end  ;;
       field: escalated_on_scene
       value: "no"
     }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
   }
 
   measure: diversion_savings_hospitalization {
@@ -3211,6 +3223,10 @@ end  ;;
     }
     filters: {
       field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
       value: "no"
     }
   }
