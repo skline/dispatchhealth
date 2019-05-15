@@ -87,6 +87,14 @@ view: patients {
     sql: ${age} < 13 AND NOT ${bad_age_filter} ;;
   }
 
+
+  dimension: age_above_65 {
+    description: "A flag indicating patients age > 65"
+    type: yesno
+    sql: ${age} > 65 AND NOT ${bad_age_filter} ;;
+  }
+
+
   dimension: age_band_sort {
     type: string
     hidden: yes

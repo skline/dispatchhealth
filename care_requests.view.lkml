@@ -520,6 +520,11 @@ view: care_requests {
     sql: ${place_of_service} = 'Home' ;;
   }
 
+  dimension: pos_senior_broad {
+    type: yesno
+    sql: ${place_of_service} in('Assisted Living Facility', 'Independent Living Facility', 'Skilled Nursing Facility', 'Long-term Care Facility', 'Rehabilitation Facility') ;;
+  }
+
   dimension_group: prioritized {
     type: time
     timeframes: [

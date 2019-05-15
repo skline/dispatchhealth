@@ -250,12 +250,12 @@ view: channel_items {
   dimension: high_level_category {
     type: string
     sql: case
-         when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue'))  then 'Direct to Consumer'
+          when ${name_no_tabs} is null then 'No Channel'
+          when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue'))  then 'Direct to Consumer'
           when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf' , 'home health') or  lower(${name_no_tabs}) in('healthcare provider', 'healthcare provider')  then 'Senior Care'
           when lower(${type_name}) in('health system', 'employer', 'payer', 'provider group', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue') then 'Strategic'          when ${digital_bool} then 'Direct to Consumer'
           when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
           when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
-          when ${name_no_tabs} is null then 'No Channel'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
 
@@ -263,6 +263,7 @@ view: channel_items {
     type: string
     label: "High Level Category (HH+Provider)"
     sql: case
+         when ${name_no_tabs} is null then 'No Channel'
          when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue'))  then 'Direct to Consumer'
          when lower(${type_name}) in('home health') then 'Home Health'
          when lower(${name_no_tabs}) in('healthcare provider', 'healthcare provider') or lower(${type_name}) in('provider group') then 'Provider'
@@ -270,7 +271,6 @@ view: channel_items {
          when lower(${type_name}) in('health system', 'employer', 'payer', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue') then 'Strategic'          when ${digital_bool} then 'Direct to Consumer'
          when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
          when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
-         when ${name_no_tabs} is null then 'No Channel'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
 
@@ -301,6 +301,11 @@ view: channel_items {
     type: number
     description: "The cost savings associated with hospitalization diversions for the Channel package"
     sql: ${TABLE}.hospitalization_diversion ;;
+  }
+
+  dimension: senior {
+    type: yesno
+    sql: lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf')  ;;
   }
 
 }
