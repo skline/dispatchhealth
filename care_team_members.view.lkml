@@ -56,6 +56,11 @@ view: care_team_members {
     sql: INITCAP(${TABLE}.name) ;;
   }
 
+  dimension: care_team_exists {
+    type: yesno
+    sql: ${name} IS NOT NULL ;;
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;

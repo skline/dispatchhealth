@@ -176,7 +176,7 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: fixed_expected_allowable {
-    description: "Expected allowable where GHOST charges are dealt with effectively"
+    description: "Expected allowable where charge reversals are dealt with effectively"
     type: number
     sql: CASE
           WHEN ${reversal_flag} = 1 THEN ${expected_allowed_amount}::float * -1
@@ -186,6 +186,8 @@ view: athenadwh_transactions_clone {
 
   measure: total_expected_allowable_test {
     type: sum
+    alias: [total_expected_allowable]
+    description: "Transaction type is CHARGE and transfer type is PRIMARY or patient is self-pay"
     sql: ${fixed_expected_allowable}::float ;;
     value_format: "0.00"
     filters: {
@@ -211,29 +213,29 @@ view: athenadwh_transactions_clone {
     sql: ${voided_date} IS NULL ;;
   }
 
-  measure: total_expected_allowable {
-    description: "Transaction type is CHARGE, transaction reason is not GHOST, transaction type is PRIMARY, voided date is NULL"
-    type: sum
-    sql: ${expected_allowed_amount}::float ;;
-    value_format: "0.00"
-    sql_distinct_key: ${transaction_id} ;;
-    filters: {
-      field: charge_transaction
-      value: "yes"
-    }
-    filters: {
-      field: ghost_transaction
-      value: "no"
-    }
-    filters: {
-      field: primary_transaction_type
-      value: "yes"
-    }
-    filters: {
-      field: voided_date_is_null
-      value: "yes"
-    }
-  }
+  # measure: total_expected_allowable {
+  #   description: "Transaction type is CHARGE, transaction reason is not GHOST, transaction type is PRIMARY, voided date is NULL"
+  #   type: sum
+  #   sql: ${expected_allowed_amount}::float ;;
+  #   value_format: "0.00"
+  #   sql_distinct_key: ${transaction_id} ;;
+  #   filters: {
+  #     field: charge_transaction
+  #     value: "yes"
+  #   }
+  #   filters: {
+  #     field: ghost_transaction
+  #     value: "no"
+  #   }
+  #   filters: {
+  #     field: primary_transaction_type
+  #     value: "yes"
+  #   }
+  #   filters: {
+  #     field: voided_date_is_null
+  #     value: "yes"
+  #   }
+  # }
 
   dimension: charge_id {
     type: number
