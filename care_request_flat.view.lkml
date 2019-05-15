@@ -2691,6 +2691,23 @@ view: care_request_flat {
     sql: coalesce((case when ${ga_pageviews_clone.high_level_category} in('Other', 'Self Report Direct to Consumer') then null else ${ga_pageviews_clone.high_level_category} end), ${web_ga_pageviews_clone.high_level_category}) ;;
   }
 
+  measure: dtc_agg_category {
+    type: string
+    sql: array_agg(${ga_high_level_category})::text ;;
+  }
+
+  measure: dtc_agg_category_hiearchy{
+    type: string
+    sql: case when ${dtc_agg_category} like '%SEM: Non-Brand%' then 'SEM: Non-Brand'
+     when ${dtc_agg_category}  like '%SEM: Brand%' then 'SEM: Brand'
+     when ${dtc_agg_category}  like '%Local Listings%' then 'Local Listings'
+     when ${dtc_agg_category} like '%Organic Search%' then 'Organic Search'
+      when ${dtc_agg_category}  like '%Other%' then 'Other'
+      when ${dtc_agg_category}  like '%Self Report Direct to Consumer%' then 'Self Report Direct to Consumer'
+   else null
+end  ;;
+  }
+
 
   dimension: ga_projections_category {
     type: string
