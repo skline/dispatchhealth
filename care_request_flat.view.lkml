@@ -2700,6 +2700,7 @@ view: care_request_flat {
     type: string
     sql: case when ${dtc_agg_category} like '%SEM: Non-Brand%' then 'SEM: Non-Brand'
      when ${dtc_agg_category}  like '%SEM: Brand%' then 'SEM: Brand'
+    when ${dtc_agg_category}  like '%Display%' then 'Display'
      when ${dtc_agg_category}  like '%Local Listings%' then 'Local Listings'
      when ${dtc_agg_category} like '%Organic Search%' then 'Organic Search'
       when ${dtc_agg_category}  like '%Other%' then 'Other'
