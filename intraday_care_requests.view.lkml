@@ -33,7 +33,12 @@ view: intraday_care_requests {
 
   dimension: complete {
     type: yesno
-    sql: ${complete_time} is not null;;
+    sql: ${complete_time} is not null or lower(${archive_comment}) like '%referred - point of care%';;
+  }
+
+  dimension: escalated_on_scene {
+    type: yesno
+    sql: lower(${archive_comment}) like '%referred - point of care%';;
   }
   dimension: complete_accepted_inqueue{
     sql: case when ${complete} then 'complete'
@@ -44,7 +49,7 @@ view: intraday_care_requests {
 
   dimension: resolved {
     type: yesno
-    sql: ${complete_time} is null and ${archived_time} is not null;;
+    sql: ${complete_time} is null and (${archived_time} is not null and lower(${archive_comment}) not like '%referred - point of care%');;
   }
 
 
@@ -87,6 +92,11 @@ view: intraday_care_requests {
   dimension: complete_comment {
     type: string
     sql: ${TABLE}.meta_data ->> 'complete_comment' ;;
+  }
+
+  dimension: archive_comment {
+    type: string
+    sql: ${TABLE}.meta_data ->> 'archived_status_comments' ;;
   }
 
   dimension: care_request_location {
