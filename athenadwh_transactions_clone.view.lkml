@@ -213,6 +213,11 @@ view: athenadwh_transactions_clone {
     sql: ${voided_date} IS NULL ;;
   }
 
+  dimension: is_valid_claim {
+    type: yesno
+    sql: ${athenadwh_valid_claims.claim_id} IS NOT NULL ;;
+  }
+
   # measure: total_expected_allowable {
   #   description: "Transaction type is CHARGE, transaction reason is not GHOST, transaction type is PRIMARY, voided date is NULL"
   #   type: sum
@@ -251,7 +256,7 @@ view: athenadwh_transactions_clone {
     type: count_distinct
     sql: ${claim_id} ;;
     filters: {
-      field: voided_date_is_null
+      field: is_valid_claim
       value: "yes"
     }
   }

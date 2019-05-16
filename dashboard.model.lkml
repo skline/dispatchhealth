@@ -151,6 +151,11 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id} ;;
   }
 
+  join: athenadwh_valid_claims {
+    relationship: one_to_one
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_valid_claims.claim_id} ;;
+  }
+
   join: athenadwh_document_crosswalk_clone {
     relationship: one_to_many
     sql_on: ${athenadwh_clinical_encounters_clone.patient_id} = ${athenadwh_document_crosswalk_clone.patient_id} AND
