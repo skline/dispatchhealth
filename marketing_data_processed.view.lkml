@@ -142,6 +142,11 @@ dimension: content_final {
     sql: ${TABLE}.ad_group_final ;;
   }
 
+  dimension: ad_group_final_present {
+    type: yesno
+    sql: ${ad_group_final}!='' ;;
+  }
+
 
   dimension: call_record_ikd {
     type: string
@@ -311,7 +316,6 @@ dimension: content_final {
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'SEM: Brand or Organic Search'
             when ${medium_final} in('local') or ${source_final} = 'yelp.com' or lower(${source_final}) like '%local%' then 'Local Listings'
             when ${medium_final} in('self report') then 'Self Report Direct to Consumer'
-            when ${dtc_ff_patients.patient_id} is not null then 'Other'
             else 'Other' end;;
   }
 
@@ -332,7 +336,6 @@ dimension: content_final {
             when ${medium_final} in('self report') then concat('Self Report ', ${source_final})
             when ${source_final} in('(direct)', 'direct')  then 'Direct Traffic'
             when (${source_final} like '%facebook%' or  ${source_final} like '%instagram%' or  ${source_final} like '%linkedin%') and ${medium_final} = 'referral' then 'Organic Social'
-            when ${dtc_ff_patients.patient_id} is not null then 'Other'
             else 'Other' end;;
   }
 
