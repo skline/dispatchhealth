@@ -932,10 +932,10 @@ view: care_requests {
       field: athenadwh_lab_imaging_providers.provider_category
       value: "Performed by Third Party"
     }
-#     filters: {
-#       field: athenadwh_lab_imaging_results.document_class
-#       value: "LABRESULT"
-#     }
+    filters: {
+      field: athenadwh_lab_imaging_results.document_is_from_care_request
+      value: "yes"
+    }
     filters: {
       field: athenadwh_clinical_results_clone.labs_flag
       value: "yes"
@@ -1046,7 +1046,21 @@ view: care_requests {
     description: "Count of completed care requests where a home health referral was made"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_orders.home_health_referrals_flag
+      field: athenadwh_referrals.home_health_referrals_flag
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_pcp_referrals {
+    type: count_distinct
+    description: "Count of completed care requests where a primary care physician referral was made"
+    sql: ${id} ;;
+    filters: {
+      field: athenadwh_referrals.pcp_referrals_flag
       value: "yes"
     }
     filters: {

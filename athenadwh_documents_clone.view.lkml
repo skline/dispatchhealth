@@ -22,9 +22,15 @@ view: athenadwh_documents_clone {
     sql: ${TABLE}.clinical_order_type ;;
   }
 
-  dimension: pcp_referral {
+  dimension: pcp_referrals_flag {
     type: yesno
     sql: ${clinical_order_type} = 'PRIMARY CARE REFERRAL' ;;
+  }
+
+  dimension: document_is_from_care_request {
+    type: yesno
+    hidden: yes
+    sql: ${created_date} = ${athenadwh_clinical_encounters_clone.encounter_date}::date + interval '1 day' ;;
   }
 
   dimension: thr_referral {
@@ -129,6 +135,11 @@ view: athenadwh_documents_clone {
   dimension: home_health_referrals_flag {
     type: yesno
     sql: ${clinical_order_type} LIKE 'HOME HEALTH%REFERRAL' ;;
+  }
+
+  dimension: pcp_referral_flag {
+    type: yesno
+    sql: ${clinical_order_type} = 'PRIMARY CARE REFERRAL' ;;
   }
 
   dimension: clinical_provider_id {

@@ -3255,16 +3255,13 @@ end  ;;
 
   measure: count_high_acuity_visits {
     type: count_distinct
-    description: "Count of visits that did not meet a diversion criteria and were not PAFU or escalated on scene"
+    description: "Count of visits that met a diversion criteria or were PAFU or were escalated on scene"
     sql: ${care_request_id} ;;
     filters: {
       field: high_acuity_visit
       value: "yes"
     }
   }
-
-
-
 
   dimension: diversion_category {
     type: string
