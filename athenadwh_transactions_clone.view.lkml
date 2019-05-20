@@ -378,6 +378,13 @@ view: athenadwh_transactions_clone {
   measure: sum_total_rvu {
     type: sum
     sql: ${total_rvu} ;;
+    value_format: "0.00"
+  }
+
+  measure: mean_total_rvu {
+    type: number
+    sql: ${sum_total_rvu} / ${count_claims} ;;
+    value_format: "0.00"
   }
 
   dimension_group: transaction_created_datetime {
