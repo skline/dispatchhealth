@@ -145,6 +145,23 @@ view: shift_details {
     sql: ${schedule_name} LIKE '%NP/PA:%';;
   }
 
+
+dimension: dhmt_shift {
+  type:  yesno
+  description: "DHMT in schedule_name"
+  sql: ${schedule_name} LIKE '%DHMT:%' ;;
+}
+
+  dimension: shift_time_hours {
+    type: number
+    description: "The number of hours between Local Actual Start time and Local Actual End Time for APP Shifts"
+    sql:
+    ((EXTRACT(EPOCH FROM ${local_actual_end_raw})-EXTRACT(EPOCH FROM ${local_actual_start_raw}))/3600) ;;
+    value_format: "0.0"
+
+  }
+
+
   dimension: valid_shift {
     type: yesno
     description: "Employee is assinged to shift"
@@ -208,6 +225,44 @@ view: shift_details {
 
   }
 
+measure:  sum_shift_time_hours {
+  type: sum
+  description: "sum of shift hours"
+  sql: ${shift_time_hours} ;;
+  value_format: "0.0"
+}
+
+  measure:  sum_app_shift_time_hours {
+    type: sum
+    description: "sum of APP shift hours"
+    sql: ${shift_time_hours} ;;
+    value_format: "0.0"
+
+    filters: {
+      field: app_shift
+      value: "yes"
+    }
+  }
+
+
+  measure:  sum_dhmt_shift_time_hours {
+    type: sum
+    description: "sum of DHMT shift hours"
+    sql: ${shift_time_hours} ;;
+    value_format: "0.0"
+
+    filters: {
+      field: dhmt_shift
+      value: "yes"
+      }
+
+    filters: {
+     field:  valid_shift
+     value: "yes"
+   }
+    }
+
+
 measure: count_total_app_shift {
   type:  count_distinct
   description: "NP/PA shift Total (invalid and valid)"
@@ -215,8 +270,14 @@ measure: count_total_app_shift {
 
   filters:  {
     field: app_shift
-    value: "yes"}
+    value: "yes"
 }
 
+  filters: {
+    field: valid_shift
+    value: "yes"
+    }
+
+}
 
 }
