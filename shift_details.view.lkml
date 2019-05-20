@@ -207,7 +207,7 @@ dimension: dhmt_shift {
     sql: ${TABLE}.shift_id;;
   }
 
-  measure: count_validate_app_shifts {
+  measure: count_valid_app_shifts {
     type: count_distinct
     description: "NP/PA shift and valid name assigned to the shift"
     sql: ${TABLE}.shift_id;;
@@ -216,7 +216,6 @@ dimension: dhmt_shift {
       field: app_shift
       value: "yes"
     }
-
     filters: {
       field: valid_shift
       value: "yes"
