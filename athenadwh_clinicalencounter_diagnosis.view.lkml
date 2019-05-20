@@ -66,6 +66,12 @@ view: athenadwh_clinicalencounter_diagnosis {
     sql: ${TABLE}.ordering ;;
   }
 
+  measure: more_than_one_diagnosis {
+    type: yesno
+    description: "A flag indicating that more than one ICD diagnosis code exists"
+    sql: MAX(${ordering}) > 0 ;;
+  }
+
   dimension: sequence_number {
     type: number
     description: "The priority number of the diagnosis code"

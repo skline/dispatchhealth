@@ -371,13 +371,20 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: total_rvu {
-    type: string
-    sql: ${TABLE}.total_rvu ;;
+    type: number
+    sql: ${TABLE}.total_rvu::float(4) ;;
   }
 
   measure: sum_total_rvu {
     type: sum
     sql: ${total_rvu} ;;
+    value_format: "0.00"
+  }
+
+  measure: mean_total_rvu {
+    type: number
+    sql: ${sum_total_rvu} / ${count_claims} ;;
+    value_format: "0.00"
   }
 
   dimension_group: transaction_created_datetime {
@@ -439,8 +446,8 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: work_rvu {
-    type: string
-    sql: ${TABLE}.work_rvu ;;
+    type: number
+    sql: ${TABLE}.work_rvu::float(4) ;;
   }
 
   measure: count {

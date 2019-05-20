@@ -95,6 +95,25 @@ view: athenadwh_clinical_encounters_clone {
     sql: ${chart_id} ;;
   }
 
+  measure: count_symptom_based_charts {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: athenadwh_icdcodeall.symptom_based_diagnosis
+      value: "yes"
+    }
+  }
+
+  measure: count_charts_two_plus_diagnoses {
+    type: count_distinct
+    description: "Count of charts that have 2 or more diagnosis codes associated"
+    sql: ${chart_id} ;;
+    filters: {
+      field: athenadwh_clinicalencounter_diagnosis.more_than_one_diagnosis
+      value: "yes"
+    }
+  }
+
   measure: count {
     type: count
     drill_fields: [id]

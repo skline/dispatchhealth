@@ -27,6 +27,19 @@ view: athenadwh_icdcodeall {
     sql: SUBSTRING(TRIM(${TABLE}.diagnosis_code), 0, 4) ;;
   }
 
+  dimension: diagnosis_code_full {
+    type: string
+    description: "The full diagnosis code (not restricted to first 3 characters)"
+    sql: ${TABLE}.diagnosis_code ;;
+  }
+
+  dimension: symptom_based_diagnosis {
+    type: yesno
+    description: "A flag indicating the ICD-10 code is symptoms-based. Use only with ICD Primary Diagnosis Codes"
+    sql: ${diagnosis_code_full} IN ('R05','R509','R197','R112','R1110','R42','T148XXA','R070','R410','K5900','R51',
+                                    'R5383','R6889','R110','R0981','R0602','R062') AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
+  }
+
   dimension: diagnosis_description {
     type: string
     sql: ${TABLE}.diagnosis_code_description ;;
