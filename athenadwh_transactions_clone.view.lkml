@@ -371,8 +371,8 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: total_rvu {
-    type: string
-    sql: ${TABLE}.total_rvu ;;
+    type: number
+    sql: ${TABLE}.total_rvu::float(4) ;;
   }
 
   measure: sum_total_rvu {
@@ -439,8 +439,8 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: work_rvu {
-    type: string
-    sql: ${TABLE}.work_rvu ;;
+    type: number
+    sql: ${TABLE}.work_rvu::float(4) ;;
   }
 
   measure: count {
