@@ -2123,7 +2123,8 @@ view: care_request_flat {
 
   dimension: escalated_on_phone_ed {
     type: yesno
-    sql: ${archive_comment} LIKE '%Referred - Phone Triage: ED%' ;;
+    sql:  (${archive_comment} LIKE '%Referred - Phone Triage: ED%' or  ${archive_comment} LIKE '%Referred via Phone: ED%' or ${archive_comment} LIKE '%Referred via Phone: Emergency Department%')  ;;
+
   }
 
 

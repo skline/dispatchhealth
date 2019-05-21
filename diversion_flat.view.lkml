@@ -610,4 +610,29 @@ view: diversion_flat {
     sql: ${TABLE}.dc41 ;;
   }
 
+  dimension: num_codes_met {
+    type: number
+    sql: ${dc1}+${dc4}+${dc5}+${dc7}+${dc10}+${dc11}+${dc12}+${dc13}+${dc14}+${dc15}+${dc16}+${dc17}+${dc20}+${dc21}+${dc22} ;;
+  }
+
+  dimension: min_code_met {
+    type: number
+    sql: case when ${dc1} = 1 then 1
+when ${dc4} = 1 then 4
+when ${dc5} = 1 then 5
+when ${dc7} = 1 then 7
+when ${dc10} = 1 then 10
+when ${dc11} = 1 then 11
+when ${dc12} = 1 then 12
+when ${dc13} = 1 then 13
+when ${dc14} = 1 then 14
+when ${dc15} = 1 then 15
+when ${dc16} = 1 then 16
+when ${dc17} = 1 then 17
+when ${dc20} = 1 then 20
+when ${dc21} = 1 then 21
+when ${dc22} = 1 then 22
+else null end;;
+  }
+
 }
