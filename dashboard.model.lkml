@@ -2476,6 +2476,15 @@ explore: thr_zips {
   join: zipcodes {
     sql_on: ${zipcodes.zip}::int=${thr_zips.zipcode} and ${zipcodes.market_id}= 169 ;;
   }
+}
 
+explore: diversion_flat {
+  join: icd_code_dimensions_clone {
+    sql_on: ${diversion_flat.diagnosis_code} = ${icd_code_dimensions_clone.diagnosis_code} ;;
+  }
+
+  join: diversion_type {
+    sql_on: ${diversion_flat.diversion_type_id} =${diversion_type.id} ;;
+  }
 
 }
