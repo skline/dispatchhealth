@@ -104,12 +104,12 @@ view: athenadwh_clinical_encounters_clone {
     }
   }
 
-  measure: count_charts_two_plus_diagnoses {
+  measure: count_comorbidity_based_charts {
     type: count_distinct
-    description: "Count of charts that have 2 or more diagnosis codes associated"
+    description: "Count of charts that have non-primary comorbidity diagnoses"
     sql: ${chart_id} ;;
     filters: {
-      field: athenadwh_clinicalencounter_diagnosis.more_than_one_diagnosis
+      field: athenadwh_icdcodeall.comorbidity_based_diagnosis
       value: "yes"
     }
   }

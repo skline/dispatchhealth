@@ -66,11 +66,6 @@ view: athenadwh_clinicalencounter_diagnosis {
     sql: ${TABLE}.ordering ;;
   }
 
-  measure: more_than_one_diagnosis {
-    type: yesno
-    description: "A flag indicating that more than one ICD diagnosis code exists"
-    sql: MAX(${ordering}) > 0 ;;
-  }
 
   dimension: sequence_number {
     type: number
@@ -78,6 +73,14 @@ view: athenadwh_clinicalencounter_diagnosis {
     hidden: no
     sql: ${ordering} + 1 ;;
   }
+
+  measure: num_diagnoses {
+    type: max
+    description: "The number of diagnosis codes recorded by the provider"
+    sql: ${sequence_number} ;;
+  }
+
+
 
   dimension_group: updated {
     type: time

@@ -40,6 +40,13 @@ view: athenadwh_icdcodeall {
                                     'R5383','R6889','R110','R0981','R0602','R062') AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
   }
 
+  dimension: comorbidity_based_diagnosis {
+    type: yesno
+    hidden: yes
+    description: "A flag indicating the non-primary ICD-10 code is a co-morbidity. Use only to count charts"
+    sql: ${diagnosis_code} IN ('E10','E11','E13','I10','I87','J45') AND ${athenadwh_clinicalencounter_diagnosis.ordering} > 0 ;;
+  }
+
   dimension: diagnosis_description {
     type: string
     sql: ${TABLE}.diagnosis_code_description ;;
