@@ -25,6 +25,7 @@ view: primary_payer_dimensions_clone {
 
   dimension: custom_insurance_grouping {
     type: string
+    order_by_field: insurance_sort_value
     sql: case when ${insurance_package_id}::int in(22741, 47756, 54360, 75708) then '(MMCD)MANAGED MEDICAID'
       else ${TABLE}.custom_insurance_grouping end;;
   }
@@ -66,6 +67,23 @@ view: primary_payer_dimensions_clone {
         WHEN '(CM)COMMERCIAL' THEN 'Commercial'
         WHEN '(TC)TRICARE' THEN 'Tricare'
         ELSE 'Other'
+        END;;
+  }
+
+  dimension: insurance_sort_value {
+    type: number
+    hidden: yes
+    sql: CASE ${custom_insurance_grouping}
+         WHEN '(CB)CORPORATE BILLING' THEN 8
+        WHEN '(MA)MEDICARE ADVANTAGE' THEN 2
+        WHEN '(MAID)MEDICAID' THEN 4
+        WHEN '(MMCD)MANAGED MEDICAID' THEN 7
+        WHEN '(MCARE)MEDICARE' THEN 3
+        WHEN '(PSP)PATIENT SELF-PAY' THEN 6
+        WHEN 'PATIENT RESPONSIBILITY' THEN 6
+        WHEN '(CM)COMMERCIAL' THEN 1
+        WHEN '(TC)TRICARE' THEN 5
+        ELSE 9
         END;;
   }
 
