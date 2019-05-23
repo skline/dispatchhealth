@@ -1784,7 +1784,9 @@ view: care_request_flat {
 
   dimension: lwbs_no_longer_need_care {
     type: yesno
-    sql: ${archive_comment} LIKE '%Cancelled by Patient: No longer need care%' ;;
+    sql: ${archive_comment} LIKE '%Cancelled by Patient: No longer need care%'
+          or
+          ${archive_comment} LIKE '%Cancelled by Patient or Partner: Symptoms Resolved / Wait it Out%' ;;
   }
 
   dimension: cancelled_by_patient_reason {

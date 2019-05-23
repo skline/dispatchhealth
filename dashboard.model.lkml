@@ -7,7 +7,7 @@ include: "*.dashboard.lookml"  # include all dashboards in this project
 explore: care_requests {
 
   sql_always_where: ${deleted_raw} IS NULL AND
-  (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate') OR ${care_request_flat.secondary_resolved_reason} IS NULL) ;;
+  (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL) ;;
 
   access_filter: {
     field: markets.name
