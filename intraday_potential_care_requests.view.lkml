@@ -5,7 +5,7 @@ view: intraday_potential_care_requests {
   care_request_id,
   (meta_data ->> 'market_id')::integer AS market_id,
   (meta_data ->> 'shift_team_id')::integer AS shift_team_id,
-  (meta_data ->> 'etc')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS etc,
+  (meta_data ->> 'etc')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE mgl.timezone AS etc,
   (meta_data ->> 'latitude')::float8 AS latitude,
   (meta_data ->> 'longitude')::float8 AS longitude,
   (meta_data ->> 'street_address_1') AS address1,
@@ -18,13 +18,19 @@ view: intraday_potential_care_requests {
   (meta_data ->> 'current_status') AS current_status,
   (meta_data ->> 'scheduled_status_comments') AS scheduled_comment,
   sli.name AS service_line,
-  (meta_data ->> 'created_at')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS created_at
+  mgl.latitude AS office_latitude,
+  mgl.longitude AS office_longitude,
+  (meta_data ->> 'created_at')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE mgl.timezone AS created_at
   FROM public.intraday_care_requests icr
   LEFT JOIN looker_scratch.service_lines_intra sli
     ON (meta_data ->> 'service_line_id')::integer = sli.id
+  LEFT JOIN looker_scratch.markets_intra mi
+    ON (meta_data ->> 'market_id')::integer = mi.id
+  LEFT JOIN looker_scratch.market_geo_locations_intra mgl
+    ON mi.id = mgl.market_id
   WHERE (meta_data ->> 'current_status') IN ('requested','accepted','scheduled') AND
   sli.name NOT IN ('Post Acute Follow up', 'Post Acute Follow Up (HPN)', '911 Service') AND
-  (meta_data ->> 'created_at')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' > current_date - interval '1 day' ;;
+  (meta_data ->> 'created_at')::timestamp AT TIME ZONE 'UTC' AT TIME ZONE mgl.timezone > current_date - interval '1 day' ;;
   }
 
   dimension: care_request_id {
@@ -141,10 +147,20 @@ view: intraday_potential_care_requests {
     sql_longitude: ${longitude} ;;
   }
 
-  dimension: denver_office {
+  dimension: office_latitude {
+    type: number
+    sql: ${TABLE}.office_latitude ;;
+  }
+
+  dimension: office_longitude {
+    type: number
+    sql: ${TABLE}.office_longitude ;;
+  }
+
+  dimension: office_location {
     type: location
-    sql_latitude: 39.7722937 ;;
-    sql_longitude:-104.9835581  ;;
+    sql_latitude: ${office_latitude} ;;
+    sql_longitude: ${office_longitude} ;;
   }
 
   dimension: distance_from_last_cr {
@@ -157,7 +173,7 @@ view: intraday_potential_care_requests {
   dimension: distance_to_office {
     type: distance
     start_location_field: location
-    end_location_field: denver_office
+    end_location_field: office_location
     units: miles
   }
 
