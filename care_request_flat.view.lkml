@@ -3048,7 +3048,7 @@ end  ;;
   measure: diversion_categories_met {
     description: "A list of the diversion categories that have been met"
     type: string
-    sql: array_to_string(array_agg(${diversion_category_first_met}), ' | ') ;;
+    sql: array_to_string(array_agg(distinct ${diversion_category_first_met}), ' | ') ;;
   }
 
   dimension: diversion_cats_met {
@@ -3138,6 +3138,7 @@ end  ;;
         END) ;;
     value_format: "$#,##0"
   }
+
 
   measure: count_911_diversions {
     type: count_distinct

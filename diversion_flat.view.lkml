@@ -612,15 +612,20 @@ view: diversion_flat {
 
   dimension: num_codes_met {
     type: number
-    sql: ${dc1}+${dc4}+${dc5}+${dc7}+${dc10}+${dc11}+${dc12}+${dc13}+${dc14}+${dc15}+${dc16}+${dc17}+${dc20}+${dc21}+${dc22} ;;
+    sql: ${dc1}+${dc2}+${dc3}+${dc4}+${dc5}+${dc6}+${dc7}+${dc8}+${dc9}+${dc10}+${dc11}+${dc12}+${dc13}+${dc14}+${dc15}+${dc16}+${dc17}+${dc18}+${dc19}+${dc20}+${dc21}+${dc22}+${dc23}+${dc24}+${dc25}+${dc26}+${dc27}+${dc28}+${dc29}+${dc30}+${dc31}+${dc32}+${dc33}+${dc34}+${dc35}+${dc36}+${dc37}+${dc38}+${dc39}+${dc40}+${dc41} ;;
   }
 
   dimension: min_code_met {
     type: number
     sql: case when ${dc1} = 1 then 1
+when ${dc2} = 1 then 2
+when ${dc3} = 1 then 3
 when ${dc4} = 1 then 4
 when ${dc5} = 1 then 5
+when ${dc6} = 1 then 6
 when ${dc7} = 1 then 7
+when ${dc8} = 1 then 8
+when ${dc9} = 1 then 9
 when ${dc10} = 1 then 10
 when ${dc11} = 1 then 11
 when ${dc12} = 1 then 12
@@ -629,9 +634,30 @@ when ${dc14} = 1 then 14
 when ${dc15} = 1 then 15
 when ${dc16} = 1 then 16
 when ${dc17} = 1 then 17
+when ${dc18} = 1 then 18
+when ${dc19} = 1 then 19
 when ${dc20} = 1 then 20
 when ${dc21} = 1 then 21
 when ${dc22} = 1 then 22
+when ${dc23} = 1 then 23
+when ${dc24} = 1 then 24
+when ${dc25} = 1 then 25
+when ${dc26} = 1 then 26
+when ${dc27} = 1 then 27
+when ${dc28} = 1 then 28
+when ${dc29} = 1 then 29
+when ${dc30} = 1 then 30
+when ${dc31} = 1 then 31
+when ${dc32} = 1 then 32
+when ${dc33} = 1 then 33
+when ${dc34} = 1 then 34
+when ${dc35} = 1 then 35
+when ${dc36} = 1 then 36
+when ${dc37} = 1 then 37
+when ${dc38} = 1 then 38
+when ${dc39} = 1 then 39
+when ${dc40} = 1 then 40
+when ${dc41} = 1 then 41
 else null end;;
   }
 
