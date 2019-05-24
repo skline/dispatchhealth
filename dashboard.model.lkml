@@ -2488,3 +2488,11 @@ explore: diversion_flat {
   }
 
 }
+
+explore: expected_allowable_corporate {
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.id} = ${expected_allowable_corporate.market_id} ;;
+  }
+
+}
