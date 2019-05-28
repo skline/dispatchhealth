@@ -319,6 +319,11 @@ dimension: content_final {
             else 'Other' end;;
   }
 
+  dimension: bing {
+    type: yesno
+    sql: (${source_final} in('bing') and ${medium_final} in('cpc', 'paid search')) or lower(${source_final}) like '%bing ad extension%';;
+  }
+
 
   dimension: granular_category
   {
