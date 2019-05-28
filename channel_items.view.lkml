@@ -308,4 +308,9 @@ view: channel_items {
     sql: lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf')  ;;
   }
 
+  dimension: growth_target {
+    type: yesno
+    sql: ${growth_update_channels.identifier_id} is not null ;;
+  }
+
 }

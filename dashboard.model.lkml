@@ -999,6 +999,11 @@ explore: care_requests {
     sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
   }
 
+  join: growth_update_channels {
+    relationship: one_to_one
+    sql_on: ${channel_items.id} =${growth_update_channels.identifier_id} and ${growth_update_channels.identifier_type} = 'channel';;
+  }
+
   join: channel_item_emr_providers {
     relationship: many_to_one
     sql_on: ${channel_items.id} = ${channel_item_emr_providers.channel_item_id} ;;
