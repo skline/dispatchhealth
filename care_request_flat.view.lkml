@@ -2218,6 +2218,20 @@ view: care_request_flat {
     }
   }
 
+  measure: screened_escalated_ed_phone_count {
+    description: "Care requests secondary screened and escalated over the phone ED"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone_ed
+      value: "yes"
+    }
+    filters: {
+      field: secondary_screening
+      value: "yes"
+    }
+  }
+
   measure: not_screened_escalated_onscene_count {
     description: "Care requests not secondary screened that were escalated on scene"
     type: count_distinct
