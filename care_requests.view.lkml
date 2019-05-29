@@ -52,10 +52,11 @@ view: care_requests {
 
   dimension: post_acute_follow_up {
     type: yesno
-    description: "Chief complaint, risk protocol name, or channel name is post-acute follow-up"
+    description: "Chief complaint, risk protocol name, channel name or service line is post acute follow-up"
     sql:  ${chief_complaint_trimmed} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
           ${risk_assessments.protocol_name} = 'Post-Acute Patient' OR
-          ${channel_items.name} SIMILAR TO '%(pafu|post acute|post-acute)%';;
+          ${channel_items.name} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
+          ${service_lines.name} LIKE 'Post Acute Follow Up%' ;;
   }
 
   dimension: follow_up {
