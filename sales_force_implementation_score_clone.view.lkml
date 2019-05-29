@@ -101,7 +101,7 @@ view: sales_force_implementation_score_clone {
            when lower(${market}) like '%colo%' or  lower(${market}) like '%springs%' then 160
            when lower(${market}) like '%phoe%'or lower(${market}) like '%phx%' then 161
            when lower(${market}) like '%ric%'  then 164
-           when lower(${market})  like '%las%' or lower(${market})  like '%las%' then 162
+           when lower(${market})  like '%las %' or lower(${market})  like '%las %' then 162
            when lower(${market})  like '%hou%' then 165
            when lower(${market})  like '%okla%' or lower(${market})  like '%okc%' then 166
            else null

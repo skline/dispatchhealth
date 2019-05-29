@@ -280,7 +280,7 @@ group by 1,2,3,4,5,6,7,8,9)lq
            when lower(${skll_name}) like '%cos%' then 160
            when lower(${skll_name}) like '%phx%' then 161
            when lower(${skll_name}) like '%ric%'  then 164
-           when lower(${skll_name})  like '%las%' then 162
+           when lower(${skll_name})  like '%las %' then 162
            when lower(${skll_name})  like '%hou%' then 165
            when lower(${skll_name})  like '%okla%' or lower(${skll_name})  like '%okc%' then 166
            when lower(${skll_name})  like 'spr%' or trim(lower(${skll_name}))  like '%spi%' then 168
