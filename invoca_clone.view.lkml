@@ -431,5 +431,20 @@ view: invoca_clone {
       ;;
   }
 
+  dimension: client_id_present {
+    type: yesno
+    sql: ${analytics_vistor_id} is not null and trim(${analytics_vistor_id})!='' ;;
+  }
+
+  measure: count_invoca_client_id_present {
+    type: count_distinct
+    sql_distinct_key: ${call_record_ikd} ;;
+    sql: ${call_record_ikd} ;;
+    filters: {
+      field: client_id_present
+      value: "yes"
+    }
+  }
+
 
 }

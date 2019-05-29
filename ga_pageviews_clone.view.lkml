@@ -564,6 +564,21 @@ dimension: source_category
           ) end;;
   }
 
+  dimension: ga_client_id_present {
+    type: yesno
+    sql: ${client_id} is not null and trim(${client_id})!='' ;;
+  }
+
+  measure: count_ga_client_id_present {
+    type: count_distinct
+    sql_distinct_key: ${client_id} ;;
+    sql: ${client_id} ;;
+    filters: {
+      field: ga_client_id_present
+      value: "yes"
+    }
+  }
+
 
 
 
