@@ -1977,7 +1977,7 @@ explore: ga_pageviews_clone {
   explore: incontact_clone {
 
           join: invoca_clone {
-            sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 300
+            sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 3800
                      and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
                           ;;
           }

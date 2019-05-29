@@ -333,6 +333,26 @@ group by 1,2,3,4,5,6,7,8,9)lq
     sql: ${TABLE}.prequeue_abandons ;;
   }
 
+  dimension: invoca_present {
+    type: yesno
+    sql:   ${invoca_clone.call_record_ikd} is not null;;
+  }
+
+  measure: count_invoca {
+    type: count_distinct
+    sql_distinct_key: ${master_contact_id} ;;
+    sql: ${master_contact_id} ;;
+    filters: {
+      field: invoca_present
+      value: "yes"
+    }
+  }
+
+
+
+
+
+
 
   measure: count {
     type: count
