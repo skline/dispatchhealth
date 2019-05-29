@@ -188,11 +188,8 @@ explore: care_requests {
   }
 
   join: athenadwh_lab_imaging_results {
-    from:  athenadwh_documents_clone
-    relationship:  one_to_one
-    sql_on: ${athenadwh_document_crosswalk_clone.document_id} = ${athenadwh_lab_imaging_results.document_id} AND
-      ${athenadwh_lab_imaging_results.document_class} IN ('IMAGINGRESULT', 'LABRESULT') AND
-      ${athenadwh_lab_imaging_results.status} != 'DELETED' ;;
+    relationship:  one_to_many
+    sql_on: ${care_requests.ehr_id} = ${athenadwh_lab_imaging_results.appointment_id}:: VARCHAR ;;
   }
 
   join: athenadwh_lab_imaging_providers {

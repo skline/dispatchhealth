@@ -130,13 +130,13 @@ dimension_group: created_datetime {
   sql: ${TABLE}.created_datetime ;;
 }
 
-dimension:  lab_results {
+dimension:  lab_results_flag {
   type: yesno
   description: "Document_class is Lab Result"
   sql: ${document_class} like 'LABRESULT' ;;
 }
 
-dimension:  imaging_results {
+dimension:  imaging_results_flag {
   type: yesno
   description: "Document_class is Imaging Result"
   sql: ${document_class} like 'IMAGINGRESULT' ;;
@@ -147,8 +147,8 @@ measure:  count_distinct_lab_results{
   description: "Count of Distinct Lab Results"
   sql: ${document_id} ;;
   filters: {
-    field: document_class
-    value: "LABRESULT"
+    field: lab_results_flag
+    value: "yes"
   }
 }
 
@@ -157,8 +157,8 @@ measure:  count_distinct_imaging_results{
   description: "Count of Distinct Imaging Results"
   sql: ${document_id} ;;
   filters: {
-    field: document_class
-    value: "IMAGINGRESULT"
+    field: imaging_results_flag
+    value: "yes"
   }
 }
 
