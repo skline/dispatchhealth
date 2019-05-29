@@ -252,12 +252,13 @@ dimension: content_final {
            when lower(${marketing_cost_campaign_name}) like '%colo%' or  lower(${marketing_cost_campaign_name}) like '%springs%' or  lower(${marketing_cost_campaign_name}) like '%cos%' then 160
            when lower(${marketing_cost_campaign_name}) like '%phoe%'or lower(${marketing_cost_campaign_name}) like '%phx%' then 161
            when lower(${marketing_cost_campaign_name}) like '%ric%'  then 164
-           when lower(${marketing_cost_campaign_name})  like '%las %' or lower(${marketing_cost_campaign_name})  like '%las %' then 162
            when lower(${marketing_cost_campaign_name})  like '%hou%' then 165
            when lower(${marketing_cost_campaign_name})  like '%okla%' or lower(${marketing_cost_campaign_name})  like '%okc%' then 166
-          when lower(${marketing_cost_campaign_name})  like '%springfield%' or lower(${marketing_cost_campaign_name})  like 'spr%' then 168
-     when lower(${marketing_cost_campaign_name})  like '%dal%' then 169
-    when lower(${marketing_cost_campaign_name})  like '%tac%' then 170
+           when lower(${marketing_cost_campaign_name})  like '%springfield%' or lower(${marketing_cost_campaign_name})  like 'spr%' then 168
+           when lower(${marketing_cost_campaign_name})  like '%dal%' then 169
+          when lower(${marketing_cost_campaign_name})  like '%tac%' then 170
+          when lower(${marketing_cost_campaign_name})  like '%las%' or lower(${marketing_cost_campaign_name})  like '%las%' then 162
+
            else null
         end;;
   }
@@ -284,12 +285,13 @@ dimension: content_final {
          when lower(${full_url})  like '%colo%' then 160
          when lower(${full_url})  like '%pho%' then 161
          when lower(${full_url})  like '%ric%' then 164
-         when lower(${full_url})  like '%las %' then 162
          when lower(${full_url})  like '%hou%' then 165
          when lower(${full_url})  like '%okl%' then 166
         when lower(${full_url})  like '%springfield%' then 168
      when lower(${full_url})  like '%dal%' then 169
     when lower(${full_url})  like '%tac%' then 170
+    when lower(${full_url})  like '%las%' then 162
+
          else null end ;;
   }
 

@@ -144,12 +144,13 @@ view: ga_pageviews_clone {
          when lower(${campaign})  like '%colo%' then 160
          when lower(${campaign})  like '%pho%' then 161
          when lower(${campaign})  like '%ric%' then 164
-         when lower(${campaign})  like '%las %' then 162
          when lower(${campaign})  like '%hou%' then 165
          when lower(${campaign})  like '%okl%' then 166
                when lower(${campaign})  like '%springfield%' then 168
      when lower(${campaign})  like '%dal%' then 169
     when lower(${campaign})  like '%tac%' then 170
+             when lower(${campaign})  like '%las%' then 162
+
          else null end ;;
   }
 
@@ -160,12 +161,13 @@ view: ga_pageviews_clone {
          when lower(${full_url})  like '%colo%' then 160
          when lower(${full_url})  like '%pho%' then 161
          when lower(${full_url})  like '%ric%' then 164
-         when lower(${full_url})  like '%las %' then 162
          when lower(${full_url})  like '%hou%' then 165
          when lower(${full_url})  like '%okl%' then 166
         when lower(${full_url})  like '%springfield%' then 168
      when lower(${full_url})  like '%dal%' then 169
     when lower(${full_url})  like '%tac%' then 170
+             when lower(${full_url})  like '%las%' then 162
+
          else null end ;;
   }
 
