@@ -35,4 +35,13 @@ view: cpt_code_types_clone {
     type: count
     drill_fields: []
   }
+
+  dimension: cpt_type_procedure_flag {
+    label: "CPT Code Type 'Procedure' Flag"
+    description: "Flag to indicate 'Procedure' contained in the cpt_code_type field"
+    type: yesno
+    sql: UPPER(${cpt_code_type}) LIKE 'PROCEDURE' ;;
+  }
+
+
 }
