@@ -137,6 +137,12 @@ view: shift_details {
 
   }
 
+  dimension: shift_name {
+    type: string
+    description: "Shift name parsed from the schedule name (e.g. DEN01)"
+    sql: LTRIM(split_part(split_part(${schedule_name},':',2),' (H)',1)) ;;
+  }
+
 
   dimension: app_shift {
     type: yesno
