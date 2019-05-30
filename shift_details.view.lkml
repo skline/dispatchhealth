@@ -140,7 +140,12 @@ view: shift_details {
   dimension: shift_name {
     type: string
     description: "Shift name parsed from the schedule name (e.g. DEN01)"
-    sql: LTRIM(split_part(split_part(${schedule_name},':',2),' (H)',1)) ;;
+    sql: CASE WHEN LTRIM(${schedule_name}) LIKE '%SMFR Car' THEN
+          split_part(${schedule_name},' ',3) || '_' || split_part(${schedule_name},' ',4)
+        WHEN LTRIM(${schedule_name}) LIKE '%WMFR Car' THEN
+          split_part(${schedule_name},' ',3) || ' ' || UPPER(split_part(${schedule_name},' ',4))
+         ELSE LTRIM(split_part(split_part(${schedule_name},':',2),' (H)',1))
+        END;;
   }
 
 
