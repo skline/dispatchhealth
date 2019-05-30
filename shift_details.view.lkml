@@ -239,7 +239,7 @@ measure:  sum_valid_shift_time_hours {
   type: sum
   description: "sum of shift hours"
   sql: ${shift_time_hours} ;;
-  value_format: "0.0"
+  value_format: "0.00"
 
   filters: {
     field: valid_shift
