@@ -77,6 +77,10 @@ explore:  intraday_care_requests {
   join: channel_items_intra {
     sql_on: ${intraday_care_requests.channel_item_id} =${channel_items_intra.id} ;;
   }
+
+  join: service_lines_intra {
+    sql_on: ${intraday_care_requests.service_line_id}::int =${service_lines_intra.id} ;;
+  }
 }
 
 explore:  intraday_care_requests_full {
