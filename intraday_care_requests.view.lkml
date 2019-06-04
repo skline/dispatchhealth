@@ -99,6 +99,12 @@ view: intraday_care_requests {
     sql: ${TABLE}.meta_data ->> 'archived_status_comments' ;;
   }
 
+  dimension: service_line_id {
+    type: number
+    sql: ${TABLE}.meta_data ->> 'service_line_id' ;;
+  }
+
+
   dimension: care_request_location {
     type: location
     sql_latitude: ${TABLE}.meta_data ->> 'latitude' ;;
@@ -336,6 +342,28 @@ view: intraday_care_requests {
     filters: {
       field: primary_payer_dimensions_intra.custom_insurance_grouping
       value: "(MAID)MEDICAID"
+    }
+
+  }
+
+  measure: inqueue_crs_pafu {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: service_lines_intra.id
+      value: "2,6"
     }
 
   }
