@@ -2501,3 +2501,11 @@ explore: expected_allowable_corporate {
   }
 
 }
+
+explore: expected_allowables_market_budget {
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.id} = ${expected_allowables_market_budget.markets_id} ;;
+  }
+
+}
