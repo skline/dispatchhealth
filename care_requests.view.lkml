@@ -66,6 +66,13 @@ view: care_requests {
   }
 
 
+  dimension: DHFU_follow_up {
+    type: yesno
+    description: "The string 'dhfu' occurs in Chief Complaint - Dispatch Health Follow Up (Does NOT included Post-Acute"
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' ;;
+  }
+
+
   measure: placeholder1 {
     type: number
     sql: NULL ;;
