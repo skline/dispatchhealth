@@ -64,4 +64,12 @@ view: expected_allowables_market_budget {
     type: count
     drill_fields: [id]
   }
+
+  measure: sum_expected_allowable_market_Budget {
+    description: "The sum of all expected allowable market budget amounts"
+    type: sum
+    sql: ${expected_allowable_budget_amount} ;;
+  }
+
+
 }
