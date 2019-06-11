@@ -1119,6 +1119,17 @@ join: ga_pageviews_clone {
     relationship: many_to_one
     sql_on: ${ed_diversion_survey_response_clone.care_request_id} = ${visit_facts_clone.care_request_id} ;;
   }
+
+  join: breaks {
+    relationship: one_to_one
+    sql_on: ${breaks.shift_team_id} = ${shift_teams.id} ;;
+  }
+
+  join: market_break_configs {
+    relationship: many_to_one
+    sql_on: ${breaks.market_break_config_id} = ${market_break_configs.id};;
+  }
+
 }
 
 explore: shift_details {
