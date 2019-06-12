@@ -51,6 +51,11 @@ view: athenadwh_patients_clone {
     sql: ${TABLE}.new_patient_id ;;
   }
 
+  dimension: is_duplicate_id {
+    type: yesno
+    sql: ${new_patient_id} IS NOT NULL ;;
+  }
+
   dimension: patient_id {
     type: number
     sql: ${TABLE}.patient_id ;;
