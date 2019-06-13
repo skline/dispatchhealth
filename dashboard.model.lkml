@@ -134,18 +134,6 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_clinical_encounter_provider.clinical_provider_id} ;;
   }
 
-  # join: athenadwh_claims_clone {
-  #   relationship: one_to_one
-  #   type: inner
-  #   sql_on: CASE
-  #             WHEN ${athenadwh_claims_clone.claim_appointment_id} IS NOT NULL
-  #             THEN ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id}
-  #             ELSE
-  #               ${athenadwh_claims_clone.patient_id} = COALESCE(${athenadwh_patients_clone.new_patient_id}, ${athenadwh_patients_clone.patient_id}) AND
-  #               ${care_request_flat.on_scene_date} = ${athenadwh_claims_clone.claim_service_date}::date
-  #             END ;;
-  # }
-
   join: athenadwh_claims_clone {
     relationship: one_to_one
    # type: inner
@@ -865,6 +853,13 @@ explore: care_requests {
     from: primary_payer_dimensions_clone
     relationship: many_to_one
     sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id} ;;
+  }
+
+  join: expected_allowable_corporate {
+    relationship: many_to_one
+    sql_on: ${markets.id} = ${expected_allowable_corporate.market_id} AND
+            ${insurance_coalese_crosswalk.custom_insurance_grouping} = ${expected_allowable_corporate.custom_insurance_grouping}  AND
+            ${athenadwh_claims_clone.service_month} = ${expected_allowable_corporate.claim_month_month} ;;
   }
 
 
