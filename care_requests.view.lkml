@@ -1478,6 +1478,17 @@ measure: distinct_day_of_week {
     sql: ${TABLE}.service_line_id ;;
   }
 
+  measure: count_no_asnwer_secondary_resolved_reason  {
+    type: count
+    label: "Count No Answer Secondary Resolved Type"
+    description: "Count for No Answer Secondary Resolved Type"
+    sql: ${secondary_resolved_reason} ;;
+    filters: {
+      field: secondary_resolved_reason
+      value: "No Answer"
+    }
+  }
+
 
   # ----- Sets of fields for drilling ------
   set: detail {
