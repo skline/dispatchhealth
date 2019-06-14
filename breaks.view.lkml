@@ -3,12 +3,14 @@ view: breaks {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -23,21 +25,23 @@ view: breaks {
 
   dimension_group: end {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
+      time_of_day,
       date,
       week,
       month,
       quarter,
       year
     ]
-    sql: ${TABLE}."end_time" ;;
+    sql: ${TABLE}."end_time" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
   dimension: market_break_config_id {
     type: number
-    # hidden: yes
+    hidden: yes
     sql: ${TABLE}."market_break_config_id" ;;
   }
 
@@ -48,20 +52,23 @@ view: breaks {
 
   dimension_group: start {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
+      time_of_day,
       date,
       week,
       month,
       quarter,
       year
     ]
-    sql: ${TABLE}."start_time" ;;
+    sql: ${TABLE}."start_time" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
