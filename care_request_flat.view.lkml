@@ -232,6 +232,12 @@ view: care_request_flat {
     value_format: "0.00"
   }
 
+  dimension: created_to_on_scene_minutes {
+    type: number
+    description: "The number of minutes between care request created time and on scene time"
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw})/60 -EXTRACT(EPOCH FROM ${created_raw})/60 ;;
+  }
+
   dimension: on_scene_time_tier {
     type: tier
     tiers: [10,20,30,40,50,60,70,80,90,100]
@@ -549,6 +555,14 @@ view: care_request_flat {
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${accepted_to_initial_eta_minutes} ;;
+  }
+
+  measure:  average_created_to_on_scene_minutes{
+    type: average_distinct
+    description: "The average minutes between created time and on on-scene time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${created_to_on_scene_minutes} ;;
   }
 
   measure: average_accepted_to_resolved_minutes{
