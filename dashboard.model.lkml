@@ -1152,6 +1152,7 @@ explore: cars {
 
 explore: operational_excellence_metrics {}
 explore: operational_excellence_app_screening {}
+explore: operational_excellence_csc_escalation {}
 
 explore: shift_planning_facts_clone {
   #view_label: "Shift Information"
