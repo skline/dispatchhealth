@@ -155,9 +155,6 @@ view: cpt_code_dimensions_clone {
     ${hernia_rp_reduction} OR ${joint_reduction} OR ${gastronomy_tube} OR ${abscess_drain} ;;
   }
 
-
-
-
   dimension: e_and_m_flag {
     label: "E&M CPT code flag"
     description: "Flag to indicate whether the CPT code is an E&M code"

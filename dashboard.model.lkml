@@ -313,7 +313,7 @@ explore: care_requests {
     relationship: one_to_many
     sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_collectibility_clone.claim_id} AND
             ${athenadwh_collectibility_clone.transaction_type} = 'PAYMENT' AND
-            ${athenadwh_collectibility_clone.transaction_created_datetime_date} < ${athenadwh_claims_clone.claim_service_date}::date + interval '10 month';;
+            ${athenadwh_collectibility_clone.transaction_created_datetime_date} < ${athenadwh_claims_clone.claim_service_date}::date + interval '9 month';;
   }
 
   join: athenadwh_social_history_clone {
@@ -1149,6 +1149,8 @@ explore: cars {
     sql_on: ${markets.id} = ${cars.market_id} ;;
   }
 }
+
+explore: operational_excellence_metrics {}
 
 explore: shift_planning_facts_clone {
   #view_label: "Shift Information"
