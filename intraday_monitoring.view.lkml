@@ -36,6 +36,11 @@ view: intraday_monitoring {
     sql: ${TABLE}.productivity_est ;;
   }
 
+  measure: diff_to_actual {
+    type: number
+    sql: max(${complete_est}) - ${care_request_flat.complete_count} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: []

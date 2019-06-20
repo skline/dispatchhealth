@@ -2499,5 +2499,18 @@ explore: expected_allowable_corporate {
     relationship: one_to_many
     sql_on: ${markets.id} = ${expected_allowable_corporate.market_id} ;;
   }
+}
 
+explore: intraday_monitoring {
+  join: markets {
+    sql_on: ${markets.name} =${intraday_monitoring.market} ;;
+  }
+  join: care_request_flat {
+    sql_on: (${care_request_flat.market_id} =${markets.id} or ${intraday_monitoring.market}='All')
+            and
+            ${care_request_flat.complete_date} =${intraday_monitoring.created_date} ;;
+  }
+}
+
+explore: intraday_monitoring_agg {
 }
