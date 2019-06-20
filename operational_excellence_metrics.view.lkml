@@ -181,6 +181,17 @@ view: operational_excellence_metrics {
     value_format: "0.00"
     type: number
   }
+
+  measure: avg_on_scene_time_minutes {
+    label: "Average minutes On-Scene"
+    description: "The avg number of minutes On-Scene"
+    type: average
+    sql: ${total_on_scene_time_minutes} ;;
+    value_format: "0.00"
+  }
+
+
+
   measure: sum_on_scene_time {
     description: "The sum of all on-scene times"
     value_format: "0.00"
@@ -258,4 +269,12 @@ view: operational_excellence_metrics {
     type: count_distinct
     sql: ${shift_team_id} ;;
   }
+  measure: sum_count_billable_est {
+    description: "sum of completed care requests OR on-scene escalations"
+    type: sum
+    sql: ${count_billable_est} ;;
+
+  }
+
+
 }
