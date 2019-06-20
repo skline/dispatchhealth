@@ -101,7 +101,8 @@ explore: care_requests {
   join: dea_schedule_ii_medications  {
     from: athenadwh_medication_clone
     relationship: many_to_one
-    sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1)) ;;
+    sql_on: UPPER(${athenadwh_prescriptions.clinical_order_type}) = UPPER(${dea_schedule_ii_medications.medication_name}) ;;
+    #sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1)) ;;
     #AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
   }
 
@@ -132,18 +133,6 @@ explore: care_requests {
     relationship: one_to_one
     sql_on:  ${athenadwh_clinical_encounters_clone.provider_id} = ${athenadwh_clinical_encounter_provider.clinical_provider_id} ;;
   }
-
-  # join: athenadwh_claims_clone {
-  #   relationship: one_to_one
-  #   type: inner
-  #   sql_on: CASE
-  #             WHEN ${athenadwh_claims_clone.claim_appointment_id} IS NOT NULL
-  #             THEN ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id}
-  #             ELSE
-  #               ${athenadwh_claims_clone.patient_id} = COALESCE(${athenadwh_patients_clone.new_patient_id}, ${athenadwh_patients_clone.patient_id}) AND
-  #               ${care_request_flat.on_scene_date} = ${athenadwh_claims_clone.claim_service_date}::date
-  #             END ;;
-  # }
 
   join: athenadwh_claims_clone {
     relationship: one_to_one
@@ -324,7 +313,7 @@ explore: care_requests {
     relationship: one_to_many
     sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_collectibility_clone.claim_id} AND
             ${athenadwh_collectibility_clone.transaction_type} = 'PAYMENT' AND
-            ${athenadwh_collectibility_clone.transaction_created_datetime_date} < ${athenadwh_claims_clone.claim_service_date}::date + interval '10 month';;
+            ${athenadwh_collectibility_clone.transaction_created_datetime_date} < ${athenadwh_claims_clone.claim_service_date}::date + interval '9 month';;
   }
 
   join: athenadwh_social_history_clone {
@@ -866,6 +855,13 @@ explore: care_requests {
     sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id} ;;
   }
 
+  join: expected_allowable_corporate {
+    relationship: many_to_one
+    sql_on: ${markets.id} = ${expected_allowable_corporate.market_id} AND
+            ${insurance_coalese_crosswalk.custom_insurance_grouping} = ${expected_allowable_corporate.custom_insurance_grouping}  AND
+            ${athenadwh_claims_clone.service_month} = ${expected_allowable_corporate.claim_month_month} ;;
+  }
+
 
   join: insurance_classifications {
     relationship: many_to_one
@@ -1119,6 +1115,17 @@ join: ga_pageviews_clone {
     relationship: many_to_one
     sql_on: ${ed_diversion_survey_response_clone.care_request_id} = ${visit_facts_clone.care_request_id} ;;
   }
+
+  join: breaks {
+    relationship: one_to_one
+    sql_on: ${breaks.shift_team_id} = ${shift_teams.id} ;;
+  }
+
+  join: market_break_configs {
+    relationship: many_to_one
+    sql_on: ${breaks.market_break_config_id} = ${market_break_configs.id};;
+  }
+
 }
 
 explore: shift_details {
@@ -1142,6 +1149,10 @@ explore: cars {
     sql_on: ${markets.id} = ${cars.market_id} ;;
   }
 }
+
+explore: operational_excellence_metrics {}
+explore: operational_excellence_app_screening {}
+explore: operational_excellence_csc_escalation {}
 
 explore: shift_planning_facts_clone {
   #view_label: "Shift Information"
@@ -2513,4 +2524,12 @@ explore: intraday_monitoring {
 }
 
 explore: intraday_monitoring_agg {
+}
+
+explore: expected_allowables_market_budget {
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.id} = ${expected_allowables_market_budget.markets_id} ;;
+  }
+
 }

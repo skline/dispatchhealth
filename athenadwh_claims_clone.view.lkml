@@ -46,6 +46,16 @@ view: athenadwh_claims_clone {
     sql: ${TABLE}.claim_service_date::date ;;
   }
 
+  dimension_group: service {
+    type: time
+    timeframes: [
+      date,
+      month,
+      year
+    ]
+    sql: ${TABLE}.claim_service_date::date ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [

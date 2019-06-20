@@ -66,6 +66,13 @@ view: care_requests {
   }
 
 
+  dimension: DHFU_follow_up {
+    type: yesno
+    description: "The string 'dhfu' occurs in Chief Complaint - Dispatch Health Follow Up (Does NOT included Post-Acute"
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' ;;
+  }
+
+
   measure: placeholder1 {
     type: number
     sql: NULL ;;
@@ -1469,6 +1476,17 @@ measure: distinct_day_of_week {
   dimension: service_line_id {
     type: number
     sql: ${TABLE}.service_line_id ;;
+  }
+
+  measure: count_no_asnwer_secondary_resolved_reason  {
+    type: count
+    label: "Count No Answer Secondary Resolved Type"
+    description: "Count for No Answer Secondary Resolved Type"
+    sql: ${secondary_resolved_reason} ;;
+    filters: {
+      field: secondary_resolved_reason
+      value: "No Answer"
+    }
   }
 
 

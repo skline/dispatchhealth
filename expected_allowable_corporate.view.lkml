@@ -3,12 +3,14 @@ view: expected_allowable_corporate {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
 
   dimension_group: claim_end {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       date,
@@ -39,6 +41,7 @@ view: expected_allowable_corporate {
 
   dimension_group: claim_start {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       date,
@@ -59,6 +62,7 @@ view: expected_allowable_corporate {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -83,11 +87,13 @@ view: expected_allowable_corporate {
 
   dimension: market_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."market_id" ;;
   }
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -104,6 +110,7 @@ view: expected_allowable_corporate {
     description: "The sum of all expected allowable amounts"
     type: sum
     sql: ${expected_allowable_total} ;;
+    value_format: "$#,##0.00"
   }
 
   measure: sum_claims {
@@ -112,8 +119,16 @@ view: expected_allowable_corporate {
     sql: ${claims_total} ;;
   }
 
+  measure: avg_expected_allowable {
+    type: number
+    description: "The average expected allowable from month end corporate finance"
+    sql: ${sum_expected_allowable} / ${sum_claims} ;;
+    value_format: "$0.00"
+  }
+
   measure: count {
     type: count
+    hidden: yes
     drill_fields: [id]
   }
 }

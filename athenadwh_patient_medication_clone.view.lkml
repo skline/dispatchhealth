@@ -31,6 +31,20 @@ view: athenadwh_patient_medication_clone {
     sql: ${TABLE}.created_datetime ;;
   }
 
+  dimension_group: created {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.created_at ;;
+  }
+
   dimension: deactivated_by {
     type: string
     sql: ${TABLE}.deactivated_by ;;
