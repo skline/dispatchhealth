@@ -30,4 +30,17 @@ view: operational_excellence_csc_escalation {
   dimension: count_distinct {
     type: number
   }
+  measure: sum_escalated_on_phone {
+    description: "The sum of all phone escalations"
+    type: sum
+    sql: ${escalated_on_phone_count} ;;
+  }
+
+  measure: sum_care_requests {
+    type: sum
+    description: "The sum of all care requests"
+    sql: ${count_distinct} ;;
+  }
+
+
 }
