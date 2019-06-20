@@ -202,6 +202,33 @@ view: operational_excellence_metrics {
     value_format: "0.00"
   }
 
+  measure: sum_shift_start_first_on_route {
+    label: "Sum Hours Between Shift Start and First On Route"
+    description: "The Sum of hours between shift starting and first on route"
+    type: sum_distinct
+    sql_distinct_key: ${shift_team_id} ;;
+    sql: ${shift_start_first_on_route_diff} ;;
+    value_format: "0.00"
+  }
+
+  measure: avg_shift_end_last_cr_diff_adj {
+    label: "Average Hours Between last Care Request and Shift End"
+    description: "The avg number of hours between the completion of the last care request and shift end"
+    type: average
+    sql: ${shift_end_last_cr_diff_adj} ;;
+    value_format: "0.00"
+  }
+
+  measure: sum_shift_end_last_cr_diff_adj {
+    label: "Sum of Hours Between last Care Request and Shift End"
+    description: "The sum of hours between the completion of the last care request and shift end"
+    type: sum_distinct
+    sql_distinct_key: ${shift_team_id} ;;
+    sql: ${shift_end_last_cr_diff_adj} ;;
+    value_format: "0.00"
+  }
+
+
   measure: avg_shift_start_first_on_route_baseline {
     label: "Average Hours Between Shift Start and First On Route (April 2019 Baseline)"
     description: "The avg number of hours between shift starting and first on route"
