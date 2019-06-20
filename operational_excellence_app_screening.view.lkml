@@ -9,7 +9,6 @@ view: operational_excellence_app_screening {
       column: escalated_on_phone_count { field: care_request_flat.escalated_on_phone_count }
       column: count_distinct {}
       column: created_month { field: care_request_flat.created_month }
-      column: market_name { field: markets.name }
       filters: {
         field: care_request_flat.created_date
         value: "2 months ago for 2 months"
@@ -17,6 +16,10 @@ view: operational_excellence_app_screening {
       filters: {
         field: care_request_flat.secondary_screening
         value: "Yes"
+      }
+      filters: {
+        field: care_requests.count_distinct
+        value: ">=12"
       }
     }
   }
