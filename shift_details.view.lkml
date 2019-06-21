@@ -62,7 +62,9 @@ view: shift_details {
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week,
+      day_of_month
     ]
     sql: ${TABLE}.local_actual_end_time ;;
   }
@@ -78,7 +80,9 @@ view: shift_details {
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week,
+      day_of_month
     ]
     sql: ${TABLE}.local_actual_start_time ;;
   }
@@ -93,7 +97,9 @@ view: shift_details {
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week,
+      day_of_month
     ]
     sql: ${TABLE}.local_expected_end_time ;;
   }
@@ -108,7 +114,9 @@ view: shift_details {
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week,
+      day_of_month
     ]
     sql: ${TABLE}.local_expected_start_time ;;
 
