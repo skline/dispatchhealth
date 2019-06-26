@@ -48,13 +48,28 @@ view: care_request_flat {
         insurances.package_id,
         callers.origin_phone,
         callers.contact_id,
-        cr.patient_id as patient_id
+        cr.patient_id as patient_id,
+        foc.first_on_scene_time
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
       LEFT JOIN care_request_statuses schedule
       ON cr.id = schedule.care_request_id AND schedule.name = 'scheduled'  and schedule.deleted_at is null
-
+      LEFT JOIN
+      (SELECT
+       cr.patient_id,
+       MIN(crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz) AS first_on_scene_time
+       FROM
+         care_requests cr
+         JOIN care_request_statuses crs
+           ON cr.id = crs.care_request_id
+         LEFT JOIN markets m
+           ON cr.market_id = m.id
+         LEFT JOIN looker_scratch.timezones t
+           ON m.sa_time_zone = t.rails_tz
+         WHERE crs.name = 'on_scene'
+         GROUP BY cr.patient_id) foc
+    ON cr.patient_id = foc.patient_id
       LEFT JOIN
         (SELECT care_request_id,
         name,
@@ -133,8 +148,8 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32, insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id;;
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date"]
@@ -1121,10 +1136,35 @@ view: care_request_flat {
     sql: ${TABLE}.on_scene_date ;;
   }
 
-  # measure: average_on_scene_hour {
-  #   type: average
-  #   sql: ${on_scene_time_of_day} ;;
-  # }
+  dimension_group: first_visit {
+    type: time
+    description: "The first local date/time that the patient was seen by DispatchHealth"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,
+      quarter,
+      hour,
+      year
+    ]
+    sql: ${TABLE}.first_on_scene_time ;;
+  }
+
+  dimension: within_30_days_first_visit {
+    type: yesno
+    description: "A flag indicating that the visit is within 30 days of the first visit"
+    sql: ${on_scene_raw} <= ${first_visit_raw} + interval '30 day' ;;
+  }
+
 
   dimension: first_half_of_month_on_scene {
     type: yesno
