@@ -106,7 +106,7 @@ view: intraday_care_requests {
 
   dimension: zipcode {
     type: string
-    sql: left(${TABLE}.meta_data ->> 'zicpode',5);;
+    sql: left(${TABLE}.meta_data ->> 'zipcode',5);;
   }
 
   dimension: smfr_care_request{

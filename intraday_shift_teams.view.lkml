@@ -217,7 +217,7 @@ view: intraday_shift_teams {
     }
     filters: {
       field: intraday_care_requests.smfr_care_request
-      value: "no"
+      value: "yes"
     }
   }
 
