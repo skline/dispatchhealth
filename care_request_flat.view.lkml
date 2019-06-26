@@ -1515,6 +1515,19 @@ view: care_request_flat {
     sql: EXTRACT(EPOCH FROM ${shift_end_raw} - ${shift_start_raw})/3600 ;;
   }
 
+  dimension: end_of_shift_dead_time {
+    type: number
+    description: "The number of hours between last updated and shift end"
+    sql: (EXTRACT(EPOCH FROM ${shift_end_raw}) - EXTRACT(EPOCH FROM ${shifts_end_of_shift_times.last_update_time_raw}))/3600 ;;
+    value_format: "0.00"
+  }
+
+  dimension: end_of_shift_dead_time_45_mins {
+    type: yesno
+    description: "A flag indicating that the end of shift dead time > 45 minutes"
+    sql: ${end_of_shift_dead_time} >= 0.75 ;;
+  }
+
   dimension: shift_team_id  {
     type: number
     sql:${TABLE}.shift_team_id ;;
