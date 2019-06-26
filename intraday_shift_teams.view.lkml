@@ -200,6 +200,28 @@ view: intraday_shift_teams {
     }
   }
 
+  measure: accepted_elgible_smfr {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: intraday_care_requests.accepted
+      value: "yes"
+    }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "no"
+    }
+    filters: {
+      field: intraday_care_requests.complete
+      value: "no"
+    }
+    filters: {
+      field: intraday_care_requests.smfr_care_request
+      value: "no"
+    }
+  }
+
+
   measure: accepted_resolved_crs {
     type: count_distinct
     sql: ${intraday_care_requests.care_request_id};;

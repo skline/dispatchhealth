@@ -104,6 +104,16 @@ view: intraday_care_requests {
     sql: ${TABLE}.meta_data ->> 'service_line_id' ;;
   }
 
+  dimension: zipcode {
+    type: string
+    sql: left(${TABLE}.meta_data ->> 'zicpode',5);;
+  }
+
+  dimension: smfr_care_request{
+    type: yesno
+    sql:  ${zipcode} in('80122', '80123', '80124', '80125', '80126', '80128', '80134', '80135', '80138', '80210', '80222', '80224', '80231', '80235', '80237', '80013', '80014', '80015', '80016', '80018', '80104', '80110', '80111', '80112', '80120', '80121');;
+  }
+
 
   dimension: care_request_location {
     type: location
@@ -250,6 +260,33 @@ view: intraday_care_requests {
       field: stuck_inqueue
       value: "no"
     }
+
+  }
+
+  measure: inqueue_smfr_elgible {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: smfr_care_request
+      value: "yes"
+    }
+    filters: {
+      field: stuck_inqueue
+      value: "no"
+    }
+
 
   }
 
