@@ -1528,6 +1528,24 @@ view: care_request_flat {
     sql: ${end_of_shift_dead_time} >= 0.75 ;;
   }
 
+measure: sum_end_of_shift_dead_time {
+  type: sum_distinct
+  description: "A sum of end of shift dead time from last updated to shift end"
+  sql_distinct_key: ${care_requests.shift_team_id} ;;
+  sql: ${end_of_shift_dead_time} ;;
+}
+
+measure:  count_end_of_shift_dead_time_45_mins {
+  type:  count_distinct
+  description: "count of shifts where the end of shift dead time > 45 minutes"
+  sql: ${care_requests.shift_team_id}  ;;
+  filters: {
+    field: end_of_shift_dead_time_45_mins
+    value: "yes"
+  }
+}
+
+
   dimension: shift_team_id  {
     type: number
     sql:${TABLE}.shift_team_id ;;
