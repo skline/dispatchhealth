@@ -50,6 +50,7 @@ view: athenadwh_claims_clone {
     type: time
     timeframes: [
       date,
+      week,
       month,
       year
     ]
