@@ -736,7 +736,7 @@ explore: care_requests {
   join: csc_created {
     from: users
     relationship: one_to_one
-    sql_on:  ${care_request_created.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
+    sql_on:  ${care_request_requested.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
   }
 
   join: secondary_screening_provider {
