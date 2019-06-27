@@ -736,7 +736,7 @@ explore: care_requests {
   join: csc_created {
     from: users
     relationship: one_to_one
-    #sql_on:  ${care_request_statuses.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
+    sql_on:  ${care_request_created.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
   }
 
   join: secondary_screening_provider {
@@ -854,6 +854,36 @@ explore: care_requests {
   join: insurance_classifications {
     relationship: many_to_one
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
+  }
+
+  join: care_request_complete{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+  }
+
+  join: care_request_requested{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
+  }
+
+  join: care_request_accepted{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+  }
+
+  join: care_request_archived{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+  }
+
+  join: care_request_scheduled{
+    relationship: one_to_many
+    from: care_request_statuses
+    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
 
   join: care_request_flat {
