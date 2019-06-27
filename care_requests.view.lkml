@@ -3,6 +3,8 @@ view: care_requests {
 
   dimension: id {
     primary_key: yes
+    description: "The care request ID"
+    alias: [care_request_id]
     type: number
     sql: ${TABLE}.id ;;
   }
@@ -1335,10 +1337,7 @@ measure: distinct_day_of_week {
     type: string
     sql:array_agg(distinct concat(${care_request_flat.archive_comment}, ${care_request_flat.complete_comment}))::text ;;
   }
-  measure: min_complete_timestamp_mountain {
-    type: date_time
-    sql: min(${care_request_complete.created_mountain_raw}) ;;
-  }
+
   dimension: resolved_reason_full {
     type: string
     sql: coalesce(${care_request_flat.complete_comment}, ${care_request_flat.archive_comment}) ;;

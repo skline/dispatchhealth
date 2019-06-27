@@ -38,19 +38,6 @@ explore: care_requests {
     sql_on: ${athenadwh_patient_insurances_clone.insurance_package_id} = ${athenadwh_payers_clone.insurance_package_id} ;;
   }
 
-  # join: athenadwh_clinical_encounters_clone {
-  #   relationship:  one_to_many
-  #   sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-  #   (CASE
-  #   WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
-  #   ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
-  #   WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
-  #   (${athenadwh_clinical_encounters_clone.encounter_date}::date  >=
-  #   ${care_request_flat.on_scene_date}::date - interval '1' day and
-  #   ${athenadwh_clinical_encounters_clone.encounter_date}::date  <=
-  #   ${care_request_flat.on_scene_date} + interval '1' day)
-  #   END) ;;
-  # }
 
   join: athenadwh_clinical_encounters_clone {
     relationship:  one_to_one
@@ -866,36 +853,6 @@ explore: care_requests {
   join: insurance_classifications {
     relationship: many_to_one
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
-  }
-
-  join: care_request_complete{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-  }
-
-  join: care_request_requested{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
-  }
-
-  join: care_request_accepted{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-  }
-
-  join: care_request_archived{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-  }
-
-  join: care_request_scheduled{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_scheduled.care_request_id} = ${care_requests.id} and ${care_request_scheduled.name}='scheduled';;
   }
 
   join: care_request_flat {
