@@ -214,8 +214,10 @@ view: athenadwh_transactions_clone {
   }
 
   dimension: is_valid_claim {
+    description: "Claim ID is not null and expected allowed amount is greater than 0.01"
     type: yesno
-    sql: ${athenadwh_valid_claims.claim_id} IS NOT NULL ;;
+    sql: ${athenadwh_valid_claims.claim_id} IS NOT NULL AND
+         ${expected_allowed_amount}::float > 0.01 ;;
   }
 
   # measure: total_expected_allowable {
