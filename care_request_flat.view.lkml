@@ -1540,9 +1540,8 @@ view: care_request_flat {
   }
 
 measure: sum_end_of_shift_dead_time {
-  type: sum_distinct
+  type: sum
   description: "A sum of end of shift dead time from last updated to shift end"
-  sql_distinct_key: ${care_requests.shift_team_id} ;;
   sql: ${end_of_shift_dead_time} ;;
 }
 
