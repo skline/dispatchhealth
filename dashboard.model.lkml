@@ -732,10 +732,11 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
+  # 6/27/2019 - DE - This join used to be on care_request_requested, which I removed.  Not sure what this is going to break
   join: csc_created {
     from: users
     relationship: one_to_one
-    sql_on:  ${care_request_requested.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
+    #sql_on:  ${care_request_statuses.user_id} = ${csc_created.id} and lower(${care_requests.request_type}) ='phone';;
   }
 
   join: secondary_screening_provider {
