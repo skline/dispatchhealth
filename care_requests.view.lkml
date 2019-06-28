@@ -1429,7 +1429,7 @@ measure: distinct_day_of_week {
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: ${care_request_flat.complete_comment} LIKE '%Referred - Phone Triage%' ;;
+    sql: ${care_request_flat.complete_comment} SIMILAR TO '(%Referred via Phone%|%Referred - Phone Triage%)' ;;
   }
 
   dimension: escalated_on_phone_reason {
