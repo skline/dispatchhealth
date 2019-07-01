@@ -39,6 +39,14 @@ view: breaks {
     sql: ${TABLE}."end_time" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
   }
 
+  dimension: break_end_decimal {
+    description: "The local break end time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    type: number
+    value_format: "0.00"
+    sql: (CAST(EXTRACT(HOUR FROM ${end_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${end_raw} ) AS FLOAT)) / 60) ;;
+  }
+
   dimension: market_break_config_id {
     type: number
     hidden: yes
@@ -64,6 +72,14 @@ view: breaks {
       year
     ]
     sql: ${TABLE}."start_time" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
+  }
+
+  dimension: break_start_decimal {
+    description: "The local break start time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    type: number
+    value_format: "0.00"
+    sql: (CAST(EXTRACT(HOUR FROM ${start_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${start_raw} ) AS FLOAT)) / 60) ;;
   }
 
   dimension_group: updated {
