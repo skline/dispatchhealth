@@ -97,7 +97,7 @@ view: athenadwh_transactions_clone {
   measure: total_payments {
     type: sum
     sql: ${payment_amount} ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: payment_transaction
       value: "yes"
