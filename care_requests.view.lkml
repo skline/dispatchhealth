@@ -781,9 +781,14 @@ view: care_requests {
 
   measure: count_complete_visit_with_procedures {
     type: count_distinct
+    description: "The count of completed visits where the CPT code group is 'Procedure'"
     sql: ${id} ;;
     filters: {
-      field: complete_visit_with_procedure
+      field: athenadwh_procedure_codes_clone.procedure_code_group
+      value: "Procedure"
+    }
+    filters: {
+      field: complete_visit
       value: "yes"
     }
   }
