@@ -78,7 +78,7 @@ view: athenadwh_transactions_clone {
   measure: total_oop_paid {
     type: sum
     sql: ${payment_amount} ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: patient_payment
       value: "yes"
@@ -88,6 +88,7 @@ view: athenadwh_transactions_clone {
   measure: total_revenue {
     type: sum
     sql: ${amount} ;;
+    value_format: "$#,##0.00"
     filters: {
       field: payment_transaction
       value: "no"
@@ -107,7 +108,7 @@ view: athenadwh_transactions_clone {
   measure: total_patient_responsibility {
     type: sum
     sql: ${amount} ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: patient_responsibility
       value: "yes"
@@ -117,7 +118,7 @@ view: athenadwh_transactions_clone {
   measure: total_patient_responsibility_copay {
     type: sum
     sql: ${amount} ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: patient_responsibility
       value: "yes"
@@ -131,7 +132,7 @@ view: athenadwh_transactions_clone {
   measure: total_patient_responsibility_deductible {
     type: sum
     sql: ${amount} ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: patient_responsibility
       value: "yes"
@@ -145,7 +146,7 @@ view: athenadwh_transactions_clone {
   measure: total_patient_responsibility_coinsurance {
     type: sum
     sql: ${amount} ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: patient_responsibility
       value: "yes"
@@ -159,7 +160,7 @@ view: athenadwh_transactions_clone {
   measure: total_patient_responsibility_without_secondary {
     type: sum
     sql: ${amount} ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: patient_responsibility_without_secondary
       value: "yes"
