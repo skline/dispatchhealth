@@ -228,11 +228,7 @@ view: care_request_flat {
   dimension: created_to_resolved_minutes {
     type: number
     description: "The number of minutes between created time and archived time"
-    sql: CASE
-          WHEN ABS((EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0) < 241
-          THEN (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0
-          ELSE NULL
-        END ;;
+    sql: (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0 ;;
     value_format: "0.00"
   }
 
