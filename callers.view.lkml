@@ -3,17 +3,20 @@ view: callers {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension: contact_id {
     type: string
+    hidden: yes
     sql: ${TABLE}.contact_id ;;
   }
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -28,6 +31,7 @@ view: callers {
 
   dimension: dh_phone {
     type: string
+    hidden: yes
     sql: ${TABLE}.dh_phone ;;
   }
 
@@ -48,6 +52,7 @@ view: callers {
 
   dimension: origin_phone {
     type: string
+    hidden: yes
     sql: ${TABLE}.origin_phone ;;
   }
 
@@ -58,6 +63,7 @@ view: callers {
 
   dimension: skill_name {
     type: string
+    hidden: yes
     sql: ${TABLE}.skill_name ;;
   }
 
@@ -68,6 +74,7 @@ view: callers {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

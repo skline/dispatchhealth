@@ -720,12 +720,12 @@ explore: care_requests {
     sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'emt' ;;
   }
 
-  join: app_names {
-    view_label: "Advanced Practice Provider Names"
-    from: users
-    relationship: one_to_one
-    sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'advanced practice provider' ;;
-  }
+  # join: app_names {
+  #   view_label: "Advanced Practice Provider Names"
+  #   from: users
+  #   relationship: one_to_one
+  #   sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'advanced practice provider' ;;
+  # }
 
   join: risk_assessments {
     relationship: one_to_one

@@ -3410,6 +3410,7 @@ end  ;;
 
   dimension: ed_diversion {
     label: "ED Diversion"
+    description: "The probability of an ED diversion based on the diversion category"
     type: number
     sql:  CASE
       WHEN ${diversion_category} = 'ed_same_complaint' THEN  0.0
@@ -3438,6 +3439,7 @@ end  ;;
 
   dimension: 911_diversion {
     type: number
+    description: "The probability of a 911 diversion based on the diversion category"
     sql:  CASE
       WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
       WHEN ${diversion_category} = 'escalated' THEN  0
