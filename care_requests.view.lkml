@@ -425,6 +425,25 @@ view: care_requests {
     }
   }
 
+  measure: count_visits_within_30_days_first_pafu_visit {
+    type: count
+    description: "Count of patient visits within 30 days of the first post-acute visit"
+    sql: ${patient_id} ;;
+
+    filters: {
+      field: care_request_flat.within_30_days_first_visit
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.first_visit_pafu
+      value: "yes"
+    }
+  }
+
   measure: count_distinct_intended_care_requests {
     description: "Count of distinct care requests where 911 diversions have been removed"
     type: count_distinct

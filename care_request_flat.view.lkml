@@ -1165,16 +1165,11 @@ view: care_request_flat {
     sql: ${on_scene_raw} <= ${first_visit_raw} + interval '30 day' ;;
   }
 
-  # measure: count_visits_within_30_days_first_visit {
-  #   type: count_distinct
-  #   description: "Count of patient visits within 30 days of the first visit"
-  #   sql: ${care_request_id} ;;
-
-  # filters: {
-  #   field: within_30_days_first_visit
-  #   value: "yes"
-  # }
-  # }
+  dimension: first_visit_pafu {
+    type: yesno
+    description: "A flag indicating that the first visit is a post-acute follow up"
+    sql: ${first_visit_raw} IS NOT NULL AND ${care_requests.post_acute_follow_up} ;;
+  }
 
 
   dimension: first_half_of_month_on_scene {
