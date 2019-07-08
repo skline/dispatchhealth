@@ -1,6 +1,6 @@
 view: marketing_data_processed {
-    derived_table: {
-      sql:
+derived_table: {
+sql:
       SELECT
         lower(coalesce(invoca_clone.utm_source, ga_pageviews_full_clone.source, marketing_cost_clone.type))  AS "source_final",
         lower(coalesce(adwords_campaigns_clone.campaign_name,  marketing_cost_clone.campaign_name, invoca_clone.utm_campaign, ga_pageviews_full_clone.campaign))  AS "campaign_final",
@@ -42,24 +42,24 @@ LEFT JOIN looker_scratch.ad_groups_clone  AS ad_groups_clone ON ga_adwords_stats
 FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON lower((lower(coalesce(invoca_clone.utm_source, ga_pageviews_full_clone.source, marketing_cost_clone.type)))) = lower(marketing_cost_clone.type)
     and (DATE(ga_pageviews_full_clone.timestamp_mst )) =(DATE(marketing_cost_clone.date ))
     and lower((lower(coalesce(invoca_clone.utm_medium, ga_pageviews_full_clone.medium, 'cpc'))))  in('cpc', 'paid search', 'paidsocial', 'ctr', 'image_carousel', 'static_image', 'display', 'nativedisplay')
-    and lower((lower(coalesce(ad_groups_clone.ad_group_name, (coalesce(invoca_clone.utm_content, (split_part(substring(ga_pageviews_full_clone.full_url from 'utm_content=\w+'), '=', 2)))), (lower(marketing_cost_clone.ad_group_name)))))) = lower((lower(marketing_cost_clone.ad_group_name)))
-    and lower((lower(coalesce(adwords_campaigns_clone.campaign_name,  marketing_cost_clone.campaign_name, invoca_clone.utm_campaign, ga_pageviews_full_clone.campaign)))) = lower(marketing_cost_clone.campaign_name)
+    and lower((lower(coalesce(ad_groups_clone.ad_group_name, (coalesce(invoca_clone.utm_content, (split_part(substring(ga_pageviews_full_clone.full_url from 'utm_content=\w+'), '=', 2)))))))) = lower((lower(marketing_cost_clone.ad_group_name)))
+    and lower((lower(coalesce(adwords_campaigns_clone.campaign_name, invoca_clone.utm_campaign, ga_pageviews_full_clone.campaign)))) = lower(marketing_cost_clone.campaign_name)
     ;;
-      sql_trigger_value: select sum(timevalue)
-from
-(select count(*) as timevalue
-from looker_scratch.ga_pageviews_clone
-union all
-select count(*)  as timevalue
-from looker_scratch.invoca_clone
-union all
-select count(*) as timevalue
-from looker_scratch.marketing_cost_clone
-union all
-select extract(epoch from max(timestamp_mst))::float/10000.0
-from looker_scratch.ga_pageviews_clone
-)lq;;
-      indexes: ["marketing_time"]
+    sql_trigger_value: select sum(timevalue)
+      from
+      (select count(*) as timevalue
+      from looker_scratch.ga_pageviews_clone
+      union all
+      select count(*)  as timevalue
+      from looker_scratch.invoca_clone
+      union all
+      select count(*) as timevalue
+      from looker_scratch.marketing_cost_clone
+      union all
+      select extract(epoch from max(timestamp_mst))::float/10000.0
+      from looker_scratch.ga_pageviews_clone
+      )lq;;
+    indexes: ["marketing_time"]
   }
 
   dimension: source_final {
@@ -297,13 +297,13 @@ dimension: content_final {
 
   dimension: market_id{
     type: number
-    sql: case when ${care_requests.market_id} is not null then ${care_requests.market_id}
+    sql: case when ${marketing_cost_market_id} is not null then ${marketing_cost_market_id}
+              when ${care_requests.market_id} is not null then ${care_requests.market_id}
               when ${web_care_requests.market_id} is not null then ${web_care_requests.market_id}
               when ${invoca_market_id} is not null then ${invoca_market_id}
-              when ${marketing_cost_market_id} is not null then ${marketing_cost_market_id}
               when ${ga_geodata_clone.market_id} is not null then ${ga_geodata_clone.market_id}
               when ${pageview_market_id} is not null then ${pageview_market_id}
-              else null end
+         else null end
               ;;
   }
 
