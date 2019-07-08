@@ -3,12 +3,14 @@ view: athenadwh_claims_clone {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension: claim_appointment_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.claim_appointment_id ;;
   }
 
@@ -33,11 +35,13 @@ view: athenadwh_claims_clone {
 
   dimension: claim_primary_patient_ins_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.claim_primary_patient_ins_id ;;
   }
 
   dimension: claim_secondary_patient_ins_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.claim_secondary_patient_ins_id ;;
   }
 
@@ -50,6 +54,7 @@ view: athenadwh_claims_clone {
     type: time
     timeframes: [
       date,
+      week,
       month,
       year
     ]
@@ -58,6 +63,7 @@ view: athenadwh_claims_clone {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -72,6 +78,7 @@ view: athenadwh_claims_clone {
 
   dimension: feed_dates {
     type: string
+    hidden: yes
     sql: ${TABLE}.feed_dates ;;
   }
 
@@ -97,6 +104,7 @@ view: athenadwh_claims_clone {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

@@ -85,9 +85,10 @@ view: risk_assessments {
 
   dimension: risk_category {
     type: string
+    description: "0 - 5.4 = Green, 5.5 - 9.9 = Yellow, 10+ = Red"
     sql: CASE
-          WHEN ${score} >= 0 AND ${score} <= 5 THEN 'Green - Low Risk'
-          WHEN ${score} > 5 AND ${score} < 10 THEN 'Yellow - Medium Risk'
+          WHEN ${score} >= 0 AND ${score} < 5.5 THEN 'Green - Low Risk'
+          WHEN ${score} >= 5.5 AND ${score} < 10 THEN 'Yellow - Medium Risk'
           WHEN ${score} >= 10 THEN 'Red - High Risk'
           ELSE 'Unknown'
         END ;;

@@ -1,8 +1,10 @@
 view: addresses {
   sql_table_name: public.addresses ;;
+  label: "Address of Care Request"
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}.id ;;
   }
@@ -14,6 +16,7 @@ view: addresses {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -37,14 +40,10 @@ view: addresses {
   }
 
   dimension: care_request_location {
+    description: "The Latitude/Longitude combination of the care request (used for maps)"
     type: location
     sql_latitude:${latitude} ;;
     sql_longitude:${longitude} ;;
-  }
-
-  measure: count_unique_locations {
-    type: count_distinct
-    sql: ${care_request_location} ;;
   }
 
   dimension: state {
@@ -69,6 +68,7 @@ view: addresses {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -87,6 +87,7 @@ view: addresses {
   }
 
   dimension: zipcode_short {
+    label: "Five Digit Zip Code"
     type: zipcode
     sql: left(${zipcode}, 5) ;;
   }

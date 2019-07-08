@@ -228,11 +228,7 @@ view: care_request_flat {
   dimension: created_to_resolved_minutes {
     type: number
     description: "The number of minutes between created time and archived time"
-    sql: CASE
-          WHEN ABS((EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0) < 241
-          THEN (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0
-          ELSE NULL
-        END ;;
+    sql: (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0 ;;
     value_format: "0.00"
   }
 
@@ -1165,6 +1161,12 @@ view: care_request_flat {
     sql: ${on_scene_raw} <= ${first_visit_raw} + interval '30 day' ;;
   }
 
+  dimension: first_visit_pafu {
+    type: yesno
+    description: "A flag indicating that the first visit is a post-acute follow up"
+    sql: ${first_visit_raw} IS NOT NULL AND ${care_requests.post_acute_follow_up} ;;
+  }
+
 
   dimension: first_half_of_month_on_scene {
     type: yesno
@@ -1514,6 +1516,36 @@ view: care_request_flat {
     type: number
     sql: EXTRACT(EPOCH FROM ${shift_end_raw} - ${shift_start_raw})/3600 ;;
   }
+
+  dimension: end_of_shift_dead_time {
+    type: number
+    description: "The number of hours between last updated and shift end"
+    sql: (EXTRACT(EPOCH FROM ${shift_end_raw}) - EXTRACT(EPOCH FROM ${shifts_end_of_shift_times.last_update_time_raw}))/3600 ;;
+    value_format: "0.00"
+  }
+
+  dimension: end_of_shift_dead_time_45_mins {
+    type: yesno
+    description: "A flag indicating that the end of shift dead time > 45 minutes"
+    sql: ${end_of_shift_dead_time} >= 0.75 ;;
+  }
+
+measure: sum_end_of_shift_dead_time {
+  type: sum
+  description: "A sum of end of shift dead time from last updated to shift end"
+  sql: ${end_of_shift_dead_time} ;;
+}
+
+measure:  count_end_of_shift_dead_time_45_mins {
+  type:  count_distinct
+  description: "count of shifts where the end of shift dead time > 45 minutes"
+  sql: ${care_requests.shift_team_id}  ;;
+  filters: {
+    field: end_of_shift_dead_time_45_mins
+    value: "yes"
+  }
+}
+
 
   dimension: shift_team_id  {
     type: number
@@ -2174,7 +2206,7 @@ view: care_request_flat {
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: (${archive_comment} LIKE '%Referred - Phone Triage%' or  ${archive_comment} LIKE '%Referred via Phone%') and not ${booked_shaping_placeholder_resolved};;
+    sql: (${archive_comment} SIMILAR TO '(%Referred via Phone%|%Referred - Phone Triage%)') and not ${booked_shaping_placeholder_resolved};;
   }
 
   dimension: escalated_on_phone_ed {
@@ -3378,6 +3410,7 @@ end  ;;
 
   dimension: ed_diversion {
     label: "ED Diversion"
+    description: "The probability of an ED diversion based on the diversion category"
     type: number
     sql:  CASE
       WHEN ${diversion_category} = 'ed_same_complaint' THEN  0.0
@@ -3406,6 +3439,7 @@ end  ;;
 
   dimension: 911_diversion {
     type: number
+    description: "The probability of a 911 diversion based on the diversion category"
     sql:  CASE
       WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
       WHEN ${diversion_category} = 'escalated' THEN  0

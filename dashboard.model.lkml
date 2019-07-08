@@ -38,19 +38,6 @@ explore: care_requests {
     sql_on: ${athenadwh_patient_insurances_clone.insurance_package_id} = ${athenadwh_payers_clone.insurance_package_id} ;;
   }
 
-  # join: athenadwh_clinical_encounters_clone {
-  #   relationship:  one_to_many
-  #   sql_on: ${patients.ehr_id} = ${athenadwh_clinical_encounters_clone.patient_id}::varchar AND
-  #   (CASE
-  #   WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NOT NULL THEN
-  #   ${athenadwh_clinical_encounters_clone.appointment_id}::varchar = ${care_requests.ehr_id}
-  #   WHEN ${athenadwh_clinical_encounters_clone.appointment_id} IS NULL THEN
-  #   (${athenadwh_clinical_encounters_clone.encounter_date}::date  >=
-  #   ${care_request_flat.on_scene_date}::date - interval '1' day and
-  #   ${athenadwh_clinical_encounters_clone.encounter_date}::date  <=
-  #   ${care_request_flat.on_scene_date} + interval '1' day)
-  #   END) ;;
-  # }
 
   join: athenadwh_clinical_encounters_clone {
     relationship:  one_to_one
@@ -733,18 +720,19 @@ explore: care_requests {
     sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'emt' ;;
   }
 
-  join: app_names {
-    view_label: "Advanced Practice Provider Names"
-    from: users
-    relationship: one_to_one
-    sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'advanced practice provider' ;;
-  }
+  # join: app_names {
+  #   view_label: "Advanced Practice Provider Names"
+  #   from: users
+  #   relationship: one_to_one
+  #   sql_on: ${users.id} = ${provider_profiles.user_id} AND ${provider_profiles.position} = 'advanced practice provider' ;;
+  # }
 
   join: risk_assessments {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
+  # 6/27/2019 - DE - This join used to be on care_request_requested, which I removed.  Not sure what this is going to break
   join: csc_created {
     from: users
     relationship: one_to_one

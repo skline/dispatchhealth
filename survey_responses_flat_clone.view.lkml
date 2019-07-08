@@ -126,7 +126,12 @@ view: survey_responses_flat_clone {
   dimension: answer_selection_dh_alternative {
     label: "Selected Value Alternative to DH"
     type: string
-    sql: ${TABLE}.alternative_dh_response ;;
+    sql: CASE
+          --WHEN ${alternative_dh_respondent} AND ${TABLE}.alternative_dh_response = 'Emergency Room' THEN ${TABLE}.alternative_dh_response
+          --WHEN ${alternative_dh_respondent} AND ${TABLE}.alternative_dh_response <> 'Emergency Room' THEN 'Other'
+          WHEN ${alternative_dh_respondent} THEN ${TABLE}.alternative_dh_response
+          ELSE 'No Survey Response'
+        END ;;
   }
 
   dimension: answer_selection_overall {

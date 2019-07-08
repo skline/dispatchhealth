@@ -3,12 +3,14 @@ view: bill_processors {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension: billing_option {
     type: string
+    hidden: yes
     sql: ${TABLE}.billing_option ;;
   }
 
@@ -19,16 +21,19 @@ view: bill_processors {
 
   dimension: checked_billing_fields {
     type: string
+    hidden: yes
     sql: ${TABLE}.checked_billing_fields ;;
   }
 
   dimension: checked_billing_fields_counts {
     type: string
+    hidden: yes
     sql: ${TABLE}.checked_billing_fields_counts ;;
   }
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -72,6 +77,7 @@ view: bill_processors {
 
   dimension: scrubbed_flag {
     type: yesno
+    hidden: yes
     sql: ${sent_raw} IS NOT NULL ;;
   }
 
@@ -100,11 +106,13 @@ view: bill_processors {
 
   dimension: settle_case {
     type: yesno
+    hidden: yes
     sql: ${TABLE}.settle_case ;;
   }
 
   dimension_group: settle {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -119,16 +127,19 @@ view: bill_processors {
 
   dimension: settle_notes {
     type: string
+    hidden: yes
     sql: ${TABLE}.settle_notes ;;
   }
 
   dimension: settled_by {
     type: string
+    hidden: yes
     sql: ${TABLE}.settled_by ;;
   }
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -143,11 +154,13 @@ view: bill_processors {
 
   dimension: user_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.user_id ;;
   }
 
   measure: count {
     type: count
+    hidden: yes
     drill_fields: [id]
   }
 }

@@ -10,6 +10,7 @@ view: markets {
 
   dimension: id_adj {
     type: string
+    description: "Market ID where WMFR is included as part of Denver (159)"
     sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 159
       else ${id} end;;
   }
@@ -27,6 +28,7 @@ view: markets {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -41,16 +43,19 @@ view: markets {
 
   dimension: enabled {
     type: yesno
+    hidden: yes
     sql: ${TABLE}.enabled ;;
   }
 
   dimension: enroute_audio {
     type: string
+    hidden: yes
     sql: ${TABLE}.enroute_audio ;;
   }
 
   dimension: humanity_id {
     type: string
+    hidden: yes
     sql: ${TABLE}.humanity_id ;;
   }
 
@@ -121,6 +126,7 @@ view: markets {
 
   dimension: name_adj {
     type: string
+    description: "Market name where WMFR is included as part of Denver"
     sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
     else ${name} end;;
   }
@@ -133,11 +139,13 @@ view: markets {
 
   dimension: old_close_at {
     type: string
+    hidden: yes
     sql: ${TABLE}.old_close_at ;;
   }
 
   dimension: old_open_at {
     type: string
+    hidden: yes
     sql: ${TABLE}.old_open_at ;;
   }
 
@@ -163,6 +171,7 @@ view: markets {
 
   dimension: service_area_image {
     type: string
+    hidden: yes
     sql: ${TABLE}.service_area_image ;;
   }
 
@@ -173,6 +182,7 @@ view: markets {
 
   dimension: short_name_adj {
     type: string
+    description: "Market short name where WMFR is included in Denver"
     sql: case when ${short_name} = 'WMFR' then 'DEN'
       else ${short_name} end;;
   }
@@ -184,6 +194,7 @@ view: markets {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -205,12 +216,12 @@ view: markets {
     type: count
     drill_fields: [id, name, provider_group_name, short_name, care_requests.count]
   }
-  measure: digital_adjusted {
-    type: number
-    sql: ${care_request_complete.count_distinct}+${incontact_spot_check_by_market.spot_check_care_requests} ;;
-  }
-  measure: non_digital_adjusted {
-    type: number
-    sql: ${care_request_complete.count_distinct} - ${incontact_spot_check_by_market.spot_check_care_requests} ;;
-  }
+  # measure: digital_adjusted {
+  #   type: number
+  #   sql: ${care_request_complete.count_distinct}+${incontact_spot_check_by_market.spot_check_care_requests} ;;
+  # }
+  # measure: non_digital_adjusted {
+  #   type: number
+  #   sql: ${care_request_complete.count_distinct} - ${incontact_spot_check_by_market.spot_check_care_requests} ;;
+  # }
 }

@@ -3,6 +3,8 @@ view: care_requests {
 
   dimension: id {
     primary_key: yes
+    description: "The care request ID"
+    alias: [care_request_id]
     type: number
     sql: ${TABLE}.id ;;
   }
@@ -408,6 +410,40 @@ view: care_requests {
     sql: ${patient_id} ;;
   }
 
+  measure: count_visits_within_30_days_first_visit {
+    type: count
+    description: "Count of patient visits within 30 days of the first visit"
+    sql: ${patient_id} ;;
+
+    filters: {
+      field: care_request_flat.within_30_days_first_visit
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_visits_within_30_days_first_pafu_visit {
+    type: count
+    description: "Count of patient visits within 30 days of the first post-acute visit"
+    sql: ${patient_id} ;;
+
+    filters: {
+      field: care_request_flat.within_30_days_first_visit
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.first_visit_pafu
+      value: "yes"
+    }
+  }
+
   measure: count_distinct_intended_care_requests {
     description: "Count of distinct care requests where 911 diversions have been removed"
     type: count_distinct
@@ -779,9 +815,14 @@ view: care_requests {
 
   measure: count_complete_visit_with_procedures {
     type: count_distinct
+    description: "The count of completed visits where the CPT code group is 'Procedure'"
     sql: ${id} ;;
     filters: {
-      field: complete_visit_with_procedure
+      field: athenadwh_procedure_codes_clone.procedure_code_group
+      value: "Procedure"
+    }
+    filters: {
+      field: complete_visit
       value: "yes"
     }
   }
@@ -1335,10 +1376,7 @@ measure: distinct_day_of_week {
     type: string
     sql:array_agg(distinct concat(${care_request_flat.archive_comment}, ${care_request_flat.complete_comment}))::text ;;
   }
-  measure: min_complete_timestamp_mountain {
-    type: date_time
-    sql: min(${care_request_complete.created_mountain_raw}) ;;
-  }
+
   dimension: resolved_reason_full {
     type: string
     sql: coalesce(${care_request_flat.complete_comment}, ${care_request_flat.archive_comment}) ;;
@@ -1430,7 +1468,7 @@ measure: distinct_day_of_week {
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: ${care_request_flat.complete_comment} LIKE '%Referred - Phone Triage%' ;;
+    sql: ${care_request_flat.complete_comment} SIMILAR TO '(%Referred via Phone%|%Referred - Phone Triage%)' ;;
   }
 
   dimension: escalated_on_phone_reason {
