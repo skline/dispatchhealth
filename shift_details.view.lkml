@@ -89,6 +89,12 @@ view: shift_details {
     sql: ${TABLE}.local_actual_start_time ;;
   }
 
+  measure: first_shift_date {
+    type: date
+    sql: MIN(${local_actual_start_raw}) ;;
+    convert_tz: no
+  }
+
   dimension_group: local_expected_end {
     type: time
     convert_tz: no
