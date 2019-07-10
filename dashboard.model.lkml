@@ -1121,6 +1121,10 @@ explore: shift_details {
     relationship: one_to_many
     sql_on:  ${markets.humanity_id} = ${shift_details.schedule_location_id}::varchar  ;;
   }
+  join: humanity_dashboard_provider_id_crosswalk {
+    relationship: many_to_one
+    sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
+  }
 }
 
 # Scott test

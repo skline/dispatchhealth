@@ -54,8 +54,8 @@ view: markets {
   }
 
   dimension: humanity_id {
-    type: string
-    hidden: yes
+    type: number
+    hidden: no
     sql: ${TABLE}.humanity_id ;;
   }
 
