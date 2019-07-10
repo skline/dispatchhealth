@@ -63,6 +63,7 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
       day_of_month
     ]
@@ -81,6 +82,7 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
       day_of_month
     ]
@@ -98,6 +100,7 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
       day_of_month
     ]
@@ -115,6 +118,7 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
       day_of_month
     ]

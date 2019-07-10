@@ -149,6 +149,7 @@ view: athenadwh_documents_clone {
 
   dimension_group: created {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
