@@ -1,7 +1,5 @@
 connection: "dashboard"
 
-connection: "dw_production"
-
 # include all views in this project
 include: "*.view"
 
