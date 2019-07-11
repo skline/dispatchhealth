@@ -27,12 +27,6 @@ view: athenadwh_documents_clone {
     sql: ${clinical_order_type} = 'PRIMARY CARE REFERRAL' ;;
   }
 
-  dimension: document_is_from_care_request {
-    type: yesno
-    hidden: yes
-    sql: ${created_date} = ${athenadwh_clinical_encounters_clone.encounter_date}::date + interval '1 day' ;;
-  }
-
   dimension: thr_referral {
     description: "A flag indicating the patient received a PCP referral to THR Access Center"
     type: number

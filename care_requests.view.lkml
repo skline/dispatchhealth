@@ -984,7 +984,7 @@ view: care_requests {
       value: "Performed by Third Party"
     }
     filters: {
-      field: athenadwh_lab_imaging_results.document_is_from_care_request
+      field: athenadwh_clinical_results_clone.document_is_from_care_request
       value: "yes"
     }
     filters: {
