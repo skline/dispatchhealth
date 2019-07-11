@@ -265,7 +265,7 @@ measure:  sum_valid_shift_time_hours {
 
   measure:  sum_valid_app_shift_time_hours {
     type: sum
-    description: "sum of APP shift hours"
+    description: "sum of APP valid shift hours"
     sql: ${shift_time_hours} ;;
     value_format: "#,##0.00"
 
@@ -273,11 +273,15 @@ measure:  sum_valid_shift_time_hours {
       field: app_shift
       value: "yes"
     }
+    filters: {
+      field: valid_shift
+      value: "yes"
+    }
   }
 
   measure:  sum_valid_dhmt_shift_time_hours {
     type: sum
-    description: "sum of DHMT shift hours"
+    description: "sum of DHMT valid shift hours"
     sql: ${shift_time_hours} ;;
     value_format: "#,##0.00"
 
@@ -285,6 +289,10 @@ measure:  sum_valid_shift_time_hours {
       field: dhmt_shift
       value: "yes"
       }
+    filters: {
+      field: valid_shift
+      value: "yes"
+    }
     }
 
 measure: count_total_app_shift {
