@@ -276,6 +276,7 @@ dimension: content_final {
                when lower(${invoca_profile_campaign})  like '%springfield%' then 168
      when lower(${invoca_profile_campaign})  like '%dal%' then 169
     when lower(${invoca_profile_campaign})  like '%tac%' then 170
+     when lower(${invoca_profile_campaign})  like '%njr%' or lower(${invoca_profile_campaign})  like '%ridgewood%' then 171
            else null end ;;
   }
 
@@ -331,7 +332,6 @@ dimension: content_final {
   {
     type: string
     sql: case
-            when lower(${channel_items.name}) = 'article or press' then 'Self Report article or press'
             when ${source_final} in('google', 'google.com') and (${campaign_final} in('[agt] remarketing', '[agt] look a like audiences') or lower(${campaign_final}) like '%display%'  or lower(${campaign_final}) like '%video%')  then 'Google Display'
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
             when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and (lower(${ad_group_final}) like '%brand%' or lower(${invoca_promo_number_description}) like '%brand%') then 'SEM: Brand'

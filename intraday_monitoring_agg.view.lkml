@@ -12,6 +12,10 @@ view: intraday_monitoring_agg {
           field: intraday_monitoring.created_date
           value: "before 0 days ago"
         }
+        filters: {
+          field: cars.arm_car
+          value: "No"
+        }
       }
     }
     dimension: created_date {
@@ -63,11 +67,25 @@ view: intraday_monitoring_agg {
     sql: ${abs_diff_to_actual} ;;
   }
 
-  measure: avg_diff_to_actual_percent {
+  measure: avg_complete_count {
     type: average_distinct
-    value_format: "0.0%"
+    value_format: "0.0"
     sql_distinct_key: concat(${created_date}, ${created_hour}, ${market}) ;;
-    sql: ${percent_diff_to_actual} ;;
+    sql: ${complete_count} ;;
+  }
+
+  measure: avg_complete_est {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: concat(${created_date}, ${created_hour}, ${market}) ;;
+    sql: ${complete_est} ;;
+  }
+
+
+  measure: avg_diff_to_actual_percent {
+    type: number
+    value_format: "0.0%"
+    sql: (${avg_diff_to_actual})/${avg_complete_count} ;;
   }
 
   measure: avg_abs_diff_to_actual_percent {

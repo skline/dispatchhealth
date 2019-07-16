@@ -1016,10 +1016,39 @@ view: care_request_flat {
     sql: ${TABLE}.created_date ;;
   }
 
+  dimension_group: scheduled_care_created_coalese {
+    type: time
+    description: "The local date/time that the care request was created."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      year,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,
+      month_num,
+      quarter
+    ]
+    sql: coalesce(${scheduled_care_raw}, ${created_raw}) ;;
+  }
+
   measure: count_distinct_days_created {
     type: count_distinct
     sql_distinct_key: ${created_date} ;;
     sql: ${created_date} ;;
+
+  }
+
+  measure: distinct_days_scheduled_care_created_coalese_date {
+    type: count_distinct
+    sql_distinct_key: ${scheduled_care_created_coalese_date} ;;
+    sql: ${scheduled_care_created_coalese_date} ;;
 
   }
 

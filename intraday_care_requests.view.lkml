@@ -474,6 +474,15 @@ view: intraday_care_requests {
     sql: ${complete_mountain_decimal} <= ${now_mountain_decimal};;
   }
 
+  dimension: created_to_now_diff_hours {
+    type: number
+    sql: EXTRACT(EPOCH FROM ${now_mountain_raw} - (${care_request_created_raw} AT TIME ZONE 'US/Mountain'))/3600 ;;
+  }
+
+ # dimension: inqueue_over_hour {
+#    type: yesno
+#    sql:  ;;
+#  }
 
 
 

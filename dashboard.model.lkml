@@ -2511,8 +2511,27 @@ explore: intraday_monitoring {
   join: care_request_flat {
     sql_on: (${care_request_flat.market_id} =${markets.id} or ${intraday_monitoring.market}='All')
             and
-            ${care_request_flat.complete_date} =${intraday_monitoring.created_date} ;;
+            ${care_request_flat.on_scene_date} =${intraday_monitoring.created_date} ;;
   }
+  join: care_requests {
+    sql_on: ${care_requests.id} =${care_request_flat.care_request_id} ;;
+  }
+  join: shift_teams {
+    relationship: many_to_one
+    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+  }
+
+  join: shifts{
+    relationship: many_to_one
+    sql_on:  ${shift_teams.id}  =  ${shifts.id};;
+  }
+
+  join: cars {
+    relationship: many_to_one
+    sql_on: ${shift_teams.car_id} = ${cars.id} ;;
+  }
+
+
 }
 
 explore: intraday_monitoring_agg {
