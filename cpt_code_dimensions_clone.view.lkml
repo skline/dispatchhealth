@@ -179,6 +179,7 @@ view: cpt_code_dimensions_clone {
     label: "Average E&M Code Care Level"
     type: average
     sql: ${em_care_level};;
+    value_format: "0.00"
   }
 
   measure: em_care_level_concat {
