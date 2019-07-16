@@ -36,7 +36,7 @@ view: athenadwh_clinical_results_clone {
     type: yesno
     hidden: no
     sql: ${created_datetime_date} >= ${athenadwh_clinical_encounters_clone.encounter_date}::date AND
-         ${created_datetime_date} <= ${athenadwh_clinical_encounters_clone.encounter_date}::date + interval '1 day' ;;
+         ${created_datetime_date} <= ${athenadwh_clinical_encounters_clone.encounter_date}::date + interval '2 day';;
   }
 
   dimension: created_by {
