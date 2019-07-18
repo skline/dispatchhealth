@@ -152,7 +152,7 @@ view: care_request_flat {
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
-    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date"]
+    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date"]
   }
 
   dimension: care_request_id {
