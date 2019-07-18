@@ -186,7 +186,7 @@ dimension: dhmt_shift {
     description: "The number of hours between Local Actual Start time and Local Actual End Time for APP Shifts"
     sql:
     ((EXTRACT(EPOCH FROM ${local_actual_end_raw})-EXTRACT(EPOCH FROM ${local_actual_start_raw}))/3600) ;;
-    value_format: "0.0"
+    value_format: "#,##0.00"
 
   }
 
@@ -255,7 +255,7 @@ measure:  sum_valid_shift_time_hours {
   type: sum
   description: "sum of shift hours"
   sql: ${shift_time_hours} ;;
-  value_format: "0.00"
+  value_format: "#,##0.00"
 
   filters: {
     field: valid_shift
@@ -265,26 +265,34 @@ measure:  sum_valid_shift_time_hours {
 
   measure:  sum_valid_app_shift_time_hours {
     type: sum
-    description: "sum of APP shift hours"
+    description: "sum of APP valid shift hours"
     sql: ${shift_time_hours} ;;
-    value_format: "0.00"
+    value_format: "#,##0.00"
 
     filters: {
       field: app_shift
+      value: "yes"
+    }
+    filters: {
+      field: valid_shift
       value: "yes"
     }
   }
 
   measure:  sum_valid_dhmt_shift_time_hours {
     type: sum
-    description: "sum of DHMT shift hours"
+    description: "sum of DHMT valid shift hours"
     sql: ${shift_time_hours} ;;
-    value_format: "0.00"
+    value_format: "#,##0.00"
 
     filters: {
       field: dhmt_shift
       value: "yes"
       }
+    filters: {
+      field: valid_shift
+      value: "yes"
+    }
     }
 
 measure: count_total_app_shift {

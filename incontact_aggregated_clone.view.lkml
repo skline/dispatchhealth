@@ -109,6 +109,7 @@ view: incontact_aggregated_clone {
            when lower(${skill})  like 'spr%' or trim(lower(${skill}))  like '%spi%' then 168
            when lower(${skill})  like '%tac%'  then 170
           when lower(${skill})  like '%dal%'  then 169
+          when lower(${skill})  like '%njr%'  then 171
 
            else null end ;;
   }

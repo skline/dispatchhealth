@@ -23,6 +23,7 @@ view: markets {
 
   dimension: contact_phone {
     type: string
+    hidden: yes
     sql: ${TABLE}.contact_phone ;;
   }
 
@@ -39,6 +40,12 @@ view: markets {
       year
     ]
     sql: ${TABLE}.created_at ;;
+  }
+
+  dimension: breaks_enabled {
+    type: yesno
+    description: "A flag indicating that provider breaks have been enabled for the market"
+    sql: ${TABLE}.enable_breaks IS TRUE ;;
   }
 
   dimension: enabled {
@@ -116,6 +123,7 @@ view: markets {
 
   dimension: market_image {
     type: string
+    hidden: yes
     sql: ${TABLE}.market_image ;;
   }
 

@@ -2876,144 +2876,312 @@ end  ;;
     #hidden: yes
     sql: CASE WHEN ${diversion_flat.diagnosis_code} IS NOT NULL THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc1_max {
+    description: "Max diversion dc1 value"
+    type: max
+    sql: ${dc1} ;;
+  }
+
   dimension: dc2 {
     description: "Survey Response YES to ER"
     type: number
     #hidden: yes
     sql: CASE WHEN ${ed_diversion_survey_response_clone.survey_yes_to_er} OR ${medical_necessity_notes.er_911_alternative} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc2_max {
+    description: "Max diversion dc2 value"
+    type: max
+    sql: ${dc2} ;;
+  }
+
   dimension: dc3 {
     description: "911 Diversion Program"
     type: number
     #hidden: yes
     sql: CASE WHEN ${channel_items.divert_from_911} OR ${medical_necessity_notes.er_911_alternative} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc3_max {
+    description: "Max diversion dc3 value"
+    type: max
+    sql: ${dc3} ;;
+  }
+
   dimension: dc4 {
     description: "POS SNF"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc4_max {
+    description: "Max diversion dc4 value"
+    type: max
+    sql: ${dc4} ;;
+  }
+
   dimension: dc5 {
     description: "POS Assisted Living"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc5_max {
+    description: "Max diversion dc5 value"
+    type: max
+    sql: ${dc5} ;;
+  }
+
   dimension: dc6 {
     description: "Referred from Home Health, PCP or Care Mgmt"
     type: number
     #hidden: yes
     sql: CASE WHEN ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc6_max {
+    description: "Max diversion dc6 value"
+    type: max
+    sql: ${dc6} ;;
+  }
+
   dimension: dc7 {
     description: "Weekends or After 3 PM"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc7_max {
+    description: "Max diversion dc7 value"
+    type: max
+    sql: ${dc7} ;;
+  }
+
   dimension: dc8 {
     description: "Abnormal Vitals (O2 sat < 90%, HR > 100, SBP < 90 for adults)"
     type: number
     #hidden: yes
     sql: CASE WHEN ${vitals_flat.abnormal_vitals} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc8_max {
+    description: "Max diversion dc8 value"
+    type: max
+    sql: ${dc8} ;;
+  }
+
   dimension: dc9 {
     description: "Additional Dx of Confusion or Altered Awareness"
     type: number
     #hidden: yes
     sql: CASE WHEN ${athenadwh_icdcodeall.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc9_max {
+    description: "Max diversion dc9 value"
+    type: max
+    sql: ${dc9} ;;
+  }
+
   dimension: dc10 {
     description: "Wheelchair or Homebound"
     type: number
     #hidden: yes
     sql: CASE WHEN ${athenadwh_icdcodeall.wheelchair_homebound} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc10_max {
+    description: "Max diversion dc10 value"
+    type: max
+    sql: ${dc10} ;;
+  }
+
   dimension: dc11 {
     description: "EKG Performed"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.ekg_performed} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc11_max {
+    description: "Max diversion dc11 value"
+    type: max
+    sql: ${dc11} ;;
+  }
+
   dimension: dc12 {
     description: "Nebulizer Treatment"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.nebulizer} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc12_max {
+    description: "Max diversion dc12 value"
+    type: max
+    sql: ${dc12} ;;
+  }
+
   dimension: dc13 {
     description: "IV/Fluids Administered"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.iv_fluids} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc13_max {
+    description: "Max diversion dc13 value"
+    type: max
+    sql: ${dc13} ;;
+  }
+
   dimension: dc14 {
     description: "Blood Tests Performed"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.blood_tests} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc14_max {
+    description: "Max diversion dc14 value"
+    type: max
+    sql: ${dc14} ;;
+  }
+
   dimension: dc15 {
     description: "Catheter Adjustment or Placement"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.catheter_placement} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc15_max {
+    description: "Max diversion dc15 value"
+    type: max
+    sql: ${dc15} ;;
+  }
+
   dimension: dc16 {
     description: "Laceration Repair"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.laceration_repair} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc16_max {
+    description: "Max diversion dc16 value"
+    type: max
+    sql: ${dc16} ;;
+  }
+
   dimension: dc17 {
     description: "Epistaxis Tx"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.epistaxis} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc17_max {
+    description: "Max diversion dc17 value"
+    type: max
+    sql: ${dc17} ;;
+  }
+
   dimension: dc18 {
     description: "Rectal Prolapse Reduction or Hernia Reduction"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.hernia_rp_reduction} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc18_max {
+    description: "Max diversion dc18 value"
+    type: max
+    sql: ${dc18} ;;
+  }
+
   dimension: dc19 {
     description: "Nursemaids elbow reduction or other joint reduction"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.joint_reduction} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc19_max {
+    description: "Max diversion dc19 value"
+    type: max
+    sql: ${dc19} ;;
+  }
+
   dimension: dc20 {
     description: "Gastrostomy Tube replacement or repair"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.gastronomy_tube} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc20_max {
+    description: "Max diversion dc20 value"
+    type: max
+    sql: ${dc20} ;;
+  }
+
   dimension: dc21 {
     description: "I&D of Abscess"
     type: number
     #hidden: yes
     sql: CASE WHEN ${cpt_code_dimensions_clone.abscess_drain} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc21_max {
+    description: "Max diversion dc21 value"
+    type: max
+    sql: ${dc21} ;;
+  }
+
   dimension: dc22 {
     description: "POS SNF AND (abnormal vital signs  OR altered mental status)"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc22_max {
+    description: "Max diversion dc22 value"
+    type: max
+    sql: ${dc22} ;;
+  }
+
   dimension: dc23 {
     description: "POS SNF AND any procedures"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc23_max {
+    description: "Max diversion dc23 value"
+    type: max
+    sql: ${dc23} ;;
+  }
+
   dimension: dc24 {
     description: "POS SNF AND referral"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_snf} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc24_max {
+    description: "Max diversion dc24 value"
+    type: max
+    sql: ${dc24} ;;
+  }
+
   dimension: dc25 {
     description: "POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
@@ -3021,6 +3189,13 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc25_max {
+    description: "Max diversion dc25 value"
+    type: max
+    sql: ${dc25} ;;
+  }
+
   dimension: dc26 {
     description: "POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
@@ -3028,24 +3203,52 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc26_max {
+    description: "Max diversion dc26 value"
+    type: max
+    sql: ${dc26} ;;
+  }
+
   dimension: dc27 {
     description: "POS AL AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc27_max {
+    description: "Max diversion dc27 value"
+    type: max
+    sql: ${dc27} ;;
+  }
+
   dimension: dc28 {
     description: "POS AL AND procedures"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc28_max {
+    description: "Max diversion dc28 value"
+    type: max
+    sql: ${dc28} ;;
+  }
+
   dimension: dc29 {
     description: "POS AL AND referral"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_al} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc29_max {
+    description: "Max diversion dc29 value"
+    type: max
+    sql: ${dc29} ;;
+  }
+
   dimension: dc30 {
     description: "POS AL AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
@@ -3053,6 +3256,13 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc30_max {
+    description: "Max diversion dc30 value"
+    type: max
+    sql: ${dc30} ;;
+  }
+
   dimension: dc31 {
     description: "POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
@@ -3060,24 +3270,52 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc31_max {
+    description: "Max diversion dc31 value"
+    type: max
+    sql: ${dc31} ;;
+  }
+
   dimension: dc32 {
     description: "POS HOME AND (abnormal vital signs OR altered mental status)"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc32_max {
+    description: "Max diversion dc32 value"
+    type: max
+    sql: ${dc32} ;;
+  }
+
   dimension: dc33 {
     description: "POS HOME AND any procedures"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc33_max {
+    description: "Max diversion dc33 value"
+    type: max
+    sql: ${dc33} ;;
+  }
+
   dimension: dc34 {
     description: "POS HOME AND referral"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc34_max {
+    description: "Max diversion dc34 value"
+    type: max
+    sql: ${dc34} ;;
+  }
+
   dimension: dc35 {
     description: "POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
@@ -3085,6 +3323,13 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
     ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc35_max {
+    description: "Max diversion dc35 value"
+    type: max
+    sql: ${dc35} ;;
+  }
+
   dimension: dc36 {
     description: "POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
@@ -3092,6 +3337,13 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
     ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc36_max {
+    description: "Max diversion dc36 value"
+    type: max
+    sql: ${dc36} ;;
+  }
+
   dimension: dc37 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)"
     type: number
@@ -3099,18 +3351,39 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
     ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc37_max {
+    description: "Max diversion dc37 value"
+    type: max
+    sql: ${dc37} ;;
+  }
+
   dimension: dc38 {
     description: "POS HOME AND wheelchair/homebound AND any procedures"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc38_max {
+    description: "Max diversion dc38 value"
+    type: max
+    sql: ${dc38} ;;
+  }
+
   dimension: dc39 {
     description: "POS HOME AND wheelchair/homebound AND referral"
     type: number
     #hidden: yes
     sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc39_max {
+    description: "Max diversion dc39 value"
+    type: max
+    sql: ${dc39} ;;
+  }
+
   dimension: dc40 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
@@ -3118,6 +3391,13 @@ end  ;;
     sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
     ${athenadwh_icdcodeall.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc40_max {
+    description: "Max diversion dc40 value"
+    type: max
+    sql: ${dc40} ;;
+  }
+
   dimension: dc41 {
     description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
@@ -3126,6 +3406,13 @@ end  ;;
     ${athenadwh_icdcodeall.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND
     ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
   }
+
+  measure: dc41_max {
+    description: "Max diversion dc41 value"
+    type: max
+    sql: ${dc41} ;;
+  }
+
 
   dimension: diversion_category_first_met {
     description: "The first diversion category that was met"

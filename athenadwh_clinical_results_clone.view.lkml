@@ -32,6 +32,13 @@ view: athenadwh_clinical_results_clone {
     sql: ${TABLE}.clinical_result_id ;;
   }
 
+  dimension: document_is_from_care_request {
+    type: yesno
+    hidden: no
+    sql: ${created_datetime_date} >= ${athenadwh_clinical_encounters_clone.encounter_date}::date AND
+         ${created_datetime_date} <= ${athenadwh_clinical_encounters_clone.encounter_date}::date + interval '2 day';;
+  }
+
   dimension: created_by {
     type: string
     sql: ${TABLE}.created_by ;;

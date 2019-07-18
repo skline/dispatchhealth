@@ -983,10 +983,10 @@ view: care_requests {
       field: athenadwh_lab_imaging_providers.provider_category
       value: "Performed by Third Party"
     }
-    filters: {
-      field: athenadwh_lab_imaging_results.document_is_from_care_request
-      value: "yes"
-    }
+    # filters: {
+    #   field: athenadwh_clinical_results_clone.document_is_from_care_request
+    #   value: "yes"
+    # }
     filters: {
       field: athenadwh_clinical_results_clone.labs_flag
       value: "yes"
