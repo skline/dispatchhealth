@@ -190,11 +190,17 @@ dimension: dhmt_shift {
 
   }
 
+  dimension: on_call_placeholder {
+    type: yesno
+    description: "A flag indicating that the shift is 15 minutes long (placeholder for on-call)"
+    sql: ${shift_time_hours} = 0.25 ;;
+  }
+
 
   dimension: valid_shift {
     type: yesno
-    description: "Employee is assinged to shift"
-    sql: ${employee_name} IS NOT NULL ;;
+    description: "Employee is assinged to shift and shift is not on-call placeholder"
+    sql: ${employee_name} IS NOT NULL AND NOT ${on_call_placeholder};;
   }
 
   dimension: holiday_shift {
