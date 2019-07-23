@@ -313,4 +313,9 @@ view: channel_items {
     sql: ${growth_update_channels.identifier_id} is not null ;;
   }
 
+  dimension: generic_organization {
+    type: yesno
+    sql: ${name_no_tabs} in('Employer Organization', 'Health System Organization', 'Home Health Organization', 'Hospice & Palliative Care Organization', 'Injury Finance Organization', 'Payer Organization', 'Provider Group Organization', 'Senior Care Organization', 'Snf Organization') ;;
+  }
+
 }
