@@ -56,6 +56,11 @@ view: addresses {
     sql: ${TABLE}.street_address_1 ;;
   }
 
+  dimension: full_addresss {
+    type: string
+    sql: concat(${street_address_1},': ', ${street_address_2},': ', ${city},': ', ${state},': ', ${zipcode}) ;;
+  }
+
   dimension: street_address_2 {
     type: string
     sql: ${TABLE}.street_address_2 ;;
