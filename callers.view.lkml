@@ -61,6 +61,11 @@ view: callers {
     sql: ${TABLE}.relationship_to_patient ;;
   }
 
+  dimension: senior_target {
+    type: yesno
+    sql: ${relationship_to_patient} in ('facility_staff', 'home_health_team') ;;
+  }
+
   dimension: skill_name {
     type: string
     hidden: yes
