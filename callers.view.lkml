@@ -61,7 +61,8 @@ view: callers {
     sql: ${TABLE}.relationship_to_patient ;;
   }
 
-  dimension: senior_target {
+  dimension: senior_caller {
+    label: "Community or Home Health Caller"
     type: yesno
     sql: ${relationship_to_patient} in ('facility_staff', 'home_health_team') ;;
   }
