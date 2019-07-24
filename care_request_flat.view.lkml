@@ -2942,6 +2942,17 @@ end  ;;
     sql: CASE WHEN ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
   }
 
+  measure: dc6_count {
+    description: "Count Referred from Home Health, PCP or Care Mgmt"
+    label: "Count Referred from Home Health, PCP or Care Mgmt"
+    type:  count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: dc6
+      value: "1"
+    }
+  }
+
   measure: dc6_max {
     description: "Max diversion dc6 value"
     type: max
@@ -2961,6 +2972,17 @@ end  ;;
     sql: ${dc7} ;;
   }
 
+  measure: dc7_count {
+    description: "Count Weekends or After 3 PM"
+    label: "Count Weekends or After 3 PM"
+    type:  count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: dc7
+      value: "1"
+    }
+  }
+
   dimension: dc8 {
     description: "Abnormal Vitals (O2 sat < 90%, HR > 100, SBP < 90 for adults)"
     type: number
@@ -2972,6 +2994,17 @@ end  ;;
     description: "Max diversion dc8 value"
     type: max
     sql: ${dc8} ;;
+  }
+
+  measure: dc8_count {
+    description: "Count Abnormal Vitals (O2 sat < 90%, HR > 100, SBP < 90 for adults)"
+    label: "Count Abnormal Vitals"
+    type:  count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: dc8
+      value: "1"
+    }
   }
 
   dimension: dc9 {
@@ -2998,6 +3031,17 @@ end  ;;
     description: "Max diversion dc10 value"
     type: max
     sql: ${dc10} ;;
+  }
+
+  measure: dc10_count {
+    description: "Count Wheelchair or Homebound"
+    label: "Count Wheelchair or Homebound"
+    type:  count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: dc10
+      value: "1"
+    }
   }
 
   dimension: dc11 {
