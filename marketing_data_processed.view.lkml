@@ -258,6 +258,7 @@ dimension: content_final {
            when lower(${marketing_cost_campaign_name})  like '%dal%' then 169
           when lower(${marketing_cost_campaign_name})  like '%tac%' then 170
           when lower(${marketing_cost_campaign_name})  like '%las%' or lower(${marketing_cost_campaign_name})  like '%las%' then 162
+             when lower(${marketing_cost_campaign_name})  like '%njr%' or lower(${invoca_profile_campaign})  like '%ridgewood%' then 171
 
            else null
         end;;

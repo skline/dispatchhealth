@@ -315,7 +315,7 @@ view: channel_items {
 
   dimension: generic_organization {
     type: yesno
-    sql: ${name_no_tabs} in('Employer Organization', 'Health System Organization', 'Home Health Organization', 'Hospice & Palliative Care Organization', 'Injury Finance Organization', 'Payer Organization', 'Provider Group Organization', 'Senior Care Organization', 'Snf Organization') ;;
+    sql: ${name_no_tabs} in('Home Health Organization', 'Hospice & Palliative Care Organization',   'Provider Group Organization', 'Senior Care Organization', 'Snf Organization') ;;
   }
 
 }
