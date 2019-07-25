@@ -1392,6 +1392,14 @@ view: care_request_flat {
     sql: ${TABLE}.complete_date ;;
   }
 
+  dimension: weekday_complete {
+    type: string
+    description: "A flag indicating the complete date is during the week"
+    sql: CASE WHEN ${complete_day_of_week_index} IN (0,1,2,3,4) THEN 'Weekday'
+            WHEN ${complete_day_of_week_index} IN (5,6) THEN 'Weekend'
+            ELSE NULL END;;
+  }
+
   dimension_group: archive {
     type: time
     description: "The local date/time that the care request was archived or resolved"
