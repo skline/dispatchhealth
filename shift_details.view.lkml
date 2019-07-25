@@ -84,9 +84,18 @@ view: shift_details {
       year,
       hour_of_day,
       day_of_week,
+      day_of_week_index,
       day_of_month
     ]
     sql: ${TABLE}.local_actual_start_time ;;
+  }
+
+  dimension: weekday_shift {
+    type: string
+    description: "A flag indicating the shift was on a weekday or weekend"
+    sql: CASE WHEN ${local_actual_start_day_of_week_index} IN (0,1,2,3,4) THEN 'Weekday'
+          WHEN ${local_actual_start_day_of_week_index} IN (5,6) THEN 'Weekend'
+          ELSE NULL END;;
   }
 
   measure: first_shift_date {
