@@ -3985,6 +3985,47 @@ end  ;;
 
   }
 
+  dimension: new_patient_first_visit {
+    description: "Flags a patient that had their first visit date occurr within the date range of the filtered population (patient may have 1+ visits in range)."
+    type: yesno
+    sql: ${first_visit_date} = ${on_scene_date};;
+  }
+
+  measure: count_new_patient_first_visits {
+    description: "Counts the number of distinct patients visited for the first time wihtin the date range of the fitered population (patient may have 1+ visits in range)"
+    type: count_distinct
+    sql: ${patient_id} ;;
+    filters: {
+      field: new_patient_first_visit
+      value: "yes"
+    }
+  }
+
+  dimension: return_patient {
+    description: "Determines a patient that has been visited more than one time on separate days"
+    type: yesno
+    sql: ${first_visit_date} != ${on_scene_date};;
+  }
+
+  measure: count_return_patients {
+    description: "Count of the number of distinct patients that have been visited more than one time by DH on separate days"
+    type: count_distinct
+    sql: ${patient_id} ;;
+    filters: {
+      field: return_patient
+      value: "yes"
+    }
+  }
+
+  measure: count_return_patient_visits {
+    description: "Counts the number visits associated with a repeat patient for spearate days"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: return_patient
+      value: "yes"
+    }
+  }
 
 
 }
