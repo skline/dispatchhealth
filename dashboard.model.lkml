@@ -2547,5 +2547,12 @@ explore: expected_allowables_market_budget {
     relationship: one_to_many
     sql_on: ${markets.id} = ${expected_allowables_market_budget.markets_id} ;;
   }
+}
 
+
+explore: genesys_conversation_summary {
+  join: number_to_market {
+    relationship: one_to_one
+    sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
+  }
 }
