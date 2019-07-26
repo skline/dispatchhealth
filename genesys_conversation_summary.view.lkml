@@ -40,6 +40,21 @@ view: genesys_conversation_summary {
     sql: ${TABLE}."conversationstarttime" ;;
   }
 
+  dimension_group: month_placeholder {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: '2019-07-05 00:00:00'::timestamp  ;;
+  }
+
+
   dimension: direction {
     type: string
     sql: ${TABLE}."direction" ;;
@@ -115,6 +130,12 @@ view: genesys_conversation_summary {
     drill_fields: [campaignname, queuename]
   }
 
+  measure: count_distinct {
+    type: count
+    sql: ${conversationid} ;;
+    sql_distinct_key:  ${conversationid};;
+  }
+
   measure: number_abandons {
     type: count_distinct
     sql: ${conversationid} ;;
@@ -160,4 +181,62 @@ view: genesys_conversation_summary {
     sql: ${firstacdwaitduration} ;;
 
   }
+
+  measure: median_wait_time {
+    type: median_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${conversationid} ;;
+    sql: ${firstacdwaitduration} ;;
+  }
+
+  measure: count_general_inquiry {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: genesys_conversation_wrapup.wrapupcodename
+      value: "General Inquiry"
+    }
+  }
+
+  dimension:  inqueue_time_greater_30{
+    type: yesno
+    sql: ${firstacdwaitduration}>30000 ;;
+  }
+
+  measure:  count_inqeue_time_greater_30s{
+    type: count_distinct
+    value_format: "0"
+    sql_distinct_key: ${conversationid} ;;
+    sql: ${conversationid} ;;
+    filters: {
+      field: inqueue_time_greater_30
+      value: "yes"
+    }
+
+
+  }
+
+  dimension: anthem_eligible {
+    type: yesno
+    sql: ${transfered} = 0 and ${markets.name_adj} = 'Richmond' ;;
+  }
+
+
+  #dimension: dispositions_raw {
+  #  type: string
+  #  sql: array_agg(DISTINCT case when ${genesys_conversation_wrapup.wrapupcodename} = '' then null else ${genesys_conversation_wrapup.wrapupcodename} end ) ;;
+  #}
+
+  #measure: dispositions {
+  #  type: string
+  #  sql: (select array_agg(a) from ${genesys_conversation_wrapup.wrapupcodename} where a is not null);;
+  #}
+
+
+
+  #dimension: disposition {
+  #  type: string
+  #  sql: ${dispositions}[1] ;;
+  #}
 }
