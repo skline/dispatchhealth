@@ -100,8 +100,64 @@ view: genesys_conversation_summary {
     sql: ${TABLE}."transfered" ;;
   }
 
+  dimension: long_abandon {
+    type: yesno
+    sql: ${abandoned} =1 and ${firstacdwaitduration} > 30000 ;;
+  }
+
+  dimension: short_abandon {
+    type: yesno
+    sql: ${abandoned} =1 and ${firstacdwaitduration} between 2000 and  30000 ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [campaignname, queuename]
+  }
+
+  measure: number_abandons {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: abandoned
+      value: "1"
+    }
+  }
+
+  measure: long_abandons {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: abandoned
+      value: "1"
+    }
+    filters: {
+      field: long_abandon
+      value: "yes"
+    }
+  }
+
+  measure: short_abandons {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: abandoned
+      value: "1"
+    }
+    filters: {
+      field: short_abandon
+      value: "yes"
+    }
+  }
+
+  measure: average_wait_time {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${conversationid} ;;
+    sql: ${firstacdwaitduration} ;;
+
   }
 }

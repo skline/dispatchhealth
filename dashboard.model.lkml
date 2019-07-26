@@ -2555,4 +2555,13 @@ explore: genesys_conversation_summary {
     relationship: one_to_one
     sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
   }
+
+  join: genesys_conversation_wrapup {
+    sql_on: ${genesys_conversation_summary.conversationid}=${genesys_conversation_wrapup.conversationid} ;;
+  }
+  join: markets {
+    relationship: one_to_one
+    sql_on: ${markets.id}=${number_to_market.market_id} ;;
+  }
+
 }
