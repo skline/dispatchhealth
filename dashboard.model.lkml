@@ -163,17 +163,25 @@ explore: care_requests {
       ${athenadwh_dme.status} != 'DELETED' ;;
   }
 
+  # join: athenadwh_lab_imaging_results {
+  #   from:  athenadwh_documents_clone
+  #   relationship:  one_to_one
+  #   sql_on: ${athenadwh_document_crosswalk_clone.document_id} = ${athenadwh_lab_imaging_results.document_id} AND
+  #     ${athenadwh_lab_imaging_results.document_class} IN ('IMAGINGRESULT', 'LABRESULT') AND
+  #     ${athenadwh_lab_imaging_results.status} != 'DELETED' ;;
+  # }
+
   join: athenadwh_lab_imaging_results {
-    from:  athenadwh_documents_clone
+    from:  athenadwh_clinical_results_clone
     relationship:  one_to_one
-    sql_on: ${athenadwh_document_crosswalk_clone.document_id} = ${athenadwh_lab_imaging_results.document_id} AND
-      ${athenadwh_lab_imaging_results.document_class} IN ('IMAGINGRESULT', 'LABRESULT') AND
-      ${athenadwh_lab_imaging_results.status} != 'DELETED' ;;
+    sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_lab_imaging_results.document_id} AND
+      ${athenadwh_lab_imaging_results.clinical_order_type_group} IN ('IMAGING', 'LAB') AND
+      ${athenadwh_documents_clone.status} != 'DELETED' ;;
   }
 
   join: athenadwh_lab_imaging_providers {
     from: athenadwh_clinical_providers_clone
-    relationship: one_to_one
+    relationship: many_to_one
     sql_on: ${athenadwh_lab_imaging_results.clinical_provider_id} = ${athenadwh_lab_imaging_providers.clinical_provider_id} ;;
   }
 
