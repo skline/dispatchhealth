@@ -814,7 +814,9 @@ explore: care_requests {
     sql_on: ${care_requests.patient_id} = ${insurances.patient_id} AND
             ${insurances.priority} = '1' AND
             ${insurances.patient_id} IS NOT NULL AND
-            (${care_request_flat.on_scene_date} <= ${insurances.end_date} OR ${insurances.end_date} IS NULL);;
+            COALESCE(${insurances.start_date},${care_request_flat.on_scene_date}) <= ${care_request_flat.on_scene_date} AND
+            COALESCE(${insurances.end_date},${care_request_flat.on_scene_date}) >= ${care_request_flat.on_scene_date};;
+            #(${care_request_flat.on_scene_date} <= ${insurances.end_date} OR ${insurances.end_date} IS NULL);;
   }
 
   join: insurance_plans {
