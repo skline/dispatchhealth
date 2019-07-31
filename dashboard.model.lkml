@@ -402,6 +402,11 @@ explore: care_requests {
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${athenadwh_icdcodeall.icd_code_id} ;;
   }
 
+  join:  icd_code_to_disease_state_mapping {
+    relationship: many_to_one
+    sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${icd_code_to_disease_state_mapping.diagnosis_code};;
+  }
+
   join: icd_primary_diagnosis_code {
     from: athenadwh_icdcodeall
     view_label: "ICD Primary Diagnosis Codes"
