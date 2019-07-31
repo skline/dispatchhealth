@@ -97,6 +97,11 @@ view: addresses {
     sql: left(${zipcode}, 5) ;;
   }
 
+  dimension: zip_23139 {
+    type: yesno
+    sql: ${zipcode_short} = '23139' ;;
+  }
+
   measure: zipcode_list {
     type: string
     sql: array_agg(${zipcode_short}) ;;

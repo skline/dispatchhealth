@@ -63,6 +63,8 @@ view: intraday_care_requests {
     sql: (${TABLE}.meta_data ->> 'etos')::int ;;
   }
 
+
+
   dimension: channel_item_id {
     type: number
     sql: (${TABLE}.meta_data ->> 'channel_item_id')::int ;;
