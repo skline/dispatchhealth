@@ -20,7 +20,7 @@ view: patient_level_aggregated_measures {
       }
     }
 
-    sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+    #sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["id"]
   }
 
