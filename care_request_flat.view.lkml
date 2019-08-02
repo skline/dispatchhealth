@@ -1338,12 +1338,28 @@ view: care_request_flat {
       ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60) ;;
   }
 
+  dimension: on_scene_rounded_integer {
+    description: "The on-scene time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${on_scene_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60)) ;;
+      value_format: "0"
+  }
+
   dimension: accepted_decimal {
     description: "The accepted time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${accept_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${accept_raw} ) AS FLOAT)) / 60) ;;
     value_format: "0.00"
+  }
+
+  dimension: accepted_rounded_integer {
+    description: "The accepted time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${accept_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${accept_raw} ) AS FLOAT)) / 60)) ;;
+    value_format: "0"
   }
 
   measure: first_accepted_decimal {
@@ -1616,6 +1632,14 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: (CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT)) / 60) ;;
       value_format: "0.00"
+  }
+
+  dimension: created_rounded_integer {
+    description: "Complete Time of Day as Decimal"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT)) / 60)) ;;
+    value_format: "0"
   }
 
   dimension: complete_decimal {
