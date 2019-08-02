@@ -265,6 +265,16 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
+  join: provider_roster {
+    relationship: one_to_one
+    sql_on: ${athenadwh_letter_recipient_provider.npi}::int = ${provider_roster.npi} ;;
+  }
+
+  join: provider_network {
+    relationship: many_to_one
+    sql_on: ${provider_roster.provider_network_id} = ${provider_network.id} ;;
+  }
+
   join: thpg_providers {
     relationship: one_to_one
     sql_on: ${athenadwh_letter_recipient_provider.npi}::int = ${thpg_providers.npi} ;;
