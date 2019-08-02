@@ -81,6 +81,12 @@ view: athenadwh_clinical_providers_clone {
     ]
   }
 
+  dimension: labcorp_provider {
+    type: yesno
+    description: "A flag indicating the provider is Labcorp"
+    sql: ${name} LIKE '%LABCORP%' ;;
+  }
+
   dimension: touchworks_flag {
     type: yesno
     sql: ${name} = 'SOUTHWEST MEDICAL TOUCHWORKS' ;;
