@@ -21,7 +21,7 @@ view: patient_level_aggregated_measures {
     }
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
-    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date"]
+    indexes: ["id"]
   }
 
 
