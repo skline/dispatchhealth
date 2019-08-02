@@ -3,6 +3,7 @@ view: provider_roster {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
@@ -24,6 +25,7 @@ view: provider_roster {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -92,7 +94,7 @@ view: provider_roster {
 
   dimension: provider_network_id {
     type: number
-    # hidden: yes
+    hidden: yes
     sql: ${TABLE}."provider_network_id" ;;
   }
 
@@ -108,6 +110,7 @@ view: provider_roster {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -120,7 +123,7 @@ view: provider_roster {
     sql: ${TABLE}."updated_at" ;;
   }
 
-  dimension: zipcd {
+  dimension: zipcode {
     type: string
     sql: ${TABLE}."zipcd" ;;
   }

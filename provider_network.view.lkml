@@ -3,12 +3,14 @@ view: provider_network {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -37,11 +39,13 @@ view: provider_network {
 
   dimension: name {
     type: string
+    description: "The name of the provider network"
     sql: ${TABLE}."name" ;;
   }
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
