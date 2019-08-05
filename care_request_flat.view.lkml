@@ -1331,6 +1331,15 @@ view: care_request_flat {
     sql: ${TABLE}.requested_date ;;
   }
 
+  dimension: requested_rounded_integer {
+    description: "The requested visit time of day, represented as a rounded decimal (e.g. 10:15 AM = 10)"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${requested_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${requested_raw} ) AS FLOAT)) / 60)) ;;
+      value_format: "0"
+  }
+
+
   dimension: on_scene_decimal {
     description: "The on-scene time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
@@ -1339,7 +1348,7 @@ view: care_request_flat {
   }
 
   dimension: on_scene_rounded_integer {
-    description: "The on-scene time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    description: "The on-scene time of day, represented as a decimal (e.g. 10:15 AM = 10)"
     type: number
     sql: round((CAST(EXTRACT(HOUR FROM ${on_scene_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60)) ;;
@@ -1355,7 +1364,7 @@ view: care_request_flat {
   }
 
   dimension: accepted_rounded_integer {
-    description: "The accepted time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    description: "The accepted time of day, represented as a rounded decimal (e.g. 10:15 AM = 10)"
     type: number
     sql: round((CAST(EXTRACT(HOUR FROM ${accept_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${accept_raw} ) AS FLOAT)) / 60)) ;;
