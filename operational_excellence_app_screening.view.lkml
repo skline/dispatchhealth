@@ -7,6 +7,7 @@ view: operational_excellence_app_screening {
       column: first_name { field: secondary_screening_provider.first_name }
       column: last_name { field: secondary_screening_provider.last_name }
       column: escalated_on_phone_count { field: care_request_flat.escalated_on_phone_count }
+      column: escalated_on_scene_count { field: care_request_flat.escalated_on_scene_count }
       column: count_distinct {}
       column: created_month { field: care_request_flat.created_month }
       filters: {
@@ -36,6 +37,14 @@ view: operational_excellence_app_screening {
     description: "The sum of all phone escalations"
     type: sum
     sql: ${escalated_on_phone_count} ;;
+  }
+  dimension: escalated_on_scene_count {
+    type: number
+  }
+  measure: sum_escalated_on_scene {
+    description: "The sum of all on scene escalations"
+    type: sum
+    sql: ${escalated_on_scene_count} ;;
   }
   dimension: count_distinct {
     type: number
