@@ -1157,6 +1157,35 @@ view: care_requests {
     }
   }
 
+  measure: count_cpr_market_visits {
+    description: "Counts the number of visits for a CPR assocaited market"
+    type: count_distinct
+    sql: ${id} ;;
+    filters:  {
+      field: markets.cpr_market
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_non_cpr_market_visits {
+    description: "Counts the number of visits for a Non-CPR assocaited market"
+    type: count_distinct
+    sql: ${id} ;;
+    filters:  {
+      field: markets.cpr_market
+      value: "no"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+
   dimension:  accepted_visit {
     type: yesno
     sql: ${care_request_flat.accept_date} is not null;;

@@ -224,6 +224,14 @@ view: markets {
     type: count
     drill_fields: [id, name, provider_group_name, short_name, care_requests.count]
   }
+
+  dimension: cpr_market {
+    description: "Flag to identify CPR markets (hard-coded)"
+    type: yesno
+    sql: ${id} in(168, 169, 170, 171, 172);;
+  }
+
+
   # measure: digital_adjusted {
   #   type: number
   #   sql: ${care_request_complete.count_distinct}+${incontact_spot_check_by_market.spot_check_care_requests} ;;

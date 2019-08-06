@@ -1035,7 +1035,7 @@ view: care_request_flat {
       month_num,
       quarter
     ]
-    sql: coalesce(${scheduled_care_raw}, ${created_raw}) ;;
+    sql: coalesce(case when ${pafu_or_follow_up} then ${scheduled_care_raw} else null end, ${created_raw}) ;;
   }
 
   measure: count_distinct_days_created {
