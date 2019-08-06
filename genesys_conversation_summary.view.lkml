@@ -117,7 +117,7 @@ view: genesys_conversation_summary {
 
   dimension: long_abandon {
     type: yesno
-    sql: ${abandoned} =1 and ${firstacdwaitduration} > 30000 ;;
+    sql: ${abandoned} =1 and ${firstacdwaitduration} > 20000 ;;
   }
 
   dimension: short_abandon {
