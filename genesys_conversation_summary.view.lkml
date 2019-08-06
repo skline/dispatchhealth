@@ -122,7 +122,7 @@ view: genesys_conversation_summary {
 
   dimension: short_abandon {
     type: yesno
-    sql: ${abandoned} =1 and ${firstacdwaitduration} between 0 and  20000 ;;
+    sql: ${abandoned} =1 and ${firstacdwaitduration} between 1 and  20000 ;;
   }
 
   measure: count {
