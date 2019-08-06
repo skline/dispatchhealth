@@ -660,6 +660,11 @@ explore: care_requests {
     sql_on: ${care_requests.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
   }
 
+  join: shift_team_market_assignment_logs {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} ;;
+  }
+
   join: breaks_pre_post_care_requests {
     relationship: one_to_one
     sql_on: ${shift_teams.id} = ${breaks_pre_post_care_requests.shift_team_id} ;;
