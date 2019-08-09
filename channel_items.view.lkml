@@ -320,19 +320,19 @@ view: channel_items {
 
   dimension: senior_umbrella_org {
     type: string
-    sql: case when lower(${name_no_tabs}) like '%bayada%' then 'bayada'
-when lower(${name_no_tabs}) like '%encompass%' then 'encompass'
-when lower(${name_no_tabs}) like '%team select%' then 'team select'
-when lower(${name_no_tabs}) like '%amedisys%' then 'amedisys'
-when lower(${name_no_tabs}) like '%kindred%' then 'kindred'
-when lower(${name_no_tabs}) like '%brookdale%' then 'brookdale'
-when lower(${name_no_tabs}) like '%christian living%' then 'christian living'
-when lower(${name_no_tabs}) like '%(rcm)%' then '(rcm)'
-when lower(${name_no_tabs}) like '%sunrise%' then 'sunrise'
-when lower(${name_no_tabs}) like '%morningstar%' then 'morningstar'
-when lower(${name_no_tabs}) like '%holiday retirement%' then 'holiday retirement'
-when lower(${name_no_tabs}) like '%atria senior living %' then 'atria senior living'
-when lower(${name_no_tabs}) like '%life care center%' then 'life care center'
+    sql: case when lower(${name_no_tabs}) like '%bayada%' or lower(${preferred_partner_description}) like '%bayada%' then 'bayada'
+when lower(${name_no_tabs}) like '%encompass%' or lower(${preferred_partner_description}) like '%encompass%' then 'encompass'
+when lower(${name_no_tabs}) like '%team select%' or lower(${preferred_partner_description}) like '%team select%' then 'team select'
+when lower(${name_no_tabs}) like '%amedisys%' or lower(${preferred_partner_description}) like '%amedisys%' then 'amedisys'
+when lower(${name_no_tabs}) like '%kindred%' or lower(${preferred_partner_description}) like '%kindred%' then 'kindred'
+when lower(${name_no_tabs}) like '%brookdale%' or lower(${preferred_partner_description}) like '%brookdale%' then 'brookdale'
+when lower(${name_no_tabs}) like '%christian living%' or lower(${preferred_partner_description}) like '%christian living%' then 'christian living'
+when lower(${name_no_tabs}) like '%(rcm)%' or lower(${preferred_partner_description}) like '%(rcm)%' then '(rcm)'
+when lower(${name_no_tabs}) like '%sunrise%' or lower(${preferred_partner_description}) like '%sunrise%' then 'sunrise'
+when lower(${name_no_tabs}) like '%morningstar%' or lower(${preferred_partner_description}) like '%morningstar%' then 'morningstar'
+when lower(${name_no_tabs}) like '%holiday retirement%' or lower(${preferred_partner_description}) like '%holiday retirement%' then 'holiday retirement'
+when lower(${name_no_tabs}) like '%atria%' or lower(${preferred_partner_description}) like '%atria%' then 'atria'
+when lower(${name_no_tabs}) like '%life care center%' or lower(${preferred_partner_description}) like '%life care center%' then 'life care center'
 else null end;;
   }
 
