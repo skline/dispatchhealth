@@ -421,8 +421,8 @@ explore: care_requests {
   }
 
   join:  icd_code_to_disease_state_mapping {
-    relationship: many_to_one
-    sql_on: ${athenadwh_icdcodeall.diagnosis_code} = ${icd_code_to_disease_state_mapping.diagnosis_code};;
+    relationship: one_to_one
+    sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${icd_code_to_disease_state_mapping.diagnosis_code};;
   }
 
   join: icd_primary_diagnosis_code {

@@ -42,21 +42,21 @@ view: icd_code_dimensions_clone {
     sql: ${TABLE}.diagnosis_code ;;
   }
 
-  dimension: disease_state {
-    type: string
-    description: "Grouped disease state for post-acute reporting"
-    sql: CASE
-          WHEN ${diagnosis_code} = 'I50' THEN 'CHF'
-          WHEN ${diagnosis_code} = 'J44' THEN 'COPD'
-          WHEN ${diagnosis_code} = 'A41' THEN 'Sepsis'
-          WHEN ${diagnosis_code} IN ('J12', 'J18', 'J84', 'Z87') THEN 'Pneumonia'
-          WHEN ${diagnosis_code} IN ('L03', 'K12', 'H05', 'N48') THEN 'Cellulitis'
-          WHEN ${diagnosis_code} = 'Z96' THEN 'Post-Op Total Joint'
-          ELSE 'Other'
-        END;;
-    drill_fields: [diagnosis_code,
-                  diagnosis_description]
-  }
+  # dimension: disease_state {
+  #   type: string
+  #   description: "Grouped disease state for post-acute reporting"
+  #   sql: CASE
+  #         WHEN ${diagnosis_code} = 'I50' THEN 'CHF'
+  #         WHEN ${diagnosis_code} = 'J44' THEN 'COPD'
+  #         WHEN ${diagnosis_code} = 'A41' THEN 'Sepsis'
+  #         WHEN ${diagnosis_code} IN ('J12', 'J18', 'J84', 'Z87') THEN 'Pneumonia'
+  #         WHEN ${diagnosis_code} IN ('L03', 'K12', 'H05', 'N48') THEN 'Cellulitis'
+  #         WHEN ${diagnosis_code} = 'Z96' THEN 'Post-Op Total Joint'
+  #         ELSE 'Other'
+  #       END;;
+  #   drill_fields: [diagnosis_code,
+  #                 diagnosis_description]
+  # }
 
 
 # dimension: disease_state {
@@ -66,13 +66,13 @@ view: icd_code_dimensions_clone {
 # }
 
 
-# dimension: disease_state {
-# type: string
-# sql: CASE
-# WHEN ${icd_code_to_disease_state_mapping.disease_state} IS NOT NULL THEN ${icd_code_to_disease_state_mapping.disease_state}
-# ELSE 'Other'
-# END ;;
-# }
+dimension: disease_state {
+type: string
+sql: CASE
+WHEN ${icd_code_to_disease_state_mapping.disease_state} IS NOT NULL THEN ${icd_code_to_disease_state_mapping.disease_state}
+ELSE 'Other'
+END ;;
+}
 
   dimension: confusion_altered_awareness {
     type: yesno
