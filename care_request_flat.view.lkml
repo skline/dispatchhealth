@@ -177,11 +177,11 @@ view: care_request_flat {
   }
 
   dimension: contact_id {
-    type: number
+    type: string
     sql:
     case
           when ${TABLE}.contact_id  ='' then null
-          else ${TABLE}.contact_id::bigint
+          else ${TABLE}.contact_id
          end;;
   }
 

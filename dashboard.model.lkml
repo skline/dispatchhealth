@@ -1065,6 +1065,12 @@ join: ga_pageviews_clone {
     sql_on: ${care_request_flat.contact_id} = ${incontact_clone.contact_id}
                   ;;
   }
+
+  join: genesys_conversation_summary {
+    sql_on: ${care_request_flat.contact_id} = ${genesys_conversation_summary.conversationid}
+      ;;
+  }
+
   join: ga_experiments {
     sql_on: ${ga_pageviews_clone.exp_id} = ${ga_experiments.exp_id}
             OR
