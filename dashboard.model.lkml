@@ -963,6 +963,11 @@ explore: care_requests {
     sql_on:  ${care_requests.patient_id} = ${patients.id} ;;
   }
 
+  join: patient_level_aggregated_measures {
+    relationship: one_to_one
+    sql_on: ${patients.id} = ${patient_level_aggregated_measures.id} ;;
+  }
+
   join: min_patient_complete_visit {
     relationship: many_to_one
     sql_on:  ${min_patient_complete_visit.patient_id} = ${patients.id} ;;
