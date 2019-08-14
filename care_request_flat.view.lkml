@@ -863,6 +863,25 @@ view: care_request_flat {
   }
   # End 3 or 30 day followup measures
 
+  #   Add consolidated dimensions and measures to combine 3, 14 and 30 day Followup results to a single value for inclusive reporting
+
+  dimension: followup_results_consolidated {
+    type: string
+    description: "Consolidated followup results from 3, 14 and 30 day results. This returns a single value from the three possible results based on the hierarchy of hospitalization_same, ed_same, Hospitalization_differing, Ed_differing, No_ed_hosptilization, and NULL'"
+    sql: CASE
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' THEN 'hospitalization_same_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT' THEN 'ed_same_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'hospitalization_different_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ed_different_complaint'
+      WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_30day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_30day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'no_ed-hospitalization'
+      ELSE NULL
+      END
+      ;;
+  }
+
+# WHEN (UPPER(${followup_3day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_3day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') OR (UPPER(${followup_14day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_14day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') OR (UPPER(${followup_30day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_30day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') THEN 'contact_attempt_unsucessful'
+# End consolidated dimensions and measures
+
   dimension: bb_30_day_in_sample {
     label: "30-Day Bounce back flag, removing any bouncebacks without a 30 day followup"
     type: yesno
