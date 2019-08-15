@@ -511,6 +511,16 @@ explore: care_requests {
     sql_on: ${diversion_flat.diversion_type_id} = ${diversion_type.id} ;;
   }
 
+  join: diversion_categories_flat {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${diversion_categories_flat.care_request_id};;
+  }
+
+  join: diversions_by_care_request {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
+  }
+
   join: letter_recipient_dimensions_clone {
     relationship:  many_to_one
     sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;

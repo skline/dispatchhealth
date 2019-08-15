@@ -4,6 +4,7 @@ view: diversion_categories_flat {
       SELECT
   cr.id AS care_request_id,
   cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS on_scene_time,
+
   dxs.diagnosis_code1,
   dxs.diagnosis_code2,
   dxs.diagnosis_code3,
@@ -14,8 +15,8 @@ view: diversion_categories_flat {
   CASE WHEN cr.place_of_service = 'Assisted Living Facility' THEN 1 ELSE 0 END AS pos_al,
   CASE WHEN ci.type_name SIMILAR TO '%(Home Health|Provider Group)%' OR
        LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%' THEN 1 ELSE 0 END AS referral,
-  CASE WHEN (CAST(EXTRACT(HOUR FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
-            (MOD(EXTRACT(DOW FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7))
+  CASE WHEN (CAST(EXTRACT(HOUR FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
+            (MOD(EXTRACT(DOW FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7))
              IN (5, 6) THEN 1 ELSE 0 END AS after_hours,
   CASE WHEN
     (pt.age < 1 AND
@@ -30,7 +31,7 @@ view: diversion_categories_flat {
        (v.heartrate < 60 OR v.heartrate_initial < 60 OR v.heartrate > 100 OR v.heartrate_initial > 100))
     OR ((v.bloodpressure_systolic < 90 OR v.bloodpressure_systolic_initial < 90) AND pt.age >= 12 )
     OR (pt.age >=12 AND (v.o2saturation < 90 OR v.o2saturation_initial < 90)) THEN 1 ELSE 0 END AS abnormal_vitals,
-    dxs.confusion,
+    COALESCE(dxs.confusion,0) AS confusion,
     CASE WHEN dxs.wheelchair_dx > 0 OR hb.wheelchair_homebound > 0 THEN 1 ELSE 0 END AS wheelchair_hb,
     COALESCE(ekg,0) AS ekg,
     COALESCE(nebulizer,0) AS nebulizer,
@@ -309,10 +310,22 @@ view: diversion_categories_flat {
        LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%') THEN 1 ELSE 0 END AS dc41
 
   FROM public.care_requests cr
-  INNER JOIN public.care_request_statuses crs
-    ON cr.id = crs.care_request_id AND crs.name = 'complete'
-  LEFT JOIN public.care_request_statuses cros
-    ON cr.id = cros.care_request_id AND cros.name = 'on_scene'
+  INNER JOIN (
+    SELECT
+      care_request_id,
+      name,
+      started_at,
+      ROW_NUMBER() OVER (PARTITION BY care_request_id, name ORDER BY started_at DESC) AS row_num
+    FROM public.care_request_statuses) crs
+    ON cr.id = crs.care_request_id AND crs.name = 'complete' AND crs.row_num = 1
+  LEFT JOIN (
+    SELECT
+      care_request_id,
+      name,
+      started_at,
+      ROW_NUMBER() OVER (PARTITION BY care_request_id, name ORDER BY started_at DESC) AS row_num
+    FROM public.care_request_statuses) cros
+    ON cr.id = cros.care_request_id AND cros.name = 'on_scene' AND cros.row_num = 1
   LEFT JOIN public.markets mkt
     ON cr.market_id = mkt.id
   LEFT JOIN looker_scratch.timezones tz
@@ -422,6 +435,7 @@ view: diversion_categories_flat {
       SELECT
         ced.clinical_encounter_id,
         ced.ordering,
+        ced.updated_at,
         SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) AS diagnosis_code,
         CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('R41','R40','R53','F03') THEN 1 ELSE 0 END AS confusion,
         CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('G81','G82') THEN 1 ELSE 0 END AS wheelchair_dx
@@ -479,7 +493,8 @@ view: diversion_categories_flat {
     LEFT JOIN looker_scratch.athenadwh_transactions_clone t
       ON t.claim_id = c.claim_id
     GROUP BY c.claim_id, c.claim_appointment_id) AS proc
-  ON cr.ehr_id = proc.appointment_id ;;
+  ON cr.ehr_id = proc.appointment_id
+  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46 ;;
 
         sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
         indexes: ["care_request_id", "diagnosis_code1", "diagnosis_code2", "diagnosis_code3"]
@@ -492,15 +507,15 @@ dimension: care_request_id {
   sql: ${TABLE}.care_request_id ;;
 }
   dimension: diagnosis_code1 {
-    type: number
+    type: string
     sql: ${TABLE}.diagnosis_code1 ;;
   }
   dimension: diagnosis_code2 {
-    type: number
+    type: string
     sql: ${TABLE}.diagnosis_code2 ;;
   }
   dimension: diagnosis_code3 {
-    type: number
+    type: string
     sql: ${TABLE}.diagnosis_code3;;
   }
   dimension: diagnosis_only {
@@ -555,5 +570,120 @@ dimension: care_request_id {
     type: number
     sql: ${TABLE}.iv_fluids ;;
   }
+  dimension: blood_tests {
+    type: number
+    sql: ${TABLE}.blood_tests ;;
+  }
+  dimension: catheter_placement {
+    type: number
+    sql: ${TABLE}.catheter_placement ;;
+  }
+  dimension: laceration_repair {
+    type: number
+    sql: ${TABLE}.laceration_repair ;;
+  }
+  dimension: epistaxis {
+    type: number
+    sql: ${TABLE}.epistaxis ;;
+  }
+  dimension: hernia_rp_reduction {
+    type: number
+    sql: ${TABLE}.hernia_rp_reduction ;;
+  }
+  dimension: joint_reduction {
+    type: number
+    sql: ${TABLE}.joint_reduction ;;
+  }
+  dimension: gastronomy_tube {
+    type: number
+    sql: ${TABLE}.gastronomy_tube ;;
+  }
+  dimension: abscess_drain {
+    type: number
+    sql: ${TABLE}.abscess_drain ;;
+  }
+  dimension: dc22 {
+    type: number
+    sql: ${TABLE}.dc22 ;;
+  }
+  dimension: dc23 {
+    type: number
+    sql: ${TABLE}.dc23 ;;
+  }
+  dimension: dc24 {
+    type: number
+    sql: ${TABLE}.dc24 ;;
+  }
+  dimension: dc25 {
+    type: number
+    sql: ${TABLE}.dc25 ;;
+  }
+  dimension: dc26 {
+    type: number
+    sql: ${TABLE}.dc26 ;;
+  }
+  dimension: dc27 {
+    type: number
+    sql: ${TABLE}.dc27 ;;
+  }
+  dimension: dc28 {
+    type: number
+    sql: ${TABLE}.dc28 ;;
+  }
+  dimension: dc29 {
+    type: number
+    sql: ${TABLE}.dc29 ;;
+  }
+  dimension: dc30 {
+    type: number
+    sql: ${TABLE}.dc30 ;;
+  }
+  dimension: dc31 {
+    type: number
+    sql: ${TABLE}.dc31 ;;
+  }
+  dimension: dc32 {
+    type: number
+    sql: ${TABLE}.dc32 ;;
+  }
+  dimension: dc33 {
+    type: number
+    sql: ${TABLE}.dc33 ;;
+  }
+  dimension: dc34 {
+    type: number
+    sql: ${TABLE}.dc34 ;;
+  }
+  dimension: dc35 {
+    type: number
+    sql: ${TABLE}.dc35 ;;
+  }
+  dimension: dc36 {
+    type: number
+    sql: ${TABLE}.dc36 ;;
+  }
+  dimension: dc37 {
+    type: number
+    sql: ${TABLE}.dc37 ;;
+  }
+  dimension: dc38 {
+    type: number
+    sql: ${TABLE}.dc38 ;;
+  }
+  dimension: dc39 {
+    type: number
+    sql: ${TABLE}.dc39 ;;
+  }
+  dimension: dc40 {
+    type: number
+    sql: ${TABLE}.dc40 ;;
+  }
+  dimension: dc41 {
+    type: number
+    sql: ${TABLE}.dc41 ;;
+  }
+
+
+
 
 }
