@@ -17,7 +17,11 @@ view: secondary_screenings {
     timeframes: [
       raw,
       time,
+      time_of_day,
+      hour_of_day,
       date,
+      day_of_week,
+      day_of_week_index,
       week,
       month,
       quarter,
@@ -74,7 +78,11 @@ view: secondary_screenings {
     timeframes: [
       raw,
       time,
+      time_of_day,
+      hour_of_day,
       date,
+      day_of_week,
+      day_of_week_index,
       week,
       month,
       quarter,
