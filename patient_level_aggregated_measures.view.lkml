@@ -23,6 +23,16 @@ view: patient_level_aggregated_measures {
       }
 
       bind_filters: {
+        to_field: insurance_coalese_crosswalk.custom_insurance_grouping
+        from_field: insurance_coalese_crosswalk.custom_insurance_grouping
+      }
+
+      bind_filters: {
+        to_field: athenadwh_payers_clone.custom_insurance_grouping
+        from_field: athenadwh_payers_clone.custom_insurance_grouping
+      }
+
+      bind_filters: {
         to_field: markets.name_adj
         from_field: markets.name_adj
       }
