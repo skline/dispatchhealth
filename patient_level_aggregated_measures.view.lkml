@@ -83,4 +83,14 @@ view: patient_level_aggregated_measures {
     }
   }
 
+  measure: count_distinct_patients_3_or_more_visits {
+    description: "Count for distinct patients that had 3 or more visits"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 3_or_more_patient_visits
+      value: "yes"
+    }
+  }
+
 }
