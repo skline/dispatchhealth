@@ -210,6 +210,16 @@ view: genesys_conversation_summary {
     }
   }
 
+  measure: count_answered {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: answered
+      value: "1"
+    }
+  }
+
   dimension:  inqueue_time_greater_30{
     type: yesno
     sql: ${firstacdwaitduration}>30000 ;;
