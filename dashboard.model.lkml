@@ -1382,30 +1382,38 @@ explore: channel_items {
 }
 
 explore: invoca_clone {
-
+  sql_always_where: (${invoca_clone.utm_medium} !='self report');;
 
   join: incontact_clone {
-    type: full_outer
     sql_on: abs(EXTRACT(EPOCH FROM ${incontact_clone.end_time_raw})-EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw}+${invoca_clone.total_duration})) < 10
              and ${invoca_clone.caller_id} = ${incontact_clone.from_number}
                   ;;
-    sql_where: (${invoca_clone.utm_medium} !='self report' or ${incontact_clone.contact_id} is not null) ;;
+
   }
+
+  join: genesys_conversation_summary {
+    sql_on: abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${invoca_clone.start_time_raw}))) <5000
+                         and ${invoca_clone.caller_id} = ${genesys_conversation_summary.ani}
+                          ;;
+  }
+
+  join: genesys_conversation_wrapup {
+    sql_on: ${genesys_conversation_summary.conversationid}=${genesys_conversation_wrapup.conversationid} ;;
+  }
+
+
 
   join: patients {
     sql_on:   (
-                ${patients.mobile_number} = ${invoca_clone.caller_id} OR
-                ${patients.mobile_number} = ${incontact_clone.from_number}
+                ${patients.mobile_number} = ${invoca_clone.caller_id}
               )
              and ${patients.mobile_number} is not null   ;;
   }
 
   join: care_request_flat {
-    sql_on: (${patients.id} = ${care_request_flat.patient_id}  OR ${care_request_flat.origin_phone} = ${invoca_clone.caller_id} or ${care_request_flat.origin_phone} = ${incontact_clone.from_number})
+    sql_on: (${patients.id} = ${care_request_flat.patient_id}  OR ${care_request_flat.origin_phone} = ${invoca_clone.caller_id})
       and (
             abs(EXTRACT(EPOCH FROM ${invoca_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
-            OR
-           abs(EXTRACT(EPOCH FROM ${incontact_clone.start_time_raw})-EXTRACT(EPOCH FROM ${care_request_flat.created_mountain_raw})) < (60*60*1.5)
           );;
   }
 
@@ -2590,9 +2598,35 @@ explore: genesys_conversation_summary {
   join: genesys_conversation_wrapup {
     sql_on: ${genesys_conversation_summary.conversationid}=${genesys_conversation_wrapup.conversationid} ;;
   }
+
+  join: invoca_clone {
+    sql_on: abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${invoca_clone.start_time_raw}))) <5000
+    and ${invoca_clone.caller_id} = ${genesys_conversation_summary.ani}
+    ;;
+  }
+
   join: markets {
     relationship: one_to_one
     sql_on: ${markets.id}=${number_to_market.market_id} ;;
   }
+
+  join: care_request_flat {
+    sql_on: ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id};;
+  }
+
+  join: patients {
+    sql_on:   (
+                ${patients.mobile_number} = ${genesys_conversation_summary.ani}
+              )
+             and ${patients.mobile_number} is not null   ;;
+  }
+
+  join: care_request_flat_number{
+    from: care_request_flat
+    sql_on: (${patients.id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
+      and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
+  }
+
+
 
 }

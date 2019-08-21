@@ -56,7 +56,7 @@ view: genesys_conversation_wrapup {
 
   dimension: wrapupcodename {
     type: string
-    sql: ${TABLE}."wrapupcodename" ;;
+    sql: trim(${TABLE}."wrapupcodename") ;;
   }
 
   measure: count {

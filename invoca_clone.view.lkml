@@ -424,6 +424,13 @@ view: invoca_clone {
  ;;
   }
 
+  dimension: sem_non_brand {
+    type: yesno
+    sql: ${sem} and lower(${promo_number_description}) not like '%brand%' and (lower(${ad_groups_clone.ad_group_name}) not like '%brand%' or ${ad_groups_clone.ad_group_name} is null)
+      ;;
+  }
+
+
   dimension: local_listings {
     type: yesno
     sql:  lower(${promo_number_description}) like '%local listings%'
