@@ -817,9 +817,9 @@ view: care_request_flat {
     type: yesno
     sql: ((${bounceback_3day} AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)
          OR ${followup_14day_result} = 'ed_same_complaint' OR ${followup_14day_result} = 'hospitalization_same_complaint')
-      AND ${followup_3day_result} != 'REMOVED';;
+    ;;
   }
-
+# AND ${followup_3day_result} != 'REMOVED'
   measure: bb_14_day_count_in_sample {
     label: "14-Day Bounce back Count With No Followups Removed"
     type: count_distinct
@@ -863,14 +863,49 @@ view: care_request_flat {
   }
   # End 3 or 30 day followup measures
 
+  #   Add consolidated dimensions and measures to combine 3, 14 and 30 day Followup results to a single value for inclusive reporting
+
+  dimension: followup_results_consolidated {
+    type: string
+    description: "Consolidated followup results from 3, 14 and 30 day results. This returns a single value from the three possible results based on the hierarchy of hospitalization_same, ed_same, Hospitalization_differing, Ed_differing, No_ed_hosptilization, and NULL'"
+    sql: CASE
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' THEN 'hospitalization_same_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT' THEN 'ed_same_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'hospitalization_different_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ed_different_complaint'
+      WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_30day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_30day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'no_ed-hospitalization'
+      ELSE NULL
+      END
+      ;;
+  }
+
+  dimension: followup_results_3_14_30day_bounceback {
+  description: "Consolidated followup results from 3, 14 and 30 day results with 30 day followup segmented into separate categories. This returns a single value from the three possible results based on the hierarchy of hospitalization_same, ed_same, Hospitalization_differing, Ed_differing, No_ed_hosptilization, and NULL'"
+    sql: CASE
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'Hospitilization Same Complaint with 30 Day Followup'
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'ED Same Complaint with 30 Day Followup'
+
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' THEN 'Hospitilization Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT' THEN 'ED Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'Hospitilization Different Complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ED Different Complaint'
+      WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_30day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_30day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'No Hospilization/ED'
+      ELSE NULL
+      END
+      ;;
+  }
+
+# WHEN (UPPER(${followup_3day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_3day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') OR (UPPER(${followup_14day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_14day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') OR (UPPER(${followup_30day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_30day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') THEN 'contact_attempt_unsucessful'
+# End consolidated dimensions and measures
+
   dimension: bb_30_day_in_sample {
     label: "30-Day Bounce back flag, removing any bouncebacks without a 30 day followup"
     type: yesno
     sql: (((${bounceback_3day} OR ${bounceback_14day}) AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)
          OR ${followup_30day_result} = 'ed_same_complaint' OR ${followup_30day_result} = 'hospitalization_same_complaint')
-      AND ${followup_3day_result} != 'REMOVED';;
+      ;;
   }
-
+# AND ${followup_3day_result} != 'REMOVED';;
   measure: bb_30_day_count_in_sample {
     label: "30-Day Bounce back Count With No Followups Removed"
     type: count_distinct
