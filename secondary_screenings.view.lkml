@@ -14,6 +14,7 @@ view: secondary_screenings {
 
   dimension_group: created {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -27,7 +28,7 @@ view: secondary_screenings {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at ;;
+    sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: note {
@@ -51,6 +52,7 @@ view: secondary_screenings {
 
   dimension_group: note_updated {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -60,7 +62,7 @@ view: secondary_screenings {
       quarter,
       year
     ]
-    sql: ${TABLE}.note_updated_at ;;
+    sql: ${TABLE}.note_updated_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: note_updater_id {
@@ -75,6 +77,7 @@ view: secondary_screenings {
 
   dimension_group: provider_updated {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -88,7 +91,7 @@ view: secondary_screenings {
       quarter,
       year
     ]
-    sql: ${TABLE}.provider_updated_at ;;
+    sql: ${TABLE}.provider_updated_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: provider_updater_id {
@@ -111,7 +114,7 @@ view: secondary_screenings {
       quarter,
       year
     ]
-    sql: ${TABLE}.updated_at ;;
+    sql: ${TABLE}.updated_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   measure: count_distinct {
