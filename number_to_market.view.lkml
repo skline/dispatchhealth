@@ -25,6 +25,10 @@ view: number_to_market {
     type: string
     sql: ${TABLE}."number" ;;
   }
+  dimension: paid {
+    type: yesno
+    sql:lower(${name}) like '%paid%' ;;
+  }
 
   measure: count {
     type: count

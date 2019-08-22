@@ -4104,5 +4104,25 @@ end  ;;
     }
   }
 
+  dimension: overflow_visit {
+    type: yesno
+    sql: (not ${pafu_or_follow_up}) and ${scheduled_visit} and lower(${service_lines.name}) like '%acute%'
+         AND
+        (
+          ${created_date} != ${on_scene_date}
+          OR
+         ${on_scene_date} is null
+        )
+        AND
+        (
+          ${created_date} != ${archive_date}
+        OR
+          ${archive_date} is NULL
+        )
+        AND
+        ${created_date} != ${scheduled_care_date}
+        ;;
+  }
+
 
 }
