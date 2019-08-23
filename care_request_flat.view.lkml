@@ -4125,5 +4125,186 @@ end  ;;
         ;;
   }
 
+  dimension: archived {
+    type: yesno
+    sql: ${archive_date} is not null ;;
+  }
+
+  measure: count_distinct_bottom_funnel_care_requests {
+    description: "Count of distinct care requests w/o phone screened"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
+  measure: count_complete_same_day {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations (Same Day)"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+  }
+
+  measure: count_complete_overflow {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations (Not Same Day)"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+  }
+
+  measure: limbo_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: not_resolved_or_complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+
+  }
+
+  measure: limbo_non_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: not_resolved_or_complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+  }
+
+  measure: count_resolved_overflow {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations (Not Same Day)"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "no"
+    }
+    filters: {
+      field: archived
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
+  measure: lwbs_minus_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+  }
+
+  measure: no_answer_no_show_count_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: resolved_no_answer_no_show
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+  }
+
+  measure: booked_shaping_placeholder_resolved_count_minus_overflow {
+    description: "Care requests resolved for booked, shaping or placeholder"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: booked_shaping_placeholder_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+  }
+
+  measure: resolved_other_count_bottom_funnel {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "no"
+    }
+    filters: {
+      field: lwbs
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: booked_shaping_placeholder_resolved
+      value: "no"
+    }
+    filters: {
+      field: resolved_no_answer_no_show
+      value: "no"
+    }
+
+    filters: {
+      field: complete
+      value: "no"
+    }
+
+    filters: {
+      field: not_resolved_or_complete
+      value: "no"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+  }
+
 
 }
