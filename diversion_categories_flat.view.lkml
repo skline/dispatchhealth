@@ -91,8 +91,6 @@ view: diversion_categories_flat {
   --POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday
   -- Needs after hours added but created correctly with timezone added.
   CASE WHEN (cr.place_of_service = 'Skilled Nursing Facility') AND
-    ((CAST(EXTRACT(HOUR FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
-    (MOD(EXTRACT(DOW FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7)) IN (5, 6)) AND
     ((ekg > 0 OR nebulizer > 0 OR iv_fluids > 0 OR
     blood_tests > 0 OR laceration_repair > 0 OR epistaxis > 0 OR hernia_rp_reduction > 0 OR
     joint_reduction > 0 OR gastronomy_tube > 0 OR abscess_drain > 0) OR
@@ -109,7 +107,10 @@ view: diversion_categories_flat {
     OR ((v.bloodpressure_systolic < 90 OR v.bloodpressure_systolic_initial < 90) AND pt.age >= 12 )
     OR (pt.age >=12 AND (v.o2saturation < 90 OR v.o2saturation_initial < 90)))) OR
     ci.type_name SIMILAR TO '%(Home Health|Provider Group)%' OR
-       LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%') THEN 1 ELSE 0 END AS dc26,
+       LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%') AND
+    (CAST(EXTRACT(HOUR FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
+            (MOD(EXTRACT(DOW FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7))
+             IN (5, 6) THEN 1 ELSE 0 END AS dc26,
 
   --POS AL AND (abnormal vital signs  OR altered mental status)
     CASE WHEN (cr.place_of_service = 'Assisted Living Facility') AND (dxs.confusion > 0 OR
@@ -156,8 +157,6 @@ view: diversion_categories_flat {
 
   --POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday
   CASE WHEN (cr.place_of_service = 'Assisted Living Facility') AND
-    ((CAST(EXTRACT(HOUR FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
-    (MOD(EXTRACT(DOW FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7)) IN (5, 6)) AND
     ((ekg > 0 OR nebulizer > 0 OR iv_fluids > 0 OR
     blood_tests > 0 OR laceration_repair > 0 OR epistaxis > 0 OR hernia_rp_reduction > 0 OR
     joint_reduction > 0 OR gastronomy_tube > 0 OR abscess_drain > 0) OR
@@ -174,7 +173,10 @@ view: diversion_categories_flat {
     OR ((v.bloodpressure_systolic < 90 OR v.bloodpressure_systolic_initial < 90) AND pt.age >= 12 )
     OR (pt.age >=12 AND (v.o2saturation < 90 OR v.o2saturation_initial < 90)))) OR
     ci.type_name SIMILAR TO '%(Home Health|Provider Group)%' OR
-       LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%') THEN 1 ELSE 0 END AS dc31,
+       LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%') AND
+    (CAST(EXTRACT(HOUR FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
+            (MOD(EXTRACT(DOW FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7))
+             IN (5, 6) THEN 1 ELSE 0 END AS dc31,
 
    --POS Home AND (abnormal vital signs  OR altered mental status)
     CASE WHEN (cr.place_of_service = 'Home') AND (dxs.confusion > 0 OR
@@ -221,8 +223,6 @@ view: diversion_categories_flat {
 
   --POS Home AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday
   CASE WHEN (cr.place_of_service = 'Home') AND
-    ((CAST(EXTRACT(HOUR FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
-    (MOD(EXTRACT(DOW FROM crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7)) IN (5, 6)) AND
     ((ekg > 0 OR nebulizer > 0 OR iv_fluids > 0 OR
     blood_tests > 0 OR laceration_repair > 0 OR epistaxis > 0 OR hernia_rp_reduction > 0 OR
     joint_reduction > 0 OR gastronomy_tube > 0 OR abscess_drain > 0) OR
@@ -239,7 +239,10 @@ view: diversion_categories_flat {
     OR ((v.bloodpressure_systolic < 90 OR v.bloodpressure_systolic_initial < 90) AND pt.age >= 12 )
     OR (pt.age >=12 AND (v.o2saturation < 90 OR v.o2saturation_initial < 90)))) OR
     ci.type_name SIMILAR TO '%(Home Health|Provider Group)%' OR
-       LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%') THEN 1 ELSE 0 END AS dc36,
+       LOWER(cr.activated_by) SIMILAR TO '%(home health|s clinician)%') AND
+    (CAST(EXTRACT(HOUR FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz) AS INT)) > 15 OR
+            (MOD(EXTRACT(DOW FROM cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz)::integer - 1 + 7, 7))
+             IN (5, 6) THEN 1 ELSE 0 END AS dc36,
 
     --POS Home AND (abnormal vital signs  OR altered mental status)
     CASE WHEN (cr.place_of_service = 'Home') AND (dxs.wheelchair_dx > 0 OR hb.wheelchair_homebound > 0) AND
@@ -439,6 +442,7 @@ view: diversion_categories_flat {
         SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) AS diagnosis_code,
         CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('R41','R40','R53','F03') THEN 1 ELSE 0 END AS confusion,
         CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('G81','G82') THEN 1 ELSE 0 END AS wheelchair_dx
+        --ROW_NUMBER() OVER (PARTITION BY ced.clinical_encounter_id, ced.ordering ORDER BY ced.updated_at DESC) AS row_num
       FROM looker_scratch.athenadwh_clinicalencounter_diagnosis ced
       LEFT JOIN looker_scratch.athenadwh_clinicalencounter_dxicd10 cedx
         ON ced.clinical_encounter_dx_id = cedx.clinical_encounter_dx_id

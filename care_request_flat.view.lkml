@@ -3687,6 +3687,65 @@ end  ;;
     sql: CASE WHEN ${diversion_type.diversion_type_911} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
   }
 
+  measure: count_911_diversions2 {
+    type: sum_distinct
+    sql: ${diversions_by_care_request.diversion_911} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
+  measure: count_er_diversions2 {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+    filters: {
+      field: diversions_by_care_request.diversion_er
+      value: "no"
+    }
+  }
+
+  measure: count_observation_diversions2 {
+    type: sum_distinct
+    sql: ${diversions_by_care_request.diversion_observation} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
+  measure: count_hospitalization_diversions2 {
+    type: sum_distinct
+    sql: ${diversions_by_care_request.diversion_hospitalization} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
   measure: diversion_savings_911 {
     type: number
     sql: ${count_911_diversions} *

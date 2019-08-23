@@ -126,7 +126,7 @@ SELECT DISTINCT
   dcf.dc38 * df3.dc38,
   dcf.dc39 * df3.dc39,
   dcf.dc40 * df3.dc40,
-  dcf.dc41 * df3.dc41) > 0 THEN 1 ELSE 0 END AS diversion_911,
+  dcf.dc41 * df3.dc41) > 0 THEN 'yes' ELSE 'no' END AS diversion_er,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df4.dc1,
   dcf.survey_yes_to_er * df4.dc2,
@@ -250,7 +250,7 @@ SELECT DISTINCT
   dcf.dc38 * df6.dc38,
   dcf.dc39 * df6.dc39,
   dcf.dc40 * df6.dc40,
-  dcf.dc41 * df6.dc41) > 0 THEN 1 ELSE 0 END AS diversion_er,
+  dcf.dc41 * df6.dc41) > 0 THEN 1 ELSE 0 END AS diversion_911,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df7.dc1,
   dcf.survey_yes_to_er * df7.dc2,
@@ -541,13 +541,16 @@ SELECT DISTINCT
     type: number
     sql: ${TABLE}.care_request_id ;;
   }
+
   dimension: diversion_911 {
     type: number
     sql: ${TABLE}.diversion_911 ;;
   }
+
   measure: count_911_diversions {
-    type: count_distinct
-    sql: ${care_request_id} ;;
+    type: sum_distinct
+    sql: ${diversion_911} ;;
+    sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "no"
@@ -557,17 +560,62 @@ SELECT DISTINCT
       value: "no"
     }
   }
+
   dimension: diversion_er {
-    type: number
+    type: yesno
     sql: ${TABLE}.diversion_er ;;
   }
+
+  measure: count_er_diversions {
+    type: count
+    sql: ${diversion_er} ;;
+    #sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
   dimension: diversion_observation {
     type: number
     sql: ${TABLE}.diversion_obs ;;
   }
+
+  measure: count_observation_diversions {
+    type: count
+    sql: ${diversion_observation} ;;
+    #sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
   dimension: diversion_hospitalization {
     type: number
     sql: ${TABLE}.diversion_hosp ;;
+  }
+
+  measure: count_hospitalization_diversions {
+    type: count
+    sql: ${diversion_hospitalization} ;;
+    #sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
   }
 
 
