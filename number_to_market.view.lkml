@@ -12,8 +12,8 @@ view: number_to_market {
   }
 
   dimension: mvp {
-    type: number
-    sql: ${TABLE}."mvp" ;;
+    type: yesno
+    sql: ${TABLE}."mvp"=1 ;;
   }
 
   dimension: name {
@@ -24,6 +24,10 @@ view: number_to_market {
   dimension: number {
     type: string
     sql: ${TABLE}."number" ;;
+  }
+  dimension: paid {
+    type: yesno
+    sql:lower(${name}) like '%paid%' ;;
   }
 
   measure: count {

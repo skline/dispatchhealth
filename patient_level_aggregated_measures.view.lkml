@@ -23,6 +23,16 @@ view: patient_level_aggregated_measures {
       }
 
       bind_filters: {
+        to_field: insurance_coalese_crosswalk.custom_insurance_grouping
+        from_field: insurance_coalese_crosswalk.custom_insurance_grouping
+      }
+
+      bind_filters: {
+        to_field: athenadwh_payers_clone.custom_insurance_grouping
+        from_field: athenadwh_payers_clone.custom_insurance_grouping
+      }
+
+      bind_filters: {
         to_field: markets.name_adj
         from_field: markets.name_adj
       }
@@ -77,6 +87,16 @@ view: patient_level_aggregated_measures {
     type: sum_distinct
     sql_distinct_key: ${id} ;;
     sql: ${count_billable_est} ;;
+    filters: {
+      field: 3_or_more_patient_visits
+      value: "yes"
+    }
+  }
+
+  measure: count_distinct_patients_3_or_more_visits {
+    description: "Count for distinct patients that had 3 or more visits"
+    type: count_distinct
+    sql: ${id} ;;
     filters: {
       field: 3_or_more_patient_visits
       value: "yes"

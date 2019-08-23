@@ -37,7 +37,7 @@ view: genesys_conversation_summary {
       quarter,
       year
     ]
-    sql: ${TABLE}."conversationstarttime" ;;
+    sql: ${TABLE}."conversationstarttime" AT TIME ZONE 'UTC';;
   }
 
   dimension_group: month_placeholder {
@@ -117,12 +117,12 @@ view: genesys_conversation_summary {
 
   dimension: long_abandon {
     type: yesno
-    sql: ${abandoned} =1 and ${firstacdwaitduration} > 20000 ;;
+    sql: ${abandoned} = 1 and ${firstacdwaitduration} > 20000 ;;
   }
 
   dimension: short_abandon {
     type: yesno
-    sql: ${abandoned} =1 and ${firstacdwaitduration} between 1 and  20000 ;;
+    sql: ${abandoned} = 1 and ${firstacdwaitduration} between 1 and  20000 ;;
   }
 
   measure: count {
@@ -131,7 +131,7 @@ view: genesys_conversation_summary {
   }
 
   measure: count_distinct {
-    type: count
+    type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key:  ${conversationid};;
   }
@@ -196,6 +196,27 @@ view: genesys_conversation_summary {
     filters: {
       field: genesys_conversation_wrapup.wrapupcodename
       value: "General Inquiry"
+    }
+  }
+
+
+  measure: count_care_request_disposition {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: genesys_conversation_wrapup.wrapupcodename
+      value: "Care Request Created"
+    }
+  }
+
+  measure: count_answered {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: answered
+      value: "1"
     }
   }
 
