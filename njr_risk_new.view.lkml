@@ -8,11 +8,8 @@ view: njr_risk_new {
 
   dimension: zipcode {
     type: zipcode
-    sql: ${TABLE}.zipcode ;;
+    sql: right(concat('0', ${TABLE}.zipcode),5);;
   }
 
-  measure: count {
-    type: count
-    drill_fields: []
-  }
+
 }
