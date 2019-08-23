@@ -4105,6 +4105,7 @@ end  ;;
   }
 
   dimension: overflow_visit {
+    description: "Care Requests that were pushed to next day from their intended visit date. Excludes PAFU and only includes 'acute' service lines."
     type: yesno
     sql: (not ${pafu_or_follow_up}) and ${scheduled_visit} and lower(${service_lines.name}) like '%acute%'
          AND
