@@ -27,6 +27,7 @@ SELECT
     cr.id AS care_request_id,
     geo.latitude AS on_route_latitude,
     geo.longitude AS on_route_longitude,
+    ROW_NUMBER() OVER (PARTITION BY cr.shift_team_id ORDER BY cr.shift_team_id, crs.started_at) AS care_request_number,
     LAG(adr.latitude,1, mgl.latitude) OVER(PARTITION BY st.id ORDER BY st.id, crs.started_at) AS prior_cr_latitude,
     LAG(adr.longitude,1, mgl.longitude) OVER(PARTITION BY st.id ORDER BY st.id, crs.started_at) AS prior_cr_longitude,
     geo.next_time AS geo_on_route_time,
@@ -50,7 +51,7 @@ SELECT
         crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' > geo.updated_time AND
         crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' <= next_time
     WHERE DATE(crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') >= '2019-06-01'
-    GROUP BY 1,2,3,4,5,6,7,adr.latitude, adr.longitude, mgl.latitude, mgl.longitude,crs.started_at,10,11
+    GROUP BY 1,2,3,4,5,6,7,crs.started_at,adr.latitude, adr.longitude, mgl.latitude, mgl.longitude,11,12
     ORDER BY 1,2,12 ;;
 
       sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
@@ -71,6 +72,12 @@ SELECT
     type: number
     primary_key: yes
     sql: ${TABLE}.care_request_id ;;
+  }
+
+  dimension: care_request_order {
+    description: "The order of the shift team's care request"
+    type: number
+    sql: ${TABLE}.care_request_number ;;
   }
 
   dimension_group: geo_on_route_time {
@@ -112,7 +119,21 @@ SELECT
   dimension: on_route_lag {
     description: "The difference between indicated on-route time and actual on-route"
     type: number
-    sql: (EXTRACT(EPOCH FROM ${geo_on_route_time_raw}) - EXTRACT(EPOCH FROM ${geo_on_route_time_raw})) / 60 ;;
+    sql: (EXTRACT(EPOCH FROM ${geo_on_route_time_raw}) - EXTRACT(EPOCH FROM ${on_route_time_raw})) / 60 ;;
+    value_format: "0.00"
+  }
+
+  measure: avg_on_route_lag {
+    description: "The average time difference between indicated on-route and actual on-route"
+    type: average
+    sql: ${on_route_lag} ;;
+    value_format: "0.00"
+  }
+
+  measure: median_on_route_lag {
+    description: "The median time difference between indicated on-route and actual on-route"
+    type: median
+    sql: ${on_route_lag} ;;
     value_format: "0.00"
   }
 
