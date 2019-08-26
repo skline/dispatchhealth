@@ -1440,6 +1440,7 @@ view: care_request_flat {
       time_of_day,
       date,
       time,
+      hour,
       week,
       month,
       day_of_week,
@@ -1450,6 +1451,18 @@ view: care_request_flat {
       year
       ]
     sql: ${TABLE}.complete_date ;;
+  }
+
+  dimension: complete_decimal_half_hour_increment {
+    description: "Complete Time of Day as Decimal rounded to the nearest 1/2 hour increment"
+    type: number
+    sql: CASE
+      WHEN CAST(EXTRACT(MINUTE FROM ${complete_raw}) AS FLOAT) < 15 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 0
+      WHEN CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT) >= 15 AND CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT) < 45 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 0.5
+      ELSE  FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 1
+      END
+      ;;
+    value_format: "0.0"
   }
 
   dimension: weekday_complete {

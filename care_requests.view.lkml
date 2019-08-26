@@ -156,6 +156,22 @@ view: care_requests {
     sql: ${TABLE}.created_at ;;
   }
 
+
+  dimension: created_decimal_quarter_hour_increment {
+    description: "Care Request Created Time of Day as Decimal rounded to the nearest 1/4 hour increment"
+    type: number
+    sql: CASE
+      WHEN CAST(EXTRACT(MINUTE FROM ${created_raw}) AS FLOAT) < 7.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0
+      WHEN CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) >= 7.5 AND CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) < 22.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0.25
+      WHEN CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) >= 22.5 AND CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) < 37.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0.5
+            WHEN CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) >= 37.5 AND CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) < 52.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0.75
+      ELSE  FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 1
+      END
+      ;;
+    value_format: "0.00"
+  }
+
+
   dimension_group: created_mountain {
     type: time
     convert_tz: no
