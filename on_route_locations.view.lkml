@@ -14,7 +14,7 @@ SELECT
       (PARTITION BY car_id, DATE(updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') ORDER BY car_id, updated_at))
   - EXTRACT(EPOCH FROM updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain'))/60 AS time_difference
   FROM geo_locations
-  WHERE DATE(updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') >= '2019-01-01'
+  WHERE DATE(updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') >= '2019-06-01'
   ORDER BY (EXTRACT(EPOCH FROM LEAD(updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain',1) OVER
       (PARTITION BY car_id, DATE(updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') ORDER BY car_id, updated_at))
   - EXTRACT(EPOCH FROM updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain'))/60 DESC)
@@ -49,7 +49,7 @@ SELECT
         ON cars.id = geo.car_id AND
         crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' > geo.updated_time AND
         crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' <= next_time
-    WHERE DATE(crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') >= '2019-01-01'
+    WHERE DATE(crs.started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') >= '2019-06-01'
     GROUP BY 1,2,3,4,5,6,7,adr.latitude, adr.longitude, mgl.latitude, mgl.longitude,crs.started_at,10,11
     ORDER BY 1,2,12 ;;
 
@@ -119,14 +119,14 @@ SELECT
   dimension: care_request_location {
     type: location
     description: "The location of the last care request"
-    sql_latitude: ${TABLE}.prior_cr_latitutde ;;
+    sql_latitude: ${TABLE}.prior_cr_latitude ;;
     sql_longitude: ${TABLE}.prior_cr_longitude ;;
   }
 
   dimension: on_route_location {
     type: location
     description: "The location where the care team was located when they indicated on-route"
-    sql_latitude: ${TABLE}.on_route_latitutde ;;
+    sql_latitude: ${TABLE}.on_route_latitude ;;
     sql_longitude: ${TABLE}.on_route_longitude ;;
   }
 
@@ -138,4 +138,12 @@ SELECT
     units: miles
     value_format: "0.00"
   }
+
+
+  dimension: different_on_route_location {
+    description: "A flag indicating that the actual on route location is > 0.25 miles from the last care request"
+    type: yesno
+    sql: ${distance_from_cr_to_actual} >= 0.25 ;;
+  }
+
 }
