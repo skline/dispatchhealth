@@ -4154,6 +4154,10 @@ end  ;;
       field: overflow_visit
       value: "no"
     }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
   }
 
   measure: count_complete_overflow {
@@ -4169,6 +4173,10 @@ end  ;;
       field: overflow_visit
       value: "yes"
     }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
   }
 
   measure: limbo_overflow {
@@ -4183,6 +4191,10 @@ end  ;;
       field: overflow_visit
       value: "yes"
     }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
 
   }
 
@@ -4196,6 +4208,10 @@ end  ;;
     }
     filters: {
       field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
       value: "no"
     }
   }
@@ -4235,6 +4251,14 @@ end  ;;
       field: overflow_visit
       value: "no"
     }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
   }
 
   measure: no_answer_no_show_count_minus_overflow{
@@ -4247,6 +4271,14 @@ end  ;;
     }
     filters: {
       field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
       value: "no"
     }
   }
@@ -4262,6 +4294,14 @@ end  ;;
     }
     filters: {
       field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
       value: "no"
     }
   }
