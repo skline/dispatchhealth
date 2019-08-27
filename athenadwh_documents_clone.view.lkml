@@ -42,6 +42,12 @@ view: athenadwh_documents_clone {
     sql: ${thr_referral} ;;
   }
 
+  dimension: third_party_lab_imaging {
+    type: yesno
+    description: "A flag indicating that third party labs or imaging were ordered"
+    sql: ${document_class} = 'ORDER' AND ${athenadwh_order_providers.provider_category} = 'Performed by Third Party' ;;
+  }
+
   dimension: rapid_strep_test {
     type: yesno
     description: "A flag indicating a rapid strep test"
