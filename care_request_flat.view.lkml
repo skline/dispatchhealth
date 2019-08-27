@@ -625,6 +625,12 @@ view: care_request_flat {
     sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
   }
 
+  dimension: wait_time_greater_than_3_hours {
+    type: yesno
+    description: "A flag indicating that total patient wait time is greater than 3 hours"
+    sql: (${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds})/3600 >= 3 ;;
+  }
+
   measure: average_wait_time_total_pre_logistics {
     description: "Total patient wait time: the average minutes between requested time and on-scene time"
     type: average_distinct
@@ -1440,6 +1446,7 @@ view: care_request_flat {
       time_of_day,
       date,
       time,
+      hour,
       week,
       month,
       day_of_week,
@@ -1450,6 +1457,18 @@ view: care_request_flat {
       year
       ]
     sql: ${TABLE}.complete_date ;;
+  }
+
+  dimension: complete_decimal_half_hour_increment {
+    description: "Complete Time of Day as Decimal rounded to the nearest 1/2 hour increment"
+    type: number
+    sql: CASE
+      WHEN CAST(EXTRACT(MINUTE FROM ${complete_raw}) AS FLOAT) < 15 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 0
+      WHEN CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT) >= 15 AND CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT) < 45 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 0.5
+      ELSE  FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 1
+      END
+      ;;
+    value_format: "0.0"
   }
 
   dimension: weekday_complete {
