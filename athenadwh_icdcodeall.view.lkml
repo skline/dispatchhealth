@@ -27,6 +27,11 @@ view: athenadwh_icdcodeall {
     sql: SUBSTRING(TRIM(${TABLE}.diagnosis_code), 0, 4) ;;
   }
 
+  measure: diagnosis_code_max {
+    type: string
+    sql:  MAX(${diagnosis_code}) ;;
+  }
+
   dimension: diagnosis_code_full {
     type: string
     description: "The full diagnosis code (not restricted to first 3 characters)"
@@ -50,6 +55,11 @@ view: athenadwh_icdcodeall {
   dimension: diagnosis_description {
     type: string
     sql: ${TABLE}.diagnosis_code_description ;;
+  }
+
+  measure: diagnosis_description_max {
+    type: string
+    sql: MAX(${diagnosis_description}) ;;
   }
 
   dimension: diagnosis_code_group {
