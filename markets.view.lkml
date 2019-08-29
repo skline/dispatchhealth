@@ -231,6 +231,13 @@ view: markets {
     sql: ${id} in(168, 169, 170, 171, 172);;
   }
 
+  dimension: national_market {
+    description: "Market has been active for 90 Days or more."
+    type: yesno
+    sql: ((EXTRACT(EPOCH from now()) - EXTRACT(EPOCH from ${market_start_date.market_start_raw}))::FLOAT / 86400) > 90;;
+
+  }
+
 
   # measure: digital_adjusted {
   #   type: number
