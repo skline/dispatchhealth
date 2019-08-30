@@ -60,6 +60,24 @@ view: notes {
     sql: ${TABLE}.note ;;
   }
 
+  dimension: special_channel_note{
+    type: yesno
+    sql: ${note} like '%care management%' OR
+${note} like '%case management%' OR
+${note} like '%doctor%' OR
+${note} like '%home health%' OR
+${note} like '% rn %' OR
+${note} like '%multicare%' OR
+${note} like '%baycare%' OR
+${note} like '% thr %' OR
+${note} like '% ou %' OR
+${note} like '%baystate%' OR
+${note} like '%bon secours%' OR
+${note} like '%valley%' OR
+${note} like '%kelsey%' OR
+${note} like '%centura%';;
+  }
+
   measure: notes_aggregated {
     type: string
     sql: array_to_string(array_agg(DISTINCT ${note}), ' |') ;;
