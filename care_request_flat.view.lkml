@@ -1202,6 +1202,50 @@ view: care_request_flat {
     sql: ${TABLE}.on_scene_date ;;
   }
 
+  measure: max_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      quarter,
+      hour,
+      year
+    ]
+    sql: max(${TABLE}.on_scene_date) ;;
+  }
+
+  measure: min_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour,
+      year
+    ]
+    sql: min(${TABLE}.on_scene_date) ;;
+  }
+
   dimension_group: first_visit {
     type: time
     description: "The first local date/time that the patient was seen by DispatchHealth"
@@ -2664,6 +2708,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
       value: "yes"
     }
   }
+
 
     measure: complete_count_medicaid {
       type: count_distinct
