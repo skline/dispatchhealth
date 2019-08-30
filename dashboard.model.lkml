@@ -371,6 +371,11 @@ explore: care_requests {
     sql_on: ${cpt_code_types_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
   }
 
+  join: on_route_locations {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${on_route_locations.care_request_id} ;;
+  }
+
 
   join: icd_visit_joins_clone {
     relationship: many_to_one
@@ -2646,7 +2651,27 @@ explore: genesys_conversation_summary {
     sql_on: (${patients.id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
   }
+}
+explore: propensity_by_zip {
+  join: zipcodes {
+    sql_on: ${zipcodes.zip} = ${propensity_by_zip.zipcode} ;;
+  }
+  join: tivity_data {
+    sql_on: ${tivity_data.zipcode} =${propensity_by_zip.zipcode} ;;
+  }
+  join: markets {
+    sql_on: ${zipcodes.market_id}=${markets.id} ;;
+  }
+}
 
-
-
+explore: tivity_data {
+  join: zipcodes {
+    sql_on: ${zipcodes.zip} = ${tivity_data.zipcode} ;;
+  }
+  join: propensity_by_zip {
+    sql_on: ${tivity_data.zipcode} =${propensity_by_zip.zipcode} ;;
+  }
+  join: markets {
+    sql_on: ${zipcodes.market_id}=${markets.id} ;;
+  }
 }

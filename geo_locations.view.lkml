@@ -9,6 +9,7 @@ view: geo_locations {
 
   dimension: altitude {
     type: number
+    hidden: yes
     sql: ${TABLE}.altitude ;;
   }
 
@@ -24,6 +25,7 @@ view: geo_locations {
 
   dimension_group: created {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -54,6 +56,7 @@ view: geo_locations {
 
   dimension_group: updated {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -71,11 +74,6 @@ view: geo_locations {
     sql: MAX(${updated_raw}) ;;
   }
 
-#   measure: shift_end_last_cr_diff{
-#     label: "Mins Btwn Arrival at Office and Shift End"
-#     type: number
-#     sql:  round(((EXTRACT(EPOCH FROM ${max_updated}::timestamp - ${care_request_flat.shift_end_time}::timestamp))/60)::decimal,2);;
-#   }
 
   dimension: velocity {
     type: number
