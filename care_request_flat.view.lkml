@@ -270,9 +270,8 @@ view: care_request_flat {
 
   measure: app_months_of_experience {
     type: number
-    sql: date_part('year', age(${app_shift_planning_facts_clone.first_shift_date}::date))*12 +
-         date_part('month', age(${app_shift_planning_facts_clone.first_shift_date}::date)) ;;
-    #date_part('month',age('2010-04-01', '2012-03-05'))
+    sql: EXTRACT('year' FROM age(${on_scene_date}::date, ${shift_details.first_app_shift}::date))*12 +
+         EXTRACT('month'FROM age(${on_scene_date}::date, ${shift_details.first_app_shift}::date)) ;;
   }
 
   dimension: on_scene_time_30min_or_less {

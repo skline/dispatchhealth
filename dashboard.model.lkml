@@ -1160,6 +1160,16 @@ join: ga_pageviews_clone {
     sql_on: ${breaks.market_break_config_id} = ${market_break_configs.id};;
   }
 
+  join: humanity_dashboard_provider_id_crosswalk {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${humanity_dashboard_provider_id_crosswalk.user_id} ;;
+  }
+
+  join: shift_details {
+    relationship: one_to_one
+    sql_on: ${humanity_dashboard_provider_id_crosswalk.humanity_id} = ${shift_details.employee_id} ;;
+  }
+
 }
 
 explore: shift_details {

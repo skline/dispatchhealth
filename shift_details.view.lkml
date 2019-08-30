@@ -183,6 +183,11 @@ view: shift_details {
     sql: ${schedule_name} LIKE '%NP/PA:%';;
   }
 
+  measure: first_app_shift {
+    type: date
+    sql: MIN(${local_actual_start_date}) ;;
+  }
+
 
 dimension: dhmt_shift {
   type:  yesno
