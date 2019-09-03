@@ -710,6 +710,16 @@ explore: care_requests {
     sql_on:  ${shift_team_members.user_id} = ${users.id};;
   }
 
+  join: humanity_dashboard_provider_id_crosswalk {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${humanity_dashboard_provider_id_crosswalk.user_id} ;;
+  }
+
+  join: shift_details {
+    relationship: one_to_many
+    sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
+  }
+
   join: medical_necessity_notes {
     from: notes
     relationship: one_to_one
