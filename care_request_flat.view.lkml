@@ -1787,7 +1787,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
   dimension_group: yesterday_mountain{
     type: time
     timeframes: [date, day_of_week_index, week, month, day_of_month]
-    sql: current_date - interval '1 day';;
+    sql: current_date - interval '2 day';;
   }
 
   dimension:  same_day_of_week_on_scene {
