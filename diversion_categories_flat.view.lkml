@@ -1,10 +1,43 @@
 view: diversion_categories_flat {
     derived_table: {
       sql:
+      WITH diag AS (
+    SELECT
+        ced.clinical_encounter_id,
+        ced.ordering,
+        ced.updated_at,
+        SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) AS diagnosis_code,
+        CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('R41','R40','R53','F03') THEN 1 ELSE 0 END AS confusion,
+        CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('G81','G82') THEN 1 ELSE 0 END AS wheelchair_dx
+        --ROW_NUMBER() OVER (PARTITION BY ced.clinical_encounter_id, ced.ordering ORDER BY ced.updated_at DESC) AS row_num
+      FROM (
+        SELECT DISTINCT
+          MAX(clinical_encounter_dx_id) AS clinical_encounter_dx_id,
+          clinical_encounter_id,
+          ordering,
+          MAX(deleted_datetime) AS deleted_datetime,
+          MAX(updated_at) AS updated_at
+          FROM looker_scratch.athenadwh_clinicalencounter_diagnosis
+          WHERE ordering <= 2
+          GROUP BY 2,3
+        ) AS ced
+      LEFT JOIN looker_scratch.athenadwh_clinicalencounter_dxicd10 cedx
+        ON ced.clinical_encounter_dx_id = cedx.clinical_encounter_dx_id
+      LEFT JOIN looker_scratch.athenadwh_icdcodeall icd
+        ON cedx.icd_code_id = icd.icd_code_id
+      WHERE icd.diagnosis_code IS NOT NULL AND ced.deleted_datetime IS NULL
+      GROUP BY 1,2,3,4,5,6
+      ORDER BY 1,2
+), vvs AS (
       SELECT
+        care_request_id,
+        json_array_elements(json_array_elements(data::json))::json->>'clinicalelementid' AS measurement,
+        json_array_elements(json_array_elements(data::json))::json->>'value' AS value,
+        updated_at
+      FROM public.vitals)
+SELECT
   cr.id AS care_request_id,
   cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE pg_tz AS on_scene_time,
-
   dxs.diagnosis_code1,
   dxs.diagnosis_code2,
   dxs.diagnosis_code3,
@@ -319,7 +352,8 @@ view: diversion_categories_flat {
       name,
       started_at,
       ROW_NUMBER() OVER (PARTITION BY care_request_id, name ORDER BY started_at DESC) AS row_num
-    FROM public.care_request_statuses) crs
+    FROM public.care_request_statuses
+    WHERE DATE(started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain') >= '2018-01-01') crs
     ON cr.id = crs.care_request_id AND crs.name = 'complete' AND crs.row_num = 1
   LEFT JOIN (
     SELECT
@@ -346,13 +380,6 @@ view: diversion_categories_flat {
     GROUP BY 1,2,3) pt
     ON cr.id = pt.care_request_id
   LEFT JOIN (
-    WITH vvs AS (
-      SELECT
-        care_request_id,
-        json_array_elements(json_array_elements(data::json))::json->>'clinicalelementid' AS measurement,
-        json_array_elements(json_array_elements(data::json))::json->>'value' AS value,
-        updated_at
-      FROM public.vitals)
     SELECT DISTINCT
       vitals.care_request_id,
       hr.value::int AS heartrate,
@@ -434,21 +461,6 @@ view: diversion_categories_flat {
     WHERE note SIMILAR TO '%(mobility issues|transportation|leave the home)%') hb
   ON cr.id = hb.care_request_id
   LEFT JOIN (
-    WITH diag AS (
-      SELECT
-        ced.clinical_encounter_id,
-        ced.ordering,
-        ced.updated_at,
-        SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) AS diagnosis_code,
-        CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('R41','R40','R53','F03') THEN 1 ELSE 0 END AS confusion,
-        CASE WHEN SUBSTRING(TRIM(icd.diagnosis_code), 0, 4) IN ('G81','G82') THEN 1 ELSE 0 END AS wheelchair_dx
-        --ROW_NUMBER() OVER (PARTITION BY ced.clinical_encounter_id, ced.ordering ORDER BY ced.updated_at DESC) AS row_num
-      FROM looker_scratch.athenadwh_clinicalencounter_diagnosis ced
-      LEFT JOIN looker_scratch.athenadwh_clinicalencounter_dxicd10 cedx
-        ON ced.clinical_encounter_dx_id = cedx.clinical_encounter_dx_id
-      LEFT JOIN looker_scratch.athenadwh_icdcodeall icd
-        ON cedx.icd_code_id = icd.icd_code_id
-      WHERE icd.diagnosis_code IS NOT NULL AND ced.deleted_datetime IS NULL)
     SELECT DISTINCT
       cr.id AS care_request_id,
       diag1.diagnosis_code AS diagnosis_code1,
@@ -498,6 +510,7 @@ view: diversion_categories_flat {
       ON t.claim_id = c.claim_id
     GROUP BY c.claim_id, c.claim_appointment_id) AS proc
   ON cr.ehr_id = proc.appointment_id
+  WHERE DATE(cros.started_at) >= '2018-01-01'
   GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46 ;;
 
         sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
