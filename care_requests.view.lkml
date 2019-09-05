@@ -896,6 +896,24 @@ view: care_requests {
     ]
   }
 
+  measure: count_visits_fluids_blood {
+    type: count_distinct
+    description: "Count of completed non-escalated visits where IV or blood work was done"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: cpt_code_dimensions_clone.blood_iv
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "no"
+    }
+  }
+
   measure: count_post_acute_followups {
     type: count_distinct
     description: "Count of post-acute follow-up visits"

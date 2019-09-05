@@ -268,11 +268,11 @@ view: care_request_flat {
     sql: ${TABLE}.shift_team_initial ;;
   }
 
-  measure: app_months_of_experience {
-    type: number
-    sql: EXTRACT('year' FROM age(${on_scene_date}::date, ${shift_details.first_app_shift}::date))*12 +
-         EXTRACT('month'FROM age(${on_scene_date}::date, ${shift_details.first_app_shift}::date)) ;;
-  }
+    measure: app_months_of_experience {
+      type: number
+      sql: EXTRACT('year' FROM age(MIN(${on_scene_date})::date, ${shift_details.first_shift_date}::date))*12 +
+        EXTRACT('month'FROM age(MIN(${on_scene_date})::date, ${shift_details.first_shift_date}::date)) ;;
+    }
 
   dimension: on_scene_time_30min_or_less {
     type: yesno
@@ -1199,6 +1199,50 @@ view: care_request_flat {
       year
       ]
     sql: ${TABLE}.on_scene_date ;;
+  }
+
+  measure: max_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      quarter,
+      hour,
+      year
+    ]
+    sql: max(${TABLE}.on_scene_date) ;;
+  }
+
+  measure: min_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour,
+      year
+    ]
+    sql: min(${TABLE}.on_scene_date) ;;
   }
 
   dimension_group: first_visit {
@@ -2663,6 +2707,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
       value: "yes"
     }
   }
+
 
     measure: complete_count_medicaid {
       type: count_distinct
