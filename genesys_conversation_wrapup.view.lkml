@@ -53,6 +53,10 @@ view: genesys_conversation_wrapup {
     type: string
     sql: ${TABLE}."username" ;;
   }
+  dimension: tesfaye_bool {
+    type: yesno
+    sql: ${username} in('Tesfaye Bihonegne') ;;
+  }
 
   dimension: wrapupcodename {
     type: string
