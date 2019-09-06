@@ -34,6 +34,7 @@ view: genesys_conversation_summary {
       date,
       week,
       month,
+      day_of_week,
       quarter,
       year
     ]
