@@ -105,10 +105,12 @@ explore: care_requests {
     sql_on: ${athenadwh_provider_clone.supervising_provider_id} = ${athenadwh_supervising_provider_clone.provider_id} ;;
   }
 
-  join: oversight_provider {
-    relationship: one_to_one
-    sql_on: ${athenadwh_provider_clone.provider_user_name} = ${oversight_provider.user_name} ;;
-  }
+    join: oversight_provider {
+      relationship: one_to_one
+      sql_on: ${athenadwh_provider_clone.provider_user_name} = ${oversight_provider.user_name}
+            AND ${care_request_flat.on_scene_date} >= ${oversight_provider.activated_date_date}
+            AND (${care_request_flat.on_scene_date} < ${oversight_provider.deactivated_date_date} OR ${oversight_provider.deactivated_date_date} IS NULL);;
+    }
 
   join: athenadwh_appointments_clone {
     relationship: one_to_one
