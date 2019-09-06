@@ -126,7 +126,7 @@ SELECT DISTINCT
   dcf.dc38 * df3.dc38,
   dcf.dc39 * df3.dc39,
   dcf.dc40 * df3.dc40,
-  dcf.dc41 * df3.dc41) > 0 THEN 'yes' ELSE 'no' END AS diversion_er,
+  dcf.dc41 * df3.dc41) > 0 THEN 1 ELSE 0 END AS diversion_er,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df4.dc1,
   dcf.survey_yes_to_er * df4.dc2,
@@ -499,7 +499,7 @@ SELECT DISTINCT
   dcf.dc39 * df12.dc39,
   dcf.dc40 * df12.dc40,
   dcf.dc41 * df12.dc41) > 0 THEN 1 ELSE 0 END AS diversion_hosp
-  FROM ${diversion_categories_flat.SQL_TABLE_NAME} dcf
+  FROM looker_scratch.diversion_categories_by_care_request dcf
   JOIN ${diversion_flat.SQL_TABLE_NAME} df
     ON dcf.diagnosis_code1 = df.diagnosis_code
   --911 Diversions
@@ -561,15 +561,27 @@ SELECT DISTINCT
     }
   }
 
+  measure: diversion_savings_911 {
+    type: number
+    sql: ${count_911_diversions} *
+        MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 750
+        END) ;;
+    value_format: "$#,##0"
+  }
+
   dimension: diversion_er {
-    type: yesno
+    type: number
     sql: ${TABLE}.diversion_er ;;
   }
 
   measure: count_er_diversions {
-    type: count
+    type: sum_distinct
     sql: ${diversion_er} ;;
-    #sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "no"
@@ -578,6 +590,18 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "no"
     }
+  }
+
+  measure: diversion_savings_er {
+    type: number
+    sql: ${count_er_diversions} *
+        MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 2000
+        END) ;;
+    value_format: "$#,##0"
   }
 
   dimension: diversion_observation {
@@ -586,9 +610,9 @@ SELECT DISTINCT
   }
 
   measure: count_observation_diversions {
-    type: count
+    type: sum_distinct
     sql: ${diversion_observation} ;;
-    #sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "no"
@@ -597,6 +621,18 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "no"
     }
+  }
+
+  measure: diversion_savings_observation {
+    type: number
+    sql: ${count_observation_diversions} *
+        MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 4000
+        END) ;;
+    value_format: "$#,##0"
   }
 
   dimension: diversion_hospitalization {
@@ -605,9 +641,9 @@ SELECT DISTINCT
   }
 
   measure: count_hospitalization_diversions {
-    type: count
+    type: sum_distinct
     sql: ${diversion_hospitalization} ;;
-    #sql_distinct_key: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "no"
@@ -616,6 +652,18 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "no"
     }
+  }
+
+  measure: diversion_savings_hospitalization {
+    type: number
+    sql: ${count_hospitalization_diversions} *
+        MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          ELSE 12000
+        END) ;;
+    value_format: "$#,##0"
   }
 
 
