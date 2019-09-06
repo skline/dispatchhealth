@@ -666,6 +666,10 @@ SELECT DISTINCT
     value_format: "$#,##0"
   }
 
-
+  dimension: diversion {
+    description: "A flag indicating that any diversion criteria was met"
+    type: yesno
+    sql: ${diversion_911} > 0 OR ${diversion_er} > 0 OR ${diversion_observation} > 0 OR ${diversion_hospitalization} > 0 ;;
+  }
 
 }

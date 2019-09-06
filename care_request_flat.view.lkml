@@ -3916,7 +3916,7 @@ end  ;;
 
   dimension: high_acuity_visit {
     type: yesno
-    sql: ${diversion_flag} OR ${escalated_on_scene} OR ${care_requests.post_acute_follow_up};;
+    sql: ${diversions_by_care_request.diversion} OR ${care_request_flat.escalated_on_scene} OR ${care_requests.post_acute_follow_up};;
   }
 
   measure: count_high_acuity_visits {
