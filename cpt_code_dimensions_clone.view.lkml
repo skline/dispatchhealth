@@ -113,6 +113,11 @@ view: cpt_code_dimensions_clone {
     sql: ${cpt_code} IN ('80047', '36415', '36410', '85014', '83605', '85610', '34616') ;;
   }
 
+  dimension: blood_iv {
+    type: yesno
+    sql: ${iv_fluids} OR ${blood_tests} ;;
+  }
+
   dimension: catheter_placement {
     type: yesno
     sql: ${cpt_code} IN ('51702', '51701', '51703', '51705') ;;

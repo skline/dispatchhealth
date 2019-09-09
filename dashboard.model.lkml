@@ -105,10 +105,12 @@ explore: care_requests {
     sql_on: ${athenadwh_provider_clone.supervising_provider_id} = ${athenadwh_supervising_provider_clone.provider_id} ;;
   }
 
-  join: oversight_provider {
-    relationship: one_to_one
-    sql_on: ${athenadwh_provider_clone.provider_user_name} = ${oversight_provider.user_name} ;;
-  }
+    join: oversight_provider {
+      relationship: one_to_one
+      sql_on: ${athenadwh_provider_clone.provider_user_name} = ${oversight_provider.user_name}
+            AND ${care_request_flat.on_scene_date} >= ${oversight_provider.activated_date_date}
+            AND (${care_request_flat.on_scene_date} < ${oversight_provider.deactivated_date_date} OR ${oversight_provider.deactivated_date_date} IS NULL);;
+    }
 
   join: athenadwh_appointments_clone {
     relationship: one_to_one
@@ -516,6 +518,16 @@ explore: care_requests {
     sql_on: ${diversion_flat.diversion_type_id} = ${diversion_type.id} ;;
   }
 
+  join: diversion_categories_flat {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${diversion_categories_flat.care_request_id};;
+  }
+
+  join: diversions_by_care_request {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
+  }
+
   join: letter_recipient_dimensions_clone {
     relationship:  many_to_one
     sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;
@@ -665,6 +677,11 @@ explore: care_requests {
     sql_on: ${care_requests.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
   }
 
+  join: shift_team_market_assignment_logs {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} ;;
+  }
+
   join: breaks_pre_post_care_requests {
     relationship: one_to_one
     sql_on: ${shift_teams.id} = ${breaks_pre_post_care_requests.shift_team_id} ;;
@@ -693,6 +710,16 @@ explore: care_requests {
   join: users {
     relationship: one_to_one
     sql_on:  ${shift_team_members.user_id} = ${users.id};;
+  }
+
+  join: humanity_dashboard_provider_id_crosswalk {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${humanity_dashboard_provider_id_crosswalk.user_id} ;;
+  }
+
+  join: shift_details {
+    relationship: one_to_many
+    sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
   }
 
   join: medical_necessity_notes {
@@ -2636,7 +2663,27 @@ explore: genesys_conversation_summary {
     sql_on: (${patients.id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
   }
+}
+explore: propensity_by_zip {
+  join: zipcodes {
+    sql_on: ${zipcodes.zip} = ${propensity_by_zip.zipcode} ;;
+  }
+  join: tivity_data {
+    sql_on: ${tivity_data.zipcode} =${propensity_by_zip.zipcode} ;;
+  }
+  join: markets {
+    sql_on: ${zipcodes.market_id}=${markets.id} ;;
+  }
+}
 
-
-
+explore: tivity_data {
+  join: zipcodes {
+    sql_on: ${zipcodes.zip} = ${tivity_data.zipcode} ;;
+  }
+  join: propensity_by_zip {
+    sql_on: ${tivity_data.zipcode} =${propensity_by_zip.zipcode} ;;
+  }
+  join: markets {
+    sql_on: ${zipcodes.market_id}=${markets.id} ;;
+  }
 }

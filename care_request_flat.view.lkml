@@ -270,9 +270,8 @@ view: care_request_flat {
 
   measure: app_months_of_experience {
     type: number
-    sql: date_part('year', age(${app_shift_planning_facts_clone.first_shift_date}::date))*12 +
-         date_part('month', age(${app_shift_planning_facts_clone.first_shift_date}::date)) ;;
-    #date_part('month',age('2010-04-01', '2012-03-05'))
+    sql: EXTRACT('year' FROM age(MIN(${on_scene_date})::date, ${shift_details.first_shift_date}::date))*12 +
+      EXTRACT('month'FROM age(MIN(${on_scene_date})::date, ${shift_details.first_shift_date}::date)) ;;
   }
 
   dimension: on_scene_time_30min_or_less {
@@ -1218,6 +1217,50 @@ view: care_request_flat {
       year
       ]
     sql: ${TABLE}.on_scene_date ;;
+  }
+
+  measure: max_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      quarter,
+      hour,
+      year
+    ]
+    sql: max(${TABLE}.on_scene_date) ;;
+  }
+
+  measure: min_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour,
+      year
+    ]
+    sql: min(${TABLE}.on_scene_date) ;;
   }
 
   dimension_group: first_visit {
@@ -2704,6 +2747,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
     }
   }
 
+
     measure: complete_count_medicaid {
       type: count_distinct
       sql: ${care_request_id} ;;
@@ -3762,6 +3806,65 @@ end  ;;
     sql: CASE WHEN ${diversion_type.diversion_type_911} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
   }
 
+  measure: count_911_diversions2 {
+    type: sum_distinct
+    sql: ${diversions_by_care_request.diversion_911} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
+  measure: count_er_diversions2 {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+    filters: {
+      field: diversions_by_care_request.diversion_er
+      value: "no"
+    }
+  }
+
+  measure: count_observation_diversions2 {
+    type: sum_distinct
+    sql: ${diversions_by_care_request.diversion_observation} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
+  measure: count_hospitalization_diversions2 {
+    type: sum_distinct
+    sql: ${diversions_by_care_request.diversion_hospitalization} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "no"
+    }
+  }
+
   measure: diversion_savings_911 {
     type: number
     sql: ${count_911_diversions} *
@@ -3852,7 +3955,7 @@ end  ;;
 
   dimension: high_acuity_visit {
     type: yesno
-    sql: ${diversion_flag} OR ${escalated_on_scene} OR ${care_requests.post_acute_follow_up};;
+    sql: ${diversions_by_care_request.diversion} OR ${care_request_flat.escalated_on_scene} OR ${care_requests.post_acute_follow_up};;
   }
 
   measure: count_high_acuity_visits {
