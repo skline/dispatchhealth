@@ -83,4 +83,22 @@ view: athenadwh_medication_clone {
     type: count
     drill_fields: [medication_name]
   }
+
+  dimension: dea_scheduled_medication {
+    description: "Identifies a prescription that is a Scheduled substance/medication by the DEA"
+    type: yesno
+    sql: ${dea_schedule} IS NOT NULL ;;
+
+  }
+
+  measure: count_dea_scheduled_medication {
+    description: "Counts prescriptions that are Scheduled substances/medications by the DEA"
+    type: count_distinct
+    sql: ${care_requests.id} ;;
+    filters: {
+      field: dea_scheduled_medication
+      value: "yes"
+    }
+
+  }
 }
