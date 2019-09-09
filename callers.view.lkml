@@ -16,7 +16,6 @@ view: callers {
 
   dimension_group: created {
     type: time
-    hidden: yes
     timeframes: [
       raw,
       time,

@@ -410,7 +410,6 @@ view: care_request_flat {
 
   dimension: is_reasonable_in_queue_time {
     type: yesno
-    hidden: yes
     sql: ${in_queue_time_minutes} < 240  ;;
   }
 
@@ -528,6 +527,25 @@ view: care_request_flat {
     }
   }
 
+  dimension: initial_in_queue_time_minutes {
+    type: number
+    description: "The number of minutes between requested time and accepted time"
+    sql: (EXTRACT(EPOCH FROM ${accept_initial_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
+    value_format: "0.00"
+  }
+
+
+  measure:  average_initial_in_queue_time_minutes{
+    type: average_distinct
+    description: "The average minutes between requested time and accepted time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${initial_in_queue_time_minutes} ;;
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+  }
   measure:  average_assigned_time_minutes{
     type: average_distinct
     description: "The average minutes between accepted time and on-route time"
@@ -1267,6 +1285,27 @@ view: care_request_flat {
       hour
     ]
     sql: ${TABLE}.on_scene_date AT TIME ZONE ${pg_tz} AT TIME ZONE 'US/Mountain' ;;
+  }
+
+  dimension_group: accept_mountain_intial {
+    type: time
+    description: "The mountain time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour
+    ]
+    sql: ${TABLE}.accept_date_initial AT TIME ZONE ${pg_tz} AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension_group: accept_mountain {
@@ -4142,6 +4181,11 @@ end  ;;
         AND
         ${created_date} != ${scheduled_care_date}
         ;;
+  }
+
+  dimension: accepted_date_same_created_date {
+    type: yesno
+    sql: ${accept_initial_date} = ${created_date} ;;
   }
 
   dimension: archived {

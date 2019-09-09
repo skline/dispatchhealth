@@ -182,6 +182,14 @@ view: genesys_conversation_summary {
 
   }
 
+  measure: average_wait_time_minutes {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${conversationid} ;;
+    sql: ${firstacdwaitduration}/1000/60 ;;
+
+  }
+
   measure: median_wait_time {
     type: median_distinct
     value_format: "0.0"
@@ -236,6 +244,18 @@ view: genesys_conversation_summary {
     }
 
 
+  }
+
+  dimension: onboard_delay {
+    type: number
+    sql: EXTRACT(EPOCH FROM (${care_request_flat.accept_mountain_intial_raw} - ${conversationstarttime_raw}));;
+  }
+
+  measure: average_onboard_delay {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: concat(${conversationid}, ${care_request_flat.care_request_id}) ;;
+    sql: ${onboard_delay}/60 ;;
   }
 
   dimension: anthem_eligible {
