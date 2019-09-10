@@ -606,7 +606,8 @@ SELECT DISTINCT
 
   dimension: diversion_observation {
     type: number
-    sql: ${TABLE}.diversion_obs ;;
+    sql: CASE WHEN ${diversion_hospitalization} > 0 THEN 0
+    ELSE ${TABLE}.diversion_obs END ;;
   }
 
   measure: count_observation_diversions {
