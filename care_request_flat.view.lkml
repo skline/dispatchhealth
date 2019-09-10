@@ -49,7 +49,9 @@ view: care_request_flat {
         callers.origin_phone,
         callers.contact_id,
         cr.patient_id as patient_id,
-        foc.first_on_scene_time
+        foc.first_on_scene_time,
+        max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
+
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
@@ -207,6 +209,23 @@ view: care_request_flat {
     description: "The number of seconds between requested time and accepted time"
     sql: EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
   }
+
+  dimension: time_to_call_seconds {
+    type: number
+    value_format: "0"
+    description: "The number of seconds between requested time and call time"
+    sql: EXTRACT(EPOCH FROM ${call_time_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
+  }
+
+  dimension: time_to_call_minutes {
+    type: number
+    value_format: "0.0"
+    description: "The number of minutes between requested time and call time"
+    sql: ${time_to_call_seconds}/60.0 ;;
+  }
+
+
+
 
   dimension: assigned_time_seconds {
     type: number
@@ -524,6 +543,14 @@ view: care_request_flat {
       field: is_reasonable_in_queue_time
       value: "yes"
     }
+  }
+
+  measure:  average_time_to_call_minutes{
+    type: average_distinct
+    description: "The average minutes between requested time and accepted time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${time_to_call_minutes} ;;
   }
 
   dimension: initial_in_queue_time_minutes {
@@ -1218,6 +1245,29 @@ view: care_request_flat {
       ]
     sql: ${TABLE}.on_scene_date ;;
   }
+
+  dimension_group: call_time {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour,
+      year
+    ]
+    sql: ${TABLE}.caller_date ;;
+  }
+
 
   measure: max_on_scene {
     type: time
