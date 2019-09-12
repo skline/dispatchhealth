@@ -66,13 +66,14 @@ view: icd_code_dimensions_clone {
 # }
 
 
-dimension: disease_state {
-type: string
-sql: CASE
-WHEN ${icd_code_to_disease_state_mapping.disease_state} IS NOT NULL THEN ${icd_code_to_disease_state_mapping.disease_state}
-ELSE 'Other'
-END ;;
-}
+  dimension: disease_state {
+    type: string
+    sql: CASE
+      WHEN ${diagnosis_code} IS NULL THEN NULL
+      WHEN ${icd_code_to_disease_state_mapping.disease_state} IS NOT NULL THEN ${icd_code_to_disease_state_mapping.disease_state}
+      ELSE 'Other'
+      END ;;
+  }
 
   dimension: confusion_altered_awareness {
     type: yesno
