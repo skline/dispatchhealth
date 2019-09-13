@@ -553,6 +553,15 @@ view: care_request_flat {
     sql: ${time_to_call_minutes} ;;
   }
 
+  measure:  median_time_to_call_minutes{
+    type: median_distinct
+    description: "The average minutes between requested time and accepted time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${time_to_call_minutes} ;;
+  }
+
+
   dimension: initial_in_queue_time_minutes {
     type: number
     description: "The number of minutes between requested time and accepted time"

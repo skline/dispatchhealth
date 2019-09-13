@@ -273,6 +273,22 @@ view: channel_items {
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
 
+  dimension: high_level_dallas {
+    type: string
+    label: "High Level Dallas"
+    sql: case
+         when ${name_no_tabs} is null then 'No Channel'
+         when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue', 'ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind', 'presentation / meeting','event/in-service', 'bridgewater assisted living avondale', 'dementia conference', 'harris county aging and disability resource center- care connection'))  then 'Direct to Consumer'
+         when lower(${type_name}) in('home health') then 'Home Health'
+         when lower(${type_name}) in('provider group') or  lower(${name_no_tabs}) in('healthcare provider') then 'Provider'
+         when lower(${name_no_tabs}) in('employer') then 'Employer'
+         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf') or  lower(${name_no_tabs}) in('ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind','presentation / meeting', 'event/in-service', 'bridgewater assisted living avondale','dementia conference', 'harris county aging and disability resource center- care connection')  then 'Senior Care'
+         when lower(${type_name}) in('health system', 'payer', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Strategic'
+         when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
+        else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
+  }
+
+
   dimension: uhc_care_request {
     type: yesno
     sql: ${id} in(2851, 2849, 2850, 2852, 2848, 2890, 2900);;
