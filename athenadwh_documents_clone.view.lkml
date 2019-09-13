@@ -302,4 +302,19 @@ view: athenadwh_documents_clone {
     sql: ${count_letters} > 0 ;;
   }
 
+  dimension: letter_created_date {
+    description: "Populates dates that are associated with a 'LETTER' document class only"
+    type: date
+    sql: CASE
+        WHEN ${document_class} LIKE '%LETTER%' THEN ${created_date}
+        ELSE NULL
+        END;;
+  }
+
+  measure: letter_created_date_minimum {
+    description: "Populates the minimum athenadwh_documents_clone.created_date value to identify the first document sent date"
+    type: date
+    sql:  min(${letter_created_date}) ;;
+
+  }
 }
