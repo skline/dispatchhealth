@@ -226,7 +226,7 @@ view: athenadwh_documents_clone {
   dimension: pending_status {
     type: yesno
     hidden: yes
-    sql: ${status} = 'SUBMITTED' ;;
+    sql: ${status} LIKE 'SUBMIT%' ;;
   }
 
   dimension: deleted_status {
