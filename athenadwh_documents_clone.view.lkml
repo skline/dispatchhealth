@@ -130,6 +130,19 @@ view: athenadwh_documents_clone {
     sql: ${document_class} = 'ORDER' ;;
   }
 
+  dimension: pending_order_description {
+    type: string
+    hidden: yes
+    sql: CASE WHEN ${pending_status} AND NOT ${provider_referrals_flag} THEN ${clinical_order_type}
+         ELSE NULL END  ;;
+  }
+
+  measure: pending_order_descriptions {
+    type: string
+    description: "The descriptions of all pending lab/imaging order"
+    sql: array_to_string(array_agg(DISTINCT ${clinical_order_type}), ' | ')  ;;
+  }
+
   dimension: provider_referrals_flag {
     type: yesno
     sql: ${clinical_order_type} LIKE '%REFERRAL%' AND ${clinical_order_type} NOT LIKE 'HOME HEALTH%' ;;
@@ -208,6 +221,12 @@ view: athenadwh_documents_clone {
   dimension: status {
     type: string
     sql: ${TABLE}.status ;;
+  }
+
+  dimension: pending_status {
+    type: yesno
+    hidden: yes
+    sql: ${status} = 'SUBMITTED' ;;
   }
 
   dimension: deleted_status {
