@@ -97,4 +97,10 @@ view: market_dimensions {
     type: count
     drill_fields: [id, market_name]
   }
-}
+
+  dimension: national_market_bi {
+    description: "Market has been active for 90 Days or more - BI db source"
+    type: yesno
+    sql: ((unix_timestamp(now()) - unix_timestamp(${market_start_date_bi.market_start_raw})) / 86400) > 90;;
+  }
+ }

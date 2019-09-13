@@ -389,9 +389,15 @@ explore: directmail_zipcode {
 
 explore: productivity_data {
   join: market_dimensions {
+    relationship: many_to_one
     sql_on: ${productivity_data.market_dim_id} = ${market_dimensions.id}
           ;;
     }
+  join: market_start_date_bi {
+    relationship: one_to_one
+    sql_on: ${market_start_date_bi.market_dim_id} = ${market_dimensions.id};;
+  }
+
   }
 
 explore: shift_planning_shifts {
