@@ -17,6 +17,12 @@ view: patient_level_aggregated_measures {
         from_field: care_request_flat.created_date
       }
 
+
+      bind_filters: {
+        to_field: service_lines.name
+        from_field: service_lines.name
+      }
+
       bind_filters: {
         to_field: insurance_coalese_crosswalk.insurance_reporting_category
         from_field: insurance_coalese_crosswalk.insurance_reporting_category
