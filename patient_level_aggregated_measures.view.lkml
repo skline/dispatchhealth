@@ -13,6 +13,11 @@ view: patient_level_aggregated_measures {
       }
 
       bind_filters: {
+        to_field: care_request_flat.created_date
+        from_field: care_request_flat.created_date
+      }
+
+      bind_filters: {
         to_field: insurance_coalese_crosswalk.insurance_reporting_category
         from_field: insurance_coalese_crosswalk.insurance_reporting_category
       }
@@ -35,6 +40,11 @@ view: patient_level_aggregated_measures {
       bind_filters: {
         to_field: markets.name_adj
         from_field: markets.name_adj
+      }
+
+      bind_filters: {
+        to_field: care_requests.post_acute_follow_up
+        from_field: care_requests.post_acute_follow_up
       }
 
       filters: {
@@ -76,6 +86,12 @@ view: patient_level_aggregated_measures {
     sql: ${count_billable_est} ;;
   }
 
+  dimension: 2_or_more_patient_visits {
+    description: "Identifies patients that had 2 or more patient visits"
+    type: yesno
+    sql: ${count_billable_est} >=2 ;;
+  }
+
   dimension: 3_or_more_patient_visits {
     description: "Identifies patients that had 3 or more patient visits"
     type: yesno
@@ -99,6 +115,16 @@ view: patient_level_aggregated_measures {
     sql: ${id} ;;
     filters: {
       field: 3_or_more_patient_visits
+      value: "yes"
+    }
+  }
+
+  measure: count_distinct_patients_2_or_more_visits {
+    description: "Count for distinct patients that had 2 or more visits"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 2_or_more_patient_visits
       value: "yes"
     }
   }
