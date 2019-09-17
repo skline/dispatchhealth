@@ -111,3 +111,18 @@ explore:  intraday_care_requests_full {
     sql_on: ${intraday_care_requests_full.channel_item_id} =${channel_items_intra.id} ;;
   }
 }
+
+explore: target_staffing_intra {
+  join: markets_intra {
+    sql_on: ${markets_intra.id}= ${target_staffing_intra.market_id} ;;
+  }
+  join: cars_intra {
+    sql_on: ${markets_intra.id} = ${cars_intra.market_id} ;;
+  }
+
+  join: intraday_shift_teams {
+    sql_on: ${cars_intra.id} = ${intraday_shift_teams.car_id}
+      and ${intraday_shift_teams.start_month}=${target_staffing_intra.month_month}
+      and  ${intraday_shift_teams.start_day_of_week} = ${target_staffing_intra.dow};;
+  }
+}

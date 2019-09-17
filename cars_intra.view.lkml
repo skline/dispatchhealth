@@ -7,9 +7,18 @@ view: cars_intra {
     sql: ${TABLE}.id ;;
   }
 
+  dimension_group: now_mountain{
+    type: time
+    convert_tz: no
+    timeframes: [day_of_week_index, week, month, day_of_month, time, raw]
+    sql: now() AT TIME ZONE 'US/Mountain' ;;
+  }
+
+
   dimension: market_id {
     type: number
-    sql: ${TABLE}.market_id ;;
+    sql: case when ${name} = 'COS02' and ${now_mountain_day_of_week_index} in(0,1,2,3)  then 159
+           else ${TABLE}.market_id end ;;
   }
 
   dimension: name {

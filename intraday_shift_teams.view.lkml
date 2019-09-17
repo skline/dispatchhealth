@@ -88,7 +88,8 @@ view: intraday_shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week
     ]
     sql: ${TABLE}.start_time ;;
   }
