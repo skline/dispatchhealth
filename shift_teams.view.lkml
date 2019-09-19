@@ -68,6 +68,7 @@ view: shift_teams {
       week,
       month,
       quarter,
+      day_of_week,
       year,
       hour_of_day
     ]
@@ -84,6 +85,7 @@ view: shift_teams {
       month,
       quarter,
       year,
+      day_of_week,
       hour_of_day
     ]
     sql:  ${TABLE}.start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
@@ -91,11 +93,13 @@ view: shift_teams {
 
   dimension: shift_hours {
     type: number
-    sql: (EXTRACT(EPOCH FROM ${end_raw}) - EXTRACT(EPOCH FROM MIN(${start_raw}))) / 3600 ;;
+    sql: (EXTRACT(EPOCH FROM ${end_raw}) - EXTRACT(EPOCH FROM ${start_raw})) / 3600 ;;
   }
 
   measure: sum_shift_hours {
-    type: sum
+    type: sum_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${id} ;;
     sql: ${shift_hours} ;;
   }
 

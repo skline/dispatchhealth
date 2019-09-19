@@ -54,8 +54,10 @@ view: genesys_conversation_wrapup {
     sql: ${TABLE}."username" ;;
   }
   dimension: tesfaye_bool {
-    type: yesno
-    sql: ${username} in('Tesfaye Bihonegne') ;;
+    label: "DTC Test Variable"
+    type: string
+    sql: case when ${username} in('Tesfaye Bihonegne','Melissa Dosch') then ${username}
+              else 'Control' end;;
   }
 
   dimension: wrapupcodename {

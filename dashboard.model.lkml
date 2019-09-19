@@ -2687,3 +2687,36 @@ explore: tivity_data {
     sql_on: ${zipcodes.market_id}=${markets.id} ;;
   }
 }
+
+explore: shift_teams
+ {
+
+  join: shift_team_market_assignment_logs {
+    sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} AND ${shift_team_market_assignment_logs.lend} ;;
+  }
+  join: cars {
+    sql_on: ${cars.id}=${shift_teams.car_id} ;;
+  }
+
+  join: markets {
+    sql_on: ${markets.id}= coalesce(${shift_team_market_assignment_logs.market_id}, ${cars.market_id}) ;;
+  }
+
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+
+  join: target_staffing {
+    sql_on: ${markets.id} = ${target_staffing.market_id}
+      and ${shift_teams.start_month}=${target_staffing.month_month}
+      and  ${shift_teams.start_day_of_week} = ${target_staffing.dow};;
+  }
+
+
+
+
+
+
+
+}

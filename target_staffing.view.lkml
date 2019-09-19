@@ -34,6 +34,11 @@ view: target_staffing {
     type: number
     sql: ${TABLE}."target_hours" ;;
   }
+  measure: sum_target_hours {
+    type: sum_distinct
+    sql_distinct_key: concat(${shift_teams.start_date}::varchar, ${markets.name});;
+    sql: ${target_hours} ;;
+  }
 
   measure: count {
     type: count
