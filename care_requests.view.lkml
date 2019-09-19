@@ -1540,13 +1540,13 @@ measure: distinct_day_of_week {
     sql: ${care_request_flat.complete_comment} SIMILAR TO '(%Referred via Phone%|%Referred - Phone Triage%)' ;;
   }
 
-  dimension: escalated_on_phone_reason {
-    type: string
-    sql: CASE
-          WHEN ${escalated_on_phone} THEN split_part(${care_request_complete.comment}, ':', 2)
-          ELSE NULL
-        END ;;
-  }
+  # dimension: escalated_on_phone_reason {
+  #   type: string
+  #   sql: CASE
+  #         WHEN ${escalated_on_phone} THEN split_part(${care_request_complete.comment}, ':', 2)
+  #         ELSE NULL
+  #       END ;;
+  # }
 
   dimension: no_credit_card_reason {
     type: string
