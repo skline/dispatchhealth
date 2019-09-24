@@ -238,6 +238,11 @@ view: markets {
 
   }
 
+  dimension: market_active_24_months {
+    description: "Market has been active for 730 days or more (roughly 24 months)."
+    type: yesno
+    sql: ((EXTRACT(EPOCH from now()) - EXTRACT(EPOCH from ${market_start_date.market_start_raw}))::FLOAT / 86400) >= 730;;
+  }
 
   # measure: digital_adjusted {
   #   type: number
