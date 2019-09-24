@@ -2589,6 +2589,11 @@ explore: expected_allowable_corporate {
     relationship: one_to_many
     sql_on: ${markets.id} = ${expected_allowable_corporate.market_id} ;;
   }
+
+  join: market_start_date{
+    sql_on: ${markets.id}=${market_start_date.market_id} ;;
+  }
+
 }
 
 explore: intraday_monitoring {
