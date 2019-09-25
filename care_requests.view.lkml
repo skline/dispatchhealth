@@ -1585,6 +1585,17 @@ measure: distinct_day_of_week {
     sql: ${TABLE}.service_line_id ;;
   }
 
+  dimension: smfr_eligible{
+    type: yesno
+    sql:  ${addresses.zipcode_short} in('80122', '80123', '80124', '80125', '80126', '80128', '80134', '80135', '80138', '80210', '80222', '80224', '80231', '80235', '80237', '80013', '80014', '80015', '80016', '80018', '80104', '80110', '80111', '80112', '80120', '80121');;
+  }
+
+  dimension: wmfr_eligble{
+    type: yesno
+    sql:  ${addresses.zipcode_short} in('80215', '80226', '80232', '80228', '80214');;
+  }
+
+
   measure: count_no_asnwer_secondary_resolved_reason  {
     type: count
     label: "Count No Answer Secondary Resolved Type"

@@ -225,8 +225,10 @@ view: channel_items {
   }
   dimension: channel_name_fixed {
     type: string
-    sql:  case when trim(lower(${name})) in('social media (facebook, linkedin, twitter, instagram)', 'social media(facebook, linkedin, twitter, instagram)') then 'Social Media (Facebook, LinkedIn, Twitter, Instagram)'
-          else ${name} end;;
+    sql:  regexp_replace(case when trim(lower(${name})) in('social media (facebook, linkedin, twitter, instagram)', 'social media(facebook, linkedin, twitter, instagram)') then 'Social Media (Facebook, LinkedIn, Twitter, Instagram)'
+          else ${name} end, '\s+$', '')
+
+;;
   }
   measure: count {
     type: count
