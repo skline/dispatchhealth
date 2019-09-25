@@ -83,7 +83,7 @@ view: provider_roster {
   }
 
   dimension: npi {
-    type: number
+    type: string
     sql: ${TABLE}."npi" ;;
   }
 
