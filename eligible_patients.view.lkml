@@ -66,6 +66,7 @@ view: eligible_patients {
   }
 
   dimension: population_health_patient {
+    description: "Identifies 'At Risk' patients"
     type: yesno
     sql: ${patient_id} IS NOT NULL ;;
   }

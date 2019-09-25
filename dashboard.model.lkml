@@ -3,8 +3,14 @@ connection: "dashboard"
 include: "*.view.lkml"         # include all views in this project
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
+datagroup: care_request_datagroup {
+  sql_trigger: SELECT max(id) FROM care_requests ;;
+  max_cache_age: "24 hours"
+}
 
 explore: care_requests {
+
+  persist_with: care_request_datagroup
 
   sql_always_where: ${deleted_raw} IS NULL AND
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL) ;;
@@ -2583,6 +2589,11 @@ explore: expected_allowable_corporate {
     relationship: one_to_many
     sql_on: ${markets.id} = ${expected_allowable_corporate.market_id} ;;
   }
+
+  join: market_start_date{
+    sql_on: ${markets.id}=${market_start_date.market_id} ;;
+  }
+
 }
 
 explore: intraday_monitoring {
