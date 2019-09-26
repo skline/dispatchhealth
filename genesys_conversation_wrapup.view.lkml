@@ -56,7 +56,7 @@ view: genesys_conversation_wrapup {
   dimension: tesfaye_bool {
     label: "DTC Test Variable"
     type: string
-    sql: case when ${username} in('Tesfaye Bihonegne','Melissa Dosch') then ${username}
+    sql: case when ${username} in('Tesfaye Bihonegne','Melissa Dosch', 'Tamara Brown', 'Laketha Stevenson', 'Amber Myers') then ${username}
               else 'Control' end;;
   }
 

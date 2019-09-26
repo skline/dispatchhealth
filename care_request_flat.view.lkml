@@ -2743,6 +2743,12 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: ${complete_date} is not null ;;
   }
 
+  dimension: accepted {
+    type: yesno
+    sql: ${accept_date} is not null ;;
+  }
+
+
   dimension: prior_complete_week_flag {
     description: "The complete date is in the past complete week"
     type: yesno
@@ -2805,6 +2811,16 @@ measure:  count_end_of_shift_dead_time_45_mins {
       value: "yes"
     }
   }
+
+  measure: accepted_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: accepted
+      value: "yes"
+    }
+  }
+
 
 
     measure: complete_count_medicaid {
