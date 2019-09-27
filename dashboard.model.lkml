@@ -924,11 +924,11 @@ explore: care_requests {
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
   }
 
-  join: care_request_complete{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
-  }
+#   join: care_request_complete{
+#     relationship: one_to_many
+#     from: care_request_statuses
+#     sql_on: ${care_request_complete.care_request_id} = ${care_requests.id} and ${care_request_complete.name}='complete';;
+#   }
 
   join: care_request_requested{
     relationship: one_to_many
@@ -936,17 +936,17 @@ explore: care_requests {
     sql_on: ${care_request_requested.care_request_id} = ${care_requests.id} and ${care_request_requested.name}='requested';;
   }
 
-  join: care_request_accepted{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
-  }
+#   join: care_request_accepted{
+#     relationship: one_to_many
+#     from: care_request_statuses
+#     sql_on: ${care_request_accepted.care_request_id} = ${care_requests.id} and ${care_request_accepted.name}='accepted';;
+#   }
 
-  join: care_request_archived{
-    relationship: one_to_many
-    from: care_request_statuses
-    sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
-  }
+#   join: care_request_archived{
+#     relationship: one_to_many
+#     from: care_request_statuses
+#     sql_on: ${care_request_archived.care_request_id} = ${care_requests.id} and ${care_request_archived.name}='archived';;
+#   }
 
   join: care_request_scheduled{
     relationship: one_to_many
