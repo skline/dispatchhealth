@@ -10,6 +10,7 @@ view: operational_excellence_app_screening {
       column: escalated_on_scene_count { field: care_request_flat.escalated_on_scene_count }
       column: count_distinct {}
       column: created_month { field: care_request_flat.created_month }
+      column: market_name {field:markets.name_adj}
       filters: {
         field: care_request_flat.created_date
         value: "2 months ago for 2 months"
