@@ -117,7 +117,8 @@ view: shift_details {
       year,
       hour_of_day,
       day_of_week,
-      day_of_month
+      day_of_month,
+      day_of_week_index
     ]
     sql: ${TABLE}.local_expected_end_time ;;
   }
@@ -149,6 +150,13 @@ view: shift_details {
   dimension: schedule_location_id {
     type: number
     sql: ${TABLE}.schedule_location_id ;;
+  }
+
+
+  dimension: schedule_location_id_w_loan {
+    type: number
+    sql: case when ${shift_name} = 'COS02' and ${local_expected_end_day_of_week_index} in(0,1,2,3,4)  and ${local_expected_end_month} in('2019-09','2019-10') then 565234
+           else ${TABLE}.schedule_location_id end  ;;
   }
 
   dimension: schedule_name {
@@ -199,6 +207,15 @@ dimension: dhmt_shift {
 
   }
 
+  dimension: expected_shift_time_hours {
+    type: number
+    description: "The number of hours between Local Actual Start time and Local Actual End Time for APP Shifts"
+    sql:
+    ((EXTRACT(EPOCH FROM ${local_expected_end_raw})-EXTRACT(EPOCH FROM ${local_expected_start_raw}))/3600) ;;
+    value_format: "#,##0.00"
+
+  }
+
   dimension: on_call_placeholder {
     type: yesno
     description: "A flag indicating that the shift is 15 minutes long (placeholder for on-call)"
@@ -210,6 +227,12 @@ dimension: dhmt_shift {
     type: yesno
     description: "Employee is assinged to shift and shift is not on-call placeholder"
     sql: ${employee_name} IS NOT NULL AND NOT ${on_call_placeholder};;
+  }
+
+  dimension: employee_name_present {
+    type: yesno
+    description: "Employee is assinged to shift and shift is not on-call placeholder"
+    sql: ${employee_name} IS NOT NULL;;
   }
 
   dimension: holiday_shift {
@@ -277,6 +300,37 @@ measure:  sum_valid_shift_time_hours {
     value: "yes"
   }
 }
+
+  measure:  sum_valid_app_expected_shift_time_hours {
+    type: sum
+    description: "sum of shift hours"
+    sql: ${expected_shift_time_hours};;
+    value_format: "#,##0.00"
+    filters: {
+      field: employee_name_present
+      value: "yes"
+    }
+    filters: {
+      field: app_shift
+      value: "yes"
+    }
+  }
+
+  measure:  sum_invalid_app_expected_shift_time_hours {
+    type: sum_distinct
+    description: "sum of shift hours"
+    sql_distinct_key: concat(${shift_id}, ${local_expected_start_date}) ;;
+    sql: ${expected_shift_time_hours};;
+    value_format: "#,##0.00"
+    filters: {
+      field: employee_name_present
+      value: "no"
+    }
+    filters: {
+      field: app_shift
+      value: "yes"
+    }
+  }
 
   measure:  sum_valid_app_shift_time_hours {
     type: sum

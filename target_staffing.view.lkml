@@ -40,6 +40,12 @@ view: target_staffing {
     sql: ${target_hours} ;;
   }
 
+  measure: sum_target_hours_future {
+    type: sum_distinct
+    sql_distinct_key: concat(${shift_details.local_expected_end_date}::varchar, ${markets_loan.name});;
+    sql: ${target_hours} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: []

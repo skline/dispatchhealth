@@ -547,6 +547,7 @@ view: care_request_flat {
 
   measure:  average_time_to_call_minutes{
     type: average_distinct
+    label: "Average Time to Submition of Caller Information in Dashboard"
     description: "The average minutes between requested time and accepted time"
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
@@ -555,6 +556,7 @@ view: care_request_flat {
 
   measure:  median_time_to_call_minutes{
     type: median_distinct
+    label: "Median Time to Submition of Caller Information in Dashboard"
     description: "The average minutes between requested time and accepted time"
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;

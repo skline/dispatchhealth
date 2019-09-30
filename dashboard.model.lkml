@@ -1200,10 +1200,22 @@ explore: shift_details {
     relationship: one_to_many
     sql_on:  ${markets.humanity_id} = ${shift_details.schedule_location_id}::varchar  ;;
   }
+
+  join: markets_loan {
+    from: markets
+    relationship: one_to_many
+    sql_on:  ${markets_loan.humanity_id} = ${shift_details.schedule_location_id_w_loan}::varchar  ;;
+  }
   join: humanity_dashboard_provider_id_crosswalk {
     relationship: many_to_one
     sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
   }
+  join: target_staffing {
+    sql_on: ${markets_loan.id} = ${target_staffing.market_id}
+      and ${shift_details.local_expected_start_month}=${target_staffing.month_month}
+      and  ${shift_details.local_expected_end_day_of_week} = ${target_staffing.dow};;
+  }
+
 }
 
 # Scott test
