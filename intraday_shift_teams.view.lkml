@@ -8,7 +8,7 @@ view: intraday_shift_teams {
       from
       (select *,  ROW_NUMBER() OVER(PARTITION BY concat(shift_team_id, date(start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ))
                                       ORDER BY updated_at desc)
-      from public.intraday_shift_teamsn
+      from public.intraday_shift_teams
       where updated_at > current_date - interval '1 day')lq
       where row_number = 1
 
