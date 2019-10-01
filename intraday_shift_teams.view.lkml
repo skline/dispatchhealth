@@ -8,7 +8,7 @@ view: intraday_shift_teams {
       from
       (select *,  ROW_NUMBER() OVER(PARTITION BY concat(shift_team_id, date(start_time  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ))
                                       ORDER BY updated_at desc)
-      from public.intraday_shift_teams
+      from public.intraday_shift_teamsn
       where updated_at > current_date - interval '1 day')lq
       where row_number = 1
 
@@ -169,8 +169,8 @@ view: intraday_shift_teams {
   measure: inclusive_shift_length  {
     type: number
     sql: max(
-             case when ${markets_intra.name} ='Colorado Springs' then 1.16
-              else 1.26 end)
+             case when ${markets_intra.name} ='Colorado Springs' then 1.17
+              else 1.27 end)
               ;;
   }
 
