@@ -169,8 +169,8 @@ view: intraday_shift_teams {
   measure: inclusive_shift_length  {
     type: number
     sql: max(
-             case when ${markets_intra.name} ='Colorado Springs' then 1.16
-              else 1.26 end)
+             case when ${markets_intra.name} ='Colorado Springs' then 1.155
+              else 1.255 end)
               ;;
   }
 
