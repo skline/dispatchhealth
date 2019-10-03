@@ -275,6 +275,17 @@ view: channel_items {
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
 
+  dimension: high_level_category_new_percent {
+    type: number
+    sql: case when ${high_level_category_new} =  'Direct to Consumer' then .05
+    when ${high_level_category_new} =  'Home Health' then 1.0
+    when ${high_level_category_new} =  'Provider (Generic)' then .5
+    when ${high_level_category_new} =  'Provider Group' then .5
+    when ${high_level_category_new} =  'Senior Care' then 1.0
+    when ${high_level_category_new} =  'Strategic' then .05
+    else 0 end;;
+  }
+
   dimension: high_level_dallas {
     type: string
     label: "High Level Dallas"
