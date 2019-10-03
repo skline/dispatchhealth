@@ -678,6 +678,11 @@ explore: care_requests {
     sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
   }
 
+  join: shift_team_stops {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${shift_team_stops.shift_team_id} ;;
+  }
+
   join: shifts_end_of_shift_times {
     relationship: many_to_one
     sql_on: ${care_requests.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
