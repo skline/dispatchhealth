@@ -29,7 +29,7 @@ view: shift_team_stops {
         st.car_id,
         MAX(cra.started_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) AS accepted_time,
         MAX(cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) AS on_scene_time,
-        MAX(crc.started_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) AS completed_time
+        MIN(crc.started_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) AS completed_time
         FROM public.care_requests cr
         JOIN public.care_request_statuses cra
             ON cr.id = cra.care_request_id AND cra.name = 'accepted'
