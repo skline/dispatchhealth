@@ -303,7 +303,7 @@ measure:  sum_valid_shift_time_hours {
 
   measure:  sum_valid_app_expected_shift_time_hours {
     type: sum
-    description: "sum of shift hours"
+    label: "Sum Expected App Assigned Hours"
     sql: ${expected_shift_time_hours};;
     value_format: "#,##0.00"
     filters: {
@@ -318,7 +318,7 @@ measure:  sum_valid_shift_time_hours {
 
   measure:  sum_invalid_app_expected_shift_time_hours {
     type: sum_distinct
-    description: "sum of shift hours"
+    label: "Sum Expected App Unassigned Hours"
     sql_distinct_key: concat(${shift_id}, ${local_expected_start_date}) ;;
     sql: ${expected_shift_time_hours};;
     value_format: "#,##0.00"

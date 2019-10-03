@@ -271,6 +271,32 @@ view: intraday_care_requests {
 
   }
 
+  measure: inqueue_crs_less_than_30_minutes {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: less_than_30_minutes_since_creation
+      value: "yes"
+    }
+    filters: {
+      field: stuck_inqueue
+      value: "no"
+    }
+
+  }
+
   measure: inqueue_smfr_elgible {
     type: count_distinct
     sql: ${care_request_id};;
@@ -512,6 +538,12 @@ view: intraday_care_requests {
   dimension: created_to_now_diff_hours {
     type: number
     sql: EXTRACT(EPOCH FROM ${now_mountain_raw} - (${care_request_created_raw} AT TIME ZONE 'US/Mountain'))/3600 ;;
+  }
+
+  dimension: less_than_30_minutes_since_creation{
+    type: yesno
+    sql:  ${created_to_now_diff_hours} < .5;;
+
   }
 
  # dimension: inqueue_over_hour {
