@@ -95,6 +95,13 @@ view: cars {
     }
   }
 
+  dimension: car_lending_flag {
+    description: "Identifies cars where the care request market differs from the car's home market"
+    type: yesno
+    sql: ${care_requests.market_id} != ${cars.market_id} ;;
+  }
+
+
   measure: emt_car_staff {
     type: string
     sql:  max(case when provider_profiles.position ='emt' then concat(${users.first_name},' ',${users.last_name})  else null end);;
