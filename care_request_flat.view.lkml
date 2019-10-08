@@ -1302,6 +1302,28 @@ view: care_request_flat {
     sql: max(${TABLE}.on_scene_date) ;;
   }
 
+  measure: max_created {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      quarter,
+      hour,
+      year
+    ]
+    sql: max(${TABLE}.created_date) ;;
+  }
+
   measure: min_on_scene {
     type: time
     description: "The local date/time that the care request team arrived on-scene"
