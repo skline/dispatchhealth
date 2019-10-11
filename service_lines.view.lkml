@@ -21,9 +21,9 @@ view: service_lines {
     sql: ${TABLE}.created_at ;;
   }
 
-  dimension: existing_patient_appointment_type {
+  dimension: existing_pt_appointment_type {
     type: string
-    sql: ${TABLE}.existing_patient_appointment_type ;;
+    sql: ${TABLE}.existing_patient_appointment_type ->> 'name';;
   }
 
   dimension: followup_14_30_day {
@@ -46,9 +46,9 @@ view: service_lines {
     sql: ${TABLE}.name ;;
   }
 
-  dimension: new_patient_appointment_type {
+  dimension: new_pt_appointment_type {
     type: string
-    sql: ${TABLE}.new_patient_appointment_type ;;
+    sql: ${TABLE}.new_patient_appointment_type ->> 'name';;
   }
 
   dimension: out_of_network_insurance {
