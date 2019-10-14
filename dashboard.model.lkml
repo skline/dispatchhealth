@@ -2719,6 +2719,31 @@ explore: tivity_data {
 explore: shift_teams
  {
 
+  join: care_requests {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${care_requests.shift_team_id} ;;
+  }
+
+  join: care_request_flat {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${care_request_flat.care_request_id} ;;
+  }
+
+  join: shift_team_members {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
+  }
+
+  join: users {
+    relationship: one_to_one
+    sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+  join: provider_profiles {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_profiles.user_id} ;;
+  }
+
   join: shift_team_market_assignment_logs {
     sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} AND ${shift_team_market_assignment_logs.lend} ;;
   }
