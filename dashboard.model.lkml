@@ -2590,6 +2590,13 @@ explore: thr_zips {
   }
 }
 
+explore: tch_low_acuity_zips {
+  join: zipcodes {
+    relationship: one_to_one
+    sql_on: ${zipcodes.zip}=${tch_low_acuity_zips.zipcode} ;;
+  }
+}
+
 explore: diversion_flat {
   join: icd_code_dimensions_clone {
     sql_on: ${diversion_flat.diagnosis_code} = ${icd_code_dimensions_clone.diagnosis_code} ;;
