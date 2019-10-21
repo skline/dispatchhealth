@@ -625,6 +625,11 @@ explore: care_requests {
     sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
   }
 
+  join: thr_texas_city_segments_by_zip {
+    relationship: one_to_one
+    sql_on: ${thr_texas_city_segments_by_zip.zip_code} = substring(${addresses.zipcode},1,5) ;;
+  }
+
   join: income_pop_by_zipcode_small {
     sql_on: ${income_pop_by_zipcode_small.zipcode} =${addresses.zipcode_short} ;;
   }
