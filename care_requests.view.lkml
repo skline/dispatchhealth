@@ -1107,7 +1107,7 @@ view: care_requests {
     description: "Count of completed care requests where imaging was ordered"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_lab_imaging_results.imaging_flag
+      field: athenadwh_documents_clone.imaging_flag
       value: "yes"
     }
     filters: {
