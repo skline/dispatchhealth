@@ -117,7 +117,7 @@ view: athenadwh_documents_clone {
 
   dimension: imaging_flag {
     type: yesno
-    sql: ${document_class} = 'IMAGINGRESULT' ;;
+    sql: ${document_class} = 'IMAGINGRESULT' OR (${clinical_order_genus} = 'XR' AND ${document_class} = 'ORDER') ;;
   }
 
   dimension: dme_flag {
