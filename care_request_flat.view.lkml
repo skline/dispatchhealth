@@ -1231,6 +1231,7 @@ view: care_request_flat {
   dimension: on_route_decimal {
     description: "The local on-route time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
+    value_format: "0.00"
     sql: (CAST(EXTRACT(HOUR FROM ${on_route_raw}) AS INT)) +
         ((CAST(EXTRACT(MINUTE FROM ${on_route_raw} ) AS FLOAT)) / 60) ;;
   }
