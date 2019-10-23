@@ -534,6 +534,16 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
   }
 
+
+  join: diversion_savings_gross_by_insurance_group {
+    relationship: many_to_one
+    sql_on: ${diversion_type.id} = ${diversion_savings_gross_by_insurance_group.diversion_type_id}
+        AND ${insurance_coalese_crosswalk.custom_insurance_grouping} = ${diversion_savings_gross_by_insurance_group.custom_insurance_grouping}
+        AND ${care_request_flat.complete_date} >= ${diversion_savings_gross_by_insurance_group.activated_date}
+        AND (${care_request_flat.complete_date} < ${diversion_savings_gross_by_insurance_group.deactivated_date}
+        OR ${diversion_savings_gross_by_insurance_group.deactivated_date} IS NULL);;
+  }
+
   join: letter_recipient_dimensions_clone {
     relationship:  many_to_one
     sql_on: ${letter_recipient_dimensions_clone.id} = ${visit_facts_clone.letter_recipient_dim_id} ;;

@@ -604,6 +604,18 @@ SELECT DISTINCT
     value_format: "$#,##0"
   }
 
+  measure: test_gross_diversion_savings_er {
+    type:  number
+    sql: ${count_er_diversions} *
+        MAX(CASE
+          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
+          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          WHEN ${diversion_savings_gross_by_insurance_group.diversion_type_id} = 1 AND ${diversion_savings_gross_by_insurance_group.custom_insurance_grouping} = ${insurance_coalese_crosswalk.custom_insurance_grouping} THEN ${diversion_savings_gross_by_insurance_group.diversion_savings_gross_amount}
+         END) ;;
+    value_format: "$#,##0"
+  }
+
   dimension: diversion_observation {
     type: number
     sql: CASE WHEN ${diversion_hospitalization} > 0 THEN 0
