@@ -2788,10 +2788,10 @@ explore: shift_teams
       and  ${shift_teams.start_day_of_week} = ${target_staffing.dow};;
   }
 
+}
 
-
-
-
-
-
+explore: budget_projections_by_market_clone {
+  join: markets {
+    sql_on: ${markets.id} = ${budget_projections_by_market_clone.market_dim_id} ;;
+  }
 }
