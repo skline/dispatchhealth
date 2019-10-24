@@ -2112,8 +2112,9 @@ measure:  count_end_of_shift_dead_time_45_mins {
   dimension: secondary_resolved_reason {
     type:  string
     sql: CASE
-          WHEN ${resolved_reason_full} LIKE '%Spoke to my family doctor%'
-          THEN 'Spoke to my Family Doctor'
+          WHEN ${resolved_reason_full} LIKE '%Spoke to my family doctor%' THEN 'Spoke to my Family Doctor'
+          WHEN trim(split_part(${resolved_reason_full}, ':', 2)) SIMILAR TO '%(Going to an Emergency Department|Going to Emergency Department)%' THEN 'Going to Emergency Department'
+          WHEN trim(split_part(${resolved_reason_full}, ':', 2)) SIMILAR TO '%(Going to an Urgent Care|Going to Urgent Care)%' THEN 'Going to Urgent Care'
           ELSE trim(split_part(${resolved_reason_full}, ':', 2))
         END ;;
   }
