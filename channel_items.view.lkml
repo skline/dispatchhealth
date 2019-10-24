@@ -87,7 +87,10 @@ view: channel_items {
 
   dimension: name {
     type: string
-    sql: TRIM(INITCAP(${TABLE}.name)) ;;
+    sql: CASE
+    WHEN INITCAP(${TABLE}.name) LIKE '%Google Or Other Search%' THEN 'Google or Other Search'
+    ELSE TRIM(INITCAP(${TABLE}.name))
+    END ;;
   }
 
   dimension: multicare_charity_patient {
