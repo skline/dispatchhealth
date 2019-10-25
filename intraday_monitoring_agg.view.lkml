@@ -45,12 +45,14 @@ view: intraday_monitoring_agg {
 
     dimension: percent_diff_to_actual {
       type: number
-      sql: ${diff_to_actual}::float/${complete_count}::float ;;
+      sql: case when ${complete_count}=0 then 0
+    else ${diff_to_actual}::float/${complete_count}::float end ;;
     }
 
   dimension: percent_abs_diff_to_actual {
     type: number
-    sql: ${abs_diff_to_actual}::float/${complete_count}::float ;;
+    sql: case when ${complete_count}=0 then 0
+    else ${abs_diff_to_actual}::float/${complete_count}::float end ;;
   }
 
     measure: avg_diff_to_actual {
@@ -85,7 +87,9 @@ view: intraday_monitoring_agg {
   measure: avg_diff_to_actual_percent {
     type: number
     value_format: "0.0%"
-    sql: (${avg_diff_to_actual})/${avg_complete_count} ;;
+    sql: case when ${avg_complete_count}=0 then 0
+    else ${avg_diff_to_actual}::float/${avg_complete_count}::float end
+ ;;
   }
 
   measure: avg_abs_diff_to_actual_percent {
