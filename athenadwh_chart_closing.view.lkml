@@ -23,6 +23,7 @@ view: athenadwh_chart_closing {
         ON ce.clinical_encounter_id = ce_first.clinical_encounter_id AND ce_first.rn = 1
         JOIN athenadwh_patients_clone p
           ON ce.patient_id = p.patient_id AND p.new_patient_id IS NULL
+        WHERE ce.encounter_status = 'CLOSED'
         GROUP BY 1,2,3,4,5,6,7,10 ;;
 
   indexes: ["clinical_encounter_id", "patient_id", "chart_id", "appointment_id", "provider_id"]
