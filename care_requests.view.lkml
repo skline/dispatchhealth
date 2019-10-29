@@ -1187,10 +1187,23 @@ view: care_requests {
     sql: ${cars.name} LIKE '%SMFR%' AND ${billable_est};;
   }
 
+  dimension: wmfr_billable {
+    type: yesno
+    sql: ${cars.name} LIKE '%WMFR%' AND ${billable_est};;
+  }
+
   measure: count_smfr_billable {
     type: count
     filters: {
       field: smfr_billable
+      value: "yes"
+    }
+  }
+
+  measure: count_wmfr_billable {
+    type: count
+    filters: {
+      field: wmfr_billable
       value: "yes"
     }
   }

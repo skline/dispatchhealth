@@ -502,14 +502,14 @@ SELECT DISTINCT
   FROM looker_scratch.diversion_categories_by_care_request dcf
   JOIN ${diversion_flat.SQL_TABLE_NAME} df
     ON dcf.diagnosis_code1 = df.diagnosis_code
-  --911 Diversions
+  --ER Diversions
   LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df1
     ON dcf.diagnosis_code1 = df1.diagnosis_code AND df1.diversion_type_id = 1
   LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df2
     ON dcf.diagnosis_code2 = df2.diagnosis_code AND df2.diversion_type_id = 1
   LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df3
     ON dcf.diagnosis_code3 = df3.diagnosis_code AND df3.diversion_type_id = 1
-  -- ER diversions
+  -- 911 diversions
   LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df4
     ON dcf.diagnosis_code1 = df4.diagnosis_code AND df4.diversion_type_id = 2
   LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df5
@@ -553,11 +553,11 @@ SELECT DISTINCT
     sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
-      value: "no"
+      value: "No"
     }
     filters: {
       field: care_requests.post_acute_follow_up
-      value: "no"
+      value: "No"
     }
   }
 
@@ -574,7 +574,7 @@ SELECT DISTINCT
   }
 
   dimension: diversion_er {
-    type: number
+    type: string
     sql: ${TABLE}.diversion_er ;;
   }
 
@@ -584,11 +584,11 @@ SELECT DISTINCT
     sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
-      value: "no"
+      value: "No"
     }
     filters: {
       field: care_requests.post_acute_follow_up
-      value: "no"
+      value: "No"
     }
   }
 
@@ -628,11 +628,11 @@ SELECT DISTINCT
     sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
-      value: "no"
+      value: "No"
     }
     filters: {
       field: care_requests.post_acute_follow_up
-      value: "no"
+      value: "No"
     }
   }
 
@@ -659,11 +659,11 @@ SELECT DISTINCT
     sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
-      value: "no"
+      value: "No"
     }
     filters: {
       field: care_requests.post_acute_follow_up
-      value: "no"
+      value: "No"
     }
   }
 
