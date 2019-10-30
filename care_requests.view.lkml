@@ -722,6 +722,11 @@ view: care_requests {
     }
   }
 
+  dimension: chart_signed {
+    type: yesno
+    sql: ${TABLE}.signed ;;
+  }
+
 
   dimension: requested_by {
     type: number
