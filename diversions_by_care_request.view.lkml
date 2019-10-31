@@ -3,6 +3,7 @@ view: diversions_by_care_request {
     sql:
 SELECT DISTINCT
   dcf.care_request_id,
+  igrp.custom_insurance_grouping,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df1.dc1,
   dcf.survey_yes_to_er * df1.dc2,
@@ -127,6 +128,7 @@ SELECT DISTINCT
   dcf.dc39 * df3.dc39,
   dcf.dc40 * df3.dc40,
   dcf.dc41 * df3.dc41) > 0 THEN 1 ELSE 0 END AS diversion_er,
+  ds1.diversion_savings_gross_amount AS diversion_er_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df4.dc1,
   dcf.survey_yes_to_er * df4.dc2,
@@ -251,6 +253,7 @@ SELECT DISTINCT
   dcf.dc39 * df6.dc39,
   dcf.dc40 * df6.dc40,
   dcf.dc41 * df6.dc41) > 0 THEN 1 ELSE 0 END AS diversion_911,
+  ds2.diversion_savings_gross_amount AS diversion_911_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df7.dc1,
   dcf.survey_yes_to_er * df7.dc2,
@@ -375,6 +378,7 @@ SELECT DISTINCT
   dcf.dc39 * df9.dc39,
   dcf.dc40 * df9.dc40,
   dcf.dc41 * df9.dc41) > 0 THEN 1 ELSE 0 END AS diversion_obs,
+  ds4.diversion_savings_gross_amount AS diversion_obs_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df10.dc1,
   dcf.survey_yes_to_er * df10.dc2,
@@ -498,7 +502,8 @@ SELECT DISTINCT
   dcf.dc38 * df12.dc38,
   dcf.dc39 * df12.dc39,
   dcf.dc40 * df12.dc40,
-  dcf.dc41 * df12.dc41) > 0 THEN 1 ELSE 0 END AS diversion_hosp
+  dcf.dc41 * df12.dc41) > 0 THEN 1 ELSE 0 END AS diversion_hosp,
+  ds3.diversion_savings_gross_amount AS diversion_hosp_savings
   FROM looker_scratch.diversion_categories_by_care_request dcf
   JOIN ${diversion_flat.SQL_TABLE_NAME} df
     ON dcf.diagnosis_code1 = df.diagnosis_code
@@ -530,7 +535,26 @@ SELECT DISTINCT
     ON dcf.diagnosis_code2 = df11.diagnosis_code AND df11.diversion_type_id = 3
   LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df12
     ON dcf.diagnosis_code3 = df12.diagnosis_code AND df12.diversion_type_id = 3
-  GROUP BY 1,2,3,4,5 ;;
+  LEFT JOIN (
+      SELECT DISTINCT
+          care_request_id,
+          package_id_coalese AS package_id,
+          custom_insurance_grouping
+      FROM lr$7nkqp8dt79vlxd51gonkd_insurance_coalese  ic
+      LEFT JOIN primary_payer_dimensions_clone pp
+          ON ic.package_id_coalese = pp.insurance_package_id
+    GROUP BY 1,2,3
+    ORDER BY 1 DESC,2) AS igrp
+  ON dcf.care_request_id = igrp.care_request_id
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds1
+    ON igrp.custom_insurance_grouping = ds1.custom_insurance_grouping AND ds1.diversion_type_id = 1
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds2
+    ON igrp.custom_insurance_grouping = ds2.custom_insurance_grouping AND ds2.diversion_type_id = 2
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds3
+    ON igrp.custom_insurance_grouping = ds3.custom_insurance_grouping AND ds3.diversion_type_id = 3
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds4
+    ON igrp.custom_insurance_grouping = ds4.custom_insurance_grouping AND ds4.diversion_type_id = 4
+  GROUP BY 1,2,3,4,5,6,7,8,9,10 ;;
 
     sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
     indexes: ["care_request_id"]
@@ -545,6 +569,11 @@ SELECT DISTINCT
   dimension: diversion_911 {
     type: number
     sql: ${TABLE}.diversion_911 ;;
+  }
+
+  dimension: diversion_911_savings {
+    type: number
+    sql: ${TABLE}.diversion_911_savings ;;
   }
 
   measure: count_911_diversions {
@@ -576,6 +605,11 @@ SELECT DISTINCT
   dimension: diversion_er {
     type: string
     sql: ${TABLE}.diversion_er ;;
+  }
+
+  dimension: diversion_er_savings {
+    type: number
+    sql: ${TABLE}.diversion_er_savings ;;
   }
 
   measure: count_er_diversions {
@@ -622,6 +656,11 @@ SELECT DISTINCT
     ELSE ${TABLE}.diversion_obs END ;;
   }
 
+  dimension: diversion_obs_savings {
+    type: number
+    sql: ${TABLE}.diversion_obs_savings ;;
+  }
+
   measure: count_observation_diversions {
     type: sum_distinct
     sql: ${diversion_observation} ;;
@@ -651,6 +690,11 @@ SELECT DISTINCT
   dimension: diversion_hospitalization {
     type: number
     sql: ${TABLE}.diversion_hosp ;;
+  }
+
+  dimension: diversion_hosp_savings {
+    type: number
+    sql: ${TABLE}.diversion_hosp_savings ;;
   }
 
   measure: count_hospitalization_diversions {
