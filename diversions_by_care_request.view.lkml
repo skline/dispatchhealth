@@ -540,7 +540,7 @@ SELECT DISTINCT
           care_request_id,
           package_id_coalese AS package_id,
           custom_insurance_grouping
-      FROM lr$7nkqp8dt79vlxd51gonkd_insurance_coalese  ic
+      FROM ${insurance_coalese.SQL_TABLE_NAME}  ic
       LEFT JOIN primary_payer_dimensions_clone pp
           ON ic.package_id_coalese = pp.insurance_package_id
     GROUP BY 1,2,3
