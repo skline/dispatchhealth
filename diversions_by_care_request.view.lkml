@@ -128,7 +128,7 @@ SELECT DISTINCT
   dcf.dc39 * df3.dc39,
   dcf.dc40 * df3.dc40,
   dcf.dc41 * df3.dc41) > 0 THEN 1 ELSE 0 END AS diversion_er,
-  ds1.diversion_savings_gross_amount AS diversion_er_savings,
+  COALESCE(ip.er_diversion, ci.er_diversion, ds1.diversion_savings_gross_amount,2000) AS diversion_er_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df4.dc1,
   dcf.survey_yes_to_er * df4.dc2,
@@ -253,7 +253,7 @@ SELECT DISTINCT
   dcf.dc39 * df6.dc39,
   dcf.dc40 * df6.dc40,
   dcf.dc41 * df6.dc41) > 0 THEN 1 ELSE 0 END AS diversion_911,
-  ds2.diversion_savings_gross_amount AS diversion_911_savings,
+  COALESCE(ip.nine_one_one_diversion, ci.nine_one_one_diversion, ds2.diversion_savings_gross_amount,750) AS diversion_911_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df7.dc1,
   dcf.survey_yes_to_er * df7.dc2,
@@ -378,7 +378,7 @@ SELECT DISTINCT
   dcf.dc39 * df9.dc39,
   dcf.dc40 * df9.dc40,
   dcf.dc41 * df9.dc41) > 0 THEN 1 ELSE 0 END AS diversion_obs,
-  ds4.diversion_savings_gross_amount AS diversion_obs_savings,
+  COALESCE(ip.observation_diversion, ci.observation_diversion, ds4.diversion_savings_gross_amount,4000) AS diversion_obs_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df10.dc1,
   dcf.survey_yes_to_er * df10.dc2,
@@ -503,7 +503,7 @@ SELECT DISTINCT
   dcf.dc39 * df12.dc39,
   dcf.dc40 * df12.dc40,
   dcf.dc41 * df12.dc41) > 0 THEN 1 ELSE 0 END AS diversion_hosp,
-  ds3.diversion_savings_gross_amount AS diversion_hosp_savings
+  COALESCE(ip.hospitalization_diversion, ci.hospitalization_diversion, ds3.diversion_savings_gross_amount,12000) AS diversion_hosp_savings
   FROM looker_scratch.diversion_categories_by_care_request dcf
   JOIN ${diversion_flat.SQL_TABLE_NAME} df
     ON dcf.diagnosis_code1 = df.diagnosis_code
@@ -546,6 +546,12 @@ SELECT DISTINCT
     GROUP BY 1,2,3
     ORDER BY 1 DESC,2) AS igrp
   ON dcf.care_request_id = igrp.care_request_id
+  INNER JOIN public.care_requests cr
+    ON igrp.care_request_id = cr.id
+  LEFT JOIN public.insurance_plans ip
+      ON igrp.package_id = ip.package_id
+  LEFT JOIN public.channel_items ci
+      ON cr.channel_item_id = ci.id
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds1
     ON igrp.custom_insurance_grouping = ds1.custom_insurance_grouping AND ds1.diversion_type_id = 1
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds2
@@ -597,14 +603,7 @@ SELECT DISTINCT
 
   measure: diversion_savings_911 {
     type: number
-    sql: ${count_911_diversions} *
-        MAX(CASE
-          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_911_savings}
-          WHEN ${insurance_plans.nine_one_one_diversion} IS NOT NULL THEN ${insurance_plans.nine_one_one_diversion}
-          WHEN ${population_health_channels.nine_one_one_diversion} IS NOT NULL THEN ${population_health_channels.nine_one_one_diversion}
-          WHEN ${channel_items.nine_one_one_diversion} IS NOT NULL THEN ${channel_items.nine_one_one_diversion}
-          ELSE 750
-        END) ;;
+    sql: ${count_911_diversions} * MAX(${diversion_911_savings}) ;;
     value_format: "$#,##0"
   }
 
@@ -634,14 +633,7 @@ SELECT DISTINCT
 
   measure: diversion_savings_er {
     type: number
-    sql: ${count_er_diversions} *
-        MAX(CASE
-          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_er_savings}
-          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
-          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
-          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
-          ELSE 2000
-        END) ;;
+    sql: ${count_er_diversions} * MAX(${diversion_er_savings}) ;;
     value_format: "$#,##0"
   }
 
@@ -672,14 +664,7 @@ SELECT DISTINCT
 
   measure: diversion_savings_observation {
     type: number
-    sql: ${count_observation_diversions} *
-        MAX(CASE
-          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_obs_savings}
-          WHEN ${insurance_plans.observation_diversion} IS NOT NULL THEN ${insurance_plans.observation_diversion}
-          WHEN ${population_health_channels.observation_diversion} IS NOT NULL THEN ${population_health_channels.observation_diversion}
-          WHEN ${channel_items.observation_diversion} IS NOT NULL THEN ${channel_items.observation_diversion}
-          ELSE 4000
-        END) ;;
+    sql: ${count_observation_diversions} * MAX(${diversion_obs_savings}) ;;
     value_format: "$#,##0"
   }
 
@@ -709,14 +694,7 @@ SELECT DISTINCT
 
   measure: diversion_savings_hospitalization {
     type: number
-    sql: ${count_hospitalization_diversions} *
-        MAX(CASE
-          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_hosp_savings}
-          WHEN ${insurance_plans.hospitalization_diversion} IS NOT NULL THEN ${insurance_plans.hospitalization_diversion}
-          WHEN ${population_health_channels.hospitalization_diversion} IS NOT NULL THEN ${population_health_channels.hospitalization_diversion}
-          WHEN ${channel_items.hospitalization_diversion} IS NOT NULL THEN ${channel_items.hospitalization_diversion}
-          ELSE 12000
-        END) ;;
+    sql: ${count_hospitalization_diversions} * MAX(${diversion_hosp_savings}) ;;
     value_format: "$#,##0"
   }
 
