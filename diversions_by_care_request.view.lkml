@@ -566,6 +566,11 @@ SELECT DISTINCT
     sql: ${TABLE}.care_request_id ;;
   }
 
+  dimension: custom_insurance_grouping {
+    type: string
+    sql: ${TABLE}.custom_insurance_grouping ;;
+  }
+
   dimension: diversion_911 {
     type: number
     sql: ${TABLE}.diversion_911 ;;
@@ -594,9 +599,10 @@ SELECT DISTINCT
     type: number
     sql: ${count_911_diversions} *
         MAX(CASE
-          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
-          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
-          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_911_savings}
+          WHEN ${insurance_plans.nine_one_one_diversion} IS NOT NULL THEN ${insurance_plans.nine_one_one_diversion}
+          WHEN ${population_health_channels.nine_one_one_diversion} IS NOT NULL THEN ${population_health_channels.nine_one_one_diversion}
+          WHEN ${channel_items.nine_one_one_diversion} IS NOT NULL THEN ${channel_items.nine_one_one_diversion}
           ELSE 750
         END) ;;
     value_format: "$#,##0"
@@ -630,23 +636,12 @@ SELECT DISTINCT
     type: number
     sql: ${count_er_diversions} *
         MAX(CASE
+          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_er_savings}
           WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
           WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
           WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
           ELSE 2000
         END) ;;
-    value_format: "$#,##0"
-  }
-
-  measure: test_gross_diversion_savings_er {
-    type:  number
-    sql: ${count_er_diversions} *
-        MAX(CASE
-          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
-          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
-          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
-          WHEN ${diversion_savings_gross_by_insurance_group.diversion_type_id} = 1 AND ${diversion_savings_gross_by_insurance_group.custom_insurance_grouping} = ${insurance_coalese_crosswalk.custom_insurance_grouping} THEN ${diversion_savings_gross_by_insurance_group.diversion_savings_gross_amount}
-         END) ;;
     value_format: "$#,##0"
   }
 
@@ -679,9 +674,10 @@ SELECT DISTINCT
     type: number
     sql: ${count_observation_diversions} *
         MAX(CASE
-          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
-          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
-          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_obs_savings}
+          WHEN ${insurance_plans.observation_diversion} IS NOT NULL THEN ${insurance_plans.observation_diversion}
+          WHEN ${population_health_channels.observation_diversion} IS NOT NULL THEN ${population_health_channels.observation_diversion}
+          WHEN ${channel_items.observation_diversion} IS NOT NULL THEN ${channel_items.observation_diversion}
           ELSE 4000
         END) ;;
     value_format: "$#,##0"
@@ -715,9 +711,10 @@ SELECT DISTINCT
     type: number
     sql: ${count_hospitalization_diversions} *
         MAX(CASE
-          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
-          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
-          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
+          WHEN ${custom_insurance_grouping} IS NOT NULL THEN ${diversion_hosp_savings}
+          WHEN ${insurance_plans.hospitalization_diversion} IS NOT NULL THEN ${insurance_plans.hospitalization_diversion}
+          WHEN ${population_health_channels.hospitalization_diversion} IS NOT NULL THEN ${population_health_channels.hospitalization_diversion}
+          WHEN ${channel_items.hospitalization_diversion} IS NOT NULL THEN ${channel_items.hospitalization_diversion}
           ELSE 12000
         END) ;;
     value_format: "$#,##0"
