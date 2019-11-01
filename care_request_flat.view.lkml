@@ -2326,6 +2326,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
   }
 
   dimension: pafu_or_follow_up {
+    description: "DH Followup AND Post Acute Followups are counted. Use the 'Post Acute Followups' flag in the 'Care Request' view to report on PAFU only"
     type: yesno
     sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} or lower(${service_lines.name}) like '%post acute%' or lower(${service_lines.name}) like '%post-acute%' ;;
   }
