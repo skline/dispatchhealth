@@ -27,6 +27,7 @@ view: insurance_coalese {
        AND transaction_facts_clone.voided_date IS NULL
         left join looker_scratch.primary_payer_dimensions_clone
         on transaction_facts_clone.primary_payer_dim_id = primary_payer_dimensions_clone.id
+        GROUP BY 1,2,3,4
        ;;
       sql_trigger_value:  select sum(timevalue)
 from

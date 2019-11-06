@@ -928,7 +928,8 @@ explore: care_requests {
   join: insurance_coalese_crosswalk {
     from: primary_payer_dimensions_clone
     relationship: many_to_one
-    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id} ;;
+    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
+            AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
   }
 
   join: expected_allowable_corporate {
