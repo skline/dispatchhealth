@@ -1698,6 +1698,7 @@ view: care_request_flat {
       week,
       month,
       day_of_week_index,
+      day_of_week,
       day_of_month
     ]
     sql: CASE
