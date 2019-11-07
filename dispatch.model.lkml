@@ -518,5 +518,10 @@ explore: aetna_uhc_ma {}
 explore: bs_risk {}
 explore: nw_zipcodes {}
 explore: njr_risk_new {}
-explore: optum_uhc_atl {}
+explore: optum_uhc_atl {
+  join: zip_to_zcta {
+    sql_on: ${optum_uhc_atl.zipcode}=${zip_to_zcta.zip_code} ;;
+  }
+
+}
 explore: propensity_atl {}
