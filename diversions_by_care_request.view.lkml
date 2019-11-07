@@ -578,19 +578,18 @@ SELECT DISTINCT
   }
 
   dimension: diversion_911 {
-    type: number
-    sql: ${TABLE}.diversion_911 ;;
+    type: yesno
+    sql: ${TABLE}.diversion_911 = 1 ;;
   }
 
   dimension: diversion_911_savings {
     type: number
-    sql: ${TABLE}.diversion_911_savings ;;
+    sql: CASE WHEN ${diversion_911} THEN ${TABLE}.diversion_911_savings ELSE 0 END ;;
   }
 
   measure: count_911_diversions {
-    type: sum_distinct
-    sql: ${diversion_911} ;;
-    sql_distinct_key: ${care_request_id} ;;
+    type: count_distinct
+    sql: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "No"
@@ -598,29 +597,32 @@ SELECT DISTINCT
     filters: {
       field: care_requests.post_acute_follow_up
       value: "No"
+    }
+    filters: {
+      field: diversion_911
+      value: "Yes"
     }
   }
 
   measure: diversion_savings_911 {
-    type: number
-    sql: ${count_911_diversions} * MAX(${diversion_911_savings}) ;;
+    type: sum
+    sql:${diversion_911_savings};;
     value_format: "$#,##0"
   }
 
   dimension: diversion_er {
-    type: string
-    sql: ${TABLE}.diversion_er ;;
+    type: yesno
+    sql: ${TABLE}.diversion_er = '1' ;;
   }
 
   dimension: diversion_er_savings {
     type: number
-    sql: ${TABLE}.diversion_er_savings ;;
+    sql: CASE WHEN ${diversion_er} THEN ${TABLE}.diversion_er_savings ELSE 0 END ;;
   }
 
   measure: count_er_diversions {
-    type: sum_distinct
-    sql: ${diversion_er} ;;
-    sql_distinct_key: ${care_request_id} ;;
+    type: count_distinct
+    sql: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "No"
@@ -629,29 +631,32 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
+    filters: {
+      field: diversion_er
+      value: "Yes"
+    }
   }
 
+
   measure: diversion_savings_er {
-    type: number
-    sql: ${count_er_diversions} * MAX(${diversion_er_savings}) ;;
+    type: sum
+    sql: ${diversion_er_savings} ;;
     value_format: "$#,##0"
   }
 
   dimension: diversion_observation {
-    type: number
-    sql: CASE WHEN ${diversion_hospitalization} > 0 THEN 0
-    ELSE ${TABLE}.diversion_obs END ;;
+    type: yesno
+    sql: ${TABLE}.diversion_obs = 1 ;;
   }
 
   dimension: diversion_obs_savings {
     type: number
-    sql: ${TABLE}.diversion_obs_savings ;;
+    sql: CASE WHEN ${diversion_observation} THEN ${TABLE}.diversion_obs_savings ELSE 0 END ;;
   }
 
   measure: count_observation_diversions {
-    type: sum_distinct
-    sql: ${diversion_observation} ;;
-    sql_distinct_key: ${care_request_id} ;;
+    type: count_distinct
+    sql: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "No"
@@ -659,29 +664,32 @@ SELECT DISTINCT
     filters: {
       field: care_requests.post_acute_follow_up
       value: "No"
+    }
+    filters: {
+      field: diversion_observation
+      value: "Yes"
     }
   }
 
   measure: diversion_savings_observation {
-    type: number
-    sql: ${count_observation_diversions} * MAX(${diversion_obs_savings}) ;;
+    type: sum
+    sql: ${diversion_obs_savings};;
     value_format: "$#,##0"
   }
 
-  dimension: diversion_hospitalization {
-    type: number
-    sql: ${TABLE}.diversion_hosp ;;
+  dimension: diversion_hosp {
+    type: yesno
+    sql: ${TABLE}.diversion_hosp = 1;;
   }
 
   dimension: diversion_hosp_savings {
     type: number
-    sql: ${TABLE}.diversion_hosp_savings ;;
+    sql: CASE WHEN ${diversion_hosp} THEN ${TABLE}.diversion_hosp_savings ELSE 0 END ;;
   }
 
   measure: count_hospitalization_diversions {
-    type: sum_distinct
-    sql: ${diversion_hospitalization} ;;
-    sql_distinct_key: ${care_request_id} ;;
+    type: count_distinct
+    sql: ${care_request_id} ;;
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "No"
@@ -690,18 +698,22 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
+    filters: {
+      field: diversion_hosp
+      value: "Yes"
+    }
   }
 
   measure: diversion_savings_hospitalization {
-    type: number
-    sql: ${count_hospitalization_diversions} * MAX(${diversion_hosp_savings}) ;;
+    type: sum
+    sql: ${diversion_hosp_savings} ;;
     value_format: "$#,##0"
   }
 
   dimension: diversion {
     description: "A flag indicating that any diversion criteria was met"
     type: yesno
-    sql: ${diversion_911} > 0 OR ${diversion_er} > 0 OR ${diversion_observation} > 0 OR ${diversion_hospitalization} > 0 ;;
+    sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
 
 }
