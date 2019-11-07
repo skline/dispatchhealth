@@ -1423,6 +1423,11 @@ explore: channel_items {
     sql_on:  ${channels.id} = ${channel_items.channel_id};;
   }
 
+  join: channel_item_emr_providers {
+    relationship: many_to_one
+    sql_on: ${channel_items.id} = ${channel_item_emr_providers.channel_item_id} ;;
+  }
+
   join: sales_force_implementation_score_recent {
     type: full_outer
     relationship: one_to_one
