@@ -535,21 +535,34 @@ SELECT DISTINCT
     ON dcf.diagnosis_code2 = df11.diagnosis_code AND df11.diversion_type_id = 3
   LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df12
     ON dcf.diagnosis_code3 = df12.diagnosis_code AND df12.diversion_type_id = 3
+  --${insurance_coalese.SQL_TABLE_NAME}
   LEFT JOIN (
-      SELECT DISTINCT
-          care_request_id,
-          package_id_coalese AS package_id,
-          custom_insurance_grouping
-      FROM ${insurance_coalese.SQL_TABLE_NAME}  ic
-      LEFT JOIN primary_payer_dimensions_clone pp
-          ON ic.package_id_coalese = pp.insurance_package_id
-    GROUP BY 1,2,3
-    ORDER BY 1 DESC,2) AS igrp
+      SELECT
+        cr.id  AS care_request_id,
+        pic.insurance_package_id,
+        pc.custom_insurance_grouping
+        FROM public.care_requests  AS cr
+        LEFT JOIN public.patients  AS pt ON cr.patient_id = pt.id
+        LEFT JOIN (
+          SELECT
+              patient_id,
+              insurance_package_id,
+              cancellation_date,
+              sequence_number,
+              ROW_NUMBER() OVER (PARTITION BY patient_id, cancellation_date
+                  ORDER BY patient_id, cancellation_date, sequence_number, updated_at) AS rn
+              FROM looker_scratch.athenadwh_patient_insurances_clone
+              WHERE (sequence_number::int = 1 OR insurance_package_id::int = -100) AND cancellation_date IS NULL
+            ) AS pic
+            ON pt.ehr_id = pic.patient_id::varchar AND pic.rn = 1
+        LEFT JOIN looker_scratch.athenadwh_payers_clone  AS pc
+            ON pic.insurance_package_id = pc.insurance_package_id
+        GROUP BY 1,2,3) AS igrp
   ON dcf.care_request_id = igrp.care_request_id
   INNER JOIN public.care_requests cr
     ON igrp.care_request_id = cr.id
   LEFT JOIN public.insurance_plans ip
-      ON igrp.package_id = ip.package_id
+      ON igrp.insurance_package_id = ip.package_id AND ip.active IS TRUE
   LEFT JOIN public.channel_items ci
       ON cr.channel_item_id = ci.id
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds1
@@ -605,8 +618,9 @@ SELECT DISTINCT
   }
 
   measure: diversion_savings_911 {
-    type: sum
+    type: sum_distinct
     sql:${diversion_911_savings};;
+    sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
   }
 
@@ -639,8 +653,9 @@ SELECT DISTINCT
 
 
   measure: diversion_savings_er {
-    type: sum
+    type: sum_distinct
     sql: ${diversion_er_savings} ;;
+    sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
   }
 
@@ -672,8 +687,9 @@ SELECT DISTINCT
   }
 
   measure: diversion_savings_observation {
-    type: sum
+    type: sum_distinct
     sql: ${diversion_obs_savings};;
+    sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
   }
 
@@ -705,8 +721,9 @@ SELECT DISTINCT
   }
 
   measure: diversion_savings_hospitalization {
-    type: sum
+    type: sum_distinct
     sql: ${diversion_hosp_savings} ;;
+    sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
   }
 
