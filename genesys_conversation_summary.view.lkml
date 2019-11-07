@@ -248,6 +248,23 @@ view: genesys_conversation_summary {
 
   }
 
+  dimension:  inqueue_time_greater_10{
+    type: yesno
+    sql: ${firstacdwaitduration}>10000 ;;
+  }
+
+  measure:  count_inqeue_time_greater_10s{
+    type: count_distinct
+    value_format: "0"
+    sql_distinct_key: ${conversationid} ;;
+    sql: ${conversationid} ;;
+    filters: {
+      field: inqueue_time_greater_10
+      value: "yes"
+    }
+
+  }
+
   dimension: onboard_delay {
     type: number
     sql: EXTRACT(EPOCH FROM (${care_request_flat.accept_mountain_intial_raw} - ${conversationstarttime_raw}));;
