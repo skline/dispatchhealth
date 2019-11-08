@@ -1,6 +1,12 @@
 view: diversions_by_care_request {
   derived_table: {
     sql:
+WITH crs AS (
+    SELECT care_request_id,
+    MAX(DATE(started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain')) AS on_scene_date
+    FROM public.care_request_statuses
+    WHERE name = 'on_scene'
+    GROUP BY 1)
 SELECT DISTINCT
   dcf.care_request_id,
   igrp.custom_insurance_grouping,
@@ -560,9 +566,20 @@ SELECT DISTINCT
         GROUP BY 1,2,3) AS igrp
   ON dcf.care_request_id = igrp.care_request_id
   INNER JOIN public.care_requests cr
-    ON igrp.care_request_id = cr.id
-  LEFT JOIN public.insurance_plans ip
-      ON igrp.insurance_package_id = ip.package_id AND ip.active IS TRUE
+    ON dcf.care_request_id = cr.id
+    LEFT JOIN crs
+        ON cr.id = crs.care_request_id
+    LEFT JOIN public.markets  AS markets ON cr.market_id = markets.id
+    LEFT JOIN public.states  AS states ON markets.state = states.abbreviation
+    LEFT JOIN public.patients pt
+        ON cr.patient_id = pt.id
+    LEFT JOIN public.insurances  AS ins ON cr.patient_id = ins.patient_id AND
+            ins.priority = '1' AND
+            ins.patient_id IS NOT NULL AND
+            COALESCE((DATE(ins.start_date )),(DATE(crs.on_scene_date ))) <= (DATE(crs.on_scene_date )) AND
+            COALESCE((DATE(ins.end_date )),(DATE(crs.on_scene_date ))) >= (DATE(crs.on_scene_date ))
+    LEFT JOIN public.insurance_plans  AS ip
+      ON ins.package_id = ip.package_id AND ip.state_id = states.id
   LEFT JOIN public.channel_items ci
       ON cr.channel_item_id = ci.id
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds1
@@ -573,6 +590,7 @@ SELECT DISTINCT
     ON igrp.custom_insurance_grouping = ds3.custom_insurance_grouping AND ds3.diversion_type_id = 3
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds4
     ON igrp.custom_insurance_grouping = ds4.custom_insurance_grouping AND ds4.diversion_type_id = 4
+  WHERE ip.active IS TRUE AND ins.eligible <> 'Ineligible'
   GROUP BY 1,2,3,4,5,6,7,8,9,10 ;;
 
     sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
@@ -626,7 +644,7 @@ SELECT DISTINCT
 
   dimension: diversion_er {
     type: yesno
-    sql: ${TABLE}.diversion_er = '1' ;;
+    sql: ${TABLE}.diversion_er::int = 1 ;;
   }
 
   dimension: diversion_er_savings {
