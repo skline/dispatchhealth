@@ -644,6 +644,15 @@ SELECT DISTINCT
     sql:${diversion_911_savings};;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+
   }
 
   dimension: diversion_er {
@@ -679,6 +688,15 @@ SELECT DISTINCT
     sql: ${diversion_er_savings} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+
   }
 
   dimension: diversion_observation {
@@ -713,6 +731,15 @@ SELECT DISTINCT
     sql: ${diversion_obs_savings};;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+
   }
 
   dimension: diversion_hosp {
@@ -747,6 +774,15 @@ SELECT DISTINCT
     sql: ${diversion_hosp_savings} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+
   }
 
   dimension: diversion {
