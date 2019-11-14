@@ -9,6 +9,15 @@ WITH
         FROM public.care_request_statuses
         WHERE name = 'on_scene'
         GROUP BY 1),
+    dsg AS (
+        SELECT
+          DISTINCT
+            insurance_classification_name,
+            MAX(case_rate_plug_less_co_pay) AS case_rate,
+            MAX(incremental_visit_cost) AS visit_cost
+        FROM looker_scratch.diversion_savings_gross_by_insurance_group
+        GROUP BY 1),
+
     ins AS (
         SELECT
             cr.id AS care_request_id,
@@ -43,6 +52,8 @@ SELECT DISTINCT
   dcf.care_request_id,
   ins.insurance_type,
   ins.package_id,
+  dsg.case_rate,
+  dsg.visit_cost,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df1.dc1,
   dcf.survey_yes_to_er * df1.dc2,
@@ -580,6 +591,8 @@ SELECT DISTINCT
     ON dcf.care_request_id = cr.id
     LEFT JOIN crs
         ON cr.id = crs.care_request_id
+    LEFT JOIN dsg
+        ON dsg.insurance_classification_name = ins.insurance_type
     LEFT JOIN public.markets  AS markets ON cr.market_id = markets.id
     LEFT JOIN public.states  AS states ON markets.state = states.abbreviation
     LEFT JOIN public.patients pt
@@ -595,7 +608,7 @@ SELECT DISTINCT
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds4
     ON ins.insurance_type = ds4.insurance_classification_name AND ds4.diversion_type_id = 4
   WHERE ins.rn = 1
-  GROUP BY 1,2,3,4,5,6,7,8,9,10,11 ;;
+  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13 ;;
 
     sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
     indexes: ["care_request_id"]
@@ -607,9 +620,14 @@ SELECT DISTINCT
     sql: ${TABLE}.care_request_id ;;
   }
 
-  dimension: custom_insurance_grouping {
+  # dimension: custom_insurance_grouping {
+  #   type: string
+  #   sql: ${TABLE}.custom_insurance_grouping ;;
+  # }
+
+  dimension: insurance_type {
     type: string
-    sql: ${TABLE}.custom_insurance_grouping ;;
+    sql: ${TABLE}.insurance_type ;;
   }
 
   dimension: diversion_911 {
@@ -790,5 +808,28 @@ SELECT DISTINCT
     type: yesno
     sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
+
+  dimension: case_rate {
+    type: number
+    sql: ${TABLE}.case_rate ;;
+  }
+
+  measure: totat_case_rate {
+    type: sum_distinct
+    sql: ${case_rate};;
+    sql_distinct_key: ${care_request_id};;
+  }
+
+  dimension: visit_cost {
+    type: number
+    sql: ${TABLE}.visit_cost ;;
+  }
+
+  measure: total_visit_cost {
+    type: sum_distinct
+    sql: ${visit_cost};;
+    sql_distinct_key: ${care_request_id};;
+  }
+
 
 }
