@@ -1,59 +1,8 @@
 view: diversions_by_care_request {
   derived_table: {
     sql:
-WITH
-    crs AS (
-        SELECT
-            care_request_id,
-            MAX(DATE(started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain')) AS on_scene_date
-        FROM public.care_request_statuses
-        WHERE name = 'on_scene'
-        GROUP BY 1),
-    dsg AS (
-        SELECT
-          DISTINCT
-            insurance_classification_name,
-            MAX(case_rate_plug_less_co_pay) AS case_rate,
-            MAX(incremental_visit_cost) AS visit_cost
-        FROM looker_scratch.diversion_savings_gross_by_insurance_group
-        GROUP BY 1),
-
-    ins AS (
-        SELECT
-            cr.id AS care_request_id,
-            pins.id,
-            pins.patient_id,
-            pins.package_id,
-            pins.priority,
-            pins.start_date,
-            pins.end_date,
-            pins.eligible,
-            ic.name AS insurance_type,
-            ip.er_diversion,
-            ip.nine_one_one_diversion,
-            ip.observation_diversion,
-            ip.hospitalization_diversion,
-            ROW_NUMBER() OVER (PARTITION BY cr.id, pins.patient_id, pins.priority
-              ORDER BY cr.id, pins.patient_id, pins.priority,
-              (CASE WHEN ic.name IS NULL THEN 0 ELSE 1 END) DESC,
-              (CASE WHEN ip.er_diversion IS NULL THEN 0 ELSE 1 END) DESC,
-              (CASE WHEN pins.eligible = 'Eligible' THEN 1 ELSE 0 END) DESC, pins.id DESC) AS rn
-        FROM public.care_requests cr
-        LEFT JOIN public.insurances pins
-            ON cr.patient_id = pins.patient_id
-        LEFT JOIN public.insurance_plans ip
-            ON pins.package_id = ip.package_id
-        LEFT JOIN public.insurance_classifications ic
-            ON ip.insurance_classification_id = ic.id
-        WHERE priority = '1' AND pins.patient_id IS NOT NULL AND eligible <> 'Ineligible'
-        GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
-        ORDER BY care_request_id DESC, patient_id, priority)
 SELECT DISTINCT
   dcf.care_request_id,
-  ins.insurance_type,
-  ins.package_id,
-  dsg.case_rate,
-  dsg.visit_cost,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df1.dc1,
   dcf.survey_yes_to_er * df1.dc2,
@@ -178,7 +127,6 @@ SELECT DISTINCT
   dcf.dc39 * df3.dc39,
   dcf.dc40 * df3.dc40,
   dcf.dc41 * df3.dc41) > 0 THEN 1 ELSE 0 END AS diversion_er,
-  COALESCE(ins.er_diversion, ci.er_diversion, ds1.diversion_savings_gross_amount,2000) AS diversion_er_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df4.dc1,
   dcf.survey_yes_to_er * df4.dc2,
@@ -303,7 +251,6 @@ SELECT DISTINCT
   dcf.dc39 * df6.dc39,
   dcf.dc40 * df6.dc40,
   dcf.dc41 * df6.dc41) > 0 THEN 1 ELSE 0 END AS diversion_911,
-  COALESCE(ins.nine_one_one_diversion, ci.nine_one_one_diversion, ds2.diversion_savings_gross_amount,750) AS diversion_911_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df7.dc1,
   dcf.survey_yes_to_er * df7.dc2,
@@ -428,7 +375,6 @@ SELECT DISTINCT
   dcf.dc39 * df9.dc39,
   dcf.dc40 * df9.dc40,
   dcf.dc41 * df9.dc41) > 0 THEN 1 ELSE 0 END AS diversion_obs,
-  COALESCE(ins.observation_diversion, ci.observation_diversion, ds4.diversion_savings_gross_amount,4000) AS diversion_obs_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df10.dc1,
   dcf.survey_yes_to_er * df10.dc2,
@@ -553,9 +499,64 @@ SELECT DISTINCT
   dcf.dc39 * df12.dc39,
   dcf.dc40 * df12.dc40,
   dcf.dc41 * df12.dc41) > 0 THEN 1 ELSE 0 END AS diversion_hosp,
-  COALESCE(ins.hospitalization_diversion, ci.hospitalization_diversion, ds3.diversion_savings_gross_amount,12000) AS diversion_hosp_savings
+
+  d911_cm.diversion_savings_gross_amount AS commercial_911_savings,
+  d911_ma.diversion_savings_gross_amount AS medicare_adv_911_savings,
+  d911_mcare.diversion_savings_gross_amount AS medicare_911_savings,
+  d911_mmcd.diversion_savings_gross_amount AS mgd_medicaid_911_savings,
+  d911_maid.diversion_savings_gross_amount AS medicaid_911_savings,
+  d911_tc.diversion_savings_gross_amount AS tricare_911_savings,
+  d911_psp.diversion_savings_gross_amount AS self_pay_911_savings,
+  d911_cb.diversion_savings_gross_amount AS corp_billing_911_savings,
+
+  der_cm.diversion_savings_gross_amount AS commercial_er_savings,
+  der_ma.diversion_savings_gross_amount AS medicare_adv_er_savings,
+  der_mcare.diversion_savings_gross_amount AS medicare_er_savings,
+  der_mmcd.diversion_savings_gross_amount AS mgd_medicaid_er_savings,
+  der_maid.diversion_savings_gross_amount AS medicaid_er_savings,
+  der_tc.diversion_savings_gross_amount AS tricare_er_savings,
+  der_psp.diversion_savings_gross_amount AS self_pay_er_savings,
+  der_cb.diversion_savings_gross_amount AS corp_billing_er_savings,
+
+  dobs_cm.diversion_savings_gross_amount AS commercial_obs_savings,
+  dobs_ma.diversion_savings_gross_amount AS medicare_adv_obs_savings,
+  dobs_mcare.diversion_savings_gross_amount AS medicare_obs_savings,
+  dobs_mmcd.diversion_savings_gross_amount AS mgd_medicaid_obs_savings,
+  dobs_maid.diversion_savings_gross_amount AS medicaid_obs_savings,
+  dobs_tc.diversion_savings_gross_amount AS tricare_obs_savings,
+  dobs_psp.diversion_savings_gross_amount AS self_pay_obs_savings,
+  dobs_cb.diversion_savings_gross_amount AS corp_billing_obs_savings,
+
+  dhsp_cm.diversion_savings_gross_amount AS commercial_hsp_savings,
+  dhsp_ma.diversion_savings_gross_amount AS medicare_adv_hsp_savings,
+  dhsp_mcare.diversion_savings_gross_amount AS medicare_hsp_savings,
+  dhsp_mmcd.diversion_savings_gross_amount AS mgd_medicaid_hsp_savings,
+  dhsp_maid.diversion_savings_gross_amount AS medicaid_hsp_savings,
+  dhsp_tc.diversion_savings_gross_amount AS tricare_hsp_savings,
+  dhsp_psp.diversion_savings_gross_amount AS self_pay_hsp_savings,
+  dhsp_cb.diversion_savings_gross_amount AS corp_billing_hsp_savings,
+
+
+  d911_cm.case_rate_plug_less_co_pay AS commercial_case_rate,
+  d911_cm.incremental_visit_cost AS commercial_inc_visit_cost,
+  d911_ma.case_rate_plug_less_co_pay AS medicare_adv_case_rate,
+  d911_ma.incremental_visit_cost AS medicare_adv_inc_visit_cost,
+  d911_mcare.case_rate_plug_less_co_pay AS medicare_case_rate,
+  d911_mcare.incremental_visit_cost AS medicare_inc_visit_cost,
+  d911_mmcd.case_rate_plug_less_co_pay AS mgd_medicaid_case_rate,
+  d911_mmcd.incremental_visit_cost AS mgd_medicaid_inc_visit_cost,
+  d911_maid.case_rate_plug_less_co_pay AS medicaid_case_rate,
+  d911_maid.incremental_visit_cost AS medicaid_inc_visit_cost,
+  d911_tc.case_rate_plug_less_co_pay AS tricare_case_rate,
+  d911_tc.incremental_visit_cost AS tricare_inc_visit_cost,
+  d911_psp.case_rate_plug_less_co_pay AS self_pay_case_rate,
+  d911_psp.incremental_visit_cost AS self_pay_inc_visit_cost,
+  d911_cb.case_rate_plug_less_co_pay AS corp_billing_case_rate,
+  d911_cb.incremental_visit_cost AS corp_billing_inc_visit_cost
+
+  --COALESCE(ins.hospitalization_diversion, ci.hospitalization_diversion, ds3.diversion_savings_gross_amount,12000) AS diversion_hosp_savings
   FROM looker_scratch.diversion_categories_by_care_request dcf
-  JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df
+  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df
     ON dcf.diagnosis_code1 = df.diagnosis_code
   --ER Diversions
   LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df1
@@ -585,30 +586,73 @@ SELECT DISTINCT
     ON dcf.diagnosis_code2 = df11.diagnosis_code AND df11.diversion_type_id = 3
   LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df12
     ON dcf.diagnosis_code3 = df12.diagnosis_code AND df12.diversion_type_id = 3
-  LEFT JOIN ins
-      ON dcf.care_request_id = ins.care_request_id AND ins.rn = 1
-  INNER JOIN public.care_requests cr
-    ON dcf.care_request_id = cr.id
-    LEFT JOIN crs
-        ON cr.id = crs.care_request_id
-    LEFT JOIN dsg
-        ON dsg.insurance_classification_name = ins.insurance_type
-    LEFT JOIN public.markets  AS markets ON cr.market_id = markets.id
-    LEFT JOIN public.states  AS states ON markets.state = states.abbreviation
-    LEFT JOIN public.patients pt
-        ON cr.patient_id = pt.id
-  LEFT JOIN public.channel_items ci
-      ON cr.channel_item_id = ci.id
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds1
-    ON ins.insurance_type = ds1.insurance_classification_name AND ds1.diversion_type_id = 1
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds2
-    ON ins.insurance_type = ds2.insurance_classification_name AND ds2.diversion_type_id = 2
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds3
-    ON ins.insurance_type = ds3.insurance_classification_name AND ds3.diversion_type_id = 3
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds4
-    ON ins.insurance_type = ds4.insurance_classification_name AND ds4.diversion_type_id = 4
-  WHERE ins.rn = 1
-  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13 ;;
+LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_cm
+    ON d911_cm.diversion_type_id = 1 AND d911_cm.custom_insurance_grouping = '(CM)COMMERCIAL'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_ma
+    ON d911_ma.diversion_type_id = 1 AND d911_ma.custom_insurance_grouping = '(MA)MEDICARE ADVANTAGE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_mcare
+    ON d911_mcare.diversion_type_id = 1 AND d911_mcare.custom_insurance_grouping = '(MCARE)MEDICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_mmcd
+    ON d911_mmcd.diversion_type_id = 1 AND d911_mmcd.custom_insurance_grouping = '(MMCD)MANAGED MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_maid
+    ON d911_maid.diversion_type_id = 1 AND d911_maid.custom_insurance_grouping = '(MAID)MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_tc
+    ON d911_tc.diversion_type_id = 1 AND d911_tc.custom_insurance_grouping = '(TC)TRICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_psp
+    ON d911_psp.diversion_type_id = 1 AND d911_psp.custom_insurance_grouping = '(PSP)PATIENT SELF-PAY'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_cb
+    ON d911_cb.diversion_type_id = 1 AND d911_cb.custom_insurance_grouping = '(CB)CORPORATE BILLING'
+
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_cm
+    ON der_cm.diversion_type_id = 2 AND der_cm.custom_insurance_grouping = '(CM)COMMERCIAL'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_ma
+    ON der_ma.diversion_type_id = 2 AND der_ma.custom_insurance_grouping = '(MA)MEDICARE ADVANTAGE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_mcare
+    ON der_mcare.diversion_type_id = 2 AND der_mcare.custom_insurance_grouping = '(MCARE)MEDICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_mmcd
+    ON der_mmcd.diversion_type_id = 2 AND der_mmcd.custom_insurance_grouping = '(MMCD)MANAGED MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_maid
+    ON der_maid.diversion_type_id = 2 AND der_maid.custom_insurance_grouping = '(MAID)MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_tc
+    ON der_tc.diversion_type_id = 2 AND der_tc.custom_insurance_grouping = '(TC)TRICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_psp
+    ON der_psp.diversion_type_id = 2 AND der_psp.custom_insurance_grouping = '(PSP)PATIENT SELF-PAY'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der_cb
+    ON der_cb.diversion_type_id = 2 AND der_cb.custom_insurance_grouping = '(CB)CORPORATE BILLING'
+
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_cm
+    ON dobs_cm.diversion_type_id = 4 AND dobs_cm.custom_insurance_grouping = '(CM)COMMERCIAL'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_ma
+    ON dobs_ma.diversion_type_id = 4 AND dobs_ma.custom_insurance_grouping = '(MA)MEDICARE ADVANTAGE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_mcare
+    ON dobs_mcare.diversion_type_id = 4 AND dobs_mcare.custom_insurance_grouping = '(MCARE)MEDICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_mmcd
+    ON dobs_mmcd.diversion_type_id = 4 AND dobs_mmcd.custom_insurance_grouping = '(MMCD)MANAGED MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_maid
+    ON dobs_maid.diversion_type_id = 4 AND dobs_maid.custom_insurance_grouping = '(MAID)MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_tc
+    ON dobs_tc.diversion_type_id = 4 AND dobs_tc.custom_insurance_grouping = '(TC)TRICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_psp
+    ON dobs_psp.diversion_type_id = 4 AND dobs_psp.custom_insurance_grouping = '(PSP)PATIENT SELF-PAY'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs_cb
+    ON dobs_cb.diversion_type_id = 4 AND dobs_cb.custom_insurance_grouping = '(CB)CORPORATE BILLING'
+
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_cm
+    ON dhsp_cm.diversion_type_id = 3 AND dhsp_cm.custom_insurance_grouping = '(CM)COMMERCIAL'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_ma
+    ON dhsp_ma.diversion_type_id = 3 AND dhsp_ma.custom_insurance_grouping = '(MA)MEDICARE ADVANTAGE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_mcare
+    ON dhsp_mcare.diversion_type_id = 3 AND dhsp_mcare.custom_insurance_grouping = '(MCARE)MEDICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_mmcd
+    ON dhsp_mmcd.diversion_type_id = 3 AND dhsp_mmcd.custom_insurance_grouping = '(MMCD)MANAGED MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_maid
+    ON dhsp_maid.diversion_type_id = 3 AND dhsp_maid.custom_insurance_grouping = '(MAID)MEDICAID'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_tc
+    ON dhsp_tc.diversion_type_id = 3 AND dhsp_tc.custom_insurance_grouping = '(TC)TRICARE'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_psp
+    ON dhsp_psp.diversion_type_id = 3 AND dhsp_psp.custom_insurance_grouping = '(PSP)PATIENT SELF-PAY'
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp_cb
+    ON dhsp_cb.diversion_type_id = 3 AND dhsp_cb.custom_insurance_grouping = '(CB)CORPORATE BILLING';;
 
     sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
     indexes: ["care_request_id"]
@@ -620,24 +664,9 @@ SELECT DISTINCT
     sql: ${TABLE}.care_request_id ;;
   }
 
-  # dimension: custom_insurance_grouping {
-  #   type: string
-  #   sql: ${TABLE}.custom_insurance_grouping ;;
-  # }
-
-  dimension: insurance_type {
-    type: string
-    sql: ${TABLE}.insurance_type ;;
-  }
-
   dimension: diversion_911 {
     type: yesno
     sql: ${TABLE}.diversion_911 = 1 ;;
-  }
-
-  dimension: diversion_911_savings {
-    type: number
-    sql: CASE WHEN ${diversion_911} THEN ${TABLE}.diversion_911_savings ELSE 0 END ;;
   }
 
   measure: count_911_diversions {
@@ -657,9 +686,66 @@ SELECT DISTINCT
     }
   }
 
+  dimension: commercial_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.commercial_911_savings ;;
+  }
+  dimension: medicare_adv_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_adv_911_savings ;;
+  }
+  dimension: medicare_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_911_savings ;;
+  }
+  dimension: mgd_medicaid_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.mgd_medicaid_911_savings ;;
+  }
+  dimension: medicaid_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicaid_911_savings ;;
+  }
+  dimension: tricare_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.tricare_911_savings ;;
+  }
+  dimension: self_pay_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.self_pay_911_savings ;;
+  }
+  dimension: corp_billing_911_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.corp_billing_911_savings ;;
+  }
+
+  dimension: savings_911 {
+    type: number
+    sql: COALESCE(${insurance_plans.nine_one_one_diversion}, ${channel_items.nine_one_one_diversion},
+      CASE
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CM)COMMERCIAL' THEN ${commercial_911_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' THEN ${medicare_adv_911_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MCARE)MEDICARE' THEN ${medicare_911_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MMCD)MANAGED MEDICAID' THEN ${mgd_medicaid_911_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MAID)MEDICAID' THEN ${medicaid_911_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(TC)TRICARE' THEN ${tricare_911_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' THEN ${self_pay_911_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CB)CORPORATE BILLING' THEN ${corp_billing_911_savings}
+        ELSE 750
+      END) ;;
+  }
+
   measure: diversion_savings_911 {
     type: sum_distinct
-    sql:${diversion_911_savings};;
+    sql: ${savings_911} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -670,17 +756,15 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
-
+    filters: {
+      field: diversion_911
+      value: "Yes"
+    }
   }
 
   dimension: diversion_er {
     type: yesno
     sql: ${TABLE}.diversion_er::int = 1 ;;
-  }
-
-  dimension: diversion_er_savings {
-    type: number
-    sql: CASE WHEN ${diversion_er} THEN ${TABLE}.diversion_er_savings ELSE 0 END ;;
   }
 
   measure: count_er_diversions {
@@ -700,10 +784,66 @@ SELECT DISTINCT
     }
   }
 
+  dimension: commercial_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.commercial_er_savings ;;
+  }
+  dimension: medicare_adv_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_adv_er_savings ;;
+  }
+  dimension: medicare_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_er_savings ;;
+  }
+  dimension: mgd_medicaid_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.mgd_medicaid_er_savings ;;
+  }
+  dimension: medicaid_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicaid_er_savings ;;
+  }
+  dimension: tricare_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.tricare_er_savings ;;
+  }
+  dimension: self_pay_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.self_pay_er_savings ;;
+  }
+  dimension: corp_billing_er_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.corp_billing_er_savings ;;
+  }
+
+  dimension: savings_er {
+    type: number
+    sql: COALESCE(${insurance_plans.er_diversion}, ${channel_items.er_diversion},
+      CASE
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CM)COMMERCIAL' THEN ${commercial_er_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' THEN ${medicare_adv_er_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MCARE)MEDICARE' THEN ${medicare_er_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MMCD)MANAGED MEDICAID' THEN ${mgd_medicaid_er_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MAID)MEDICAID' THEN ${medicaid_er_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(TC)TRICARE' THEN ${tricare_er_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' THEN ${self_pay_er_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CB)CORPORATE BILLING' THEN ${corp_billing_er_savings}
+        ELSE 2000
+      END) ;;
+  }
 
   measure: diversion_savings_er {
     type: sum_distinct
-    sql: ${diversion_er_savings} ;;
+    sql: ${savings_er} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -714,18 +854,19 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
-
+    filters: {
+      field: diversion_er
+      value: "Yes"
+    }
   }
+
+
 
   dimension: diversion_observation {
     type: yesno
     sql: ${TABLE}.diversion_obs = 1 ;;
   }
 
-  dimension: diversion_obs_savings {
-    type: number
-    sql: CASE WHEN ${diversion_observation} THEN ${TABLE}.diversion_obs_savings ELSE 0 END ;;
-  }
 
   measure: count_observation_diversions {
     type: count_distinct
@@ -743,10 +884,66 @@ SELECT DISTINCT
       value: "Yes"
     }
   }
+  dimension: commercial_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.commercial_obs_savings ;;
+  }
+  dimension: medicare_adv_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_adv_obs_savings ;;
+  }
+  dimension: medicare_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_obs_savings ;;
+  }
+  dimension: mgd_medicaid_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.mgd_medicaid_obs_savings ;;
+  }
+  dimension: medicaid_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicaid_obs_savings ;;
+  }
+  dimension: tricare_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.tricare_obs_savings ;;
+  }
+  dimension: self_pay_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.self_pay_obs_savings ;;
+  }
+  dimension: corp_billing_obs_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.corp_billing_obs_savings ;;
+  }
 
-  measure: diversion_savings_observation {
+  dimension: savings_observation {
+    type: number
+    sql: COALESCE(${insurance_plans.observation_diversion}, ${channel_items.observation_diversion},
+      CASE
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CM)COMMERCIAL' THEN ${commercial_obs_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' THEN ${medicare_adv_obs_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MCARE)MEDICARE' THEN ${medicare_obs_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MMCD)MANAGED MEDICAID' THEN ${mgd_medicaid_obs_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MAID)MEDICAID' THEN ${medicaid_obs_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(TC)TRICARE' THEN ${tricare_obs_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' THEN ${self_pay_obs_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CB)CORPORATE BILLING' THEN ${corp_billing_obs_savings}
+        ELSE 4000
+      END) ;;
+  }
+
+  measure: diversion_savings_obs {
     type: sum_distinct
-    sql: ${diversion_obs_savings};;
+    sql: ${savings_observation} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -757,17 +954,15 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
-
+    filters: {
+      field: diversion_observation
+      value: "Yes"
+    }
   }
 
   dimension: diversion_hosp {
     type: yesno
     sql: ${TABLE}.diversion_hosp = 1;;
-  }
-
-  dimension: diversion_hosp_savings {
-    type: number
-    sql: CASE WHEN ${diversion_hosp} THEN ${TABLE}.diversion_hosp_savings ELSE 0 END ;;
   }
 
   measure: count_hospitalization_diversions {
@@ -787,9 +982,66 @@ SELECT DISTINCT
     }
   }
 
+  dimension: commercial_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.commercial_hsp_savings ;;
+  }
+  dimension: medicare_adv_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_adv_hsp_savings ;;
+  }
+  dimension: medicare_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicare_hsp_savings ;;
+  }
+  dimension: mgd_medicaid_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.mgd_medicaid_hsp_savings ;;
+  }
+  dimension: medicaid_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.medicaid_hsp_savings ;;
+  }
+  dimension: tricare_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.tricare_hsp_savings ;;
+  }
+  dimension: self_pay_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.self_pay_hsp_savings ;;
+  }
+  dimension: corp_billing_hsp_savings {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.corp_billing_hsp_savings ;;
+  }
+
+  dimension: savings_hospitalization {
+    type: number
+    sql: COALESCE(${insurance_plans.hospitalization_diversion}, ${channel_items.hospitalization_diversion},
+      CASE
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CM)COMMERCIAL' THEN ${commercial_hsp_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' THEN ${medicare_adv_hsp_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MCARE)MEDICARE' THEN ${medicare_hsp_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MMCD)MANAGED MEDICAID' THEN ${mgd_medicaid_hsp_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MAID)MEDICAID' THEN ${medicaid_hsp_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(TC)TRICARE' THEN ${tricare_hsp_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' THEN ${self_pay_hsp_savings}
+        WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CB)CORPORATE BILLING' THEN ${corp_billing_hsp_savings}
+        ELSE 12000
+      END) ;;
+  }
+
   measure: diversion_savings_hospitalization {
     type: sum_distinct
-    sql: ${diversion_hosp_savings} ;;
+    sql: ${savings_hospitalization} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -800,7 +1052,10 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
-
+    filters: {
+      field: diversion_hosp
+      value: "Yes"
+    }
   }
 
   dimension: diversion {
@@ -808,28 +1063,5 @@ SELECT DISTINCT
     type: yesno
     sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
-
-  dimension: case_rate {
-    type: number
-    sql: ${TABLE}.case_rate ;;
-  }
-
-  measure: totat_case_rate {
-    type: sum_distinct
-    sql: ${case_rate};;
-    sql_distinct_key: ${care_request_id};;
-  }
-
-  dimension: visit_cost {
-    type: number
-    sql: ${TABLE}.visit_cost ;;
-  }
-
-  measure: total_visit_cost {
-    type: sum_distinct
-    sql: ${visit_cost};;
-    sql_distinct_key: ${care_request_id};;
-  }
-
 
 }

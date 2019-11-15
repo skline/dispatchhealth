@@ -530,7 +530,7 @@ explore: care_requests {
   }
 
   join: diversions_by_care_request {
-    relationship: one_to_many
+    relationship: one_to_one
     sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
   }
 
