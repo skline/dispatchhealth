@@ -897,7 +897,10 @@ explore: care_requests {
 
   join: insurance_plans {
     relationship: many_to_one
-    sql_on: ${insurances.package_id} = ${insurance_plans.package_id} /*AND ${insurances.company_name} = ${insurance_plans.name}*/ AND ${insurance_plans.state_id} = ${states.id};;
+    sql_on: ${insurances.package_id} = ${insurance_plans.package_id}
+    /*AND ${insurances.company_name} = ${insurance_plans.name}*/ AND
+    ${insurance_plans.state_id} = ${states.id} AND
+    ${insurance_plans.active};;
   }
 
   join: insurance_member_id {

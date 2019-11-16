@@ -827,8 +827,10 @@ LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_cm
 
   dimension: savings_er {
     type: number
-    sql: COALESCE(${insurance_plans.er_diversion}, ${channel_items.er_diversion},
+    sql:
       CASE
+        WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
+        WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
         WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CM)COMMERCIAL' THEN ${commercial_er_savings}
         WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MA)MEDICARE ADVANTAGE' THEN ${medicare_adv_er_savings}
         WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(MCARE)MEDICARE' THEN ${medicare_er_savings}
@@ -838,7 +840,7 @@ LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911_cm
         WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(PSP)PATIENT SELF-PAY' THEN ${self_pay_er_savings}
         WHEN ${insurance_coalese_crosswalk.custom_insurance_grouping} = '(CB)CORPORATE BILLING' THEN ${corp_billing_er_savings}
         ELSE 2000
-      END) ;;
+      END ;;
   }
 
   measure: diversion_savings_er {
