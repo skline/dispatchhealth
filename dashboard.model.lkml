@@ -892,7 +892,7 @@ explore: care_requests {
             ${insurances.patient_id} IS NOT NULL AND
             COALESCE(${insurances.start_date},${care_request_flat.on_scene_date}) <= ${care_request_flat.on_scene_date} AND
             COALESCE(${insurances.end_date},${care_request_flat.on_scene_date}) >= ${care_request_flat.on_scene_date};;
-            #(${care_request_flat.on_scene_date} <= ${insurances.end_date} OR ${insurances.end_date} IS NULL);;
+    sql_where: ${insurances.eligible} <> 'Ineligible' ;;
     }
 
     join: insurance_plans {
