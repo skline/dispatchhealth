@@ -893,15 +893,14 @@ explore: care_requests {
             COALESCE(${insurances.start_date},${care_request_flat.on_scene_date}) <= ${care_request_flat.on_scene_date} AND
             COALESCE(${insurances.end_date},${care_request_flat.on_scene_date}) >= ${care_request_flat.on_scene_date};;
             #(${care_request_flat.on_scene_date} <= ${insurances.end_date} OR ${insurances.end_date} IS NULL);;
-  }
+    }
 
-  join: insurance_plans {
-    relationship: many_to_one
-    sql_on: ${insurances.package_id} = ${insurance_plans.package_id}
-    /*AND ${insurances.company_name} = ${insurance_plans.name}*/ AND
-    ${insurance_plans.state_id} = ${states.id} AND
-    ${insurance_plans.active};;
-  }
+    join: insurance_plans {
+      relationship: many_to_one
+      sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND
+            ${insurance_plans.state_id} = ${states.id} ;;
+      sql_where: ${insurance_plans.active} ;;
+    }
 
   join: insurance_member_id {
     relationship: one_to_one
