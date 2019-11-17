@@ -892,14 +892,14 @@ explore: care_requests {
             ${insurances.patient_id} IS NOT NULL AND
             COALESCE(${insurances.start_date},${care_request_flat.on_scene_date}) <= ${care_request_flat.on_scene_date} AND
             COALESCE(${insurances.end_date},${care_request_flat.on_scene_date}) >= ${care_request_flat.on_scene_date};;
-    sql_where: ${insurances.eligible} <> 'Ineligible' ;;
+#     sql_where: ${insurances.eligible} <> 'Ineligible' ;;
     }
 
     join: insurance_plans {
       relationship: many_to_one
       sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND
             ${insurance_plans.state_id} = ${states.id} ;;
-      sql_where: ${insurance_plans.active} ;;
+#       sql_where: ${insurance_plans.active} ;;
     }
 
   join: insurance_member_id {
