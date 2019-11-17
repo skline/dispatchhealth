@@ -5,7 +5,8 @@ view: insurance_coalese {
     cr.id as care_request_id,
     COALESCE(athena.insurance_package_id, sri.package_id) package_id_coalese,
     athena.insurance_package_id as athena_package_id,
-    sri.package_id as self_report_package_id
+    sri.package_id as self_report_package_id,
+    cig.custom_insurance_grouping
     FROM public.care_requests cr
     JOIN public.patients pt
     ON pt.id=cr.patient_id
@@ -38,8 +39,16 @@ view: insurance_coalese {
                 AND tfc.voided_date IS NULL
             LEFT JOIN looker_scratch.primary_payer_dimensions_clone ppdc
                 ON tfc.primary_payer_dim_id = ppdc.id) athena
-        ON athena.care_request_id = sri.care_request_id AND athena.rn = 1
-        GROUP BY 1,2,3,4;;
+      ON athena.care_request_id = sri.care_request_id AND athena.rn = 1
+      LEFT JOIN (
+          SELECT DISTINCT
+              insurance_package_id,
+              custom_insurance_grouping
+              FROM looker_scratch.athenadwh_payers_clone
+              WHERE custom_insurance_grouping IS NOT NULL
+              GROUP BY 1,2) AS cig
+          ON COALESCE(athena.insurance_package_id, sri.package_id) = cig.insurance_package_id
+      GROUP BY 1,2,3,4,5;;
 
       sql_trigger_value:  select sum(timevalue)
 from
@@ -60,5 +69,10 @@ from looker_scratch.transaction_facts_clone
   dimension: package_id_coalese {
     type: number
     sql: ${TABLE}.package_id_coalese ;;
+  }
+
+  dimension: custom_insurance_grouping {
+    type: string
+    sql: ${TABLE}.custom_insurance_grouping ;;
   }
 }
