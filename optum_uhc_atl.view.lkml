@@ -16,6 +16,11 @@ view: optum_uhc_atl {
     sql: ${TABLE}.optum_ccm_uhc_ma_total ;;
   }
 
+  dimension: total_uhc_optum_propensity {
+    type: number
+    sql: coalesce(${uhc_ma_total},0)+coalesce(${optum_ccm_total},0)+coalesce(${propensity_atl.prospect_count},0) ;;
+  }
+
   dimension: optum_home_dnsp {
     type: number
     sql: ${TABLE}.optum_home_dnsp ;;
