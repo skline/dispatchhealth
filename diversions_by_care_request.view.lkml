@@ -1,59 +1,30 @@
 view: diversions_by_care_request {
   derived_table: {
     sql:
-WITH
-    crs AS (
-        SELECT
-            care_request_id,
-            MAX(DATE(started_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain')) AS on_scene_date
-        FROM public.care_request_statuses
-        WHERE name = 'on_scene'
-        GROUP BY 1),
-    dsg AS (
-        SELECT
-          DISTINCT
-            insurance_classification_name,
-            MAX(case_rate_plug_less_co_pay) AS case_rate,
-            MAX(incremental_visit_cost) AS visit_cost
-        FROM looker_scratch.diversion_savings_gross_by_insurance_group
-        GROUP BY 1),
-
-    ins AS (
-        SELECT
-            cr.id AS care_request_id,
-            pins.id,
-            pins.patient_id,
-            pins.package_id,
-            pins.priority,
-            pins.start_date,
-            pins.end_date,
-            pins.eligible,
-            ic.name AS insurance_type,
-            ip.er_diversion,
-            ip.nine_one_one_diversion,
-            ip.observation_diversion,
-            ip.hospitalization_diversion,
-            ROW_NUMBER() OVER (PARTITION BY cr.id, pins.patient_id, pins.priority
-              ORDER BY cr.id, pins.patient_id, pins.priority,
-              (CASE WHEN ic.name IS NULL THEN 0 ELSE 1 END) DESC,
-              (CASE WHEN ip.er_diversion IS NULL THEN 0 ELSE 1 END) DESC,
-              (CASE WHEN pins.eligible = 'Eligible' THEN 1 ELSE 0 END) DESC, pins.id DESC) AS rn
-        FROM public.care_requests cr
-        LEFT JOIN public.insurances pins
-            ON cr.patient_id = pins.patient_id
-        LEFT JOIN public.insurance_plans ip
-            ON pins.package_id = ip.package_id
-        LEFT JOIN public.insurance_classifications ic
-            ON ip.insurance_classification_id = ic.id
-        WHERE priority = '1' AND pins.patient_id IS NOT NULL AND eligible <> 'Ineligible'
-        GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
-        ORDER BY care_request_id DESC, patient_id, priority)
+WITH inspkg AS (
+SELECT DISTINCT
+    package_id,
+    er_diversion,
+    nine_one_one_diversion,
+    observation_diversion,
+    hospitalization_diversion
+    FROM public.insurance_plans
+    WHERE er_diversion IS NOT NULL
+    GROUP BY 1,2,3,4,5),
+chnpkg AS (
+SELECT DISTINCT
+    id AS channel_item_id,
+    er_diversion,
+    nine_one_one_diversion,
+    observation_diversion,
+    hospitalization_diversion
+    FROM public.channel_items
+    WHERE er_diversion IS NOT NULL
+    GROUP BY 1,2,3,4,5)
 SELECT DISTINCT
   dcf.care_request_id,
-  ins.insurance_type,
-  ins.package_id,
-  dsg.case_rate,
-  dsg.visit_cost,
+  ic.package_id_coalese AS insurance_package_id,
+  ic.custom_insurance_grouping,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df1.dc1,
   dcf.survey_yes_to_er * df1.dc2,
@@ -178,7 +149,6 @@ SELECT DISTINCT
   dcf.dc39 * df3.dc39,
   dcf.dc40 * df3.dc40,
   dcf.dc41 * df3.dc41) > 0 THEN 1 ELSE 0 END AS diversion_er,
-  COALESCE(ins.er_diversion, ci.er_diversion, ds1.diversion_savings_gross_amount,2000) AS diversion_er_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df4.dc1,
   dcf.survey_yes_to_er * df4.dc2,
@@ -303,7 +273,6 @@ SELECT DISTINCT
   dcf.dc39 * df6.dc39,
   dcf.dc40 * df6.dc40,
   dcf.dc41 * df6.dc41) > 0 THEN 1 ELSE 0 END AS diversion_911,
-  COALESCE(ins.nine_one_one_diversion, ci.nine_one_one_diversion, ds2.diversion_savings_gross_amount,750) AS diversion_911_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df7.dc1,
   dcf.survey_yes_to_er * df7.dc2,
@@ -428,7 +397,6 @@ SELECT DISTINCT
   dcf.dc39 * df9.dc39,
   dcf.dc40 * df9.dc40,
   dcf.dc41 * df9.dc41) > 0 THEN 1 ELSE 0 END AS diversion_obs,
-  COALESCE(ins.observation_diversion, ci.observation_diversion, ds4.diversion_savings_gross_amount,4000) AS diversion_obs_savings,
   CASE WHEN
   GREATEST(dcf.diagnosis_only * df10.dc1,
   dcf.survey_yes_to_er * df10.dc2,
@@ -553,65 +521,66 @@ SELECT DISTINCT
   dcf.dc39 * df12.dc39,
   dcf.dc40 * df12.dc40,
   dcf.dc41 * df12.dc41) > 0 THEN 1 ELSE 0 END AS diversion_hosp,
-  COALESCE(ins.hospitalization_diversion, ci.hospitalization_diversion, ds3.diversion_savings_gross_amount,12000) AS diversion_hosp_savings
+  COALESCE(inspkg.er_diversion, chnpkg.er_diversion, der.diversion_savings_gross_amount, 2000) AS diversion_svgs_er,
+  COALESCE(inspkg.nine_one_one_diversion, chnpkg.nine_one_one_diversion, d911.diversion_savings_gross_amount, 750) AS diversion_svgs_911,
+  COALESCE(inspkg.observation_diversion, chnpkg.observation_diversion, dobs.diversion_savings_gross_amount, 4000) AS diversion_svgs_observation,
+  COALESCE(inspkg.hospitalization_diversion, chnpkg.hospitalization_diversion, dhsp.diversion_savings_gross_amount, 12000) AS diversion_svgs_hospitalization,
+  d911.case_rate_plug_less_co_pay,
+  d911.incremental_visit_cost
+
+  --COALESCE(ins.hospitalization_diversion, ci.hospitalization_diversion, ds3.diversion_savings_gross_amount,12000) AS diversion_hosp_savings
   FROM looker_scratch.diversion_categories_by_care_request dcf
-  JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} AS df
     ON dcf.diagnosis_code1 = df.diagnosis_code
   --ER Diversions
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df1
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df1
     ON dcf.diagnosis_code1 = df1.diagnosis_code AND df1.diversion_type_id = 1
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df2
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df2
     ON dcf.diagnosis_code2 = df2.diagnosis_code AND df2.diversion_type_id = 1
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df3
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df3
     ON dcf.diagnosis_code3 = df3.diagnosis_code AND df3.diversion_type_id = 1
   -- 911 diversions
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df4
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df4
     ON dcf.diagnosis_code1 = df4.diagnosis_code AND df4.diversion_type_id = 2
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df5
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df5
     ON dcf.diagnosis_code2 = df5.diagnosis_code AND df5.diversion_type_id = 2
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df6
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df6
     ON dcf.diagnosis_code3 = df6.diagnosis_code AND df6.diversion_type_id = 2
   --Observation Diversions
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df7
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df7
     ON dcf.diagnosis_code1 = df7.diagnosis_code AND df7.diversion_type_id = 4
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df8
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df8
     ON dcf.diagnosis_code2 = df8.diagnosis_code AND df8.diversion_type_id = 4
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df9
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df9
     ON dcf.diagnosis_code3 = df9.diagnosis_code AND df9.diversion_type_id = 4
   --Hospitalization Diversions
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df10
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df10
     ON dcf.diagnosis_code1 = df10.diagnosis_code AND df10.diversion_type_id = 3
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df11
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df11
     ON dcf.diagnosis_code2 = df11.diagnosis_code AND df11.diversion_type_id = 3
-  LEFT JOIN looker_scratch.LR$7N7CAOW2IW30F33R6YIZD_diversion_flat df12
+  LEFT JOIN ${diversion_flat.SQL_TABLE_NAME} df12
     ON dcf.diagnosis_code3 = df12.diagnosis_code AND df12.diversion_type_id = 3
-  LEFT JOIN ins
-      ON dcf.care_request_id = ins.care_request_id AND ins.rn = 1
-  INNER JOIN public.care_requests cr
+
+LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
+    ON dcf.care_request_id = ic.care_request_id
+
+  LEFT JOIN inspkg
+    ON ic.package_id_coalese = inspkg.package_id
+  LEFT JOIN public.care_requests cr
     ON dcf.care_request_id = cr.id
-    LEFT JOIN crs
-        ON cr.id = crs.care_request_id
-    LEFT JOIN dsg
-        ON dsg.insurance_classification_name = ins.insurance_type
-    LEFT JOIN public.markets  AS markets ON cr.market_id = markets.id
-    LEFT JOIN public.states  AS states ON markets.state = states.abbreviation
-    LEFT JOIN public.patients pt
-        ON cr.patient_id = pt.id
-  LEFT JOIN public.channel_items ci
-      ON cr.channel_item_id = ci.id
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds1
-    ON ins.insurance_type = ds1.insurance_classification_name AND ds1.diversion_type_id = 1
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds2
-    ON ins.insurance_type = ds2.insurance_classification_name AND ds2.diversion_type_id = 2
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds3
-    ON ins.insurance_type = ds3.insurance_classification_name AND ds3.diversion_type_id = 3
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group ds4
-    ON ins.insurance_type = ds4.insurance_classification_name AND ds4.diversion_type_id = 4
-  WHERE ins.rn = 1
-  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13 ;;
+  LEFT JOIN chnpkg
+    ON cr.channel_item_id = chnpkg.channel_item_id
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911
+    ON ic.custom_insurance_grouping = d911.custom_insurance_grouping AND d911.diversion_type_id = 1
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der
+    ON ic.custom_insurance_grouping = der.custom_insurance_grouping AND der.diversion_type_id = 2
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs
+    ON ic.custom_insurance_grouping = dobs.custom_insurance_grouping AND dobs.diversion_type_id = 4
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp
+    ON ic.custom_insurance_grouping = dhsp.custom_insurance_grouping AND dhsp.diversion_type_id = 3;;
 
     sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
-    indexes: ["care_request_id"]
+    indexes: ["care_request_id", "insurance_package_id"]
 
   }
   dimension: care_request_id {
@@ -620,24 +589,9 @@ SELECT DISTINCT
     sql: ${TABLE}.care_request_id ;;
   }
 
-  # dimension: custom_insurance_grouping {
-  #   type: string
-  #   sql: ${TABLE}.custom_insurance_grouping ;;
-  # }
-
-  dimension: insurance_type {
-    type: string
-    sql: ${TABLE}.insurance_type ;;
-  }
-
   dimension: diversion_911 {
     type: yesno
     sql: ${TABLE}.diversion_911 = 1 ;;
-  }
-
-  dimension: diversion_911_savings {
-    type: number
-    sql: CASE WHEN ${diversion_911} THEN ${TABLE}.diversion_911_savings ELSE 0 END ;;
   }
 
   measure: count_911_diversions {
@@ -657,9 +611,14 @@ SELECT DISTINCT
     }
   }
 
+  dimension: savings_911 {
+    type: number
+    sql: ${TABLE}.diversion_svgs_911 ;;
+  }
+
   measure: diversion_savings_911 {
     type: sum_distinct
-    sql:${diversion_911_savings};;
+    sql: ${savings_911} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -670,17 +629,15 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
-
+    filters: {
+      field: diversion_911
+      value: "Yes"
+    }
   }
 
   dimension: diversion_er {
     type: yesno
     sql: ${TABLE}.diversion_er::int = 1 ;;
-  }
-
-  dimension: diversion_er_savings {
-    type: number
-    sql: CASE WHEN ${diversion_er} THEN ${TABLE}.diversion_er_savings ELSE 0 END ;;
   }
 
   measure: count_er_diversions {
@@ -700,10 +657,14 @@ SELECT DISTINCT
     }
   }
 
+  dimension: savings_er {
+    type: number
+    sql:${TABLE}.diversion_svgs_er;;
+  }
 
   measure: diversion_savings_er {
     type: sum_distinct
-    sql: ${diversion_er_savings} ;;
+    sql: ${savings_er} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -714,17 +675,15 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
-
+    filters: {
+      field: diversion_er
+      value: "Yes"
+    }
   }
 
   dimension: diversion_observation {
     type: yesno
     sql: ${TABLE}.diversion_obs = 1 ;;
-  }
-
-  dimension: diversion_obs_savings {
-    type: number
-    sql: CASE WHEN ${diversion_observation} THEN ${TABLE}.diversion_obs_savings ELSE 0 END ;;
   }
 
   measure: count_observation_diversions {
@@ -744,9 +703,14 @@ SELECT DISTINCT
     }
   }
 
-  measure: diversion_savings_observation {
+  dimension: savings_observation {
+    type: number
+    sql: ${TABLE}.diversion_svgs_observation ;;
+  }
+
+  measure: diversion_savings_obs {
     type: sum_distinct
-    sql: ${diversion_obs_savings};;
+    sql: ${savings_observation} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -757,17 +721,15 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
-
+    filters: {
+      field: diversion_observation
+      value: "Yes"
+    }
   }
 
   dimension: diversion_hosp {
     type: yesno
     sql: ${TABLE}.diversion_hosp = 1;;
-  }
-
-  dimension: diversion_hosp_savings {
-    type: number
-    sql: CASE WHEN ${diversion_hosp} THEN ${TABLE}.diversion_hosp_savings ELSE 0 END ;;
   }
 
   measure: count_hospitalization_diversions {
@@ -787,9 +749,14 @@ SELECT DISTINCT
     }
   }
 
+  dimension: savings_hospitalization {
+    type: number
+    sql: ${TABLE}.diversion_svgs_hospitalization ;;
+  }
+
   measure: diversion_savings_hospitalization {
     type: sum_distinct
-    sql: ${diversion_hosp_savings} ;;
+    sql: ${savings_hospitalization} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
     filters: {
@@ -800,7 +767,34 @@ SELECT DISTINCT
       field: care_requests.post_acute_follow_up
       value: "No"
     }
+    filters: {
+      field: diversion_hosp
+      value: "Yes"
+    }
+  }
 
+  dimension: case_rate_less_copay {
+    type: number
+    sql: ${TABLE}.case_rate_plug_less_co_pay ;;
+  }
+
+  measure: sum_case_rate {
+    type: sum_distinct
+    sql: ${case_rate_less_copay} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    value_format: "$#,##0"
+  }
+
+  dimension: incremental_visit_cost {
+    type: number
+    sql: ${TABLE}.incremental_visit_cost ;;
+  }
+
+  measure: sum_incremental_visit_cost {
+    type: sum_distinct
+    sql: ${incremental_visit_cost} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    value_format: "$#,##0"
   }
 
   dimension: diversion {
@@ -808,28 +802,5 @@ SELECT DISTINCT
     type: yesno
     sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
-
-  dimension: case_rate {
-    type: number
-    sql: ${TABLE}.case_rate ;;
-  }
-
-  measure: totat_case_rate {
-    type: sum_distinct
-    sql: ${case_rate};;
-    sql_distinct_key: ${care_request_id};;
-  }
-
-  dimension: visit_cost {
-    type: number
-    sql: ${TABLE}.visit_cost ;;
-  }
-
-  measure: total_visit_cost {
-    type: sum_distinct
-    sql: ${visit_cost};;
-    sql_distinct_key: ${care_request_id};;
-  }
-
 
 }

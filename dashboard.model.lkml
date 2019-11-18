@@ -530,7 +530,7 @@ explore: care_requests {
   }
 
   join: diversions_by_care_request {
-    relationship: one_to_many
+    relationship: one_to_one
     sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
   }
 
@@ -892,13 +892,15 @@ explore: care_requests {
             ${insurances.patient_id} IS NOT NULL AND
             COALESCE(${insurances.start_date},${care_request_flat.on_scene_date}) <= ${care_request_flat.on_scene_date} AND
             COALESCE(${insurances.end_date},${care_request_flat.on_scene_date}) >= ${care_request_flat.on_scene_date};;
-            #(${care_request_flat.on_scene_date} <= ${insurances.end_date} OR ${insurances.end_date} IS NULL);;
-  }
+#     sql_where: ${insurances.eligible} <> 'Ineligible' ;;
+    }
 
-  join: insurance_plans {
-    relationship: many_to_one
-    sql_on: ${insurances.package_id} = ${insurance_plans.package_id} /*AND ${insurances.company_name} = ${insurance_plans.name}*/ AND ${insurance_plans.state_id} = ${states.id};;
-  }
+    join: insurance_plans {
+      relationship: many_to_one
+      sql_on: ${insurances.package_id} = ${insurance_plans.package_id} AND
+            ${insurance_plans.state_id} = ${states.id} ;;
+#       sql_where: ${insurance_plans.active} ;;
+    }
 
   join: insurance_member_id {
     relationship: one_to_one
