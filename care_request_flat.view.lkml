@@ -4524,6 +4524,19 @@ end  ;;
     }
   }
 
+    measure: count_overflow {
+    type: count_distinct
+    description: "Count of all Overflow visits"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+  }
+
+
+
   measure: count_resolved_overflow {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations (Not Same Day)"
