@@ -775,7 +775,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
 
   dimension: case_rate_less_copay {
     type: number
-    sql: ${TABLE}.case_rate_plug_less_co_pay ;;
+    sql: CASE
+    WHEN ${TABLE}.case_rate_plug_less_co_pay IS NULL THEN 150
+    ELSE ${TABLE}.case_rate_plug_less_co_pay
+    END;;
   }
 
   measure: sum_case_rate {
@@ -787,7 +790,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
 
    dimension: incremental_visit_cost {
     type: number
-    sql: ${TABLE}.incremental_visit_cost ;;
+    sql: CASE
+    WHEN ${TABLE}.incremental_visit_cost IS NULL THEN 50
+    ELSE ${TABLE}.incremental_visit_cost
+    END;;
   }
 
   measure: sum_incremental_visit_cost {
