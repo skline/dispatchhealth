@@ -80,6 +80,11 @@ view: cars {
     sql: ${name} like '%SMFR_Car%' ;;
   }
 
+  dimension: advanced_care_car  {
+    type: yesno
+    sql: lower(${name}) like '%advanced%' ;;
+  }
+
   dimension: mfr_flex_car  {
     type: yesno
     sql: ${name} like '%MFR%' OR ${name} LIKE '%Flex%' ;;

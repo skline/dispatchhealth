@@ -1239,6 +1239,7 @@ explore: shift_details {
       and  ${shift_details.local_expected_end_day_of_week} = ${target_staffing.dow};;
   }
 
+
 }
 
 # Scott test
@@ -2794,6 +2795,9 @@ explore: shift_teams
     sql_on: ${markets.id} = ${target_staffing.market_id}
       and ${shift_teams.start_month}=${target_staffing.month_month}
       and  ${shift_teams.start_day_of_week} = ${target_staffing.dow};;
+  }
+  join: goals_by_day_of_week {
+    sql_on: ${markets.id_adj} =${goals_by_day_of_week.market_id} and ${goals_by_day_of_week.month_month}=${shift_teams.start_month};;
   }
 
 }

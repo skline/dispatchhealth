@@ -522,6 +522,9 @@ explore: optum_uhc_atl {
   join: zip_to_zcta {
     sql_on: ${optum_uhc_atl.zipcode}=${zip_to_zcta.zip_code} ;;
   }
+  join: propensity_atl {
+    sql_on:  ${optum_uhc_atl.zipcode}=${propensity_atl.zipcode} ;;
+  }
 
 }
 explore: propensity_atl {}

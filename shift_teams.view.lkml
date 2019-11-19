@@ -69,10 +69,18 @@ view: shift_teams {
       month,
       quarter,
       day_of_week,
+      day_of_week_index,
       year,
       hour_of_day
     ]
     sql: ${TABLE}.start_time AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
+  }
+
+  dimension: goal_volume {
+    type: number
+    sql: case when ${start_day_of_week_index} = 5 then ${goals_by_day_of_week.sat_goal}
+    when ${start_day_of_week_index} = 6  then ${goals_by_day_of_week.sun_goal}
+    else ${goals_by_day_of_week.weekday_goal} end;;
   }
 
   dimension_group: start_mountain {
@@ -102,6 +110,29 @@ view: shift_teams {
     sql_distinct_key: ${id} ;;
     sql: ${shift_hours} ;;
   }
+
+  measure: sum_shift_hours_no_arm_advanced {
+    type: sum_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${id} ;;
+    sql: ${shift_hours} ;;
+    filters:  {
+      field: cars.mfr_flex_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.advanced_care_car
+      value: "no"
+    }
+  }
+
+  measure: productivity {
+    type: number
+    value_format: "0.00"
+    sql: case when ${sum_shift_hours_no_arm_advanced}>0 then ${care_request_flat.complete_count_no_arm_advanced}/${sum_shift_hours_no_arm_advanced} else 0 end ;;
+    }
+
+
 
   dimension_group: updated {
     type: time

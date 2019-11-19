@@ -2847,6 +2847,38 @@ measure:  count_end_of_shift_dead_time_45_mins {
     }
   }
 
+  measure: complete_count_no_arm_advanced{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.mfr_flex_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.advanced_care_car
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+  measure: complete_count_advanced{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.advanced_care_car
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+
+
   measure: accepted_count {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -4491,6 +4523,19 @@ end  ;;
       value: "no"
     }
   }
+
+    measure: count_overflow {
+    type: count_distinct
+    description: "Count of all Overflow visits"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+  }
+
+
 
   measure: count_resolved_overflow {
     type: count_distinct
