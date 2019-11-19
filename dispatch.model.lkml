@@ -528,3 +528,4 @@ explore: optum_uhc_atl {
 
 }
 explore: propensity_atl {}
+explore: texas_childrens_hospital {}

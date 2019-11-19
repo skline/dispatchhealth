@@ -526,7 +526,17 @@ SELECT DISTINCT
   COALESCE(inspkg.observation_diversion, chnpkg.observation_diversion, dobs.diversion_savings_gross_amount, 4000) AS diversion_svgs_observation,
   COALESCE(inspkg.hospitalization_diversion, chnpkg.hospitalization_diversion, dhsp.diversion_savings_gross_amount, 12000) AS diversion_svgs_hospitalization,
   d911.case_rate_plug_less_co_pay,
-  d911.incremental_visit_cost
+  d911.incremental_visit_cost,
+  CASE WHEN ic.custom_insurance_grouping = '(CM)COMMERCIAL' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(MA)MEDICARE ADVANTAGE' THEN 0.08
+  WHEN ic.custom_insurance_grouping = '(MCARE)MEDICARE' THEN 0.08
+  WHEN ic.custom_insurance_grouping = '(MMCD)MANAGED MEDICAID' THEN 0.07
+  WHEN ic.custom_insurance_grouping = '(MAID)MEDICAID' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(TC)TRICARE' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(PSP)PATIENT SELF-PAY' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(CB)CORPORATE BILLING' THEN 0.05
+  ELSE 0.06
+  END AS bounceback_multiplier
 
   --COALESCE(ins.hospitalization_diversion, ci.hospitalization_diversion, ds3.diversion_savings_gross_amount,12000) AS diversion_hosp_savings
   FROM looker_scratch.diversion_categories_by_care_request dcf
@@ -895,5 +905,22 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
   }
+
+  dimension: bounceback_multiplier {
+    type: number
+    sql: ${TABLE}.bounceback_multiplier ;;
+  }
+
+  dimension: 14_day_bounceback_case_rate_calculated {
+    type: number
+    sql: ${care_requests.count_billable_est}*${bounceback_multiplier} ;;
+  }
+
+  measure: sum_14_day_bounceback_case_rate_calculated {
+    type: sum_distinct
+    sql: ${14_day_bounceback_case_rate_calculated} ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
 
   }
