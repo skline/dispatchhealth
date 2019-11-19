@@ -809,6 +809,24 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
 
+  measure: count_any_diversions {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: diversion
+      value: "Yes"
+    }
+  }
+
+
   dimension: diversion_or_escalated_on_scene {
     description: "A flag indicating that any diversion criteria was met"
     type: yesno
