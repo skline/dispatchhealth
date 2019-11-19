@@ -911,16 +911,16 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: ${TABLE}.bounceback_multiplier ;;
   }
 
-  dimension: 14_day_bounceback_case_rate_calculated {
-    type: number
-    sql: ${care_requests.count_billable_est}*${bounceback_multiplier} ;;
-  }
-
-  measure: sum_14_day_bounceback_case_rate_calculated {
-    type: sum_distinct
-    sql: ${14_day_bounceback_case_rate_calculated} ;;
-    sql_distinct_key: ${care_request_id} ;;
-  }
+#   dimension: 14_day_bounceback_case_rate_calculated {
+#     type: number
+#     sql: ${care_requests.count_billable_est}*${bounceback_multiplier} ;;
+#   }
+#
+#   measure: sum_14_day_bounceback_case_rate_calculated {
+#     type: sum_distinct
+#     sql: ${14_day_bounceback_case_rate_calculated} ;;
+#     sql_distinct_key: ${care_request_id} ;;
+#   }
 
 
   }
