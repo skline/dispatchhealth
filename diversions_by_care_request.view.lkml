@@ -785,7 +785,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     value_format: "$#,##0"
   }
 
-  dimension: incremental_visit_cost {
+   dimension: incremental_visit_cost {
     type: number
     sql: ${TABLE}.incremental_visit_cost ;;
   }
@@ -797,10 +797,85 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     value_format: "$#,##0"
   }
 
-  dimension: diversion {
+     dimension: diversion {
     description: "A flag indicating that any diversion criteria was met"
     type: yesno
     sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
 
-}
+  measure: count_high_acuity_visits_cost_saving {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion
+      value: "Yes"
+    }
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+
+  }
+
+  measure: sum_case_rate_high_acuity {
+    type: sum_distinct
+    sql: ${case_rate_less_copay} ;;
+    sql_distinct_key: ${care_request_id} ;;
+
+    filters: {
+      field: diversion
+      value: "Yes"
+    }
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+
+  }
+
+  measure: count_low_acuity_visits_cost_saving {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion
+      value: "No"
+    }
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+
+  }
+
+  measure: sum_incremental_visit_cost_low_acuity {
+    type: sum_distinct
+    sql: ${incremental_visit_cost} ;;
+    sql_distinct_key: ${care_request_id} ;;
+
+    filters: {
+      field: diversion
+      value: "No"
+    }
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+  }
+
+  }
