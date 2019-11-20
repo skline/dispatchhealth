@@ -54,17 +54,17 @@ view: diversion_savings_gross_by_insurance_group {
     ]
     convert_tz: no
     datatype: date
-    sql: ${TABLE}."deactivated" ;;
+    sql: ${TABLE}.deactivated ;;
   }
 
   dimension: diversion_savings_gross_amount {
     type: number
-    sql: ${TABLE}."diversion_savings_gross_amount" ;;
+    sql: ${TABLE}.diversion_savings_gross_amount ;;
   }
 
   dimension: diversion_type_id {
     type: number
-    sql: ${TABLE}."diversion_type_id" ;;
+    sql: ${TABLE}.diversion_type_id ;;
   }
 
   dimension_group: updated {
@@ -84,5 +84,9 @@ view: diversion_savings_gross_by_insurance_group {
   measure: count {
     type: count
     drill_fields: [id]
+  }
+  measure: diversion_savings_gross_amount_number {
+    type: average
+    sql: ${TABLE}.diversion_savings_gross_amount ;;
   }
 }
