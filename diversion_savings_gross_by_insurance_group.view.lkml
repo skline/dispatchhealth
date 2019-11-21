@@ -89,4 +89,15 @@ view: diversion_savings_gross_by_insurance_group {
     type: average
     sql: ${TABLE}.diversion_savings_gross_amount ;;
   }
+
+  dimension: case_rate_plug_less_co_pay {
+    type: number
+    sql: ${TABLE}.case_rate_plug_less_co_pay ;;
+  }
+
+  dimension: incremental_visit_cost {
+    type: number
+    sql: ${TABLE}.incremental_visit_cost ;;
+  }
+
 }
