@@ -2807,3 +2807,5 @@ explore: budget_projections_by_market_clone {
     sql_on: ${markets.id} = ${budget_projections_by_market_clone.market_dim_id} ;;
   }
 }
+
+explore: diversion_savings_gross_by_insurance_group {}

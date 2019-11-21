@@ -525,8 +525,32 @@ SELECT DISTINCT
   COALESCE(inspkg.nine_one_one_diversion, chnpkg.nine_one_one_diversion, d911.diversion_savings_gross_amount, 750) AS diversion_svgs_911,
   COALESCE(inspkg.observation_diversion, chnpkg.observation_diversion, dobs.diversion_savings_gross_amount, 4000) AS diversion_svgs_observation,
   COALESCE(inspkg.hospitalization_diversion, chnpkg.hospitalization_diversion, dhsp.diversion_savings_gross_amount, 12000) AS diversion_svgs_hospitalization,
-  d911.case_rate_plug_less_co_pay,
-  d911.incremental_visit_cost
+  CASE WHEN d911.case_rate_plug_less_co_pay IS NULL THEN 150
+  ELSE d911.case_rate_plug_less_co_pay
+  END AS case_rate_plug_less_co_pay,
+  CASE WHEN  d911.incremental_visit_cost IS NULL THEN 50
+  ELSE d911.incremental_visit_cost
+  END AS incremental_visit_cost,
+  CASE WHEN ic.custom_insurance_grouping = '(CM)COMMERCIAL' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(MA)MEDICARE ADVANTAGE' THEN 0.08
+  WHEN ic.custom_insurance_grouping = '(MCARE)MEDICARE' THEN 0.08
+  WHEN ic.custom_insurance_grouping = '(MMCD)MANAGED MEDICAID' THEN 0.07
+  WHEN ic.custom_insurance_grouping = '(MAID)MEDICAID' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(TC)TRICARE' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(PSP)PATIENT SELF-PAY' THEN 0.05
+  WHEN ic.custom_insurance_grouping = '(CB)CORPORATE BILLING' THEN 0.05
+  ELSE 0.06
+  END AS bounceback_multiplier,
+  CASE WHEN ic.custom_insurance_grouping = '(CM)COMMERCIAL' THEN 0.05 * d911.case_rate_plug_less_co_pay
+  WHEN ic.custom_insurance_grouping = '(MA)MEDICARE ADVANTAGE' THEN 0.08 * d911.case_rate_plug_less_co_pay
+  WHEN ic.custom_insurance_grouping = '(MCARE)MEDICARE' THEN 0.08 * d911.case_rate_plug_less_co_pay
+  WHEN ic.custom_insurance_grouping = '(MMCD)MANAGED MEDICAID' THEN 0.07 * d911.case_rate_plug_less_co_pay
+  WHEN ic.custom_insurance_grouping = '(MAID)MEDICAID' THEN 0.05 * d911.case_rate_plug_less_co_pay
+  WHEN ic.custom_insurance_grouping = '(TC)TRICARE' THEN 0.05 * d911.case_rate_plug_less_co_pay
+  WHEN ic.custom_insurance_grouping = '(PSP)PATIENT SELF-PAY' THEN 0.05 * d911.case_rate_plug_less_co_pay
+  WHEN ic.custom_insurance_grouping = '(CB)CORPORATE BILLING' THEN 0.05 * d911.case_rate_plug_less_co_pay
+  ELSE 0.06 * d911.case_rate_plug_less_co_pay
+  END AS bounceback_14_day_case_rate_adjustment
 
   --COALESCE(ins.hospitalization_diversion, ci.hospitalization_diversion, ds3.diversion_savings_gross_amount,12000) AS diversion_hosp_savings
   FROM looker_scratch.diversion_categories_by_care_request dcf
@@ -775,7 +799,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
 
   dimension: case_rate_less_copay {
     type: number
-    sql: ${TABLE}.case_rate_plug_less_co_pay ;;
+    sql: ${TABLE}.case_rate_plug_less_co_pay;;
   }
 
   measure: sum_case_rate {
@@ -803,17 +827,38 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
 
-  measure: count_high_acuity_visits_cost_saving {
+  measure: count_any_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
-    filters: {
-      field: diversion
-      value: "Yes"
-    }
     filters: {
       field: care_request_flat.escalated_on_scene
       value: "No"
     }
+    filters: {
+      field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: diversion
+      value: "Yes"
+    }
+  }
+
+
+  dimension: diversion_or_escalated_on_scene {
+    description: "A flag indicating that any diversion criteria was met"
+    type: yesno
+    sql: ${diversion} OR  ${care_request_flat.escalated_on_scene};;
+  }
+
+  measure: count_high_acuity_visits_cost_saving {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: diversion_or_escalated_on_scene
+      value: "Yes"
+    }
+
     filters: {
       field: care_requests.post_acute_follow_up
       value: "No"
@@ -827,13 +872,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql_distinct_key: ${care_request_id} ;;
 
     filters: {
-      field: diversion
+      field: diversion_or_escalated_on_scene
       value: "Yes"
     }
-    filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
-    }
+
     filters: {
       field: care_requests.post_acute_follow_up
       value: "No"
@@ -845,13 +887,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
-      field: diversion
+      field: diversion_or_escalated_on_scene
       value: "No"
     }
-    filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
-    }
+
     filters: {
       field: care_requests.post_acute_follow_up
       value: "No"
@@ -865,17 +904,48 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql_distinct_key: ${care_request_id} ;;
 
     filters: {
-      field: diversion
+      field: diversion_or_escalated_on_scene
       value: "No"
     }
-    filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
-    }
+
     filters: {
       field: care_requests.post_acute_follow_up
       value: "No"
     }
   }
+
+  dimension: bounceback_14_day_case_rate_adjustment {
+    type: number
+    sql: ${TABLE}.bounceback_14_day_case_rate_adjustment ;;
+  }
+
+  dimension: bounceback_multiplier {
+    type: number
+    sql: ${TABLE}.bounceback_multiplier ;;
+  }
+
+  measure: sum_bounceback_14_day_case_rate_adjustment {
+    type: sum_distinct
+    sql: ${bounceback_14_day_case_rate_adjustment} ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
+  measure: count_bounceback_14_day_calc {
+    type: sum_distinct
+    sql: ${bounceback_multiplier} ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
+
+#   dimension: 14_day_bounceback_case_rate_calculated {
+#     type: number
+#     sql: ${care_requests.count_billable_est}*${bounceback_multiplier} ;;
+#   }
+#
+#   measure: sum_14_day_bounceback_case_rate_calculated {
+#     type: sum_distinct
+#     sql: ${14_day_bounceback_case_rate_calculated} ;;
+#     sql_distinct_key: ${care_request_id} ;;
+#   }
+
 
   }
