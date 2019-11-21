@@ -631,7 +631,7 @@ explore: care_requests {
     sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;
   }
   join: addresses {
-    relationship: one_to_one
+    relationship: many_to_one
     sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
   }
 
