@@ -534,6 +534,11 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
   }
 
+  join: patient_details_flat {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${patient_details_flat.care_request_id} ;;
+  }
+
 
   # join: diversion_savings_gross_by_insurance_group {
   #   relationship: many_to_one
