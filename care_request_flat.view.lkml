@@ -34,6 +34,8 @@ view: care_request_flat {
         accept.first_name AS accept_employee_first_name,
         accept.last_name AS accept_employee_last_name,
         accept.eta_time::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS eta_date,
+        resolved.first_name AS resolved_employee_first_name,
+        resolved.last_name AS resolved_employee_last_name,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
         else array_to_string(array_agg(distinct comp.comment), ':')end
         as complete_comment,
@@ -109,6 +111,18 @@ view: care_request_flat {
         WHERE name = 'accepted' AND crs.deleted_at IS NULL) AS accept
       ON cr.id = accept.care_request_id AND accept.rn = 1
 
+    LEFT JOIN (SELECT care_request_id,
+      name,
+      ROW_NUMBER() OVER(PARTITION BY care_request_id
+                           ORDER BY crs.started_at) AS rn,
+      first_name,
+      last_name
+      FROM care_request_statuses crs
+      LEFT JOIN users
+      ON crs.user_id = users.id
+      WHERE crs.name = 'archived' AND crs.deleted_at IS NULL) AS resolved
+    ON cr.id =resolved.care_request_id AND resolved.rn = 1
+
       LEFT JOIN care_request_statuses AS onroute
       ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
       LEFT JOIN care_request_statuses onscene
@@ -121,11 +135,11 @@ view: care_request_flat {
       LEFT JOIN care_request_statuses archive
       ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
       LEFT JOIN care_request_statuses fu3
-      ON cr.id = fu3.care_request_id AND fu3.name = 'followup_3'
+      ON cr.id = fu3.care_request_id AND fu3.name = 'followup_3' and fu3.deleted_at is null
       LEFT JOIN care_request_statuses fu14
-      ON cr.id = fu14.care_request_id AND fu14.name = 'followup_14'
+      ON cr.id = fu14.care_request_id AND fu14.name = 'followup_14' and fu14.deleted_at is null
       LEFT JOIN care_request_statuses fu30
-      ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30'
+      ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30' and fu30.deleted_at is null
       LEFT JOIN public.shift_teams
       ON shift_teams.id = cr.shift_team_id
       LEFT JOIN public.shift_teams st_init
@@ -150,7 +164,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
@@ -468,6 +482,19 @@ view: care_request_flat {
     type: string
     sql: ${TABLE}.accept_employee_last_name ;;
   }
+
+  dimension: resolved_employee_first_name {
+    description: "The first name of the user who accepted the patient"
+    type: string
+    sql: ${TABLE}.resolved_employee_first_name ;;
+  }
+
+  dimension: resolved_employee_last_name {
+    description: "The last name of the user who accepted the patient"
+    type: string
+    sql: ${TABLE}.resolved_employee_last_name ;;
+  }
+
 
   dimension: accepted_patient {
     type: yesno
