@@ -36,6 +36,7 @@ view: care_request_flat {
         accept.eta_time::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS eta_date,
         resolved.first_name AS resolved_employee_first_name,
         resolved.last_name AS resolved_employee_last_name,
+        resolved.resolved_role,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
         else array_to_string(array_agg(distinct comp.comment), ':')end
         as complete_comment,
@@ -53,7 +54,6 @@ view: care_request_flat {
         cr.patient_id as patient_id,
         foc.first_on_scene_time,
         max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
-
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
@@ -86,13 +86,11 @@ view: care_request_flat {
         ROW_NUMBER() OVER(PARTITION BY care_request_id
                                 ORDER BY started_at) AS rn
         FROM care_request_statuses
-
         WHERE name = 'accepted' AND deleted_at IS NULL) AS accept1
       ON cr.id = accept1.care_request_id AND accept1.rn = 1
       LEFT JOIN public.notes
       ON notes.care_request_id = cr.id
       AND notes.note_type = 'reorder_reason'
-
       LEFT JOIN (SELECT care_request_id,
         name,
         crs.started_at,
@@ -110,19 +108,31 @@ view: care_request_flat {
         ON crs.user_id = users.id
         WHERE name = 'accepted' AND crs.deleted_at IS NULL) AS accept
       ON cr.id = accept.care_request_id AND accept.rn = 1
-
-    LEFT JOIN (SELECT care_request_id,
-      name,
-      ROW_NUMBER() OVER(PARTITION BY care_request_id
-                           ORDER BY crs.started_at) AS rn,
-      first_name,
-      last_name
-      FROM care_request_statuses crs
-      LEFT JOIN users
-      ON crs.user_id = users.id
-      WHERE crs.name = 'archived' AND crs.deleted_at IS NULL) AS resolved
-    ON cr.id =resolved.care_request_id AND resolved.rn = 1
-
+      LEFT JOIN (
+          SELECT
+              crs.care_request_id,
+              MIN(crs.started_at) AS archive_date,
+              INITCAP(users.first_name) AS first_name,
+              INITCAP(users.last_name) AS last_name,
+              roles.name AS resolved_role
+          FROM public.care_request_statuses crs
+          LEFT JOIN public.users
+              ON crs.user_id = users.id
+          LEFT JOIN (
+              SELECT
+                  users.id AS user_id,
+                  COALESCE(csc.role_id, prv.role_id) AS role_id
+                  FROM public.users
+                  LEFT JOIN public.user_roles csc
+                      ON users.id = csc.user_id AND csc.role_id = 5
+                  LEFT JOIN public.user_roles prv
+                      ON users.id = prv.user_id AND prv.role_id = 2) ur
+              ON ur.user_id = users.id
+          JOIN public.roles
+              ON ur.role_id = roles.id AND roles.name IN ('csc','provider')
+          WHERE crs.name = 'archived' AND crs.comment IS NOT NULL AND crs.deleted_at IS NULL
+          GROUP BY 1,3,4,5) AS resolved
+    ON cr.id =resolved.care_request_id
       LEFT JOIN care_request_statuses AS onroute
       ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
       LEFT JOIN care_request_statuses onscene
@@ -164,7 +174,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
@@ -493,6 +503,12 @@ view: care_request_flat {
     description: "The last name of the user who accepted the patient"
     type: string
     sql: ${TABLE}.resolved_employee_last_name ;;
+  }
+
+  dimension: resolved_employee_role {
+    description: "The role of the employee who resolved the care request"
+    type: string
+    sql: ${TABLE}.resolved_role ;;
   }
 
 
