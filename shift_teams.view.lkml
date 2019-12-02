@@ -7,6 +7,12 @@ view: shift_teams {
     sql: ${TABLE}.id ;;
   }
 
+  dimension: compound_primary_key {
+    primary_key: no
+    hidden: no
+    sql: CONCAT(${start_date}::varchar, ${goals_by_day_of_week.market_id}::varchar) ;;
+  }
+
   dimension: car_id {
     type: number
     sql: ${TABLE}.car_id ;;
@@ -86,7 +92,7 @@ view: shift_teams {
   measure: sum_goal_volume {
     type: sum_distinct
     sql: ${goal_volume} ;;
-    sql_distinct_key: ${id} ;;
+    sql_distinct_key: ${compound_primary_key} ;;
   }
 
   dimension_group: start_mountain {
