@@ -83,6 +83,12 @@ view: shift_teams {
     else ${goals_by_day_of_week.weekday_goal} end;;
   }
 
+  measure: sum_goal_volume {
+    type: sum_distinct
+    sql: ${goal_volume} ;;
+    sql_distinct_key: ${id} ;;
+  }
+
   dimension_group: start_mountain {
     type: time
     timeframes: [
