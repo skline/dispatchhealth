@@ -67,7 +67,7 @@ view: athenadwh_icdcodeall {
     ${risk_assessments.protocol_name} SIMILAR TO '%(Upper Respiratory Symptoms|Shortness Of Breath|Flu-Like Symptoms)%') OR
     (${diagnosis_code_full} IN ('J029') AND
     ${risk_assessments.protocol_name} SIMILAR TO '%(Sore Throat|Upper Respiratory Symptoms|Sinus Pain)%') OR
-    (${diagnosis_code_full} IN ('R179') AND
+    (${diagnosis_code_full} IN ('R197') AND
     ${risk_assessments.protocol_name} SIMILAR TO '%(Diarrhea|Abdominal Pain)%') OR
     (${diagnosis_code_full} IN ('R112') AND
     ${risk_assessments.protocol_name} SIMILAR TO '%(Nausea/Vomiting|Dehydration)%') OR
