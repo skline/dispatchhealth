@@ -10,7 +10,7 @@ view: markets_intra {
   dimension: name {
     type: string
     sql: case when ${cars_intra.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
-             when ${cars_intra.name} = 'Denver_Advanced Care' then 'Denver Advanced Care'
+             when ${cars_intra.name} = 'Denver_Advanced Care ' then 'Denver Advanced Care'
          else ${TABLE}.name end ;;
   }
 

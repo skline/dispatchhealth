@@ -142,7 +142,7 @@ view: markets {
   dimension: name_smfr {
     type: string
     sql: case when ${cars.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
-           when ${cars.name} = 'Denver_Advanced Care' then 'Denver Advanced Care'
+           when ${cars.name} = 'Denver_Advanced Care ' then 'Denver Advanced Care'
          else ${name} end ;;
   }
 
