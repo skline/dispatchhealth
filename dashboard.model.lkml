@@ -534,6 +534,11 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
   }
 
+  join: patient_details_flat {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${patient_details_flat.care_request_id} ;;
+  }
+
 
   # join: diversion_savings_gross_by_insurance_group {
   #   relationship: many_to_one
@@ -2798,6 +2803,10 @@ explore: shift_teams
   }
   join: goals_by_day_of_week {
     sql_on: ${markets.id_adj} =${goals_by_day_of_week.market_id} and ${goals_by_day_of_week.month_month}=${shift_teams.start_month};;
+  }
+
+  join: budget_projections_by_market_clone {
+    sql_on: ${markets.id_adj} = ${budget_projections_by_market_clone.market_dim_id} AND ${shift_teams.start_month} = ${budget_projections_by_market_clone.month_month} ;;
   }
 
 }
