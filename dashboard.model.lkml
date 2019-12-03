@@ -2805,6 +2805,10 @@ explore: shift_teams
     sql_on: ${markets.id_adj} =${goals_by_day_of_week.market_id} and ${goals_by_day_of_week.month_month}=${shift_teams.start_month};;
   }
 
+  join: budget_projections_by_market_clone {
+    sql_on: ${markets.id_adj} = ${budget_projections_by_market_clone.market_dim_id} AND ${shift_teams.start_month} = ${budget_projections_by_market_clone.month_month} ;;
+  }
+
 }
 
 explore: budget_projections_by_market_clone {
