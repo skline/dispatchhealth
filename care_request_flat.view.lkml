@@ -494,13 +494,13 @@ view: care_request_flat {
   }
 
   dimension: resolved_employee_first_name {
-    description: "The first name of the user who accepted the patient"
+    description: "The first name of the user who resolved the care request"
     type: string
     sql: ${TABLE}.resolved_employee_first_name ;;
   }
 
   dimension: resolved_employee_last_name {
-    description: "The last name of the user who accepted the patient"
+    description: "The last name of the user who resolved the care request"
     type: string
     sql: ${TABLE}.resolved_employee_last_name ;;
   }
