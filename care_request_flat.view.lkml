@@ -53,6 +53,7 @@ view: care_request_flat {
         callers.contact_id,
         cr.patient_id as patient_id,
         foc.first_on_scene_time,
+        onscene.meta_data::jsonb->>'etoc' AS mins_on_scene_predicted,
         max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
@@ -175,7 +176,7 @@ view: care_request_flat {
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
       GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
-               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time;;
+               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time,onscene.meta_data::jsonb;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date"]
@@ -297,6 +298,18 @@ view: care_request_flat {
     tiers: [10,20,30,40,50,60,70,80,90,100]
     style: integer
     sql: ${on_scene_time_minutes} ;;
+  }
+
+  dimension: mins_on_scene_predicted {
+    type: number
+    sql: ${TABLE}.mins_on_scene_predicted ;;
+  }
+
+  dimension: on_scene_time_tier_predicted {
+    type: tier
+    tiers: [10,20,30,40,50,60,70,80,90,100]
+    style: integer
+    sql: ${mins_on_scene_predicted} ;;
   }
 
   dimension: shift_team_id_initial {
@@ -655,6 +668,14 @@ view: care_request_flat {
       field: is_reasonable_on_scene_time
       value: "yes"
     }
+  }
+
+  measure:  average_on_scene_time_predicted {
+    type: average_distinct
+    description: "The average predicted minutes between complete time and on scene time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${mins_on_scene_predicted} ;;
   }
 
   measure:  average_created_to_resolved_minutes{
