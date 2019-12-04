@@ -1059,17 +1059,6 @@ explore: care_requests {
     sql_on: ${patients.id} = ${eligible_patients.patient_id} ;;
   }
 
-  join: baycare_eligibility {
-    relationship: one_to_one
-    sql_on:
-    ${baycare_eligibility.match} =
-    UPPER(concat(replace(${patients.last_name}, '''', '')::text, to_char(${patients.dob}, 'MM/DD/YYYY'),
-      CASE WHEN ${patients.gender} = 'Female' THEN 'F'
-      WHEN ${patients.gender} = 'Male' THEN 'M'
-      ELSE ''
-      END)) ;;
-  }
-
   join: vitals_flat {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${vitals_flat.care_request_id} ;;
