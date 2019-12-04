@@ -89,6 +89,7 @@ view: channel_items {
     type: string
     sql: CASE
     WHEN INITCAP(${TABLE}.name) LIKE '%Google Or Other Search%' THEN 'Google or Other Search'
+    WHEN INITCAP(${TABLE}.name) LIKE '%911 Channel%' THEN '911 Channel'
     ELSE TRIM(INITCAP(${TABLE}.name))
     END ;;
   }
