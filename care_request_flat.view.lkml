@@ -249,9 +249,6 @@ view: care_request_flat {
     sql: ${time_to_call_seconds}/60.0 ;;
   }
 
-
-
-
   dimension: assigned_time_seconds {
     type: number
     description: "The number of seconds between accepted time and on-route time"
@@ -303,6 +300,18 @@ view: care_request_flat {
   dimension: mins_on_scene_predicted {
     type: number
     sql: ${TABLE}.mins_on_scene_predicted ;;
+  }
+
+  dimension: actual_minus_pred_on_scene {
+    type: number
+    sql: ${on_scene_time_minutes}::float - ${mins_on_scene_predicted}::float ;;
+  }
+
+  dimension: real_minus_pred_tier {
+    type: tier
+    tiers: [-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60]
+    style: integer
+    sql: ${actual_minus_pred_on_scene} ;;
   }
 
   dimension: on_scene_time_tier_predicted {
