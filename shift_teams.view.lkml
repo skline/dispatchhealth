@@ -71,6 +71,7 @@ view: shift_teams {
       raw,
       time,
       date,
+      day_of_month,
       week,
       month,
       quarter,
