@@ -176,7 +176,7 @@ view: care_request_flat {
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
       GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
-               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time,onscene.meta_data::jsonb;;
+               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time,onscene.meta_data::jsonb->>'etoc';;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date"]
@@ -423,6 +423,13 @@ view: care_request_flat {
   dimension: drive_time_seconds_google {
     type: number
     sql: ${TABLE}.drive_time_seconds ;;
+  }
+
+  dimension: drive_time_minutes_google_initial {
+    type: number
+    description: "The initial Google drive time for the care request"
+    sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
+    value_format: "0.00"
   }
 
   dimension: drive_time_minutes_google {
