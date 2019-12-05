@@ -506,13 +506,13 @@ view: care_request_flat {
   dimension: accept_employee_first_name {
     description: "The first name of the user who accepted the patient"
     type: string
-    sql: ${TABLE}.accept_employee_first_name ;;
+    sql: initcap(${TABLE}.accept_employee_first_name) ;;
   }
 
   dimension: accept_employee_last_name {
     description: "The last name of the user who accepted the patient"
     type: string
-    sql: ${TABLE}.accept_employee_last_name ;;
+    sql: initcap(${TABLE}.accept_employee_last_name) ;;
   }
 
   dimension: resolved_employee_first_name {
