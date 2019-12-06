@@ -299,7 +299,7 @@ view: care_request_flat {
 
   dimension: mins_on_scene_predicted {
     type: number
-    sql: ${TABLE}.mins_on_scene_predicted ;;
+    sql: ${TABLE}.mins_on_scene_predicted::int ;;
   }
 
   dimension: actual_minus_pred_on_scene {
@@ -418,6 +418,7 @@ view: care_request_flat {
     description: "The number of minutes between on-route time and on-scene time"
     sql_distinct_key: ${care_request_id} ;;
     sql: ${drive_time_minutes};;
+    value_format: "0.00"
   }
 
   dimension: drive_time_seconds_google {
@@ -739,6 +740,15 @@ view: care_request_flat {
       value: "yes"
     }
   }
+
+  measure:  total_predicted_on_scene_time_minutes{
+    type: sum_distinct
+    description: "The sum of predicted minutes on scene"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${mins_on_scene_predicted} ;;
+  }
+
 #   Need to get this working for histograms
    parameter: bucket_size {
      default_value: "10"

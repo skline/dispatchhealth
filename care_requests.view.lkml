@@ -1403,7 +1403,8 @@ measure: distinct_day_of_week {
   measure: shift_start_first_on_route_diff{
     label: "Hours Between Shift Start and First On Route"
     type: number
-    sql:  round(((EXTRACT(EPOCH FROM ${min_on_route_time}::timestamp - ${care_request_flat.shift_start_time}::timestamp))/3600)::decimal,2);;
+    sql:  round(((EXTRACT(EPOCH FROM ${min_on_route_time}::timestamp - MIN(${care_request_flat.shift_start_time})::timestamp))/3600)::decimal,2);;
+    value_format: "0.00"
   }
 
   measure: shift_end_last_cr_diff_adj{
