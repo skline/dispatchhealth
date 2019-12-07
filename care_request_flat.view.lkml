@@ -411,6 +411,7 @@ view: care_request_flat {
     type: number
     description: "The number of minutes between on-route time and on-scene time"
     sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}))::float/60.0 ;;
+    value_format: "0.0"
   }
 
   measure: total_drive_time_minutes {
@@ -418,7 +419,7 @@ view: care_request_flat {
     description: "The number of minutes between on-route time and on-scene time"
     sql_distinct_key: ${care_request_id} ;;
     sql: ${drive_time_minutes};;
-    value_format: "0.00"
+    value_format: "0.0"
   }
 
   dimension: drive_time_seconds_google {
