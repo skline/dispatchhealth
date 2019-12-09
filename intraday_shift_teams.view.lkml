@@ -412,7 +412,7 @@ view: intraday_shift_teams {
 measure: sum_shift_hours {
   type: sum_distinct
   value_format: "0.00"
-  sql_distinct_key: concat(${cars_intra.name}, ${shift_id}) ;;
+  sql_distinct_key: concat(${shift_id}, ${start_date}) ;;
   sql: ${hours_in_shift_no_agg} ;;
 }
 
