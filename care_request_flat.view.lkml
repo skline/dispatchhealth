@@ -33,6 +33,7 @@ view: care_request_flat {
         accept.drive_time_seconds,
         accept.first_name AS accept_employee_first_name,
         accept.last_name AS accept_employee_last_name,
+        accept.user_id AS accept_employee_user_id,
         accept.eta_time::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS eta_date,
         resolved.first_name AS resolved_employee_first_name,
         resolved.last_name AS resolved_employee_last_name,
@@ -103,7 +104,8 @@ view: care_request_flat {
         ROW_NUMBER() OVER(PARTITION BY care_request_id
                                 ORDER BY crs.started_at DESC) AS rn,
         first_name,
-        last_name
+        last_name,
+        users.id AS user_id
         FROM care_request_statuses crs
         LEFT JOIN users
         ON crs.user_id = users.id
@@ -175,7 +177,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time,onscene.meta_data::jsonb->>'etoc';;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
@@ -395,6 +397,11 @@ view: care_request_flat {
     sql: ${TABLE}.auto_assigned_final = 'true' ;;
   }
 
+  dimension: board_optimizer_assigned {
+    type: yesno
+    sql: ${auto_assigned_final} = 'false' AND ${accept_employee_user_id} IN (7419,14804,10941,24564,20171,13134,6620,12582) ;;
+  }
+
   dimension: reassignment_reason_final {
     type: string
     description: "The reassignment reason logged by the CSC"
@@ -522,6 +529,12 @@ view: care_request_flat {
     description: "The last name of the user who accepted the patient"
     type: string
     sql: initcap(${TABLE}.accept_employee_last_name) ;;
+  }
+
+  dimension: accept_employee_user_id {
+    description: "The user ID of the user who accepted the patient"
+    type: number
+    sql: ${TABLE}.accept_employee_user_id ;;
   }
 
   dimension: resolved_employee_first_name {

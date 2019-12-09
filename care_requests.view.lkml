@@ -901,6 +901,20 @@ view: care_requests {
     ]
   }
 
+  measure: count_board_optimizer_requests {
+    description: "A count of all care requests that were assigned by the board optimizers"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.board_optimizer_assigned
+      value: "yes"
+    }
+  }
+
   measure: count_visits_fluids_blood {
     type: count_distinct
     description: "Count of completed non-escalated visits where IV or blood work was done"
