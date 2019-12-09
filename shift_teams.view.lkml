@@ -70,6 +70,7 @@ view: shift_teams {
     timeframes: [
       raw,
       time,
+      time_of_day,
       date,
       day_of_month,
       week,
