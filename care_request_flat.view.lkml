@@ -2611,7 +2611,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
 
   dimension: escalated_on_phone {
     type: yesno
-    sql: (${archive_comment} SIMILAR TO '(%Referred via Phone%|%Referred - Phone Triage%)') and not ${booked_shaping_placeholder_resolved};;
+    sql: (${archive_comment} SIMILAR TO '%(Referred via Phone|Referred - Phone Triage)%') and not ${booked_shaping_placeholder_resolved};;
   }
 
   dimension: escalated_on_phone_ed {
