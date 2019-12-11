@@ -71,6 +71,19 @@ view: primary_payer_dimensions_clone {
         END;;
   }
 
+  dimension: custom_insurance_label_grouped {
+    type: string
+    sql: CASE
+            when ${custom_insurance_label} in('Corporate Billing', 'Patient Self Pay', 'Commercial', 'Medicare Advantage') then 'Commercial/Medicare Advantage/Self-Pay'
+            when ${custom_insurance_label} in('Managed Medicaid') then 'Managed Medicaid'
+            when ${custom_insurance_label} in('Medicare') then 'Medicare'
+            when ${custom_insurance_label} in('Medicaid', 'Tricare') then 'Medicaid/Tricare'
+            else 'Other'
+
+         END;;
+  }
+
+
   dimension: insurance_sort_value {
     type: number
     hidden: yes
