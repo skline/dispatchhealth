@@ -229,7 +229,7 @@ view: markets {
   dimension: cpr_market {
     description: "Flag to identify CPR markets (hard-coded)"
     type: yesno
-    sql: ${id} in(168, 169, 170, 171, 172, 173, 178);;
+    sql: ${id} in(168, 169, 170, 171, 172, 173, 178, 177);;
   }
 
   dimension: national_market {

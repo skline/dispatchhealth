@@ -594,10 +594,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     ON dcf.care_request_id = cr.id
   LEFT JOIN chnpkg
     ON cr.channel_item_id = chnpkg.channel_item_id
-  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911
-    ON ic.custom_insurance_grouping = d911.custom_insurance_grouping AND d911.diversion_type_id = 1
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group der
-    ON ic.custom_insurance_grouping = der.custom_insurance_grouping AND der.diversion_type_id = 2
+    ON ic.custom_insurance_grouping = der.custom_insurance_grouping AND der.diversion_type_id = 1
+  LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group d911
+    ON ic.custom_insurance_grouping = d911.custom_insurance_grouping AND d911.diversion_type_id = 2
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dobs
     ON ic.custom_insurance_grouping = dobs.custom_insurance_grouping AND dobs.diversion_type_id = 4
   LEFT JOIN looker_scratch.diversion_savings_gross_by_insurance_group dhsp

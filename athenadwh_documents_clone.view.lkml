@@ -101,7 +101,7 @@ view: athenadwh_documents_clone {
 
   dimension: clinical_letter_flag {
     type: yesno
-    sql: ${document_class} LIKE '%LETTER%' ;;
+    sql: ${document_class} LIKE '%LETTER%' OR ${document_class} LIKE '%ENCOUNTERDOCUMENT%' ;;
   }
 
   dimension: medicine_administered_onscene {
