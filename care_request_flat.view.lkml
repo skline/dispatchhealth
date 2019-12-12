@@ -186,8 +186,6 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      WHERE cr.id IN (144598,140911)
-
       GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
                foc.first_on_scene_time,onscene.mins_on_scene_predicted;;
