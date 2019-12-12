@@ -54,7 +54,7 @@ view: care_request_flat {
         callers.contact_id,
         cr.patient_id as patient_id,
         foc.first_on_scene_time,
-        onscene.meta_data::jsonb->>'etoc' AS mins_on_scene_predicted,
+        onscene.mins_on_scene_predicted,
         max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
@@ -138,8 +138,17 @@ view: care_request_flat {
     ON cr.id =resolved.care_request_id
       LEFT JOIN care_request_statuses AS onroute
       ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
-      LEFT JOIN care_request_statuses onscene
-      ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene' and onscene.deleted_at is null
+      LEFT JOIN (
+          SELECT
+              care_request_id,
+              started_at,
+              meta_data::jsonb->>'etoc' AS mins_on_scene_predicted,
+              ROW_NUMBER() OVER(PARTITION BY care_request_id
+                                ORDER BY started_at DESC) AS rn
+              FROM public.care_request_statuses
+              WHERE name = 'on_scene' AND deleted_at IS NULL
+      ) onscene
+        ON cr.id = onscene.care_request_id AND onscene.rn = 1
       LEFT JOIN care_request_statuses comp
       ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
       LEFT JOIN care_request_statuses esc
@@ -177,8 +186,11 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
+      WHERE cr.id IN (144598,140911)
+
       GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,
-               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time,onscene.meta_data::jsonb->>'etoc';;
+               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
+               foc.first_on_scene_time,onscene.mins_on_scene_predicted;;
 
     sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date"]
