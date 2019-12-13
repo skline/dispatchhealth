@@ -13,7 +13,8 @@ explore: care_requests {
   persist_with: care_request_datagroup
 
   sql_always_where: ${deleted_raw} IS NULL AND
-  (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL) ;;
+  (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL
+  OR ${patients.last_name} LIKE '%Test%') ;;
 
   access_filter: {
     field: markets.name
