@@ -531,6 +531,16 @@ view: care_request_flat {
     sql: initcap(${TABLE}.accept_employee_last_name) ;;
   }
 
+  dimension: accept_employee_full_name {
+    type: string
+    sql: concat(${accept_employee_first_name}, " ", ${accept_employee_last_name}) ;;
+  }
+
+  dimension: resolved_employee_full_name {
+    type: string
+    sql: concat(${resolved_employee_first_name}, " ", ${resolved_employee_last_name}) ;;
+  }
+
   dimension: accept_employee_user_id {
     description: "The user ID of the user who accepted the patient"
     type: number
@@ -3162,6 +3172,13 @@ measure:  count_end_of_shift_dead_time_45_mins {
     type: number
     sql: round(${complete_count}/${month_percent});;
   }
+
+  measure: overflow_visits_run_rate {
+    type: number
+    value_format: "0"
+    sql: round(${count_overflow}::float/${month_percent});;
+  }
+
 
   measure: care_request_count_run_rate {
     type: number
