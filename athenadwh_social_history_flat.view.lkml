@@ -5,6 +5,9 @@ view: athenadwh_social_history_flat {
   base.chart_id,
   CAST(rd.answer AS DATE) AS review_date,
   ss.answer AS smoking_status,
+  cts.answer AS smokeless_tobacco_use,
+  drugs.answer AS drugs_abused,
+  vape.answer AS vaping_status,
   ms.answer AS marital_status,
   cs.answer AS code_status,
   ad.answer AS advance_directive,
@@ -23,13 +26,20 @@ view: athenadwh_social_history_flat {
   smk.answer AS smoking_how_much,
   thaz.answer AS fall_hazards,
   gcln.answer AS general_cleanliness,
-  nstat.answer AS nutritional_status
+  nstat.answer AS nutritional_status,
+  costs.answer AS cost_concerns,
+  hs.answer AS home_situation,
+  fis.answer AS food_insecurity,
+  fw.answer AS food_insecurity_worry,
+  soci.answer AS social_interactions,
+  homeis.answer AS housing_insecurity,
+  rcs.answer AS resource_help_requested
 
   FROM (
     SELECT DISTINCT chart_id
       FROM athenadwh_social_history_clone
   ) AS base
-  LEFT JOIN (
+LEFT JOIN (
     SELECT chart_id, question, answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
             FROM athenadwh_social_history_clone
             WHERE question = 'Reviewed Date'
@@ -39,7 +49,7 @@ view: athenadwh_social_history_flat {
     LEFT JOIN (
       SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
               FROM athenadwh_social_history_clone
-              WHERE question = 'Smoking Status'
+              WHERE question = 'Tobacco Smoking Status'
               GROUP BY 1,2,3,4
     ) AS ss
       ON base.chart_id = ss.chart_id AND ss.rownum = 1
@@ -67,35 +77,36 @@ view: athenadwh_social_history_flat {
     LEFT JOIN (
       SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
               FROM athenadwh_social_history_clone
-        WHERE question = 'Fall Risk: Do you feel unsteady when standing or walking?'
+        WHERE social_history_key = 'SOCIALHISTORY.LOCAL.145'
         GROUP BY 1,2,3,4
     ) AS fru
       ON base.chart_id = fru.chart_id AND fru.rownum = 1
     LEFT JOIN (
       SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
               FROM athenadwh_social_history_clone
-        WHERE question = 'ADL: Do you need help with daily activities such as bathing, preparing meals, dressing, or cleaning?'
+        WHERE social_history_key = 'SOCIALHISTORY.LOCAL.144'
         GROUP BY 1,2,3,4
     ) AS adl
       ON base.chart_id = adl.chart_id AND adl.rownum = 1
     LEFT JOIN (
       SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
               FROM athenadwh_social_history_clone
-        WHERE question = 'Transportation: Do you have transportation to your medical appointments?'
+        WHERE question = 'Transportation: Do you have transportation to your medical appointments?' OR
+        social_history_key = 'SOCIALHISTORY.LOCAL.141'
         GROUP BY 1,2,3,4
     ) AS trn
       ON base.chart_id = trn.chart_id AND trn.rownum = 1
     LEFT JOIN (
       SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
               FROM athenadwh_social_history_clone
-        WHERE question = 'Fall Risk: In your opinion (provider), does the home or patient potentially predispose them to an increase fall risk?'
+        WHERE social_history_key = 'SOCIALHISTORY.LOCAL.147'
         GROUP BY 1,2,3,4
     ) AS frp
       ON base.chart_id = frp.chart_id AND frp.rownum = 1
     LEFT JOIN (
       SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
               FROM athenadwh_social_history_clone
-        WHERE question = 'Fall Risk: Do you worry about falling?'
+        WHERE social_history_key = 'SOCIALHISTORY.LOCAL.146'
         GROUP BY 1,2,3,4
     ) AS frw
       ON base.chart_id = frw.chart_id AND frw.rownum = 1
@@ -176,7 +187,77 @@ view: athenadwh_social_history_flat {
         GROUP BY 1,2,3,4
     ) AS nstat
       ON base.chart_id = nstat.chart_id AND nstat.rownum = 1
-    ORDER BY base.chart_id  ;;
+LEFT JOIN (
+      SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+              FROM athenadwh_social_history_clone
+              WHERE question = 'Smokeless Tobacco Status'
+              GROUP BY 1,2,3,4
+    ) AS cts
+      ON base.chart_id = cts.chart_id AND cts.rownum = 1
+LEFT JOIN (
+      SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+              FROM athenadwh_social_history_clone
+              WHERE social_history_key = 'SOCIALHISTORY.DRUGSABUSED'
+              GROUP BY 1,2,3,4
+    ) AS drugs
+      ON base.chart_id = drugs.chart_id AND drugs.rownum = 1
+LEFT JOIN (
+      SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+              FROM athenadwh_social_history_clone
+              WHERE social_history_key = 'SOCIALHISTORY.ECIGVAPESTATUS'
+              GROUP BY 1,2,3,4
+    ) AS vape
+      ON base.chart_id = vape.chart_id AND vape.rownum = 1
+LEFT JOIN (
+        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+                FROM athenadwh_social_history_clone
+          WHERE question = 'Home situation'
+          GROUP BY 1,2,3,4
+      ) AS hs
+        ON base.chart_id = hs.chart_id AND hs.rownum = 1
+LEFT JOIN (
+        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+                FROM athenadwh_social_history_clone
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.142'
+          GROUP BY 1,2,3,4
+      ) AS fis
+        ON base.chart_id = fis.chart_id AND fis.rownum = 1
+LEFT JOIN (
+        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+                FROM athenadwh_social_history_clone
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.143'
+          GROUP BY 1,2,3,4
+      ) AS fw
+        ON base.chart_id = fw.chart_id AND fw.rownum = 1
+LEFT JOIN (
+        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+                FROM athenadwh_social_history_clone
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.161'
+          GROUP BY 1,2,3,4
+      ) AS soci
+        ON base.chart_id = soci.chart_id AND soci.rownum = 1
+LEFT JOIN (
+        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+                FROM athenadwh_social_history_clone
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.91'
+          GROUP BY 1,2,3,4
+      ) AS homeis
+        ON base.chart_id = homeis.chart_id AND homeis.rownum = 1
+LEFT JOIN (
+        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+                FROM athenadwh_social_history_clone
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.94'
+          GROUP BY 1,2,3,4
+      ) AS rcs
+        ON base.chart_id = rcs.chart_id AND rcs.rownum = 1
+LEFT JOIN (
+        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+                FROM athenadwh_social_history_clone
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.85'
+          GROUP BY 1,2,3,4
+      ) AS costs
+        ON base.chart_id = costs.chart_id AND costs.rownum = 1
+ORDER BY base.chart_id  ;;
 
       sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
       indexes: ["chart_id"]
@@ -203,6 +284,20 @@ view: athenadwh_social_history_flat {
   dimension: smoking_flag {
     type: yesno
     sql: ${smoking_how_much} !='n' and ${smoking_how_much} is not null ;;
+  }
+
+  dimension: smokeless_tobacco_use {
+    type: string
+    sql: ${TABLE}.smokeless_tobacco_use ;;
+  }
+
+  dimension: drugs_abused {
+    type: string
+    sql: ${TABLE}.drugs_abused ;;
+  }
+  dimension: vaping_status {
+    type: string
+    sql: ${TABLE}.vaping_status ;;
   }
 
   dimension: marital_status {
@@ -234,7 +329,8 @@ view: athenadwh_social_history_flat {
 
   dimension: transportation {
     type: string
-    description: "Transportation: Do you have transportation to your medical appointments?"
+    description: "Has lack of transportation kept you from medical appointments, meetings, work,
+    or from getting things needed for daily living?"
     sql: ${TABLE}.transportation ;;
   }
 
@@ -350,6 +446,44 @@ view: athenadwh_social_history_flat {
     type: string
     description: "Overall nutritional status of the patient"
     sql: ${TABLE}.nutritional_status ;;
+  }
+
+  dimension: cost_concerns {
+    type: string
+    sql: ${TABLE}.cost_concerns ;;
+    description: "In the past year, have you been unable to get any of the following when it was really needed?"
+  }
+  dimension: home_situation {
+    type: string
+    sql: ${TABLE}.home_situation ;;
+    description: "Home situation"
+  }
+  dimension: food_insecurity {
+    type: string
+    sql: ${TABLE}.food_insecurity;;
+    description: "Has it ever happened within the past 12 months that the food you bought
+    just didn’t last, and you didn’t have money to get more?"
+  }
+  dimension: food_insecurity_worry {
+    type: string
+    sql: ${TABLE}.food_insecurity_worry ;;
+    description: "Within the past 12 months we worried that our food would run out before we got money to buy more."
+  }
+  dimension: social_interactions {
+    type: string
+    sql: ${TABLE}.social_interactions ;;
+    description: "How often do you have the opportunity to see or talk to people that you care about
+    and feel close to?"
+  }
+  dimension: housing_insecurity {
+    type: string
+    sql: ${TABLE}.housing_insecurity ;;
+    description: "Do you have any concerns about your current housing situation?"
+  }
+  dimension: resource_help_requested {
+    type: string
+    sql: ${TABLE}.resource_help_requested ;;
+    description: "Would you like help connecting to resources?"
   }
 
   dimension: overweight_obese_flag {
