@@ -543,12 +543,12 @@ view: care_request_flat {
 
   dimension: accept_employee_full_name {
     type: string
-    sql: concat(${accept_employee_first_name}, " ", ${accept_employee_last_name}) ;;
+    sql: concat(${accept_employee_first_name}, ' ', ${accept_employee_last_name}) ;;
   }
 
   dimension: resolved_employee_full_name {
     type: string
-    sql: concat(${resolved_employee_first_name}, " ", ${resolved_employee_last_name}) ;;
+    sql: concat(${resolved_employee_first_name}, ' ', ${resolved_employee_last_name}) ;;
   }
 
   dimension: accept_employee_user_id {
