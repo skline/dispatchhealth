@@ -218,7 +218,8 @@ LEFT JOIN (
 LEFT JOIN (
         SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
                 FROM athenadwh_social_history_clone
-          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.142'
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.142' AND
+          question = 'Has it ever happened within the past 12 months that the food you bought just didn’t last, and you didn’t have money to get more?'
           GROUP BY 1,2,3,4
       ) AS fis
         ON base.chart_id = fis.chart_id AND fis.rownum = 1
