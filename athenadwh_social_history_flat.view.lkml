@@ -461,7 +461,8 @@ ORDER BY base.chart_id  ;;
   }
   dimension: food_insecurity {
     type: string
-    sql: ${TABLE}.food_insecurity;;
+    sql: CASE WHEN ${TABLE}.food_insecurity IN ('Yes','No') THEN ${TABLE}.food_insecurity
+        ELSE NULL END ;;
     description: "Has it ever happened within the past 12 months that the food you bought
     just didn’t last, and you didn’t have money to get more?"
   }
