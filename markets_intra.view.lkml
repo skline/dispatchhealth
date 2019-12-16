@@ -13,6 +13,10 @@ view: markets_intra {
              when ${cars_intra.name} = 'Denver_Advanced Care ' then 'Denver Advanced Care'
          else ${TABLE}.name end ;;
   }
+  dimension: fee_for_service {
+    type: yesno
+    sql: ${name} in('Denver', 'Colorado Springs', 'Las Vegas', 'Phoenix', 'Richmond', 'Houston', 'Oklahoma City') ;;
+  }
 
   dimension: sa_time_zone {
     type: string
