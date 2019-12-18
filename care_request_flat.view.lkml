@@ -21,6 +21,7 @@ view: care_request_flat {
         fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS day3_followup_date,
         fu14.comment AS followup_14day_result,
         fu30.comment AS followup_30day_result,
+        accept1.initial_eta::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta,
         accept1.auto_assigned AS auto_assigned_initial,
         accept1.reassignment_reason AS reassignment_reason_initial,
         accept1.reassignment_reason_other AS reassignment_reason_other_initial,
@@ -35,6 +36,8 @@ view: care_request_flat {
         accept.last_name AS accept_employee_last_name,
         accept.user_id AS accept_employee_user_id,
         accept.eta_time::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS eta_date,
+        eta.starts_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta_start,
+        eta.ends_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta_end,
         resolved.first_name AS resolved_employee_first_name,
         resolved.last_name AS resolved_employee_last_name,
         resolved.resolved_role,
@@ -80,6 +83,7 @@ view: care_request_flat {
         (SELECT care_request_id,
         name,
         started_at,
+        meta_data::Json->> 'eta' AS initial_eta,
         meta_data::json->> 'auto_assigned' AS auto_assigned,
         meta_data::json->> 'drive_time' AS drive_time_seconds,
         meta_data::json->> 'shift_team_id' AS shift_team_id_initial,
@@ -149,6 +153,14 @@ view: care_request_flat {
               WHERE name = 'on_scene' AND deleted_at IS NULL
       ) onscene
         ON cr.id = onscene.care_request_id AND onscene.rn = 1
+      LEFT JOIN
+          (SELECT
+              care_request_id,
+              starts_at,
+              ends_at,
+              ROW_NUMBER() OVER(PARTITION BY care_request_id ORDER BY care_request_id, created_at) AS rn
+           FROM public.eta_ranges) eta
+      ON cr.id = eta.care_request_id AND eta.rn = 1
       LEFT JOIN care_request_statuses comp
       ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
       LEFT JOIN care_request_statuses esc
@@ -186,7 +198,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,
+      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
                foc.first_on_scene_time,onscene.mins_on_scene_predicted;;
 
@@ -985,6 +997,52 @@ view: care_request_flat {
       day_of_month
     ]
     sql: ${TABLE}.eta_date ;;
+  }
+
+  dimension_group: eta_range_start {
+    type: time
+    description: "The initial ETA range start time that was given to the patient"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time
+    ]
+    sql: ${TABLE}.initial_eta_start ;;
+  }
+
+  dimension_group: eta_range_end {
+    type: time
+    description: "The initial ETA range end time that was given to the patient"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time
+    ]
+    sql: ${TABLE}.initial_eta_end ;;
+  }
+
+  dimension_group: initial_eta {
+    type: time
+    description: "The initial ETA that was calculated for the patient"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week,
+      day_of_month
+    ]
+    sql: ${TABLE}.initial_eta ;;
   }
 
   dimension: bounceback_3day {
