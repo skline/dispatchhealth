@@ -90,6 +90,10 @@ view: cars {
     sql: ${name} like '%MFR%' OR ${name} LIKE '%Flex%' ;;
   }
 
+  dimension: test_car  {
+    type: yesno
+    sql: lower(${name}) like '%test%' ;;
+  }
   measure: count_distinct_cars {
     description: "Count of distinct cars, not including SMFR/WMFR/Flex"
     type: count_distinct

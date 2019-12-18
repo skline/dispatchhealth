@@ -546,6 +546,11 @@ view: intraday_care_requests {
 
   }
 
+  dimension: address {
+    type: string
+    sql:  (meta_data ->> 'street_address_1') ;;
+  }
+
  # dimension: inqueue_over_hour {
 #    type: yesno
 #    sql:  ;;

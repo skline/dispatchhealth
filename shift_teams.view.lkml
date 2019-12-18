@@ -123,6 +123,10 @@ view: shift_teams {
     value_format: "0.0"
     sql_distinct_key: ${id} ;;
     sql: ${shift_hours} ;;
+    filters:  {
+      field: cars.test_car
+      value: "no"
+    }
   }
 
   measure: sum_shift_hours_no_arm_advanced {
@@ -136,6 +140,10 @@ view: shift_teams {
     }
     filters:  {
       field: cars.advanced_care_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.test_car
       value: "no"
     }
   }

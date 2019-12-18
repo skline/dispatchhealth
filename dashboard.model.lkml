@@ -2808,3 +2808,4 @@ explore: budget_projections_by_market_clone {
 }
 
 explore: diversion_savings_gross_by_insurance_group {}
+explore: idle_time_summary {}
