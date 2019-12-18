@@ -290,7 +290,7 @@ view: care_requests {
       quarter,
       year
     ]
-    sql: ${TABLE}.on_route_eta ;;
+    sql: ${TABLE}.on_route_eta AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension_group: on_route_eta_mountain {
