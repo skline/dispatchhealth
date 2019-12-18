@@ -170,7 +170,7 @@ view: intraday_shift_teams {
     type: number
     sql: max(
              case when ${markets_intra.name} ='Colorado Springs' then 1.155
-              else 1.255 end)
+              else 1.2 end)
               ;;
   }
 

@@ -4433,9 +4433,18 @@ end  ;;
       ((CAST(EXTRACT(MINUTE FROM ${now_mountain_raw} ) AS FLOAT)) / 60);;
   }
 
+  dimension: timezone_too_late {
+    type: number
+    value_format: "0.00"
+    sql:
+    (CAST(EXTRACT(HOUR FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60);;
+  }
+
+
   dimension: before_now {
     type: yesno
-    sql: ${created_mountain_decimal} <= ${now_mountain_decimal};;
+    sql:  ${created_mountain_decimal} <= ${now_mountain_decimal} OR ${created_mountain_decimal} >= ${timezone_too_late}  ;;
   }
 
   dimension: max_time_mountain_predictions {
