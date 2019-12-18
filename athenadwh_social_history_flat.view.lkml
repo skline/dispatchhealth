@@ -493,6 +493,41 @@ ORDER BY base.chart_id  ;;
     sql: LOWER(${nutrition_status}) SIMILAR TO '(overweight|obese)%' ;;
   }
 
+  dimension: number_questions_asked {
+    type: number
+    sql:
+      (CASE WHEN athenadwh_social_history_flat.review_date IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN smoking_status IS NULL AND smokeless_tobacco_use IS NULL AND vaping_status IS NULL AND
+      tobacco_yrs_of_use IS NULL AND smoking_how_much IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN drugs_abused IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN marital_status IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN code_status IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN advance_directive IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN fall_risk_unsteady IS NULL AND fall_risk_provider IS NULL AND fall_risk_worry IS NULL AND fall_hazards IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN activities_daily_living IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN transportation IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN nutrition_access IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN safety_feeling IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN taking_advantage IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN afford_medications IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN heavy_drinking IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN general_cleanliness IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN cost_concerns IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN home_situation IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN food_insecurity IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN food_insecurity_worry IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN social_interactions IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN housing_insecurity IS NULL THEN 0 ELSE 1 END) +
+      (CASE WHEN resource_help_requested IS NULL THEN 0 ELSE 1 END)
+    ;;
+  }
+
+  measure: avg_questions_asked {
+    type: average_distinct
+    sql_distinct_key: ${chart_id} ;;
+    sql: ${number_questions_asked} ;;
+  }
+
   measure: count_distinct_charts {
     type: count_distinct
     sql: ${chart_id} ;;
