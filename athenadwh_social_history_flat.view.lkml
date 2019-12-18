@@ -526,6 +526,7 @@ ORDER BY base.chart_id  ;;
     type: average_distinct
     sql_distinct_key: ${chart_id} ;;
     sql: ${number_questions_asked} ;;
+    value_format: "0.0"
   }
 
   measure: count_distinct_charts {
