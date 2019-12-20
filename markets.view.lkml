@@ -137,6 +137,18 @@ view: markets {
     description: "Market name where WMFR is included as part of Denver"
     sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
     else ${name} end;;
+
+  }
+
+  dimension: name_adj_productivity_url {
+    type: string
+    description: "ONLY USE for Productivty dashboard: Contains URL Link to Market Productivity Detail. Market name where WMFR is included as part of Denver"
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
+      else ${name} end;;
+      link: {
+        label: "Productivity Details by Market by Day"
+        url: "https://dispatchhealth.looker.com/looks/2248?&f[markets.name_adj_productivity_url]={{ value }}"
+      }
   }
 
   dimension: name_smfr {
