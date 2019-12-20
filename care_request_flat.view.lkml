@@ -2286,10 +2286,20 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: coalesce(${complete_comment}, ${archive_comment}) ;;
   }
 
+#   dimension: primary_resolved_reason {
+#     type:  string
+#     sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
+#     drill_fields: [secondary_resolved_reason]
+#   }
+
   dimension: primary_resolved_reason {
     type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
-    drill_fields: [secondary_resolved_reason]
+    sql: CASE
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'CANCELLED BY PATIENT'  THEN 'Cancelled by Patient or Partner'
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'REFERRED VIA PHONE' THEN 'Referred - Phone Triage'
+        ELSE  trim(split_part(${resolved_reason_full}, ':', 1))
+        END;;
+        drill_fields: [secondary_resolved_reason]
   }
 
   dimension: secondary_resolved_reason {

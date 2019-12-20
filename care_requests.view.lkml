@@ -1484,9 +1484,19 @@ measure: distinct_day_of_week {
     sql: coalesce(${care_request_flat.complete_comment}, ${care_request_flat.archive_comment}) ;;
   }
 
+#   dimension: primary_resolved_reason {
+#     type:  string
+#     sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
+#   }
+
   dimension: primary_resolved_reason {
     type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
+    sql: CASE
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'CANCELLED BY PATIENT'  THEN 'Cancelled by Patient or Partner'
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'REFERRED VIA PHONE' THEN 'Referred - Phone Triage'
+        ELSE  trim(split_part(${resolved_reason_full}, ':', 1))
+        END;;
+        drill_fields: [secondary_resolved_reason]
   }
 
   dimension: secondary_resolved_reason {
