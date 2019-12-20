@@ -837,6 +837,12 @@ explore: care_requests {
     sql_on:  ${secondary_screenings.provider_id} = ${secondary_screening_provider.id};;
   }
 
+  join: secondary_screening_provider_profile {
+    from: provider_profiles
+    relationship: many_to_one
+    sql_on: ${secondary_screening_provider.id} = ${secondary_screening_provider_profile.user_id} ;;
+  }
+
 
   join: csc_risk_assessments {
     from: users
