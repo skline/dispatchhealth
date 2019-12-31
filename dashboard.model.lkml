@@ -2819,4 +2819,8 @@ explore: budget_projections_by_market_clone {
 }
 
 explore: diversion_savings_gross_by_insurance_group {}
-explore: idle_time_summary {}
+explore: idle_time_summary {
+  join: overflow_by_day_market {
+    sql_on: ${idle_time_summary.start_date_date} = ${overflow_by_day_market.created_date} and ${overflow_by_day_market.name} = ${idle_time_summary.name_smfr} ;;
+  }
+}
