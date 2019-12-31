@@ -21,6 +21,12 @@ view: market_start_date_bi {
     sql: ${TABLE}.market_start_date ;;
   }
 
+  dimension: mbo_2020_markets {
+    type: yesno
+    description: "The markets that are being tracked in 2020 for MBO's"
+    sql: ${market_start_date} <= '2019-06-01' ;;
+  }
+
   measure: count {
     type: count
     drill_fields: []
