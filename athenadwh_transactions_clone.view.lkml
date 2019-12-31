@@ -190,7 +190,7 @@ view: athenadwh_transactions_clone {
     alias: [total_expected_allowable]
     description: "Transaction type is CHARGE and transfer type is PRIMARY or patient is self-pay"
     sql: ${fixed_expected_allowable}::float ;;
-    value_format: "0.00"
+    value_format: "$#,##0.00"
     filters: {
       field: is_valid_exp_allowable
       value: "yes"
