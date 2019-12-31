@@ -824,6 +824,11 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
+  join: icd_code_risk_assessment_crosswalk {
+    relationship: one_to_many
+    sql_on:upper(trim(${icd_primary_diagnosis_code.diagnosis_code_full})) = upper(trim(${icd_code_risk_assessment_crosswalk.diagnosis_code})) and upper(trim(${risk_assessments.protocol_name})) = upper(trim(${icd_code_risk_assessment_crosswalk.risk_assessments_protocol_name})) ;;
+  }
+
   # 6/27/2019 - DE - This join used to be on care_request_requested, which I removed.  Not sure what this is going to break
   join: csc_created {
     from: users
