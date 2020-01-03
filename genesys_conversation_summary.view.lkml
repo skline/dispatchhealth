@@ -87,6 +87,12 @@ view: genesys_conversation_summary {
     sql: ${TABLE}."queuename" ;;
   }
 
+  dimension: queuename_adj {
+    type: string
+    sql: case when ${queuename} in('TIER 1', 'TIER 2') then 'TIER 1/TIER 2'
+    else ${queuename}  end ;;
+  }
+
   dimension: totalacdwaitduration {
     type: number
     sql: ${TABLE}."totalacdwaitduration" ;;
