@@ -9,11 +9,13 @@ view: users {
 
   dimension: authentication_token {
     type: string
+    hidden: yes
     sql: ${TABLE}.authentication_token ;;
   }
 
   dimension_group: confirmation_sent {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -28,11 +30,13 @@ view: users {
 
   dimension: confirmation_token {
     type: string
+    hidden: yes
     sql: ${TABLE}.confirmation_token ;;
   }
 
   dimension_group: confirmed {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -61,6 +65,7 @@ view: users {
 
   dimension_group: current_sign_in {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -75,6 +80,7 @@ view: users {
 
   dimension: current_sign_in_ip {
     type: string
+    hidden: yes
     sql: ${TABLE}.current_sign_in_ip ;;
   }
 
@@ -99,6 +105,7 @@ view: users {
 
   dimension: encrypted_password {
     type: string
+    hidden: yes
     sql: ${TABLE}.encrypted_password ;;
   }
 
@@ -127,6 +134,7 @@ view: users {
 
   dimension_group: last_sign_in {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -141,6 +149,7 @@ view: users {
 
   dimension: last_sign_in_ip {
     type: string
+    hidden: yes
     sql: ${TABLE}.last_sign_in_ip ;;
   }
 
@@ -165,6 +174,7 @@ view: users {
 
   dimension_group: reset_password_sent {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -179,6 +189,7 @@ view: users {
 
   dimension: reset_password_token {
     type: string
+    hidden: yes
     sql: ${TABLE}.reset_password_token ;;
   }
 
@@ -195,6 +206,7 @@ view: users {
 
   dimension: unconfirmed_email {
     type: string
+    hidden: yes
     sql: ${TABLE}.unconfirmed_email ;;
   }
 
