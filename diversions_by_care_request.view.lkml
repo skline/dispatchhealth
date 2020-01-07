@@ -661,7 +661,8 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
 
   dimension: diversion_er {
     type: yesno
-    sql: ${TABLE}.diversion_er::int = 1 AND NOT ${diversion_hosp} AND NOT ${diversion_observation};;
+    sql: ${TABLE}.diversion_er::int = 1;;
+    # AND NOT ${diversion_hosp} AND NOT ${diversion_observation};;
   }
 
   measure: count_er_diversions {
