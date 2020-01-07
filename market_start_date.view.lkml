@@ -2,6 +2,7 @@ view: market_start_date {
   sql_table_name: looker_scratch.market_start_date ;;
 
   dimension: market_id {
+    primary_key: yes
     type: number
     sql: ${TABLE}.market_id ;;
   }
@@ -28,12 +29,27 @@ view: market_start_date {
   }
 
   measure: count {
+    hidden: yes
     type: count
     drill_fields: []
   }
+
   dimension: market_age {
     type:  number
     sql: extract(year from age(date_trunc('month', ${care_request_flat.complete_raw}), date_trunc('month',${market_start_raw})))*12 + extract(month from age(date_trunc('month', ${care_request_flat.complete_raw}), date_trunc('month',${market_start_raw}))) ;;
+  }
+
+  dimension: market_start_month_flag {
+    type: yesno
+    sql: ${market_age} = 0 ;;
+  }
+
+  measure: count_market_start_month {
+    type: count
+    filters: {
+      field: market_start_month_flag
+      value: "yes"
+    }
   }
 
   dimension: market_age_quarter {
