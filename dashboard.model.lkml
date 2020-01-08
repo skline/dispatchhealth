@@ -880,6 +880,11 @@ explore: care_requests {
     sql_on: ${markets.id}=${market_start_date.market_id} ;;
   }
 
+  join: markets_state_level_metrics {
+    relationship: many_to_one
+    sql_on: ${markets.state} = ${markets_state_level_metrics.state} ;;
+  }
+
   join: market_geo_locations {
     relationship: one_to_one
     sql_on: ${markets.id} = ${market_geo_locations.market_id} ;;

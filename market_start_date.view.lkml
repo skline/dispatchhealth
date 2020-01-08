@@ -8,6 +8,7 @@ view: market_start_date {
   }
 
   dimension_group: market_start {
+    description: "Date market opened"
     type: time
     timeframes: [
       raw,
@@ -29,28 +30,30 @@ view: market_start_date {
   }
 
   measure: count {
+    description: "Count market start dates"
     hidden: yes
     type: count
     drill_fields: []
   }
 
   dimension: market_age {
+    description: "Age in months from market open"
     type:  number
     sql: extract(year from age(date_trunc('month', ${care_request_flat.complete_raw}), date_trunc('month',${market_start_raw})))*12 + extract(month from age(date_trunc('month', ${care_request_flat.complete_raw}), date_trunc('month',${market_start_raw}))) ;;
   }
 
-  dimension: market_start_month_flag {
-    type: yesno
-    sql: ${market_age} = 0 ;;
-  }
+#   dimension: market_start_month_flag {
+#     type: yesno
+#     sql: ${market_age} = 0 ;;
+#   }
 
-  measure: count_market_start_month {
-    type: count
-    filters: {
-      field: market_start_month_flag
-      value: "yes"
-    }
-  }
+#   measure: count_market_start_month {
+#     type: count
+#     filters: {
+#       field: market_start_month_flag
+#       value: "yes"
+#     }
+#   }
 
   dimension: market_age_quarter {
     type: number
