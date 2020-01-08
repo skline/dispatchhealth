@@ -92,12 +92,10 @@ explore: care_requests {
     sql_on: ${athenadwh_patient_current_medication_listing.medication_id} = ${athenadwh_medication_clone.medication_id} ;;
   }
 
-  join: dea_schedule_ii_medications  {
+  join: prescribed_medications  {
     from: athenadwh_medication_clone
     relationship: many_to_one
-    sql_on: UPPER(${athenadwh_prescriptions.clinical_order_type}) = UPPER(${dea_schedule_ii_medications.medication_name}) ;;
-    #sql_on: UPPER(split_part(${athenadwh_prescriptions.clinical_order_type}, ' ', 1)) = UPPER(split_part(${dea_schedule_ii_medications.medication_name}, ' ', 1)) ;;
-    #AND ${dea_schedule_ii_medications.dea_schedule} = 'Schedule II';;
+    sql_on: UPPER(${athenadwh_prescriptions.clinical_order_type}) = UPPER(${prescribed_medications.medication_name}) ;;
   }
 
   join: athenadwh_provider_clone {

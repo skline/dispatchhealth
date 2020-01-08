@@ -901,6 +901,21 @@ view: care_requests {
     ]
   }
 
+  measure: count_antibiotics_prescriptions {
+    type: count_distinct
+    description: "Count of completed care requests where antibiotics were prescribed"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: prescribed_medications.antibiotic_medication
+      value: "yes"
+    }
+  }
+
+
   measure: count_board_optimizer_requests {
     description: "A count of all care requests that were assigned by the board optimizers"
     type: count_distinct

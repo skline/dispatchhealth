@@ -27,6 +27,17 @@ view: athenadwh_icdcodeall {
     sql: SUBSTRING(TRIM(${TABLE}.diagnosis_code), 0, 4) ;;
   }
 
+  dimension: antibiotic_stewardship_diagnosis {
+    type: string
+    description: "The combined primary diagnoses for bronchitis, sinusitis, pharyngitis, and UTI"
+    sql: CASE
+          WHEN ${diagnosis_code} = 'J01' THEN 'Sinusitis'
+          WHEN ${diagnosis_code} = 'J02' THEN 'Pharyngitis'
+          WHEN ${diagnosis_code} IN ('J20','J40') THEN 'Bronchitis'
+          ELSE 'Other'
+        END ;;
+  }
+
   measure: diagnosis_code_max {
     type: string
     sql:  MAX(${diagnosis_code}) ;;
