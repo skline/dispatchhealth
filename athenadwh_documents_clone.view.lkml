@@ -70,6 +70,12 @@ view: athenadwh_documents_clone {
     ]
   }
 
+  dimension: reportable_infectious_disease_labs {
+    type: yesno
+    description: "A flag indicating the order was one of the reportable infectious disease categories"
+    sql: ${clinical_order_type} SIMILAR TO '(LYME DISEASE%|HIV%|CHLAMYDIA%|CAMPYLOBACTER%|SHIGA TOXINS%|SALMONELLA%)';;
+  }
+
   measure: order_type_concat {
     label: "Description Of Items Ordered"
     type: string
