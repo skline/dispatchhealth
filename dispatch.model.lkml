@@ -486,4 +486,6 @@ explore: optum_uhc_atl {
 explore: propensity_atl {}
 explore: texas_childrens_hospital {}
 explore: zipcodes_ed_average {}
-explore: tampa_uhc_data {}
+explore: tampa_combined {
+  sql_always_where: ${zipcode}!=33630 ;;
+}
