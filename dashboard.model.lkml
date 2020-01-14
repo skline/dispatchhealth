@@ -874,6 +874,11 @@ explore: care_requests {
     relationship: many_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
   }
+  join: regional_markets {
+    relationship: one_to_one
+    sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
   join: market_start_date{
     sql_on: ${markets.id}=${market_start_date.market_id} ;;
   }
