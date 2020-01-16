@@ -3246,6 +3246,21 @@ measure:  count_end_of_shift_dead_time_45_mins {
           ) end;;
   }
 
+  measure: month_percent_created {
+    type: number
+    sql:
+
+        case when to_char(${max_created_date} , 'YYYY-MM') != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
+  }
+
+
   measure: monthly_visits_run_rate {
     type: number
     sql: round(${complete_count}/${month_percent});;

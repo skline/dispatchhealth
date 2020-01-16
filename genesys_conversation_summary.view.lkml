@@ -154,6 +154,43 @@ view: genesys_conversation_summary {
     }
   }
 
+  measure: max_start {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      quarter,
+      hour,
+      year
+    ]
+    sql: max(${conversationstarttime_raw}) ;;
+  }
+
+
+  measure: month_percent_created {
+    type: number
+    sql:
+
+        case when to_char(${max_start_date} , 'YYYY-MM') != ${care_request_flat.yesterday_mountain_month} then 1
+        else
+            extract(day from ${care_request_flat.yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${care_request_flat.yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
+  }
+
   measure: long_abandons {
     type: count_distinct
     sql: ${conversationid} ;;

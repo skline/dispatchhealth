@@ -2740,6 +2740,11 @@ explore: genesys_conversation_summary {
     sql_on: ${markets.id}=${number_to_market.market_id} ;;
   }
 
+  join: regional_markets {
+    relationship: one_to_one
+    sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
   join: care_request_flat {
     sql_on: ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id};;
   }
