@@ -2820,6 +2820,11 @@ explore: shift_teams
     sql_on: ${markets.id}= coalesce(${shift_team_market_assignment_logs.market_id}, ${cars.market_id}) ;;
   }
 
+  join: regional_markets {
+    relationship: one_to_one
+    sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
   join: timezones {
     relationship: many_to_one
     sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
