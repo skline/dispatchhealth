@@ -237,6 +237,11 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_documents_clone.clinical_encounter_id};;
   }
 
+  join: athenadwh_documentaction {
+    relationship: one_to_many
+    sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_documentaction.document_id} ;;
+  }
+
   join: athenadwh_referral_providers {
     from: athenadwh_clinical_providers_clone
     relationship: one_to_one
@@ -252,6 +257,11 @@ explore: care_requests {
   join: athenadwh_clinical_results_clone {
     relationship: one_to_one
     sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_clinical_results_clone.document_id} ;;
+  }
+
+  join: athenadwh_clinicalresultobservation {
+    relationship: one_to_many
+    sql_on: ${athenadwh_clinical_results_clone.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
   }
 
   join: athenadwh_clinical_letters_clone {
@@ -307,6 +317,11 @@ explore: care_requests {
   join: athenadwh_patients_clone {
     relationship: one_to_one
     sql_on: ${patients.ehr_id} = ${athenadwh_patients_clone.patient_id}::varchar ;;
+  }
+
+  join: athenadwh_patientaudit {
+    relationship: one_to_many
+    sql_on: ${athenadwh_patients_clone.patient_id} = ${athenadwh_patientaudit.source_id};;
   }
 
   join: athenadwh_procedure_codes_clone {
