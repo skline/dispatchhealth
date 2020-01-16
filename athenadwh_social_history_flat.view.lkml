@@ -535,4 +535,45 @@ ORDER BY base.chart_id  ;;
     drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
   }
 
+  measure: count_fall_risk_per_provider {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: fall_risk_per_provider_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_lack_of_transportation {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: lack_of_transportation_flag
+      value: "yes"
+    }
+  }
+
+  measure: count_lack_of_access_healthy_foods {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: lack_of_access_healthy_foods
+      value: "yes"
+    }
+  }
+
+  measure: count_cant_afford_medications {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: cant_afford_medications_flag
+      value: "yes"
+    }
+  }
+
+
 }
