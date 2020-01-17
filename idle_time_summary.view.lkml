@@ -153,7 +153,7 @@ view: idle_time_summary {
     type: sum_distinct
     value_format: "0.0"
     sql_distinct_key: ${id} ;;
-    sql:${on_scene_time_minutes}/60 ;;
+    sql:${total_drive_time_minutes}/60 ;;
   }
 
 
