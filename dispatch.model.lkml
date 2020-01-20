@@ -489,3 +489,7 @@ explore: zipcodes_ed_average {}
 explore: tampa_combined {
   sql_always_where: ${zipcode}!=33630 ;;
 }
+
+explore: indianapolis_combined{
+
+}
