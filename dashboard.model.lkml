@@ -5,7 +5,7 @@ include: "*.dashboard.lookml"  # include all dashboards in this project
 
 datagroup: care_request_datagroup {
   sql_trigger: SELECT max(id) FROM care_requests ;;
-  max_cache_age: "24 hours"
+  max_cache_age: "6 hours"
 }
 
 explore: care_requests {
