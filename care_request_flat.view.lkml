@@ -443,11 +443,28 @@ view: care_request_flat {
     value_format: "0.0"
   }
 
+
+  dimension: drive_time_minutes_coalesce {
+    type: number
+    description: "google drive time if available, otherwise regular drive time"
+    sql: coalesce(${drive_time_minutes_google}, ${drive_time_minutes});;
+    value_format: "0.0"
+  }
+
+
   measure: total_drive_time_minutes {
+    type: sum_distinct
+    description: "google drive time if available, otherwise regular drive time"
+    sql_distinct_key: ${care_request_id} ;;
+    sql: ${drive_time_minutes};;
+    value_format: "0.0"
+  }
+
+  measure: total_drive_time_minutes_coalesce {
     type: sum_distinct
     description: "The number of minutes between on-route time and on-scene time"
     sql_distinct_key: ${care_request_id} ;;
-    sql: ${drive_time_minutes};;
+    sql: ${drive_time_minutes_coalesce};;
     value_format: "0.0"
   }
 
@@ -645,6 +662,18 @@ view: care_request_flat {
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_minutes} ;;
+    filters: {
+      field: is_reasonable_drive_time
+      value: "yes"
+    }
+  }
+
+  measure:  average_drive_time_minutes_coalesce{
+    type: average_distinct
+    description: "The average minutes between on-route time and on-scene time"
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_minutes_coalesce} ;;
     filters: {
       field: is_reasonable_drive_time
       value: "yes"

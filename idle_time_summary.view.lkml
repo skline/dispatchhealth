@@ -16,18 +16,18 @@ view: idle_time_summary {
       column: sum_shift_hours { field: shift_teams.sum_shift_hours }
       column: first_accepted_decimal { field: care_request_flat.first_accepted_decimal }
       column: count_billable_est {}
-      column: total_drive_time_minutes { field: care_request_flat.total_drive_time_minutes }
+      column: total_drive_time_minutes_coalesce { field: care_request_flat.total_drive_time_minutes_coalesce }
       column: on_scene_time_minutes { field: care_request_flat.total_on_scene_time_minutes }
       column: shift_end_last_cr_diff_adj {}
       column: sum_break_time_minutes { field: breaks.sum_break_time_minutes }
       column: shift_start_first_on_route_diff {}
-      column: average_drive_time_minutes { field: care_request_flat.average_drive_time_minutes }
+      column: average_drive_time_minutes_coalesce { field: care_request_flat.average_drive_time_minutes_coalesce }
       column: name_smfr { field: markets.name_smfr }
       filters: {
         field: cars.name
         value: "-SMFR_Car,-WMFR CAR,-Denver_Advanced Care"
-        }
-        filters: {
+      }
+      filters: {
         field: shift_teams.start_date
         value: "180 days ago for 180 days"
       }
@@ -69,7 +69,7 @@ view: idle_time_summary {
     description: "Count of completed care requests OR on-scene escalations"
     type: number
   }
-  dimension: total_drive_time_minutes {
+  dimension: total_drive_time_minutes_coalesce {
     label: "drive time minutes"
     description: "The number of minutes between on-route time and on-scene time"
     value_format: "0.0"
@@ -95,7 +95,7 @@ view: idle_time_summary {
     value_format: "0.00"
     type: number
   }
-  dimension: average_drive_time_minutes {
+  dimension: average_drive_time_minutes_coalesce {
     description: "The average minutes between on-route time and on-scene time"
     value_format: "0"
     type: number
@@ -107,13 +107,19 @@ view: idle_time_summary {
 
   dimension: intraday_dead_time {
     type: number
-    sql: (${sum_shift_hours} - ${shift_start_first_on_route_diff} - ((${on_scene_time_minutes} + ${total_drive_time_minutes} + ${sum_break_time_minutes})/60) + ${shift_end_last_cr_diff_adj})*60 ;;
+    sql: (${sum_shift_hours} - ${shift_start_first_on_route_diff} - ((${on_scene_time_minutes} + ${total_drive_time_minutes_coalesce} + ${sum_break_time_minutes})/60) + ${shift_end_last_cr_diff_adj})*60 ;;
   }
 
   dimension: drive_time_and_idle_time {
     type: number
     sql: (${sum_shift_hours} - ${on_scene_time_minutes}/60);;
   }
+
+  dimension: idle_time {
+    type: number
+    sql: (${sum_shift_hours} - ${on_scene_time_minutes} - ${total_drive_time_minutes_coalesce})/60;;
+  }
+
 
   measure: total_intraday_dead_time{
     type: sum_distinct
@@ -153,7 +159,7 @@ view: idle_time_summary {
     type: sum_distinct
     value_format: "0.0"
     sql_distinct_key: ${id} ;;
-    sql:${total_drive_time_minutes}/60 ;;
+    sql:${total_drive_time_minutes_coalesce}/60 ;;
   }
 
 
@@ -168,6 +174,13 @@ view: idle_time_summary {
     value_format: "0.00"
     sql:${total_drive_time_and_idle_time}/${total_billable_visits} ;;
   }
+
+  measure: idle_time_per_visit {
+    type: number
+    value_format: "0.00"
+    sql:${idle_time}/${total_billable_visits} ;;
+  }
+
 
   measure: drive_time_per_visit {
     type: number
