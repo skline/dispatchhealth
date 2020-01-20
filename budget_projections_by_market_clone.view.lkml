@@ -26,11 +26,24 @@ view: budget_projections_by_market_clone {
   }
 
   measure: sum_projected_visits {
+    label:"Budgeted Visits"
     type: sum_distinct
     sql_distinct_key: concat(${market_dim_id}, ${month_raw})  ;;
     sql: ${projected_visits} ;;
-
   }
+
+  measure: sum_projected_visits_weekly {
+    label:"Budgeted Visits Weekly"
+    type: sum_distinct
+    value_format: "#,##0"
+    sql_distinct_key: concat(${market_dim_id}, ${month_raw})  ;;
+    sql: (${projected_visits}/DATE_PART('days',
+              DATE_TRUNC('month', ${care_request_flat.yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ))*7;;
+  }
+
 
   measure: count {
     type: count
