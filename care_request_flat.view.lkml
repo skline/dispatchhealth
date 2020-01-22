@@ -3295,6 +3295,11 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: round(${complete_count}/${month_percent});;
   }
 
+  measure: monthly_accepted_run_rate {
+    type: number
+    sql: round(${accepted_count}/${month_percent});;
+  }
+
   measure: monthly_new_patients_run_rate{
     type: number
     sql: round(${count_new_patient_first_visits}/${month_percent});;
