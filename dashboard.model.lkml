@@ -2862,3 +2862,32 @@ explore: idle_time_summary {
     sql_on: ${idle_time_summary.start_date_date} = ${overflow_by_day_market.created_date} and ${overflow_by_day_market.name} = ${idle_time_summary.name_smfr} ;;
   }
 }
+
+explore: ga_adwords_cost_clone{
+  sql_always_where: (lower(${adwords_campaigns_clone.campaign_name}) like '%search%' or ${adwords_campaigns_clone.campaign_name} is null)  and ${date_raw} >= '2020-01-01' and ${adcost} is not null;;
+  join: adwords_campaigns_clone {
+    sql_on: ${adwords_campaigns_clone.campaign_id} =${ga_adwords_cost_clone.adwordscampaignid} ;;
+  }
+  join: markets {
+    sql_on: ${adwords_campaigns_clone.market_id_new} =${markets.id} ;;
+  }
+}
+
+explore: cac_costs {
+  join: markets {
+    sql_on: ${cac_costs.market_id} =${markets.id} ;;
+  }
+  join: regional_markets {
+    relationship: one_to_one
+    sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
+  join: care_request_flat {
+    sql_on: ${care_request_flat.on_scene_month} = ${cac_costs.date_month} and ${care_request_flat.market_id} = ${cac_costs.market_id};;
+  }
+
+  join: sem_run_rate {
+    sql_on: ${sem_run_rate.date_month}=${cac_costs.date_month} and ${cac_costs.market_id}=${sem_run_rate.id_adj};;
+  }
+
+}
