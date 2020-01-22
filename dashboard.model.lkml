@@ -2720,6 +2720,7 @@ explore: expected_allowables_market_budget {
 
 
 explore: genesys_conversation_summary {
+  sql_always_where: ${markets.id} is not null ;;
   join: number_to_market {
     relationship: one_to_one
     sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
