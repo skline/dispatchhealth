@@ -24,6 +24,32 @@ view: ga_adwords_cost_clone {
     sql: ${TABLE}.adcost  ;;
   }
 
+  dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [date, day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '1 day';;
+  }
+  measure: month_percent {
+    type: number
+    sql:
+
+        case when ${date_month} != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
+  }
+
+
+  measure: ad_cost_monthly_run_rate {
+    type: number
+    value_format:"$#;($#)"
+    sql: ${sum_total_adcost}/${month_percent} ;;
+    }
+
 
   dimension: admatchtype {
     type: string
