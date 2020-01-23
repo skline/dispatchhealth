@@ -493,3 +493,4 @@ explore: tampa_combined {
 explore: indianapolis_combined{
 
 }
+explore: uhc_hotspot {}
