@@ -2862,3 +2862,5 @@ explore: idle_time_summary {
     sql_on: ${idle_time_summary.start_date_date} = ${overflow_by_day_market.created_date} and ${overflow_by_day_market.name} = ${idle_time_summary.name_smfr} ;;
   }
 }
+
+explore: mbo_metrics {}
