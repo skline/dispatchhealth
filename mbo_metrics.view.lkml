@@ -234,13 +234,6 @@ view: mbo_metrics {
     value_format:  "$#,##0;($#,##0)"
   }
 
-  dimension: new_patient_percentage_finance {
-    type: number
-    sql: ${new_patients_finance} / ${visits_finance} ;;
-    value_format: "0%"
-
-  }
-
   dimension: direct_costs_per_visit {
     type: number
     sql: ${total_direct_costs} / ${visits_finance} ;;
