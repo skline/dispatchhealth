@@ -65,12 +65,13 @@ view: mbo_metrics {
     sql: ${TABLE}."created_at" ;;
   }
 
-  dimension: customer_acquisition_cost {
-    type: number
-    sql: ${TABLE}."customer_acquisition_cost" ;;
-    value_format:  "$#,##0;($#,##0)"
-
-  }
+#   Added as calculation below
+#     dimension: customer_acquisition_cost {
+#     type: number
+#     sql: ${TABLE}."customer_acquisition_cost" ;;
+#     value_format:  "$#,##0;($#,##0)"
+#
+#   }
 
   dimension: ebitda {
     type: number
@@ -196,6 +197,76 @@ view: mbo_metrics {
     ]
     sql: ${TABLE}."updated_at" ;;
   }
+
+  dimension: indirect_marketing_costs {
+    type: number
+    sql: ${TABLE}."indirect_marketing_costs" ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: visits_finance {
+    type: number
+    sql: ${TABLE}."visits_finance" ;;
+    value_format:  "#,##0"
+  }
+
+  dimension: new_patients_finance {
+    type: number
+    sql: ${TABLE}."new_patients_finance" ;;
+    value_format:  "#,##0"
+  }
+
+  dimension: trailing_3_months_new_patients {
+    type: number
+    sql: ${TABLE}."trailing_3_months_new_patients" ;;
+    value_format:  "#,##0"
+  }
+
+  dimension: trailing_3_months_indirect_marketing_expense {
+    type: number
+    sql: ${TABLE}."trailing_3_months_indirect_marketing_expense" ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: gross_margin {
+    type: number
+    sql: ${total_net_revenue} - ${total_direct_costs} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: new_patient_percentage_finance {
+    type: number
+    sql: ${new_patients_finance} / ${visits_finance} ;;
+    value_format: "0%"
+
+  }
+
+  dimension: direct_costs_per_visit {
+    type: number
+    sql: ${total_direct_costs} / ${visits_finance} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: customer_acquisition_cost {
+    type: number
+    sql: ${trailing_3_months_indirect_marketing_expense} / ${trailing_3_months_new_patients} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: cost_per_claim {
+    type: number
+    sql: ${total_rcm_costs} / ${visits_finance} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: call_center_cost_per_visit {
+    type: number
+    sql: ${total_care_team_costs} / ${visits_finance} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+
+
 
   measure: count {
     type: count
