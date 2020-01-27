@@ -342,6 +342,18 @@ view: genesys_conversation_summary {
 
   }
 
+  dimension: handle_time {
+    type: number
+    sql: (coalesce(${totalagentalertduration},0)+coalesce(${totalagentholdduration},0)+coalesce(${totalacdwaitduration},0)+coalesce(${totalagenttalkduration},0)+coalesce(${totalagentwrapupduration},0))-coalesce(${firstacdwaitduration},0) ;;
+  }
+
+  measure: average_handle_time {
+    type: average_distinct
+    sql: round((${handle_time}/1000)/60,2) ;;
+    sql_distinct_key:  ${conversationid};;
+    value_format: "0.00"
+  }
+
   dimension: onboard_delay {
     type: number
     sql: EXTRACT(EPOCH FROM (${care_request_flat.accept_mountain_intial_raw} - ${conversationstarttime_raw}));;
