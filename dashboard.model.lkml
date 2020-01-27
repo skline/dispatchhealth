@@ -653,6 +653,9 @@ explore: care_requests {
     relationship: many_to_one
     sql_on:  ${addressable_items.address_id} = ${addresses.id} ;;
   }
+  join: zipcodes {
+    sql_on: ${addresses.zipcode_short} = ${zipcodes.zip};;
+  }
 
   join: thr_texas_city_segments_by_zip {
     relationship: one_to_one
