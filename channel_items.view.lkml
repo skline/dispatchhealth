@@ -342,7 +342,7 @@ view: channel_items {
 
   dimension: growth_target {
     type: yesno
-    sql: ${growth_update_channels.identifier_id} is not null ;;
+    sql: ${priority_sf_accounts.channel_items_id} is not null ;;
   }
 
   dimension: generic_organization {

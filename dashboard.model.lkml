@@ -2901,3 +2901,20 @@ explore: cac_costs {
 }
 
 explore: mbo_metrics {}
+explore: priority_sf_accounts {
+  join: sf_markets_mapping {
+    sql_on: ${sf_markets_mapping.market}=${priority_sf_accounts.market} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
+  }
+  join: channel_items {
+    sql_on: ${channel_items.id} =${priority_sf_accounts.channel_items_id} ;;
+  }
+  join: care_requests{
+    sql_on: ${care_requests.channel_item_id}=${channel_items.id} ;;
+  }
+  join: care_request_flat{
+    sql_on: ${care_request_flat.care_request_id}=${care_requests.id} ;;
+  }
+}
