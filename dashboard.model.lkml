@@ -1116,6 +1116,10 @@ explore: care_requests {
     sql_on: ${channel_items.id} =${growth_update_channels.identifier_id} and ${growth_update_channels.identifier_type} = 'channel';;
   }
 
+  join: priority_sf_accounts{
+    sql_on: ${priority_sf_accounts.channel_items_id}=${channel_items.id} ;;
+  }
+
   join: channel_item_emr_providers {
     relationship: many_to_one
     sql_on: ${channel_items.id} = ${channel_item_emr_providers.channel_item_id} ;;
