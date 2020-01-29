@@ -30,7 +30,6 @@ view: sf_activities {
     type: time
     timeframes: [
       raw,
-      time,
       date,
       week,
       month,

@@ -25,7 +25,6 @@ view: sf_accounts {
     type: time
     timeframes: [
       raw,
-      time,
       date,
       week,
       month,
@@ -49,7 +48,6 @@ view: sf_accounts {
     type: time
     timeframes: [
       raw,
-      time,
       date,
       week,
       month,
