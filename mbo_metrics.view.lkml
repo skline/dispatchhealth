@@ -180,6 +180,11 @@ view: mbo_metrics {
     sql: ${TABLE}."high_trust_certification" ;;
   }
 
+  measure: report_high_trust_certification {
+    type: string
+    sql: ${high_trust_certification} ;;
+  }
+
   dimension: managed_care_penetration {
     type: number
     sql: ${TABLE}."managed_care_penetration" ;;
