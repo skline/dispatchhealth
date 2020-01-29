@@ -3,9 +3,15 @@ view: sf_markets_mapping {
     sql:
     select sf.market, m.id as market_id
 from
-(select priority_sf_accounts.market
-from looker_scratch.priority_sf_accounts
-group by 1) sf
+(select sf_accounts.market
+from looker_scratch.sf_accounts
+group by 1
+union all
+select 'Denver, CO'
+union all
+select 'Phoenix, AZ'
+union all
+select 'Dallas, TX') sf
 left join public.markets m
 on  lower(sf.market) like  concat('%', lower(m.name),'%')
 

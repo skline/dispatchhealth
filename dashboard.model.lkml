@@ -1116,8 +1116,8 @@ explore: care_requests {
     sql_on: ${channel_items.id} =${growth_update_channels.identifier_id} and ${growth_update_channels.identifier_type} = 'channel';;
   }
 
-  join: priority_sf_accounts{
-    sql_on: ${priority_sf_accounts.channel_items_id}=${channel_items.id} ;;
+  join: sf_accounts{
+    sql_on: ${sf_accounts.channel_items_id}=${channel_items.id} ;;
   }
 
   join: channel_item_emr_providers {
@@ -2901,20 +2901,35 @@ explore: cac_costs {
 }
 
 explore: mbo_metrics {}
-explore: priority_sf_accounts {
+explore: sf_accounts {
   join: sf_markets_mapping {
-    sql_on: ${sf_markets_mapping.market}=${priority_sf_accounts.market} ;;
+    sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
   }
   join: markets {
     sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
   }
   join: channel_items {
-    sql_on: ${channel_items.id} =${priority_sf_accounts.channel_items_id} ;;
+    sql_on: ${channel_items.id} =${sf_accounts.channel_items_id} ;;
   }
   join: care_requests{
     sql_on: ${care_requests.channel_item_id}=${channel_items.id} ;;
   }
   join: care_request_flat{
     sql_on: ${care_request_flat.care_request_id}=${care_requests.id} ;;
+  }
+  join: sf_activities {
+    sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
+  }
+}
+
+explore: sf_activities {
+  join: sf_markets_mapping {
+    sql_on: ${sf_markets_mapping.market}=${sf_activities.market} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
+  }
+  join: sf_accounts {
+    sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
   }
 }

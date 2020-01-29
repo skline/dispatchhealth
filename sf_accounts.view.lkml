@@ -1,5 +1,5 @@
-view: priority_sf_accounts {
-  sql_table_name: looker_scratch.priority_sf_accounts ;;
+view: sf_accounts {
+  sql_table_name: looker_scratch.sf_accounts ;;
 
   dimension: account_id {
     type: string
