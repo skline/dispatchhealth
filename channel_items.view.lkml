@@ -9,7 +9,7 @@ view: channel_items {
 
   dimension: address {
     type: string
-    sql: ${TABLE}.address ;;
+    sql: ${TABLE}.address_old ;;
   }
 
   dimension: agreement {
@@ -39,7 +39,7 @@ view: channel_items {
 
   dimension: city {
     type: string
-    sql: ${TABLE}.city ;;
+    sql: ${TABLE}.city_old ;;
   }
 
   dimension: contact_person {
@@ -160,7 +160,7 @@ view: channel_items {
 
   dimension: state {
     type: string
-    sql: ${TABLE}.state ;;
+    sql: ${TABLE}.state_old ;;
   }
 
   dimension: type_name {
@@ -206,7 +206,7 @@ view: channel_items {
 
   dimension: zipcode {
     type: zipcode
-    sql: ${TABLE}.zipcode ;;
+    sql: ${TABLE}.zipcode_old ;;
   }
 
   dimension: zipcode_short {
