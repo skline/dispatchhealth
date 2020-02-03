@@ -221,7 +221,7 @@ view: genesys_conversation_summary {
 
   measure: average_wait_time {
     type: average_distinct
-    value_format: "0.0"
+    value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${firstacdwaitduration} ;;
 
@@ -229,7 +229,7 @@ view: genesys_conversation_summary {
 
   measure: average_talk_time {
     type: average_distinct
-    value_format: "0.0"
+    value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration} ;;
 
@@ -238,7 +238,7 @@ view: genesys_conversation_summary {
 
   measure: median_talk_time {
     type: median_distinct
-    value_format: "0.0"
+    value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration} ;;
 
@@ -246,7 +246,7 @@ view: genesys_conversation_summary {
 
   measure: sum_talk_time {
     type: sum_distinct
-    value_format: "0.0"
+    value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration} ;;
 
@@ -255,7 +255,7 @@ view: genesys_conversation_summary {
 
   measure: sum_talk_time_minutes {
     type: sum_distinct
-    value_format: "0.0"
+    value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration}/1000/60 ;;
 
@@ -264,7 +264,7 @@ view: genesys_conversation_summary {
 
   measure: average_wait_time_minutes {
     type: average_distinct
-    value_format: "0.0"
+    value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${firstacdwaitduration}/1000/60 ;;
 
@@ -272,7 +272,7 @@ view: genesys_conversation_summary {
 
   measure: median_wait_time {
     type: median_distinct
-    value_format: "0.0"
+    value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${firstacdwaitduration} ;;
   }
