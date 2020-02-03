@@ -244,6 +244,14 @@ view: genesys_conversation_summary {
 
   }
 
+  measure: sum_talk_time {
+    type: sum_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${conversationid} ;;
+    sql: ${totalagenttalkduration} ;;
+
+  }
+
   measure: average_wait_time_minutes {
     type: average_distinct
     value_format: "0.0"
