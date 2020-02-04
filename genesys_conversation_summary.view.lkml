@@ -222,7 +222,7 @@ view: genesys_conversation_summary {
   measure: average_wait_time {
     type: average_distinct
     value_format: "0.00"
-    sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
+    sql_distinct_key: concat(${conversationid}) ;;
     sql: ${firstacdwaitduration} ;;
 
   }
@@ -265,7 +265,7 @@ view: genesys_conversation_summary {
   measure: average_wait_time_minutes {
     type: average_distinct
     value_format: "0.00"
-    sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
+    sql_distinct_key: concat(${conversationid}) ;;
     sql: ${firstacdwaitduration}/1000/60 ;;
 
   }
@@ -273,7 +273,7 @@ view: genesys_conversation_summary {
   measure: median_wait_time {
     type: median_distinct
     value_format: "0.00"
-    sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
+    sql_distinct_key: concat(${conversationid}) ;;
     sql: ${firstacdwaitduration} ;;
   }
 
