@@ -16,6 +16,12 @@ view: sf_accounts {
     sql: ${TABLE}."channel_items_id" ;;
   }
 
+  dimension: channel_items_id_is_set {
+    type: yesno
+    sql:  ${channel_items_id} is not null;;
+  }
+
+
   dimension: channel_type {
     type: string
     sql: ${TABLE}."channel_type" ;;
@@ -43,6 +49,10 @@ view: sf_accounts {
     type: string
     sql: ${TABLE}."neighborhood" ;;
   }
+  dimension: priority {
+    type: yesno
+    sql: ${priority_account_timestamp_raw} >=  date_trunc('month', now())::date - 70 ;;
+  }
 
   dimension_group: priority_account_timestamp {
     type: time
@@ -62,13 +72,56 @@ view: sf_accounts {
     sql: ${TABLE}."priority_action" ;;
   }
 
+  dimension: priority_action_set {
+    type: yesno
+    sql: ${priority_action} is not null ;;
+  }
+
   dimension: quadrant {
     type: string
     sql: ${TABLE}."quadrant" ;;
   }
 
   measure: count {
-    type: count
-    drill_fields: [account_name]
+    type: count_distinct
+    sql: ${account_id} ;;
+    sql_distinct_key: ${account_id} ;;
+  }
+
+  measure: count_priority {
+    type: count_distinct
+    sql: ${account_id} ;;
+    sql_distinct_key: ${account_id} ;;
+    filters:  {
+      field: priority
+      value: "yes"
+    }
+  }
+
+  measure: count_priority_action_set {
+    type: count_distinct
+    sql: ${account_id} ;;
+    sql_distinct_key: ${account_id} ;;
+    filters:  {
+      field: priority
+      value: "yes"
+    }
+    filters:  {
+      field: priority_action_set
+      value: "yes"
+    }
+  }
+  measure: count_priority_dashboard_id_set {
+    type: count_distinct
+    sql: ${account_id} ;;
+    sql_distinct_key: ${account_id} ;;
+    filters:  {
+      field: priority
+      value: "yes"
+    }
+    filters:  {
+      field: channel_items_id_is_set
+      value: "yes"
+    }
   }
 }

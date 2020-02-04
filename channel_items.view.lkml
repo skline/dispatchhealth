@@ -342,7 +342,7 @@ view: channel_items {
 
   dimension: growth_target {
     type: yesno
-    sql: ${sf_accounts.priority_account_timestamp_raw} >=  date_trunc('month', now())::date - 1 ;;
+    sql: ${sf_accounts.priority_account_timestamp_raw} >=  date_trunc('month', now())::date - 30 ;;
   }
 
   dimension: generic_organization {
