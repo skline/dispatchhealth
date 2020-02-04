@@ -1,6 +1,10 @@
 view: genesys_conversation_summary {
   sql_table_name: looker_scratch.genesys_conversation_summary ;;
 
+  dimension: inbound_demand {
+    type: yesno
+    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill');;
+  }
   dimension: abandoned {
     type: number
     sql: ${TABLE}."abandoned" ;;
@@ -139,18 +143,28 @@ view: genesys_conversation_summary {
   }
 
   measure: count_distinct {
+    label: "Count Distinct (Inbound Demand)"
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key:  ${conversationid};;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   measure: number_abandons {
+    label: "Number of Abandons (Inbound Demand)"
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key: ${conversationid}  ;;
     filters: {
       field: abandoned
       value: "1"
+    }
+    filters: {
+      field: inbound_demand
+      value: "yes"
     }
   }
 
@@ -192,6 +206,8 @@ view: genesys_conversation_summary {
   }
 
   measure: long_abandons {
+    label: "Number of Long Abandons (Inbound Demand)"
+
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key: ${conversationid}  ;;
@@ -203,9 +219,14 @@ view: genesys_conversation_summary {
       field: long_abandon
       value: "yes"
     }
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   measure: short_abandons {
+    label: "Number of Short Abandons (Inbound Demand)"
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key: ${conversationid}  ;;
@@ -217,9 +238,14 @@ view: genesys_conversation_summary {
       field: short_abandon
       value: "yes"
     }
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   measure: average_wait_time {
+    label: "Average Wait Time (Inbound Demand)"
     type: average_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}) ;;
@@ -228,56 +254,87 @@ view: genesys_conversation_summary {
   }
 
   measure: average_talk_time {
+    label: "Average Talk Time (Inbound Demand)"
     type: average_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration} ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
 
   }
 
 
   measure: median_talk_time {
+    label: "Median Talk Time (Inbound Demand)"
     type: median_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration} ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
 
   }
 
   measure: sum_talk_time {
+    label: "Sum Talk Time (Inbound Demand)"
     type: sum_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration} ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
 
   }
 
 
   measure: sum_talk_time_minutes {
+    label: "Sum Talk Time (Inbound Demand) Minutes"
     type: sum_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
     sql: ${totalagenttalkduration}/1000/60 ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
 
   }
 
 
   measure: average_wait_time_minutes {
+    label: "Average Wait Time Minutes (Inbound Demand)"
     type: average_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}) ;;
     sql: ${firstacdwaitduration}/1000/60 ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
 
   }
 
   measure: median_wait_time {
+    label: "Median Wait Time Minutes (Inbound Demand)"
     type: median_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}) ;;
     sql: ${firstacdwaitduration} ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   measure: count_general_inquiry {
+    label: "Count General Inquiry (Inbound Demand)"
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key: ${conversationid}  ;;
@@ -285,10 +342,16 @@ view: genesys_conversation_summary {
       field: genesys_conversation_wrapup.wrapupcodename
       value: "General Inquiry"
     }
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
 
   measure: count_care_request_disposition {
+    label: "Count Care Request (Inbound Demand)"
+
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key: ${conversationid}  ;;
@@ -296,9 +359,14 @@ view: genesys_conversation_summary {
       field: genesys_conversation_wrapup.wrapupcodename
       value: "Care Request Created"
     }
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   measure: count_answered {
+    label: "Count Answered (Inbound Demand)"
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key: ${conversationid}  ;;
@@ -306,14 +374,21 @@ view: genesys_conversation_summary {
       field: answered
       value: "1"
     }
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   dimension:  inqueue_time_greater_30{
     type: yesno
     sql: ${firstacdwaitduration}>30000 ;;
+
   }
 
   measure:  count_inqeue_time_greater_30s{
+    label: "Count Inqeue Time Greater 30s (Inbound Demand)"
+
     type: count_distinct
     value_format: "0"
     sql_distinct_key: ${conversationid} ;;
@@ -322,6 +397,11 @@ view: genesys_conversation_summary {
       field: inqueue_time_greater_30
       value: "yes"
     }
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+
 
 
   }
@@ -332,12 +412,18 @@ view: genesys_conversation_summary {
   }
 
   measure:  count_inqeue_time_greater_10s{
+    label: "Count Inqeue Time Greater 10s (Inbound Demand)"
+
     type: count_distinct
     value_format: "0"
     sql_distinct_key: ${conversationid} ;;
     sql: ${conversationid} ;;
     filters: {
       field: inqueue_time_greater_10
+      value: "yes"
+    }
+    filters: {
+      field: inbound_demand
       value: "yes"
     }
 
@@ -349,6 +435,8 @@ view: genesys_conversation_summary {
   }
 
   measure:  count_inqeue_time_greater_45s{
+    label: "Count Inqeue Time Greater 45 (Inbound Demand)"
+
     type: count_distinct
     value_format: "0"
     sql_distinct_key: ${conversationid} ;;
@@ -357,7 +445,10 @@ view: genesys_conversation_summary {
       field: inqueue_time_greater_45
       value: "yes"
     }
-
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   dimension: handle_time {
@@ -366,10 +457,16 @@ view: genesys_conversation_summary {
   }
 
   measure: average_handle_time {
+    label: "Average Handle Time (Inbound Demand)"
+
     type: average_distinct
     sql: round((${handle_time}/1000)/60,2) ;;
     sql_distinct_key:  ${conversationid};;
     value_format: "0.00"
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   dimension: onboard_delay {
