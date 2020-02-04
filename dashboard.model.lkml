@@ -2900,6 +2900,8 @@ explore: cac_costs {
 
 }
 
+explore: mbo_metrics {}
+
 explore: sf_accounts {
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
