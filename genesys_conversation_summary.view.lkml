@@ -304,7 +304,7 @@ view: genesys_conversation_summary {
     label: "Sum Talk Time (Non-Inbound Demand)"
     type: sum_distinct
     value_format: "0.00"
-    sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
+    sql_distinct_key: concat(${conversationid}, ${queuename}, ${direction}, ${mediatype}) ;;
     sql: ${totalagenttalkduration} ;;
     filters: {
       field: inbound_demand
@@ -323,6 +323,19 @@ view: genesys_conversation_summary {
     filters: {
       field: inbound_demand
       value: "yes"
+    }
+
+  }
+
+  measure: sum_talk_time_non_inbound_minutes {
+    label: "Sum Talk Time (Non-Inbound Demand) Minutes"
+    type: sum_distinct
+    value_format: "0.00"
+    sql_distinct_key: concat(${conversationid}, ${queuename}, ${direction}, ${mediatype}) ;;
+    sql: ${totalagenttalkduration}/1000/60 ;;
+    filters: {
+      field: inbound_demand
+      value: "no"
     }
 
   }
