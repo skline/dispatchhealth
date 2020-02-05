@@ -300,6 +300,19 @@ view: genesys_conversation_summary {
 
   }
 
+  measure: sum_talk_time_non_inbound {
+    label: "Sum Talk Time (Non-Inbound Demand)"
+    type: sum_distinct
+    value_format: "0.00"
+    sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
+    sql: ${totalagenttalkduration} ;;
+    filters: {
+      field: inbound_demand
+      value: "no"
+    }
+
+  }
+
 
   measure: sum_talk_time_minutes {
     label: "Sum Talk Time (Inbound Demand) Minutes"
