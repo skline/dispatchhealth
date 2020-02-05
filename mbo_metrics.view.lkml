@@ -107,13 +107,6 @@ view: mbo_metrics {
 
   }
 
-  measure: ebitda_margin {
-    description: "EBITDA / Total Net Revenue"
-    type: number
-    sql: ${ebitda} / ${total_net_revenue} ;;
-    value_format: "0%"
-  }
-
   dimension: gross_clinical_partner_revenue {
     type: number
     sql: ${TABLE}."gross_clinical_partner_revenue" ;;
@@ -430,6 +423,21 @@ view: mbo_metrics {
     sql: ${gross_margin} ;;
     value_format:  "$#,##0;($#,##0)"
   }
+
+  dimension: contribution_margin {
+    type: number
+    sql: ${TABLE}.contribution_margin ;;
+    value_format: "$#,##0;($#,##0)"
+  }
+
+  measure: sum_contribution_margin {
+    description: "Sum of contribution margin"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${contribution_margin} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
 
   measure: count {
     type: count
