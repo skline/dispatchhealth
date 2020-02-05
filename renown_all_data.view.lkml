@@ -32,7 +32,7 @@ view: renown_all_data {
   }
 
   dimension: zipcodes {
-    type: string
+    type: zipcode
     sql: ${TABLE}."zipcodes" ;;
   }
 
