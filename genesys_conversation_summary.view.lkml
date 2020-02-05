@@ -3,7 +3,7 @@ view: genesys_conversation_summary {
 
   dimension: inbound_demand {
     type: yesno
-    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill');;
+    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill') and ${markets.id} is not null;;
   }
   dimension: abandoned {
     type: number
@@ -191,15 +191,22 @@ view: genesys_conversation_summary {
   }
 
 
+  dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [date, day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '1 day';;
+  }
+
+
   measure: month_percent_created {
     type: number
     sql:
 
-        case when to_char(${max_start_date} , 'YYYY-MM') != ${care_request_flat.yesterday_mountain_month} then 1
+        case when to_char(${max_start_date} , 'YYYY-MM') != ${yesterday_mountain_month} then 1
         else
-            extract(day from ${care_request_flat.yesterday_mountain_date})
+            extract(day from ${yesterday_mountain_date})
           /    DATE_PART('days',
-              DATE_TRUNC('month', ${care_request_flat.yesterday_mountain_date})
+              DATE_TRUNC('month', ${yesterday_mountain_date})
               + '1 MONTH'::INTERVAL
               - '1 DAY'::INTERVAL
           ) end;;
