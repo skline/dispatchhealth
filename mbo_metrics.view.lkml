@@ -438,6 +438,12 @@ view: mbo_metrics {
     value_format:  "$#,##0;($#,##0)"
   }
 
+  dimension: quarter_id {
+    description: "Foriegn key linked to mbo_metrics_quarterly_goals"
+    type: string
+    sql: ${TABLE}.quarter_id ;;
+  }
+
 
   measure: count {
     type: count
