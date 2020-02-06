@@ -45,6 +45,10 @@ view: sf_activities {
     sql: ${TABLE}."end_date" ;;
   }
 
+  dimension: result {
+    type: string
+    sql: lower(${TABLE}."result") ;;
+  }
 
   dimension: subject {
     type: string
