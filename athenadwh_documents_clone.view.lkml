@@ -22,6 +22,11 @@ view: athenadwh_documents_clone {
     sql: ${TABLE}.clinical_order_type ;;
   }
 
+  dimension: clinical_order_type_short {
+    type: string
+    sql: initcap(split_part(${clinical_order_type}, ' ', 1)) ;;
+  }
+
   dimension: pcp_referrals_flag {
     type: yesno
     sql: ${clinical_order_type} = 'PRIMARY CARE REFERRAL' ;;

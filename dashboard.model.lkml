@@ -1291,6 +1291,11 @@ explore: cars {
     relationship: one_to_many
     sql_on: ${markets.id} = ${cars.market_id} ;;
   }
+
+  join: shift_teams {
+    relationship: one_to_many
+    sql_on: ${cars.id} = ${shift_teams.car_id} ;;
+  }
 }
 
 explore: operational_excellence_metrics {}
