@@ -8,65 +8,6 @@ view: mbo_metrics {
     sql: ${TABLE}."id" ;;
   }
 
-  dimension: accounts_receivable_days {
-    description: "Average of monthly AR days"
-    type: number
-    sql: ${TABLE}."accounts_receivable_days" ;;
-    value_format: "0.0"
-  }
-
-  measure: average_accounts_receivable_days {
-    description: "Average of monthly AR days"
-    type: average_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${accounts_receivable_days} ;;
-    value_format: "0.0"
-
-  }
-
-  dimension: advanced_care_revenue {
-    type: number
-    sql: ${TABLE}."advanced_care_revenue" ;;
-    value_format: "$#,##0;($#,##0)"
-  }
-
-  measure: sum_advanced_care_revenue {
-    description: "sum of monthly advanced care revenue"
-    type: sum_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${advanced_care_revenue} ;;
-    value_format: "$#,##0;($#,##0)"
-
-  }
-
-  dimension: care_team_service_level {
-    type: number
-    sql: ${TABLE}."care_team_service_level" ;;
-    value_format: "0%"
-  }
-
-  measure: average_care_team_service_level {
-    description: "Average of monthly care team service level"
-    type: average_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${care_team_service_level} ;;
-    value_format: "0%"
-  }
-
-  dimension: clinical_partner_revenue {
-    type: number
-    sql: ${TABLE}."clinical_partner_revenue" ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  measure: sum_clinical_partner_revenue {
-    description: "Sum of monthly clinical partner revenue"
-    type: sum_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${clinical_partner_revenue} ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
   dimension: coding_audit_score {
     type: number
     sql: ${TABLE}."coding_audit_score" ;;
@@ -95,21 +36,32 @@ view: mbo_metrics {
     value_format: "0%"
   }
 
-  dimension: contribution_margin {
+  dimension: count_adverse_events {
     type: number
-    sql: ${TABLE}."contribution_margin" ;;
-    value_format:  "$#,##0;($#,##0)"
+    sql: ${TABLE}."count_adverse_events" ;;
+    value_format: "0"
   }
 
-  measure: sum_contribution_margin {
-    description: "Sum of monthly contribution margin"
+  measure: sum_count_adverse_events {
+    description: "Sum of adverse events"
     type: sum_distinct
-    sql_distinct_key: id ;;
-    sql:  ${contribution_margin} ;;
-    value_format:  "$#,##0;($#,##0)"
+    sql_distinct_key: ${id} ;;
+    sql: ${count_adverse_events} ;;
+    value_format: "0"
   }
 
+  dimension: count_near_misses {
+    type: number
+    sql: ${TABLE}."count_near_misses" ;;
+  }
 
+  measure: sum_count_near_misses {
+    description: "Sum of the count of near misses in reporting"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${count_near_misses} ;;
+    value_format: "0"
+  }
 
   dimension_group: created {
     type: time
@@ -117,6 +69,7 @@ view: mbo_metrics {
       raw,
       time,
       date,
+      week,
       month,
       quarter,
       year
@@ -124,13 +77,20 @@ view: mbo_metrics {
     sql: ${TABLE}."created_at" ;;
   }
 
-#   Added as calculation below
-#     dimension: customer_acquisition_cost {
-#     type: number
-#     sql: ${TABLE}."customer_acquisition_cost" ;;
-#     value_format:  "$#,##0;($#,##0)"
-#
-#   }
+  dimension: days_in_ar {
+    type: number
+    sql: ${TABLE}."days_in_ar" ;;
+    value_format: "0.0"
+  }
+
+  measure: average_days_in_ar {
+    description: "Average of monthly AR days"
+    type: average_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${days_in_ar} ;;
+    value_format: "0.0"
+
+  }
 
   dimension: ebitda {
     type: number
@@ -147,32 +107,18 @@ view: mbo_metrics {
 
   }
 
-  dimension: extended_care_revenue {
+  dimension: gross_clinical_partner_revenue {
     type: number
-    sql: ${TABLE}."extended_care_revenue" ;;
+    sql: ${TABLE}."gross_clinical_partner_revenue" ;;
     value_format:  "$#,##0;($#,##0)"
   }
 
-  measure: sum_extended_care_revenue {
-    description: "Sum of monthly extended care revenue"
+  measure: sum_gross_clinical_partner_revenue {
+    description: "Sum of goss clinical partner revenue"
     type: sum_distinct
     sql_distinct_key: ${id} ;;
-    sql: ${extended_care_revenue} ;;
+    sql: ${gross_clinical_partner_revenue} ;;
     value_format:  "$#,##0;($#,##0)"
-  }
-
-  dimension: handle_time {
-    type: number
-    sql: ${TABLE}."handle_time" ;;
-    value_format: "0"
-  }
-
-  measure: avearge_handle_time {
-    description: "Average of monthly handle time"
-    type: average_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${handle_time} ;;
-    value_format: "0"
   }
 
   dimension: high_trust_certification {
@@ -185,11 +131,44 @@ view: mbo_metrics {
     sql: ${high_trust_certification} ;;
   }
 
+  dimension: indirect_marketing_costs {
+    type: number
+    sql: ${TABLE}."indirect_marketing_costs" ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  measure: sum_indirect_marketing_costs {
+    description: "Sum of indirect marketing costs"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${indirect_marketing_costs} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: indirect_marketing_costs_ttm {
+    type: number
+    sql: ${TABLE}."indirect_marketing_costs_ttm" ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: customer_acquisition_cost {
+    type: number
+    sql: ${indirect_marketing_costs_ttm} / ${new_patients_ttm} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  measure: average_customer_acquisition_cost {
+    description: "Average of monthly customer acquisition cost"
+    type: average_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${customer_acquisition_cost} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
   dimension: managed_care_penetration {
     type: number
     sql: ${TABLE}."managed_care_penetration" ;;
     value_format: "0%"
-
   }
 
   measure: average_managed_care_penetration {
@@ -204,7 +183,6 @@ view: mbo_metrics {
     type: number
     sql: ${TABLE}."maximum_customer_concentration" ;;
     value_format: "0.0%"
-
   }
 
   measure: average_maximum_customer_concentration {
@@ -213,35 +191,55 @@ view: mbo_metrics {
     sql_distinct_key: ${id} ;;
     sql:  ${maximum_customer_concentration} ;;
     value_format: "0.0%"
-
   }
 
-  dimension: near_miss_reporting_rate {
+
+  dimension: net_advanced_care_revenue {
     type: number
-    sql: ${TABLE}."near_miss_reporting_rate" ;;
-    value_format: "0.0%"
+    sql: ${TABLE}."net_advanced_care_revenue" ;;
+    value_format: "$#,##0;($#,##0)"
   }
 
-  measure: average_near_miss_reporting_rate {
-    description: "Average of monthly near miss reporting rate"
-    type: average_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${near_miss_reporting_rate} ;;
-    value_format: "0.0%"
-  }
-
-  dimension: new_clinical_partner_revenue {
-    type: number
-    sql: ${TABLE}."new_clinical_partner_revenue" ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  measure: sum_new_clinical_partner_revenue {
-    description: "Sum of new clinical partner revenue"
+  measure: sum_net_advanced_care_revenue {
+    description: "Sum of monthly net advanced care revenue"
     type: sum_distinct
     sql_distinct_key: ${id} ;;
-    sql: ${new_clinical_partner_revenue} ;;
+    sql: ${net_advanced_care_revenue} ;;
+    value_format: "$#,##0;($#,##0)"
+  }
+
+  dimension: net_extended_care_revenue {
+    type: number
+    sql: ${TABLE}."net_extended_care_revenue" ;;
     value_format:  "$#,##0;($#,##0)"
+  }
+
+  measure: sum_net_extended_care_revenue {
+    description: "Sum of monthly net extended care revenue"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${net_extended_care_revenue} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: new_gross_clinical_partner_revenue {
+    type: number
+    sql: ${TABLE}."new_gross_clinical_partner_revenue" ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  measure: sum_new_gross_clinical_partner_revenue {
+    description: "Sum of new gross clinical partner revenue"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${new_gross_clinical_partner_revenue} ;;
+    value_format:  "$#,##0;($#,##0)"
+  }
+
+  dimension: new_patients_ttm {
+    type: number
+    sql: ${TABLE}."new_patients_ttm" ;;
+    value_format:  "#,##0"
   }
 
   dimension: novel_unbudgeted_revenue {
@@ -258,32 +256,44 @@ view: mbo_metrics {
     value_format:  "$#,##0;($#,##0)"
   }
 
-  dimension: partner_nps {
+  dimension: partner_detractors {
     type: number
-    sql: ${TABLE}."partner_nps" ;;
-    value_format: "0"
+    sql: ${TABLE}."partner_detractors" ;;
+    value_format: "#,##0"
   }
 
-  measure: average_partner_nps {
-    description: "Average of monthly partner NPS"
-    type: average_distinct
+  measure: sum_partner_detractors {
+    description: "Sum of partner detractors"
+    type: sum_distinct
     sql_distinct_key: ${id} ;;
-    sql: ${partner_nps} ;;
-    value_format: "0"
+    sql: ${partner_detractors} ;;
+    value_format: "#,##0"
   }
 
-  dimension: rcm_touchless_rate {
+  dimension: partner_promoters {
     type: number
-    sql: ${TABLE}."rcm_touchless_rate" ;;
-    value_format: "0%"
+    sql: ${TABLE}."partner_promoters" ;;
   }
 
-  measure: average_rcm_touchless_rate {
-    description: "Average of monthly RCM touchless rate"
-    type: average_distinct
+  measure: sum_partner_promoters {
+    description: "Sum of partner promoters"
+    type: sum_distinct
     sql_distinct_key: ${id} ;;
-    sql: ${rcm_touchless_rate} ;;
-    value_format: "0%"
+    sql: ${partner_promoters} ;;
+    value_format: "#,##0"
+  }
+
+  dimension: partner_survey_respondents {
+    type: number
+    sql: ${TABLE}."partner_survey_respondents" ;;
+  }
+
+  measure: sum_partner_survey_respondents {
+    description: "Sum of partner survey respondents"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${partner_survey_respondents} ;;
+    value_format: "#,##0"
   }
 
   dimension_group: report {
@@ -291,6 +301,7 @@ view: mbo_metrics {
     timeframes: [
       raw,
       date,
+      week,
       month,
       quarter,
       year
@@ -300,23 +311,37 @@ view: mbo_metrics {
     sql: ${TABLE}."report_date" ;;
   }
 
-  dimension: total_care_team_costs {
+  dimension: total_billable_visits {
     type: number
-    sql: ${TABLE}."total_care_team_costs" ;;
+    sql: ${TABLE}."total_billable_visits" ;;
+    value_format:  "#,##0"
+  }
+
+  measure: sum_total_billable_visits {
+    description: "Sum of Finance reported patient visits"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${total_billable_visits} ;;
+    value_format:  "#,##0"
+  }
+
+  dimension: total_care_team_expense {
+    type: number
+    sql: ${TABLE}."total_care_team_expense" ;;
     value_format:  "$#,##0;($#,##0)"
   }
 
-  measure: sum_total_care_team_costs {
-    description: "Sum of monthly total care team costs"
+  measure: sum_total_care_team_expense {
+    description: "Sum of monthly total care team expenses"
     type: sum_distinct
     sql_distinct_key: ${id} ;;
-    sql: ${total_care_team_costs} ;;
+    sql: ${total_care_team_expense} ;;
     value_format:  "$#,##0;($#,##0)"
   }
 
   dimension: total_direct_costs {
     type: number
-    sql: ${TABLE}."total_direct_costs" ;;
+    sql: ${TABLE}."total_direct_costs";;
     value_format:  "$#,##0;($#,##0)"
   }
 
@@ -342,6 +367,20 @@ view: mbo_metrics {
     value_format:  "$#,##0;($#,##0)"
   }
 
+  dimension: total_new_patients {
+    type: number
+    sql: ${TABLE}."total_new_patients" ;;
+    value_format:  "#,##0"
+  }
+
+  measure: sum_total_new_patients {
+    description: "Sum of Finance reported new patients"
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${total_new_patients} ;;
+    value_format:  "#,##0"
+  }
+
   dimension: total_rcm_costs {
     type: number
     sql: ${TABLE}."total_rcm_costs" ;;
@@ -354,21 +393,6 @@ view: mbo_metrics {
     sql_distinct_key: ${id} ;;
     sql: ${total_rcm_costs} ;;
     value_format:  "$#,##0;($#,##0)"
-  }
-
-  dimension: total_revenue_run_rate {
-    type: number
-    sql: ${TABLE}."total_revenue_run_rate" ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  measure: average_total_revenue_run_rate {
-    description: "Average of total monthly revenue run rate"
-    type: average_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${total_revenue_run_rate} ;;
-    value_format:  "$#,##0;($#,##0)"
-
   }
 
   dimension_group: updated {
@@ -385,131 +409,34 @@ view: mbo_metrics {
     sql: ${TABLE}."updated_at" ;;
   }
 
-  dimension: indirect_marketing_costs {
-    type: number
-    sql: ${TABLE}."indirect_marketing_costs" ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  measure: sum_indirect_marketing_costs {
-    description: "Sum of indirect marketing costs"
-    type: sum_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${indirect_marketing_costs} ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  dimension: visits_finance {
-    type: number
-    sql: ${TABLE}."visits_finance" ;;
-    value_format:  "#,##0"
-  }
-
-  measure: sum_visits_finance {
-    description: "Sum of Finance reported patient visits"
-    type: sum_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${visits_finance} ;;
-    value_format:  "#,##0"
-  }
-
-  dimension: new_patients_finance {
-    type: number
-    sql: ${TABLE}."new_patients_finance" ;;
-    value_format:  "#,##0"
-  }
-
-  measure: sum_new_patients_finance {
-    description: "Sum of Finance reported new patients"
-    type: sum_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${new_patients_finance} ;;
-    value_format:  "#,##0"
-  }
-
-  dimension: trailing_3_months_new_patients {
-    type: number
-    sql: ${TABLE}."trailing_3_months_new_patients" ;;
-    value_format:  "#,##0"
-  }
-
-  dimension: trailing_3_months_indirect_marketing_expense {
-    type: number
-    sql: ${TABLE}."trailing_3_months_indirect_marketing_expense" ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
   dimension: gross_margin {
+    description: "Total net revenue minus direct costs"
     type: number
     sql: ${total_net_revenue} - ${total_direct_costs} ;;
-    value_format:  "$#,##0;($#,##0)"
+    value_format: "$#,##0;($#,##0)"
   }
 
   measure: sum_gross_margin {
-    description: "Sum of monthly gross margin"
+    description: "Sum of total RCM costs"
     type: sum_distinct
     sql_distinct_key: ${id} ;;
     sql: ${gross_margin} ;;
     value_format:  "$#,##0;($#,##0)"
   }
 
-  dimension: direct_costs_per_visit {
+  dimension: contribution_margin {
     type: number
-    sql: ${total_direct_costs} / ${visits_finance} ;;
-    value_format:  "$#,##0;($#,##0)"
+    sql: ${TABLE}.contribution_margin ;;
+    value_format: "$#,##0;($#,##0)"
   }
 
-measure: average_direct_costs_per_visit {
-  description: "Average of monthly direct costs per visit"
-  type: average_distinct
-  sql_distinct_key: id ;;
-  sql: ${direct_costs_per_visit} ;;
-  value_format:  "$#,##0;($#,##0)"
-}
-
-  dimension: customer_acquisition_cost {
-    type: number
-    sql: ${trailing_3_months_indirect_marketing_expense} / ${trailing_3_months_new_patients} ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  measure: average_customer_acquisition_cost {
-    description: "Average of monthly customer acquisition cost"
-    type: average_distinct
+  measure: sum_contribution_margin {
+    description: "Sum of contribution margin"
+    type: sum_distinct
     sql_distinct_key: ${id} ;;
-    sql: ${customer_acquisition_cost} ;;
+    sql: ${contribution_margin} ;;
     value_format:  "$#,##0;($#,##0)"
   }
-
-  dimension: cost_per_claim {
-    type: number
-    sql: ${total_rcm_costs} / ${visits_finance} ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  measure: average_cost_per_claim {
-    description: "Average of monthly cost per claim"
-    type: average_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${cost_per_claim} ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  dimension: call_center_cost_per_visit {
-    type: number
-    sql: ${total_care_team_costs} / ${visits_finance} ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-  measure: average_call_center_cost_per_visit {
-    description: "Average of monthly call center cost per visit"
-    type: average_distinct
-    sql_distinct_key: ${id} ;;
-    sql: ${call_center_cost_per_visit} ;;
-    value_format:  "$#,##0;($#,##0)"
-  }
-
-
 
 
   measure: count {

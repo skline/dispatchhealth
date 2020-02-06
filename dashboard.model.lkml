@@ -2732,7 +2732,6 @@ explore: expected_allowables_market_budget {
 
 
 explore: genesys_conversation_summary {
-  sql_always_where: ${markets.id} is not null ;;
   join: number_to_market {
     relationship: one_to_one
     sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
@@ -2906,6 +2905,7 @@ explore: cac_costs {
 }
 
 explore: mbo_metrics {}
+
 explore: sf_accounts {
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
@@ -2925,16 +2925,22 @@ explore: sf_accounts {
   join: sf_activities {
     sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
   }
+  join: sf_contacts {
+    sql_on: ${sf_contacts.account_id} =${sf_accounts.account_id} ;;
+  }
 }
 
 explore: sf_activities {
+  join: sf_accounts {
+    sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
+  }
   join: sf_markets_mapping {
-    sql_on: ${sf_markets_mapping.market}=${sf_activities.market} ;;
+    sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
   }
   join: markets {
     sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
   }
-  join: sf_accounts {
-    sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
-  }
+
 }
+
+explore: renown_all_data {}

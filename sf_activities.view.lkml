@@ -6,11 +6,6 @@ view: sf_activities {
     sql: ${TABLE}."account_id" ;;
   }
 
-  dimension: account_name {
-    type: string
-    sql: ${TABLE}."account_name" ;;
-  }
-
   dimension: activity_id {
     type: string
     sql: ${TABLE}."activity_id" ;;
@@ -21,12 +16,8 @@ view: sf_activities {
     sql: ${TABLE}."assigned" ;;
   }
 
-  dimension: channel_type {
-    type: string
-    sql: ${TABLE}."channel_type" ;;
-  }
 
-  dimension_group: date {
+  dimension_group: start {
     type: time
     timeframes: [
       raw,
@@ -34,28 +25,51 @@ view: sf_activities {
       week,
       month,
       quarter,
-      year
+      year,
+      time
     ]
-    sql: ${TABLE}."date" ;;
+    sql: ${TABLE}."start_date" ;;
   }
 
-  dimension: market {
-    type: string
-    sql: ${TABLE}."market" ;;
+  dimension_group: end {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      time
+    ]
+    sql: ${TABLE}."end_date" ;;
   }
 
-  dimension: result {
-    type: string
-    sql: ${TABLE}."result" ;;
-  }
 
   dimension: subject {
     type: string
-    sql: ${TABLE}."subject" ;;
+    sql: lower(${TABLE}."subject") ;;
   }
+
+  dimension: task_type {
+    type: string
+    sql: lower(${TABLE}."task_type") ;;
+  }
+
+  dimension: lead_type {
+    type: string
+    sql: lower(${TABLE}."lead_type") ;;
+  }
+
+
+  dimension: task_bool {
+    type: yesno
+    sql: ${TABLE}."task_bool" = true ;;
+  }
+
 
   measure: count {
     type: count
-    drill_fields: [account_name]
+    drill_fields: []
   }
 }

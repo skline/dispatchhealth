@@ -50,6 +50,30 @@ view: shift_details {
     type: string
     sql: ${TABLE}.employee_name ;;
   }
+  dimension: mcfaker {
+    type: yesno
+    sql: lower(${employee_name}) like '%mcfaker%' ;;
+  }
+
+  measure:  sum_valid_app_expected_shift_time_hours_mcfaker {
+    type: sum
+    label: "Sum Expected App Assigned Hours Mcfaker"
+    sql: ${expected_shift_time_hours};;
+    value_format: "#,##0.00"
+    filters: {
+      field: employee_name_present
+      value: "yes"
+    }
+    filters: {
+      field: app_shift
+      value: "yes"
+    }
+    filters: {
+      field: mcfaker
+      value: "yes"
+    }
+  }
+
 
   dimension_group: local_actual_end {
     type: time
