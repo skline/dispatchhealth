@@ -2904,7 +2904,14 @@ explore: cac_costs {
 
 }
 
-explore: mbo_metrics {}
+explore: mbo_metrics {
+  join: mbo_metrics_quarterly_goals {
+    relationship: one_to_many
+    sql_on: ${mbo_metrics_quarterly_goals.quarter_id} = ${mbo_metrics.quarter_id} ;;
+  }
+}
+
+explore: mbo_metrics_quarterly_goals {}
 
 explore: zizzl_employee_roster {}
 
