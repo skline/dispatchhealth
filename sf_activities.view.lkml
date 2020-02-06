@@ -6,11 +6,6 @@ view: sf_activities {
     sql: ${TABLE}."account_id" ;;
   }
 
-  dimension: account_name {
-    type: string
-    sql: ${TABLE}."account_name" ;;
-  }
-
   dimension: activity_id {
     type: string
     sql: ${TABLE}."activity_id" ;;
@@ -21,10 +16,6 @@ view: sf_activities {
     sql: ${TABLE}."assigned" ;;
   }
 
-  dimension: channel_type {
-    type: string
-    sql: ${TABLE}."channel_type" ;;
-  }
 
   dimension_group: date {
     type: time
@@ -39,23 +30,25 @@ view: sf_activities {
     sql: ${TABLE}."date" ;;
   }
 
-  dimension: market {
-    type: string
-    sql: ${TABLE}."market" ;;
-  }
-
-  dimension: result {
-    type: string
-    sql: ${TABLE}."result" ;;
-  }
 
   dimension: subject {
     type: string
     sql: ${TABLE}."subject" ;;
   }
 
+  dimension: task_type {
+    type: string
+    sql: ${TABLE}."task_type" ;;
+  }
+
+  dimension: task_bool {
+    type: yesno
+    sql: ${TABLE}."task_bool" = true ;;
+  }
+
+
   measure: count {
     type: count
-    drill_fields: [account_name]
+    drill_fields: []
   }
 }

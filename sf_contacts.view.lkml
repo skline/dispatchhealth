@@ -54,10 +54,6 @@ view: sf_contacts {
     sql: ${TABLE}."last_activity" ;;
   }
 
-  dimension: market_name {
-    type: string
-    sql: ${TABLE}."market_name" ;;
-  }
 
   dimension: mobile_phone {
     type: string
