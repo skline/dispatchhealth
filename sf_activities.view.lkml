@@ -17,7 +17,7 @@ view: sf_activities {
   }
 
 
-  dimension_group: date {
+  dimension_group: start {
     type: time
     timeframes: [
       raw,
@@ -25,21 +25,42 @@ view: sf_activities {
       week,
       month,
       quarter,
-      year
+      year,
+      time
     ]
-    sql: ${TABLE}."date" ;;
+    sql: ${TABLE}."start_date" ;;
+  }
+
+  dimension_group: end {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      time
+    ]
+    sql: ${TABLE}."end_date" ;;
   }
 
 
   dimension: subject {
     type: string
-    sql: ${TABLE}."subject" ;;
+    sql: lower(${TABLE}."subject") ;;
   }
 
   dimension: task_type {
     type: string
-    sql: ${TABLE}."task_type" ;;
+    sql: lower(${TABLE}."task_type") ;;
   }
+
+  dimension: lead_type {
+    type: string
+    sql: lower(${TABLE}."lead_type") ;;
+  }
+
 
   dimension: task_bool {
     type: yesno
