@@ -7,7 +7,7 @@ view: sf_activities {
   }
   dimension: cem {
     type: yesno
-    sql:  lower(${assigned}) not in ('syeda abbas', 'matthew callman', 'melanie plaksin', 'karrie austin escobedo', 'christine greimann') or ${markets.id} is not null;;
+    sql:  lower(${assigned}) not in ('syeda abbas', 'matthew callman', 'melanie plaksin', 'karrie austin escobedo', 'christine greimann');;
   }
 
   dimension: call {
