@@ -1,6 +1,25 @@
 view: sf_activities {
   sql_table_name: looker_scratch.sf_activities ;;
 
+  dimension: inside_sales{
+    type: yesno
+    sql: lower(${assigned}) in ('syeda abbas', 'matthew callman') ;;
+  }
+  dimension: cem {
+    type: yesno
+    sql:  lower(${assigned}) not in ('syeda abbas', 'matthew callman', 'melanie plaksin', 'karrie austin escobedo', 'christine greimann') or ${markets.id} is not null;;
+  }
+
+  dimension: call {
+    type: yesno
+    sql: ${subject} like '%call%' ;;
+  }
+
+  dimension: email {
+    type: yesno
+    sql: ${subject} like '%email%' ;;
+  }
+
   dimension: account_id {
     type: string
     sql: ${TABLE}."account_id" ;;
@@ -72,8 +91,54 @@ view: sf_activities {
   }
 
 
-  measure: count {
-    type: count
-    drill_fields: []
+  measure: count_activities {
+    type: count_distinct
+    sql_distinct_key: ${account_id} ;;
+    sql: ${account_id} ;;
   }
+
+  measure: count_calls {
+    type: count_distinct
+    sql_distinct_key: ${account_id} ;;
+    sql: ${account_id} ;;
+    filters: {
+      field: call
+      value: "yes"
+    }
+  }
+
+  measure: count_emails {
+    type: count_distinct
+    sql_distinct_key: ${account_id} ;;
+    sql: ${account_id} ;;
+    filters: {
+      field: email
+      value: "yes"
+    }
+  }
+
+  measure: count_priority_account_activities {
+    type: count_distinct
+    sql_distinct_key: ${account_id} ;;
+    sql: ${account_id} ;;
+    filters: {
+      field: sf_accounts.priority
+      value: "yes"
+    }
+  }
+
+  measure: count_meetings {
+    type: count_distinct
+    sql_distinct_key: ${account_id} ;;
+    sql: ${account_id} ;;
+    filters: {
+      field: email
+      value: "no"
+    }
+    filters: {
+      field: call
+      value: "no"
+    }
+  }
+
 }

@@ -2925,6 +2925,11 @@ explore: sf_accounts {
     type: full_outer
     sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
   }
+  join: regional_markets {
+    relationship: one_to_one
+    sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
   join: channel_items {
     sql_on: ${channel_items.id} =${sf_accounts.channel_items_id} ;;
   }
@@ -2958,6 +2963,12 @@ explore: sf_activities {
     type: full_outer
     sql_on: ${markets.id}=${sf_markets_mapping.market_id}   ;;
   }
+
+  join: regional_markets {
+    relationship: one_to_one
+    sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
   join: channel_items {
     sql_on: ${channel_items.id} =${sf_accounts.channel_items_id} ;;
   }
@@ -2972,5 +2983,6 @@ explore: sf_activities {
     sql_on: ${parent_accounts.account_id}  = ${sf_accounts.parent_account_id};;
   }
 }
+
 
 explore: renown_all_data {}
