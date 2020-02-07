@@ -16,6 +16,13 @@ view: zizzl_employee_roster {
   measure: avg_active_employees {
     type: average
     description: "The average number of active employees."
+    value_format: "0.0"
+    sql: ${count_active_employees} ;;
+  }
+
+  measure: sum_active_employees {
+    type: sum
+    description: "The sum of all active employees."
     sql: ${count_active_employees} ;;
   }
 
@@ -56,7 +63,15 @@ view: zizzl_employee_roster {
 
   dimension: employee_category {
     type: string
+    description: "The employee category: APP, DHMT, CARE Team, CORP"
     sql: ${TABLE}."employee_category" ;;
+  }
+
+  dimension: employee_category_aggregated {
+    type: string
+    description: "Employee Category where APP and DHMT are combined into Clinical"
+    sql: CASE WHEN ${employee_category} IN ('APP','DHMT') THEN 'Clinical'
+         ELSE ${employee_category} END;;
   }
 
   dimension: employee_location {
@@ -80,6 +95,11 @@ view: zizzl_employee_roster {
     convert_tz: no
     datatype: date
     sql: ${TABLE}."report_date" ;;
+  }
+
+  measure: count_distinct_days {
+    type: count_distinct
+    sql: ${report_date} ;;
   }
 
   dimension_group: updated {
