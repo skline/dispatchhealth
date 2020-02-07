@@ -23,7 +23,7 @@ view: sf_accounts {
 
 
   dimension: channel_type {
-    label: "Channel Type (Senoir Community, Home Health etc.)"
+    label: "Channel Type (Senior Community, Home Health etc.)"
     type: string
     sql: ${TABLE}."channel_type" ;;
   }
