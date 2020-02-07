@@ -2956,7 +2956,7 @@ explore: sf_activities {
   }
   join: markets {
     type: full_outer
-    sql_on: ${markets.id}=${sf_markets_mapping.market_id} and  ;;
+    sql_on: ${markets.id}=${sf_markets_mapping.market_id}   ;;
   }
   join: channel_items {
     sql_on: ${channel_items.id} =${sf_accounts.channel_items_id} ;;
