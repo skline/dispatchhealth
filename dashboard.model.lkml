@@ -2937,6 +2937,10 @@ explore: sf_accounts {
   join: sf_contacts {
     sql_on: ${sf_contacts.account_id} =${sf_accounts.account_id} ;;
   }
+  join: parent_accounts {
+    from: sf_accounts
+    sql_on: ${parent_accounts.account_id}  ${sf_accounts.parent_account_id};;
+  }
 }
 
 explore: sf_activities {
@@ -2949,7 +2953,6 @@ explore: sf_activities {
   join: markets {
     sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
   }
-
   join: channel_items {
     sql_on: ${channel_items.id} =${sf_accounts.channel_items_id} ;;
   }
@@ -2959,7 +2962,10 @@ explore: sf_activities {
   join: care_request_flat{
     sql_on: ${care_request_flat.care_request_id}=${care_requests.id} ;;
   }
-
+  join: parent_accounts {
+    from: sf_accounts
+    sql_on: ${parent_accounts.account_id}  ${sf_accounts.parent_account_id};;
+  }
 }
 
 explore: renown_all_data {}
