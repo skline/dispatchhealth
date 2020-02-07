@@ -83,7 +83,7 @@ view: mbo_metrics_quarterly_goals {
     description: "Average clinical team turnover quarterly goal"
     type: average_distinct
     sql_distinct_key: ${id} ;;
-    sql: ${clinical_employee_turnover_rate_qg} ;;
+    sql: ${collectibility_qg} ;;
     value_format: "0.0%"
   }
 
