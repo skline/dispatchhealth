@@ -2916,10 +2916,13 @@ explore: mbo_metrics_quarterly_goals {}
 explore: zizzl_employee_roster {}
 
 explore: sf_accounts {
+  sql_always_where:  ${markets.name} != 'West Metro Fire Rescue';;
+
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
   }
   join: markets {
+    type: full_outer
     sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
   }
   join: channel_items {
@@ -2944,6 +2947,7 @@ explore: sf_accounts {
 }
 
 explore: sf_activities {
+  sql_always_where:  ${markets.name} != 'West Metro Fire Rescue';;
   join: sf_accounts {
     sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
   }
@@ -2951,7 +2955,8 @@ explore: sf_activities {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
   }
   join: markets {
-    sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
+    type: full_outer
+    sql_on: ${markets.id}=${sf_markets_mapping.market_id} and  ;;
   }
   join: channel_items {
     sql_on: ${channel_items.id} =${sf_accounts.channel_items_id} ;;

@@ -145,6 +145,11 @@ view: sf_accounts {
     sql: ${TABLE}."collaborative_agreement" is true ;;
   }
 
+  dimension: account_owner {
+    type: string
+    sql: ${TABLE}."account_owner" ;;
+  }
+
   dimension_group: id_campaign {
     type: time
     timeframes: [
