@@ -82,6 +82,80 @@ view: sf_accounts {
     sql: ${TABLE}."quadrant" ;;
   }
 
+  dimension: parent_account_id {
+    type: string
+    sql: ${TABLE}."parent_account_id" ;;
+  }
+
+  dimension: phone {
+    type: string
+    sql: ${TABLE}."phone" ;;
+  }
+
+  dimension: address {
+    type: string
+    sql: ${TABLE}."address" ;;
+  }
+
+  dimension: city {
+    type: string
+    sql: ${TABLE}."city" ;;
+  }
+
+  dimension: state {
+    type: string
+    sql: ${TABLE}."state" ;;
+  }
+
+  dimension: zipcode {
+    type: string
+    sql: ${TABLE}."zipcode" ;;
+  }
+
+  dimension: record_type {
+    type: string
+    sql: ${TABLE}."record_type" ;;
+  }
+
+  dimension: type {
+    label: "Type (Prospect etc.)"
+    type: string
+    sql: ${TABLE}."type" ;;
+  }
+
+  dimension: website {
+    type: string
+    sql: ${TABLE}."website" ;;
+  }
+
+  dimension: projected_volume {
+    type: number
+    sql: ${TABLE}."projected_volume" ;;
+  }
+
+  dimension: number_of_beds {
+    type: number
+    sql: ${TABLE}."number_of_beds" ;;
+  }
+
+  dimension: collaborative_agreement {
+    type: yesno
+    sql: ${TABLE}."collaborative_agreement" is true ;;
+  }
+
+  dimension_group: id_campaign {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."id_campaign" ;;
+  }
+
   measure: count {
     type: count_distinct
     sql: ${account_id} ;;
