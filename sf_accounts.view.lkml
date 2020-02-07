@@ -113,6 +113,7 @@ view: sf_accounts {
   }
 
   dimension: record_type {
+    label: "Record Type (Account, Health System etc.)"
     type: string
     sql: ${TABLE}."record_type" ;;
   }
