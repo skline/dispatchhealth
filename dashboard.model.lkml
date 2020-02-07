@@ -2964,7 +2964,7 @@ explore: sf_activities {
   }
   join: parent_accounts {
     from: sf_accounts
-    sql_on: ${parent_accounts.account_id}  ${sf_accounts.parent_account_id};;
+    sql_on: ${parent_accounts.account_id}  = ${sf_accounts.parent_account_id};;
   }
 }
 
