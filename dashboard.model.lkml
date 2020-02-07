@@ -2950,6 +2950,16 @@ explore: sf_activities {
     sql_on: ${markets.id}=${sf_markets_mapping.market_id} ;;
   }
 
+  join: channel_items {
+    sql_on: ${channel_items.id} =${sf_accounts.channel_items_id} ;;
+  }
+  join: care_requests{
+    sql_on: ${care_requests.channel_item_id}=${channel_items.id} ;;
+  }
+  join: care_request_flat{
+    sql_on: ${care_request_flat.care_request_id}=${care_requests.id} ;;
+  }
+
 }
 
 explore: renown_all_data {}
