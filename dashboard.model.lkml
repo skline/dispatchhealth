@@ -2987,5 +2987,41 @@ explore: sf_activities {
   }
 }
 
+explore: sf_contacts {
+  join: athenadwh_primary_care_provider {
+    from: athenadwh_clinical_providers_clone
+    sql_on:  ${athenadwh_primary_care_provider.npi} = ${sf_contacts.npi_number};;
+  }
 
+  join: athenadwh_clinical_letters_clone {
+    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
+      ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
+  }
+
+  join: athenadwh_letters_encounters {
+    from:  athenadwh_documents_clone
+    sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
+  }
+
+
+
+  join: athenadwh_clinical_encounters_clone {
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
+            ${athenadwh_letters_encounters.document_class}  = 'LETTER' AND
+            (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
+            (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
+  }
+
+  join: care_requests {
+    sql_on: ${care_requests.ehr_id} = ${athenadwh_clinical_encounters_clone.appointment_id}::varchar;;
+  }
+
+
+  join: care_request_flat {
+    relationship: one_to_one
+    sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
+
+}
 explore: renown_all_data {}
