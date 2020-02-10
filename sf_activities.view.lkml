@@ -12,12 +12,12 @@ view: sf_activities {
 
   dimension: call {
     type: yesno
-    sql: ${subject} like '%call%' ;;
+    sql: ${subject} like '%call%' and ${subject} not like '%(phone call/drop-in/email)%' ;;
   }
 
   dimension: email {
     type: yesno
-    sql: ${subject} like '%email%' ;;
+    sql: ${subject} like '%email%' and ${subject} not like '%(phone call/drop-in/email)%'  ;;
   }
 
   dimension: account_id {
