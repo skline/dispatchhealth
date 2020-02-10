@@ -12,12 +12,12 @@ view: sf_activities {
 
   dimension: call {
     type: yesno
-    sql: ${subject} like '%call%' and ${subject} not like '%email%' ;;
+    sql: (${subject} like '%call%' or  ${task_type} ='call') and ${subject} not like '%email%' and ${task_type} !='email' ;;
   }
 
   dimension: email {
     type: yesno
-    sql: ${subject} like '%email%' and ${subject} not like '%(phone call/drop-in/email)%'  ;;
+    sql:( ${subject} like '%email%' or ${task_type} ='email') and ${subject} not like '%(phone call/drop-in/email)%'  ;;
   }
 
   dimension: account_id {
@@ -128,7 +128,7 @@ view: sf_activities {
   }
 
   measure: count_meetings {
-    label: "In-person Activity"
+    label: "Count In-person Activity"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
