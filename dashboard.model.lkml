@@ -3018,8 +3018,11 @@ explore: sf_contacts {
 
 
   join: care_request_flat {
-    relationship: one_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: sf_accounts{
+    sql_on: ${sf_contacts.account_id} = ${sf_accounts.account_id} ;;
   }
 
 
