@@ -12,7 +12,7 @@ view: sf_activities {
 
   dimension: call {
     type: yesno
-    sql: ${subject} like '%call%' and ${subject} not like '%(phone call/drop-in/email)%' ;;
+    sql: ${subject} like '%call%' and ${subject} not like '%email%' ;;
   }
 
   dimension: email {
@@ -93,14 +93,14 @@ view: sf_activities {
 
   measure: count_activities {
     type: count_distinct
-    sql_distinct_key: ${account_id} ;;
-    sql: ${account_id} ;;
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
   }
 
   measure: count_calls {
     type: count_distinct
-    sql_distinct_key: ${account_id} ;;
-    sql: ${account_id} ;;
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
     filters: {
       field: call
       value: "yes"
@@ -109,8 +109,8 @@ view: sf_activities {
 
   measure: count_emails {
     type: count_distinct
-    sql_distinct_key: ${account_id} ;;
-    sql: ${account_id} ;;
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
     filters: {
       field: email
       value: "yes"
@@ -119,8 +119,8 @@ view: sf_activities {
 
   measure: count_priority_account_activities {
     type: count_distinct
-    sql_distinct_key: ${account_id} ;;
-    sql: ${account_id} ;;
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
     filters: {
       field: sf_accounts.priority
       value: "yes"
@@ -128,9 +128,10 @@ view: sf_activities {
   }
 
   measure: count_meetings {
+    label: "In-person Activity"
     type: count_distinct
-    sql_distinct_key: ${account_id} ;;
-    sql: ${account_id} ;;
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
     filters: {
       field: email
       value: "no"
