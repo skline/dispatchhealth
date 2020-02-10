@@ -1119,6 +1119,9 @@ explore: care_requests {
   join: sf_accounts{
     sql_on: ${sf_accounts.channel_items_id}=${channel_items.id} ;;
   }
+  join: sf_activities {
+    sql_on: ${sf_accounts.account_id} = ${sf_activities.account_id} ;;
+  }
 
   join: channel_item_emr_providers {
     relationship: many_to_one
