@@ -205,6 +205,10 @@ view: sf_activities {
       field: call
       value: "no"
     }
+    filters: {
+      field: actual_activity
+      value: "yes"
+    }
   }
 
 }
