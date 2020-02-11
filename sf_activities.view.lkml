@@ -12,7 +12,7 @@ view: sf_activities {
 
   dimension: call {
     type: yesno
-    sql: (${subject} like '%call%' or  ${task_type} ='call') and ${subject} not like '%email%' and ${task_type} !='email' and ${result} != 'need to contact';;
+    sql: (${subject} like '%call%' or  ${task_type} ='call') and ${subject} not like '%email%' and ${task_type} !='email' and (${result} != 'need to contact' or ${result} is null);;
   }
 
   dimension: actual_activity {
