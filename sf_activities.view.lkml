@@ -12,7 +12,22 @@ view: sf_activities {
 
   dimension: call {
     type: yesno
-    sql: (${subject} like '%call%' or  ${task_type} ='call') and ${subject} not like '%email%' and ${task_type} !='email' ;;
+    sql: (${subject} like '%call%' or  ${task_type} ='call') and ${subject} not like '%email%' and ${task_type} !='email' and ${result} != 'need to contact';;
+  }
+
+  dimension: actual_activity {
+    type: yesno
+    sql: ${result} != 'need to contact' or ${result} is null   ;;
+  }
+
+  dimension: call_answered {
+    type: yesno
+    sql: ${call} and ${result} in('connected', 'booked a meeting');;
+  }
+
+  dimension: call_booked_a_meeting{
+    type: yesno
+    sql: ${call} and ${result} in('booked a meeting');;
   }
 
   dimension: email {
@@ -95,6 +110,10 @@ view: sf_activities {
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
+    filters: {
+      field: actual_activity
+      value: "yes"
+    }
   }
 
   measure: count_calls {
@@ -104,6 +123,46 @@ view: sf_activities {
     filters: {
       field: call
       value: "yes"
+    }
+  }
+
+
+  measure: count_calls_answered {
+    type: count_distinct
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
+    filters: {
+      field: call
+      value: "yes"
+    }
+    filters: {
+      field: call_answered
+      value: "yes"
+    }
+  }
+
+  measure: count_calls_booked_a_meeting {
+    type: count_distinct
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
+    filters: {
+      field: call
+      value: "yes"
+    }
+    filters: {
+      field: call_booked_a_meeting
+      value: "yes"
+    }
+  }
+
+  measure: count_calls_intended {
+    label: "Count Planned Calls"
+    type: count_distinct
+    sql_distinct_key: ${activity_id} ;;
+    sql: ${activity_id} ;;
+    filters: {
+      field: task_type
+      value: "call"
     }
   }
 
@@ -125,6 +184,12 @@ view: sf_activities {
       field: sf_accounts.priority
       value: "yes"
     }
+    filters: {
+      field: actual_activity
+      value: "yes"
+    }
+
+
   }
 
   measure: count_meetings {
