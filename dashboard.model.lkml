@@ -1480,29 +1480,17 @@ explore: channel_items {
     sql_on: ${channel_items.id} = ${channel_item_emr_providers.channel_item_id} ;;
   }
 
-  join: sales_force_implementation_score_recent {
-    type: full_outer
-    relationship: one_to_one
-    sql_on: ${sales_force_implementation_score_recent.channel_item_id} = ${channel_items.id} ;;
-  }
+ join: sf_accounts {
+   sql_on: ${sf_accounts.channel_items_id} = ${channel_items.id} ;;
+ }
 
-  join: sales_force_implementation_score_one_week {
-    from: sales_force_implementation_score_clone
-    sql_on: ${sales_force_implementation_score_one_week.sf_account_name} = ${sales_force_implementation_score_recent.sf_account_name}
-   and  ${sales_force_implementation_score_one_week.sf_implementation_name} = ${sales_force_implementation_score_recent.sf_implementation_name}
-    and ${sales_force_implementation_score_one_week.created_date}=current_date - interval '7 day';;
-  }
-
-  join: sales_force_implementation_score_one_month {
-    from: sales_force_implementation_score_clone
-    sql_on: ${sales_force_implementation_score_one_month.sf_account_name} = ${sales_force_implementation_score_recent.sf_account_name}
-        and  ${sales_force_implementation_score_one_month.sf_implementation_name} = ${sales_force_implementation_score_recent.sf_implementation_name}
-          and ${sales_force_implementation_score_one_month.created_date}=current_date - interval '30 day';;
-  }
+join: sf_markets_mapping {
+  sql_on: ${sf_accounts.market} = ${sf_markets_mapping.market};;
+}
 
   join: markets {
     relationship: many_to_one
-    sql_on: ${sales_force_implementation_score_recent.market_id_final} = ${markets.id} ;;
+    sql_on: ${sf_markets_mapping.market_id} = ${markets.id} ;;
   }
 
 
