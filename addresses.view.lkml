@@ -34,9 +34,19 @@ view: addresses {
     sql: ${TABLE}.latitude ;;
   }
 
+  dimension: latitude_round_4_decimal {
+    type: number
+    sql:round(${latitude}::numeric,4);;
+  }
+
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
+  }
+
+  dimension: longitude_round_4_decimal {
+    type: number
+    sql: round(${longitude}::numeric,4);;
   }
 
   dimension: care_request_location {
@@ -45,6 +55,14 @@ view: addresses {
     sql_latitude:${latitude} ;;
     sql_longitude:${longitude} ;;
   }
+
+  dimension: care_request_location_truncated {
+    description: "Used to approximate households. The location based on rounded 4 decimal Latitude/Longitude combination of the care request (used for maps)."
+    type: location
+    sql_latitude:${latitude_round_4_decimal} ;;
+    sql_longitude:${longitude_round_4_decimal} ;;
+  }
+
 
   dimension: state {
     type: string
