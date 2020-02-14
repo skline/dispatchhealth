@@ -126,6 +126,33 @@ view: sf_activities {
     }
   }
 
+  measure: percent_calls_made{
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls_intended} = 0 then 0 else
+    ${count_calls}::float /${count_calls_intended}::float end;;
+  }
+
+  measure: percent_calls_answered{
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls} = 0 then 0 else
+    ${count_calls_answered}::float /${count_calls}::float end;;
+  }
+
+  measure: percent_meetings_booked{
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls} = 0 then 0 else
+    ${count_calls_booked_a_meeting}::float /${count_calls}::float end;;
+  }
+
+  measure: percent_meetings_booked_answered{
+    type: number
+    value_format: "00.0%"
+    sql:  case when ${count_calls_answered} = 0 then 0 else
+    ${count_calls_booked_a_meeting}::float /${count_calls_answered}::float end;;
+  }
 
   measure: count_calls_answered {
     type: count_distinct
