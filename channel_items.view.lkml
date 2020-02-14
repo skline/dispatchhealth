@@ -121,7 +121,7 @@ view: channel_items {
           WHEN lower(${name}) LIKE 'hpn/shl ed education%' THEN 'EDED'
           WHEN lower(${name}) LIKE 'hpn/shl asthma education%' THEN 'ASTH'
           WHEN lower(${name}) LIKE 'hpn/shl hedis%' THEN 'HEDG'
-          WHEN lower(${name}) LIKE 'hpn/shl post acute follow up%' THEN 'PAFU'
+          WHEN lower(${name}) LIKE 'hpn/shl post acute follow up%' OR (${name} LIKE 'Bridge-%' AND ${name} LIKE '%Hpn') THEN 'PAFU'
           WHEN lower(${name}) LIKE 'hpn/shl opcm%' THEN 'OPCM'
           WHEN lower(${name}) LIKE 'hpn/shl tcm%' THEN 'TCM'
           ELSE ${name}
@@ -308,7 +308,8 @@ view: channel_items {
 
   dimension: uhc_care_request {
     type: yesno
-    sql: ${id} in(2851, 2849, 2850, 2852, 2848, 2890, 2900);;
+    sql: ${id} in(2851, 2849, 2850, 2852, 2848, 2890, 2900) OR
+         (${name} LIKE 'Bridge-%' AND ${name} LIKE '%Hpn');;
   }
 
   dimension: er_diversion {
