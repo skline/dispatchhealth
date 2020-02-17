@@ -16,7 +16,7 @@ left join public.markets m
 on  lower(sf.market) like  concat('%', lower(m.name),'%')
 
 ;;
-    sql_trigger_value: SELECT count(*) FROM priority_sf_accounts ;;
+    sql_trigger_value: SELECT count(*) FROM looker_scratch.sf_accounts ;;
     indexes: ["market_id", "market"]
   }
 
