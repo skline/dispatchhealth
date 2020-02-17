@@ -2907,7 +2907,7 @@ explore: mbo_metrics_quarterly_goals {}
 explore: zizzl_employee_roster {}
 
 explore: sf_accounts {
-  sql_always_where:  ${markets.name} != 'West Metro Fire Rescue';;
+  sql_always_where: ( ${markets.name} != 'West Metro Fire Rescue' or  ${markets.name} is null);;
 
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
@@ -2943,7 +2943,7 @@ explore: sf_accounts {
 }
 
 explore: sf_activities {
-  sql_always_where:  ${markets.name} != 'West Metro Fire Rescue';;
+  sql_always_where: ( ${markets.name} != 'West Metro Fire Rescue' or  ${markets.name} is null);;
   join: sf_accounts {
     sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
   }
