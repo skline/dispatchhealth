@@ -1079,10 +1079,23 @@ view: care_request_flat {
     sql: ${followup_3day_result} LIKE '%same_complaint%' ;;
   }
 
-  dimension: followup_14day_result {
+  dimension: raw_followup_14day_result {
     type: string
     description: "The 14-day follow-up result"
     sql: TRIM(${TABLE}.followup_14day_result) ;;
+  }
+
+
+  dimension: followup_14day_result {
+    type: string
+    description: "The 14-day follow-up result (or 30 day result if the 14 day result is NULL and the 30 day is populated)"
+    sql: CASE
+    WHEN (TRIM(${raw_followup_14day_result}) IS NULL OR  TRIM(${raw_followup_14day_result}) = 'no_hie_data' OR TRIM(${raw_followup_14day_result}) = '')
+    AND (TRIM(${raw_followup_30day_result}) IS NOT NULL AND  TRIM(${raw_followup_30day_result}) != 'no_hie_data' AND TRIM(${raw_followup_30day_result}) != '')
+    THEN TRIM(${raw_followup_30day_result})
+    ELSE TRIM(${raw_followup_14day_result})
+    END;;
+
   }
 
   dimension: bounceback_14day {
@@ -1109,18 +1122,46 @@ view: care_request_flat {
     }
   }
 
-  dimension: followup_30day_result {
+  dimension: raw_followup_30day_result {
     type: string
     description: "The 30-day follow-up result"
     sql: TRIM(${TABLE}.followup_30day_result) ;;
   }
 
+  dimension: followup_30day_result {
+    type: string
+    description: "The 30-day follow-up result (or the 14 day result if the 30 day result is NULL and the 14 day is populated)"
+    sql: CASE
+    WHEN (TRIM(${raw_followup_30day_result}) IS NULL OR TRIM(${raw_followup_30day_result}) = 'no_hie_data' OR TRIM(${raw_followup_30day_result}) = '')
+    AND (TRIM(${raw_followup_14day_result}) IS NOT NULL AND  TRIM(${raw_followup_14day_result}) != 'no_hie_data' AND TRIM(${raw_followup_14day_result}) != '')
+    THEN TRIM(${raw_followup_14day_result})
+    ELSE TRIM(${raw_followup_30day_result})
+    END;;
+  }
+
+
   dimension: followup_30day {
+    type: yesno
+    description: "A flag indicating the 14/30-day follow-up was completed (also includes 3 day bouncebacks)"
+    sql: ${complete_date} IS NOT NULL AND
+    ((${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} != '') OR
+    ${bounceback_3day} OR ${bounceback_14day}) ;;
+  }
+
+  dimension: followup_30day_sample_only {
     type: yesno
     description: "A flag indicating the 14/30-day follow-up was completed"
     sql: ${complete_date} IS NOT NULL AND
-    ((${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data') OR
-    ${bounceback_3day} OR ${bounceback_14day}) ;;
+          (${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} != '')  ;;
+  }
+
+  measure: count_followup_30day_sample_only {
+    type: count_distinct
+    sql: ${care_request_id}    ;;
+    filters: {
+      field: followup_30day_sample_only
+      value: "yes"
+    }
   }
 
   # Add 3 or 30 day followup measures
@@ -1153,6 +1194,22 @@ view: care_request_flat {
       WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'hospitalization_different_complaint'
       WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ed_different_complaint'
       WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_30day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_30day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'no_ed-hospitalization'
+      ELSE NULL
+      END
+      ;;
+  }
+
+  dimension: followup_results_3_14day_bounceback {
+    description: "Consolidated followup results from 3 and 14 day results with 14 day followup segmented into separate categories. This returns a single value from the three possible results based on the hierarchy of hospitalization_same, ed_same, Hospitalization_differing, Ed_differing, No_ed_hosptilization, and NULL'"
+    sql: CASE
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT')) AND (${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'Hospitilization Same Complaint with 30 Day Followup'
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' )) AND (${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'ED Same Complaint with 30 Day Followup'
+
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' THEN 'Hospitilization Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' THEN 'ED Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'Hospitilization Different Complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ED Different Complaint'
+      WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'No Hospilization/ED'
       ELSE NULL
       END
       ;;
