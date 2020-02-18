@@ -113,6 +113,7 @@ view: sf_activities {
 
 
   measure: count_activities {
+    label: "Activities"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -123,6 +124,7 @@ view: sf_activities {
   }
 
   measure: count_calls {
+    label: "Calls"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -133,6 +135,8 @@ view: sf_activities {
   }
 
   measure: percent_calls_made{
+    label: "Calls Made Percent"
+
     type: number
     value_format: "00.0%"
     sql: case when ${count_calls_intended} = 0 then 0 else
@@ -140,6 +144,8 @@ view: sf_activities {
   }
 
   measure: percent_calls_answered{
+    label: "Answered Calls Percent"
+
     type: number
     value_format: "00.0%"
     sql: case when ${count_calls} = 0 then 0 else
@@ -147,6 +153,7 @@ view: sf_activities {
   }
 
   measure: percent_meetings_booked{
+    label: "Meetings Booked Percent"
     type: number
     value_format: "00.0%"
     sql: case when ${count_calls} = 0 then 0 else
@@ -154,6 +161,8 @@ view: sf_activities {
   }
 
   measure: percent_meetings_booked_answered{
+    label: "Meetings Booked Answered Percent"
+
     type: number
     value_format: "00.0%"
     sql:  case when ${count_calls_answered} = 0 then 0 else
@@ -161,6 +170,7 @@ view: sf_activities {
   }
 
   measure: count_calls_answered {
+    label: "Answered Calls"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -175,6 +185,7 @@ view: sf_activities {
   }
 
   measure: count_calls_booked_a_meeting {
+    label: "Booked Meetings"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -189,7 +200,7 @@ view: sf_activities {
   }
 
   measure: count_calls_intended {
-    label: "Count Planned Calls"
+    label: "Planned Calls"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
