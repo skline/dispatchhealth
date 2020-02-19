@@ -140,6 +140,16 @@ view: markets {
 
   }
 
+  dimension: name_adj_dfw {
+    type: string
+    description: "Market name where WMFR is included as part of Denver and merges Dallas FTW"
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
+    when ${TABLE}.name in('Dallas', 'Fort Worth') then 'Dallas/Fort Worth'
+      else ${name} end;;
+
+  }
+
+
   dimension: name_adj_productivity_url {
     type: string
     description: "ONLY USE for Productivty dashboard: Contains URL Link to Market Productivity Detail. Market name where WMFR is included as part of Denver"

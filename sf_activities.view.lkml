@@ -7,7 +7,7 @@ view: sf_activities {
   }
   dimension: cem {
     type: yesno
-    sql:  lower(${assigned}) not in ('syeda abbas', 'matthew callman', 'melanie plaksin', 'karrie austin escobedo', 'christine greimann');;
+    sql:  lower(${assigned}) not in ('syeda abbas', 'matthew callman', 'melanie plaksin', 'karrie austin escobedo', 'christine greimann','kendra tinsley');;
   }
 
   dimension: call {
@@ -84,6 +84,12 @@ view: sf_activities {
     sql: lower(${TABLE}."result") ;;
   }
 
+  dimension: comments {
+    type: string
+    sql: lower(${TABLE}."comments") ;;
+  }
+
+
   dimension: subject {
     type: string
     sql: lower(${TABLE}."subject") ;;
@@ -107,6 +113,7 @@ view: sf_activities {
 
 
   measure: count_activities {
+    label: "Activities"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -116,7 +123,19 @@ view: sf_activities {
     }
   }
 
+  measure: count_activities_accounts {
+    label: "Activities (Unique Accounts)"
+    type: count_distinct
+    sql_distinct_key: ${sf_accounts.account_id} ;;
+    sql:${sf_accounts.account_id} ;;
+    filters: {
+      field: actual_activity
+      value: "yes"
+    }
+  }
+
   measure: count_calls {
+    label: "Calls"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -126,8 +145,92 @@ view: sf_activities {
     }
   }
 
+  measure: count_calls_accounts{
+    label: "Calls (Unique Accounts)"
+    type: count_distinct
+    sql_distinct_key:  ${sf_accounts.account_id} ;;
+    sql:  ${sf_accounts.account_id};;
+    filters: {
+      field: call
+      value: "yes"
+    }
+  }
+
+
+  measure: percent_calls_made{
+    label: "Calls Made Percent"
+
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls_intended} = 0 then 0 else
+    ${count_calls}::float /${count_calls_intended}::float end;;
+  }
+
+  measure: percent_calls_made_accounts{
+    label: "Calls Made Percent (Unique Accounts)"
+
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls_intended_accounts} = 0 then 0 else
+      ${count_calls_accounts}::float /${count_calls_intended_accounts}::float end;;
+  }
+
+
+  measure: percent_calls_answered{
+    label: "Answered Calls Percent"
+
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls} = 0 then 0 else
+    ${count_calls_answered}::float /${count_calls}::float end;;
+  }
+
+  measure: percent_calls_answered_accounts{
+    label: "Answered Calls Percent (Unique Accounts)"
+
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls_accounts} = 0 then 0 else
+      ${count_calls_answered_accounts}::float /${count_calls_accounts}::float end;;
+  }
+
+  measure: percent_meetings_booked{
+    label: "Meetings Booked Percent"
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls} = 0 then 0 else
+    ${count_calls_booked_a_meeting}::float /${count_calls}::float end;;
+  }
+
+  measure: percent_meetings_booked_accounts{
+    label: "Meetings Booked Percent (Unique Accounts)"
+    type: number
+    value_format: "00.0%"
+    sql: case when ${count_calls_accounts} = 0 then 0 else
+      ${count_calls_booked_a_meeting_accounts}::float /${count_calls_accounts}::float end;;
+  }
+
+  measure: percent_meetings_booked_answered{
+    label: "Meetings Booked (Answered) Percent"
+
+    type: number
+    value_format: "00.0%"
+    sql:  case when ${count_calls_answered} = 0 then 0 else
+    ${count_calls_booked_a_meeting}::float /${count_calls_answered}::float end;;
+  }
+
+
+  measure: percent_meetings_booked_answered_accounts{
+    label: "Meetings Booked (Answered) Percent (Unique Accounts)"
+    type: number
+    value_format: "00.0%"
+    sql:  case when ${count_calls_answered_accounts} = 0 then 0 else
+      ${count_calls_booked_a_meeting_accounts}::float /${count_calls_answered_accounts}::float end;;
+  }
+
 
   measure: count_calls_answered {
+    label: "Answered Calls"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -141,7 +244,24 @@ view: sf_activities {
     }
   }
 
+
+  measure: count_calls_answered_accounts {
+    label: "Answered Calls (Unique Accounts)"
+    type: count_distinct
+    sql_distinct_key: ${sf_accounts.account_id} ;;
+    sql: ${sf_accounts.account_id} ;;
+    filters: {
+      field: call
+      value: "yes"
+    }
+    filters: {
+      field: call_answered
+      value: "yes"
+    }
+  }
+
   measure: count_calls_booked_a_meeting {
+    label: "Booked Meetings"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -155,8 +275,23 @@ view: sf_activities {
     }
   }
 
+  measure: count_calls_booked_a_meeting_accounts {
+    label: "Booked Meetings (Unique Accounts)"
+    type: count_distinct
+    sql_distinct_key: ${sf_accounts.account_id} ;;
+    sql: ${sf_accounts.account_id} ;;
+    filters: {
+      field: call
+      value: "yes"
+    }
+    filters: {
+      field: call_booked_a_meeting
+      value: "yes"
+    }
+  }
+
   measure: count_calls_intended {
-    label: "Count Planned Calls"
+    label: "Planned Calls"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -166,7 +301,19 @@ view: sf_activities {
     }
   }
 
+  measure: count_calls_intended_accounts {
+    label: "Planned Calls  (Unique Accounts)"
+    type: count_distinct
+    sql_distinct_key: ${sf_accounts.account_id} ;;
+    sql: ${sf_accounts.account_id} ;;
+    filters: {
+      field: task_type
+      value: "call"
+    }
+  }
+
   measure: count_emails {
+    label: "Emails"
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -176,7 +323,20 @@ view: sf_activities {
     }
   }
 
+  measure: count_emails_accounts {
+    type: count_distinct
+    label: "Emails (Unique Accounts)"
+    sql_distinct_key: ${sf_accounts.account_id} ;;
+    sql: ${sf_accounts.account_id} ;;
+    filters: {
+      field: email
+      value: "yes"
+    }
+  }
+
   measure: count_priority_account_activities {
+    label: "Priority Account Activities"
+
     type: count_distinct
     sql_distinct_key: ${activity_id} ;;
     sql: ${activity_id} ;;
@@ -188,8 +348,21 @@ view: sf_activities {
       field: actual_activity
       value: "yes"
     }
+  }
 
-
+  measure: count_priority_account_activities_accounts {
+    label: "Priority Account Activities (Unique Accounts)"
+    type: count_distinct
+    sql_distinct_key: ${sf_accounts.account_id} ;;
+    sql:${sf_accounts.account_id} ;;
+    filters: {
+      field: sf_accounts.priority
+      value: "yes"
+    }
+    filters: {
+      field: actual_activity
+      value: "yes"
+    }
   }
 
   measure: count_meetings {
@@ -211,4 +384,23 @@ view: sf_activities {
     }
   }
 
+
+  measure: count_meetings_unique_accounts {
+    label: "Count In-person Activity (Unique Accounts)"
+    type: count_distinct
+    sql_distinct_key: ${sf_accounts.account_id} ;;
+    sql: ${sf_accounts.account_id} ;;
+    filters: {
+      field: email
+      value: "no"
+    }
+    filters: {
+      field: call
+      value: "no"
+    }
+    filters: {
+      field: actual_activity
+      value: "yes"
+    }
+  }
 }
