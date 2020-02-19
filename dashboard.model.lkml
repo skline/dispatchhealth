@@ -21,7 +21,6 @@ explore: care_requests {
     user_attribute: "market_name"
   }
 
-
 # Join all Athena data warehouse feed tables -- DE
   join: athenadwh_patient_insurances_clone {
     relationship: one_to_many
@@ -398,6 +397,10 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${on_route_locations.care_request_id} ;;
   }
 
+  join: stop_times_by_care_request {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${stop_times_by_care_request.care_request_id} ;;
+  }
 
   join: icd_visit_joins_clone {
     relationship: many_to_one
@@ -2810,6 +2813,11 @@ explore: shift_teams
   join: users {
     relationship: one_to_one
     sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+  join: zizzl_detailed_shift_hours {
+    relationship: one_to_many
+    sql_on: ${users.id} = ${zizzl_detailed_shift_hours.employee_id} ;;
   }
 
   join: provider_profiles {

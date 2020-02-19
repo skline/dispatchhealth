@@ -1,14 +1,18 @@
 view: shift_team_stops {
   derived_table: {
     sql: WITH stops AS (
-    SELECT
+SELECT
+    geo.id,
     geo.shift_team_id,
+    geo.latitude,
+    geo.longitude,
     CASE WHEN care.care_request_id IS NOT NULL THEN 'care request'
       WHEN brk.id IS NOT NULL THEN 'break'
       ELSE 'other'
     END AS stop_type,
     geo.car_id,
     care.care_request_id,
+    care.market_id,
     geo.stop_time,
     geo.start_time,
     care.accepted_time,
@@ -27,6 +31,7 @@ view: shift_team_stops {
         cr.id AS care_request_id,
         st.id AS shift_team_id,
         st.car_id,
+        mkt.id AS market_id,
         MAX(cra.started_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) AS accepted_time,
         MAX(cros.started_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) AS on_scene_time,
         MIN(crc.started_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) AS completed_time
@@ -43,48 +48,104 @@ view: shift_team_stops {
             ON cr.market_id = mkt.id
         LEFT JOIN looker_scratch.timezones tz
             ON mkt.sa_time_zone = tz.rails_tz
-        GROUP BY 1,2,3
-        ORDER BY 4) AS care
+        GROUP BY 1,2,3,4
+        ORDER BY 5) AS care
     ON care.shift_team_id = geo.shift_team_id AND care.completed_time >= geo.stop_time AND care.on_scene_time <= geo.start_time
     LEFT JOIN public.breaks brk
         ON geo.shift_team_id = brk.shift_team_id AND brk.start_time AT TIME ZONE 'UTC' AT TIME ZONE geo.timezone <= geo.start_time
         AND brk.end_time AT TIME ZONE 'UTC' AT TIME ZONE geo.timezone >= geo.stop_time
-    --WHERE geo.shift_team_id = 20335
-    GROUP BY 1,2,3,4,5,6,7,8
-    ORDER BY 5)
+    --WHERE geo.shift_team_id = 28166
+    WHERE geo.shift_team_id IS NOT NULL
+    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
+    ORDER BY 1,5
+    )
 
 SELECT
-  shift_team_id,
-  stop_type,
-  car_id,
-  SUM(num_stops) AS num_stops,
-  COUNT(DISTINCT care_request_id) AS num_care_requests,
-  SUM(total_stop_time) AS total_stop_time,
-  MAX(max_stop_time) AS max_stop_time,
-  SUM(CASE WHEN stop_type <> 'care request' AND num_assigned > 0 THEN 1 ELSE 0 END) AS stops_with_assigned_cr
-  FROM (
-    SELECT
-      stops.*,
-      COUNT(DISTINCT(fut.care_request_id)) AS num_assigned
-      FROM stops
-      LEFT JOIN stops AS fut
-        ON stops.shift_team_id = fut.shift_team_id AND stops.stop_type <> 'care request' AND fut.stop_type = 'care request'
-           AND fut.accepted_time < stops.stop_time AND stops.stop_time < fut.completed_time
-      GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
-      ORDER BY stops.stop_time) AS ss
-  WHERE shift_team_id IS NOT NULL
-  GROUP BY 1,2,3
-  ORDER BY 1,2 ;;
+                MIN(stops.id) AS id,
+                stops.shift_team_id,
+                ROUND(ad.latitude::numeric,5) AS latitude,
+                ROUND(ad.longitude::numeric,5) AS longitude,
+                stop_type,
+                car_id,
+                care_request_id,
+                market_id,
+                MIN(stop_time) AS stop_time,
+                MAX(start_time) AS start_time,
+                accepted_time,
+                completed_time,
+                MAX(assigned_care_requests) AS assigned_care_requests,
+                np.total_stop_time,
+                np.num_patients,
+                np.total_stop_time / np.num_patients AS on_scene_time
+            FROM stops
+            LEFT JOIN public.addressable_items ai
+                ON stops.care_request_id = ai.addressable_id
+            LEFT JOIN public.addresses ad
+                ON ai.address_id = ad.id
+            LEFT JOIN (
+            SELECT
+                shift_team_id,
+                ROUND(ad.latitude::numeric,5) AS latitude,
+                ROUND(ad.longitude::numeric,5) AS longitude,
+                COUNT(DISTINCT care_request_id) AS num_patients,
+                SUM(total_stop_time) AS total_stop_time
+            FROM stops
+            LEFT JOIN public.addressable_items ai
+                ON stops.care_request_id = ai.addressable_id
+            LEFT JOIN public.addresses ad
+                ON ai.address_id = ad.id
+            WHERE stop_type = 'care request'
+            GROUP BY 1,2,3) np
+                ON ROUND(ad.latitude::numeric,5) = np.latitude AND ROUND(ad.longitude::numeric,5) = np.longitude
+            WHERE stop_type = 'care request'
+            GROUP BY 2,3,4,5,6,7,8,11,12,14,15,16
+    UNION ALL (
+            SELECT
+                id,
+                shift_team_id,
+                latitude,
+                longitude,
+                stop_type,
+                car_id,
+                care_request_id,
+                market_id,
+                stop_time,
+                start_time,
+                accepted_time,
+                completed_time,
+                assigned_care_requests,
+                total_stop_time,
+                0 AS num_patients,
+                NULL AS on_scene_time
+            FROM stops
+            WHERE stop_type <> 'care request')
+ORDER BY 2,9;;
 
       sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
       indexes: ["shift_team_id"]
     }
 
-  dimension: compound_primary_key {
+  dimension: concat_primary_id {
     primary_key: yes
     hidden: yes
     type: string
-    sql: CONCAT(${TABLE}.shift_team_id::varchar, ' ', ${TABLE}.stop_type) ;;
+    #sql: CONCAT(${TABLE}.id::varchar, ' ', COALESCE(${TABLE}.care_request_id::varchar, '0')) ;;
+    sql: COALESCE(${care_request_id}::varchar, ${id}::varchar) ;;
+  }
+
+  dimension: id {
+    type: number
+    sql: ${TABLE}.id ;;
+  }
+
+  dimension: market_id {
+    type: number
+    sql: ${TABLE}.market_id ;;
+  }
+
+  dimension: car_id {
+    type: number
+    sql: ${TABLE}.car_id ;;
   }
 
     dimension: shift_team_id {
@@ -92,19 +153,14 @@ SELECT
       sql: ${TABLE}.shift_team_id ;;
     }
 
+    dimension: care_request_id {
+      type: number
+      sql: ${TABLE}.care_request_id ;;
+    }
+
     dimension: stop_type {
       type: string
       sql: ${TABLE}.stop_type ;;
-    }
-
-    dimension: num_stops {
-      type: number
-      sql: ${TABLE}.num_stops ;;
-    }
-
-    dimension: num_care_requests {
-      type: number
-      sql: ${TABLE}.num_care_requests ;;
     }
 
     dimension: total_stop_time {
@@ -112,46 +168,52 @@ SELECT
       sql: ${TABLE}.total_stop_time ;;
     }
 
-    dimension: max_stop_time {
+    dimension: num_patients {
       type: number
-      sql: ${TABLE}.max_stop_time ;;
+      sql: ${TABLE}.num_patients ;;
     }
 
-    dimension: stops_with_assigned_cr {
+    dimension: on_scene_time {
       type: number
-      sql: ${TABLE}.stops_with_assigned_cr ;;
+      sql: ${TABLE}.on_scene_time ;;
     }
+
+    dimension: latitude {
+      type: number
+      sql: ${TABLE}.latitude ;;
+    }
+
+  dimension: longitude {
+    type: number
+    sql: ${TABLE}.longitude ;;
+  }
+
+  dimension: stop_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
+  }
 
     measure: num_shifts {
       type: count_distinct
       sql: ${shift_team_id} ;;
     }
 
-    measure: total_stops {
-      type: sum
-      description: "The total number of stops"
-      sql: ${num_stops} ;;
-    }
-
-    measure: total_stops_with_assigned_cr {
-      description: "The total number of stops where at least 1 care request is currently assigned"
-      type: sum
-      sql: ${stops_with_assigned_cr} ;;
-    }
-
-    measure: avg_number_other_stops {
-      type: average
-      sql: ${num_stops} ;;
-      filters: {
-        field: stop_type
-        value: "other"
-      }
-    }
+  measure: num_stops {
+    type: count_distinct
+    sql: ${concat_primary_id} ;;
+  }
 
     measure: avg_stop_time {
-      type: number
-      sql: SUM(${total_stop_time}) / SUM(${num_stops}) ;;
+      type: average_distinct
+      sql: ${total_stop_time} ;;
       value_format: "0.00"
+    }
+
+    measure: avg_on_scene_time {
+      type: average_distinct
+      sql: ${on_scene_time} ;;
+      value_format: "0.0"
     }
 
 
