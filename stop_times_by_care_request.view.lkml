@@ -117,6 +117,19 @@ SELECT
     sql: ${TABLE}.on_scene_time ;;
   }
 
+  dimension: actual_minus_pred_on_scene {
+    type: number
+    description: "The actual (car stop time) on scene time minus predicted on scene time"
+    sql: ${on_scene_time} - ${care_request_flat.mins_on_scene_predicted} ;;
+  }
+
+  dimension: real_minus_pred_tier {
+    type: tier
+    tiers: [-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60]
+    style: integer
+    sql: ${actual_minus_pred_on_scene} ;;
+    }
+
   measure: sum_patients {
     type: count_distinct
     sql: ${care_request_id} ;;

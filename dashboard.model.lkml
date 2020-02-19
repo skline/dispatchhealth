@@ -1260,6 +1260,43 @@ join: ga_pageviews_clone {
 
 }
 
+explore: shift_team_stops {
+  join: shift_teams {
+    relationship: many_to_one
+    sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
+  }
+
+  join: shift_team_members {
+    relationship: many_to_one
+    sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
+  }
+
+  join: users {
+    relationship: many_to_one
+    sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
+  }
+
+  join: provider_profiles {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_profiles.user_id} ;;
+  }
+
+  join: cars {
+    relationship: many_to_one
+    sql_on: ${shift_teams.car_id} = ${cars.id} ;;
+  }
+
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${cars.market_id} = ${markets.id_adj} ;;
+  }
+
+  join: timezones {
+    relationship: one_to_one
+    sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
+  }
+}
+
 explore: shift_details {
   join: markets {
     relationship: one_to_many
