@@ -42,6 +42,13 @@ view: market_start_date {
     sql: extract(year from age(date_trunc('month', ${care_request_flat.complete_raw}), date_trunc('month',${market_start_raw})))*12 + extract(month from age(date_trunc('month', ${care_request_flat.complete_raw}), date_trunc('month',${market_start_raw}))) ;;
   }
 
+  dimension: market_region {
+    description: "Market Region"
+    type:  string
+    sql: ${TABLE}.market_region ;;
+
+  }
+
 #   dimension: market_start_month_flag {
 #     type: yesno
 #     sql: ${market_age} = 0 ;;
