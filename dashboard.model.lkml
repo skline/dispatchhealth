@@ -2833,6 +2833,10 @@ explore: shift_teams
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
   }
 
+  join: market_start_date{
+    sql_on: ${markets.id}=${market_start_date.market_id} ;;
+  }
+
   join: timezones {
     relationship: many_to_one
     sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
