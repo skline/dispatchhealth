@@ -314,6 +314,12 @@ view: care_request_flat {
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})/60 -EXTRACT(EPOCH FROM ${created_raw})/60 ;;
   }
 
+  dimension: accepted_initial_to_on_scene_minutes {
+    type: number
+    description: "The number of minutes between when a care request is accepted time and on scene time"
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw})/60 -EXTRACT(EPOCH FROM ${accept_initial_raw})/60 ;;
+  }
+
   dimension: on_scene_time_tier {
     type: tier
     tiers: [10,20,30,40,50,60,70,80,90,100]
@@ -800,6 +806,14 @@ view: care_request_flat {
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${accepted_to_resolved_minutes} ;;
+  }
+
+  measure: average_accepted_initial_to_on_scene_minutes{
+    type: average_distinct
+    description: "The average minutes between the initial accepted time and On-Scene Time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${accepted_initial_to_on_scene_minutes} ;;
   }
 
 
