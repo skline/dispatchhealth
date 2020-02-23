@@ -14,7 +14,8 @@ SELECT
     slt.market_id AS loaned_market_id,
     mktl.name AS loaned_market,
     MAX(slt.created_at) AS start_loaned,
-    MAX(slf.created_at) AS stop_loaned
+    MAX(slf.created_at) AS stop_loaned,
+    RANK() OVER(PARTITION BY users.id, DATE(st.start_time AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz) ORDER BY st.start_time) AS row_num
     FROM public.shift_teams st
     LEFT JOIN public.shift_team_members stm
         ON st.id = stm.shift_team_id
@@ -34,7 +35,6 @@ SELECT
         ON st.id = slf.shift_team_id AND slf.lend is FALSE
     LEFT JOIN public.markets mktl
         ON slt.market_id = mktl.id
-    --WHERE slt.lend IS TRUE
     GROUP BY 1,2,3,4,5,6,7,8,9,10),
 sh AS (
 SELECT
@@ -53,8 +53,7 @@ SELECT
             position,
             activities,
             partner,
-            time_off,
-            ROW_NUMBER() OVER(PARTITION BY employee_id,employee_ein, counter_date,counter_name ORDER BY created_at DESC) AS row_num
+            time_off
         FROM looker_scratch.zizzl_detailed_shift_hours)
 
 SELECT DISTINCT
@@ -86,10 +85,7 @@ SELECT DISTINCT
     FROM sh
     LEFT JOIN shift_info
         ON shift_info.user_id = sh.employee_id AND
-        DATE(shift_info.shift_start) = sh.counter_date AND sh.row_num = 1
-    --WHERE shift_info.shift_team_id = 27777
-    --WHERE counter_name IN ('Ambassador') AND provider_type = 'APP'
-    --WHERE shift_team_id IN (25942)
+        DATE(shift_info.shift_start) = sh.counter_date AND shift_info.row_num = 1
     ORDER BY counter_date, employee_id, provider_type, counter_name ;;
 
   sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
@@ -106,7 +102,7 @@ SELECT DISTINCT
     dimension:shift_team_id {
       type: number
       description: "The primary key from the public shift_teams view"
-      sql: ${TABLE}. ;;
+      sql: ${TABLE}.shift_team_id ;;
     }
     dimension_group: local_shift_start {
       type: time
@@ -222,6 +218,7 @@ SELECT DISTINCT
 
    dimension: counter_hours {
     type: number
+    value_format: "#,##0.00"
     description: "The punched hours worked"
     sql: ${TABLE}.counter_hours ;;
     }
@@ -250,6 +247,7 @@ SELECT DISTINCT
 
    dimension: gross_pay {
     type: number
+    value_format: "$#,##0.00"
     description: "The amount paid for hours worked"
     sql: ${TABLE}.gross_pay ;;
     }
