@@ -53,11 +53,12 @@ SELECT
             position,
             activities,
             partner,
-            time_off
+            time_off,
+            RANK() OVER(PARTITION BY employee_id, counter_date, counter_name ORDER BY updated_at DESC) AS row_num
         FROM looker_scratch.zizzl_detailed_shift_hours)
 
 SELECT DISTINCT
-    CONCAT(sh.employee_id::varchar,sh.employee_ein,counter_date::varchar,counter_name,activities) AS primary_key,
+    CONCAT(sh.employee_id::varchar,sh.employee_ein,counter_date::varchar,sh.counter_name,sh.position,sh.activities) AS primary_key,
     sh.employee_id,
     sh.first_name,
     sh.last_name,
@@ -85,7 +86,7 @@ SELECT DISTINCT
     FROM sh
     LEFT JOIN shift_info
         ON shift_info.user_id = sh.employee_id AND
-        DATE(shift_info.shift_start) = sh.counter_date AND shift_info.row_num = 1
+        DATE(shift_info.shift_start) = sh.counter_date AND shift_info.row_num = 1 AND sh.row_num = 1
     ORDER BY counter_date, employee_id, provider_type, counter_name ;;
 
   sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
@@ -229,7 +230,7 @@ SELECT DISTINCT
       sql: ${counter_hours} ;;
       value_format: "#,##0.00"
       filters: {
-        field: regular_shift_hours
+        field: direct_shift_hours
         value: "yes"
       }
     }
@@ -240,7 +241,7 @@ SELECT DISTINCT
     sql: ${counter_hours} ;;
     value_format: "#,##0.00"
     filters: {
-      field: special_shift_hours
+      field: special_direct_hours
       value: "yes"
     }
   }
@@ -258,7 +259,7 @@ SELECT DISTINCT
     sql: ${gross_pay} ;;
     value_format: "$#,##0.00"
     filters: {
-      field: regular_shift_hours
+      field: direct_shift_hours
       value: "yes"
     }
   }
@@ -269,7 +270,7 @@ SELECT DISTINCT
     sql: ${gross_pay} ;;
     value_format: "$#,##0.00"
     filters: {
-      field: special_shift_hours
+      field: special_direct_hours
       value: "yes"
     }
   }
@@ -283,20 +284,26 @@ SELECT DISTINCT
     dimension: regular_shift_hours {
       type: yesno
       description: "A flag indicating regular paid hours. Additional pay may be added for the same hours"
-      sql: ${counter_name} IN ('Regular','Salary Plus') ;;
+      sql: ${counter_name} IN ('Regular','Salary Plus') AND ${activities} IS NULL ;;
     }
 
-  dimension: special_shift_hours {
+  dimension: direct_shift_hours {
+    type: yesno
+    description: "A flag indicating hours worked for direct costs. Administration and training are excluded."
+    sql: ${counter_name} IN ('Regular','Salary Plus') AND ${activities} IS NULL AND ${shift_name} != 'Administration';;
+  }
+
+  dimension: special_direct_hours {
     type: yesno
     description: "A flag indicating special paid hours (e.g. Ambassador, Solo Shift, 1.5 Time, etc."
     sql: ${counter_name} IN ('Overtime 0.5','Holiday Worked 0.5','Double Pay','Ambassador',
-                             'Solo Shift','On Call Premium','Time and Half') ;;
+                             'Solo Shift','On Call Premium','Time and Half');;
   }
 
-  dimension: special_non_shift_hours {
+  dimension: special_non_direct_hours {
     type: yesno
     description: "A flag indicating special non-worked hours (e.g. Bereavement, PTO, etc."
-    sql: ${counter_name} IN ('PTO','Bereavement') ;;
+    sql: ${counter_name} IN ('PTO','Bereavement') OR ${shift_name} = 'Administration' ;;
   }
 
   dimension: training_hours {
@@ -315,8 +322,8 @@ SELECT DISTINCT
     type: string
     description: "The Zizzl shift name (e.g. 'NP/PA/DEN01')"
     sql: CASE
-          WHEN shift_name='' AND ${position} = 'advanced practice provider' THEN CONCAT('NP/PA/',${car_name})
-          WHEN shift_name='' AND ${position} = 'emt' THEN CONCAT('DHMT/',${car_name})
+          WHEN shift_name IS NULL AND ${provider_type} = 'APP' THEN CONCAT('NP/PA/',${car_name})
+          WHEN shift_name IS NULL AND ${provider_type} = 'DHMT' THEN CONCAT('DHMT/',${car_name})
           ELSE ${TABLE}.shift_name
         END ;;
     }
