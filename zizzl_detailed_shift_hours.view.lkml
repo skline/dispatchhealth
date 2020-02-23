@@ -175,6 +175,11 @@ SELECT DISTINCT
       description: "The long name of the market to which the shift was loaned"
       sql: ${TABLE}.loaned_market ;;
     }
+    dimension: market_worked {
+      type: string
+      description: "The long name of the market where the shift worked, taking into account shift lending"
+      sql: COALESCE(${loaned_market}, ${market_name}, NULL) ;;
+    }
     dimension: employee_id {
       type: number
       description: "The primary key from the public users view"
@@ -193,7 +198,11 @@ SELECT DISTINCT
   dimension: provider_type {
     type: string
     description: "Provider type (e.g. 'APP','DHMT') if applicable"
-    sql: ${TABLE}.provider_type ;;
+    sql: CASE WHEN ${TABLE}.provider_type IS NULL AND ${position} = 'advanced practice provider' THEN 'APP'
+              WHEN ${TABLE}.provider_type IS NULL AND ${position} = 'emt' THEN 'DHMT'
+              ELSE ${TABLE}.provider_type
+         END ;;
+    # sql: ${TABLE}.provider_type ;;
   }
   dimension_group: counter {
     type: time
