@@ -86,7 +86,8 @@ SELECT DISTINCT
     FROM sh
     LEFT JOIN shift_info
         ON shift_info.user_id = sh.employee_id AND
-        DATE(shift_info.shift_start) = sh.counter_date AND shift_info.row_num = 1 AND sh.row_num = 1
+        DATE(shift_info.shift_start) = sh.counter_date AND shift_info.row_num = 1 --AND sh.row_num = 1
+    WHERE sh.row_num = 1
     ORDER BY counter_date, employee_id, provider_type, counter_name ;;
 
   sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
@@ -149,6 +150,11 @@ SELECT DISTINCT
     type: string
     description: "The employee's default job title"
     sql: ${TABLE}.employee_job_title ;;
+  }
+  dimension: care_team_employee {
+    type: yesno
+    description: "A flag indicating the employee is part of the CARE Team"
+    sql: ${employee_job_title} LIKE 'CARE %'   ;;
   }
     dimension: car_name {
       type: string
@@ -255,6 +261,21 @@ SELECT DISTINCT
     }
   }
 
+#   measure: sum_care_team_hours {
+#     type: sum_distinct
+#     description: "The sum of all CARE Team hours worked"
+#     sql: ${counter_hours} ;;
+#     value_format: "#,##0.00"
+#     filters: {
+#       field: regular_shift_hours
+#       value: "yes"
+#     }
+#     filters: {
+#       field: care_team_employee
+#       value: "yes"
+#     }
+#   }
+
    dimension: gross_pay {
     type: number
     value_format: "$#,##0.00"
@@ -299,7 +320,7 @@ SELECT DISTINCT
   dimension: direct_shift_hours {
     type: yesno
     description: "A flag indicating hours worked for direct costs. Administration and training are excluded."
-    sql: ${counter_name} IN ('Regular','Salary Plus') AND ${activities} IS NULL AND ${shift_name} != 'Administration';;
+    sql: ${counter_name} IN ('Regular','Salary Plus') AND ${activities} IS NULL AND (${shift_name} != 'Administration' OR ${shift_name} IS NULL);;
   }
 
   dimension: special_direct_hours {
