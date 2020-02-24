@@ -261,6 +261,17 @@ SELECT DISTINCT
     }
   }
 
+  measure: sum_non_direct_hours {
+    type: sum
+    description: "The sum of all non-direct hours (Training, PTO, Bereavement, etc.)"
+    sql: ${counter_hours} ;;
+    value_format: "#,##0.00"
+    filters: {
+      field: non_direct_hours
+      value: "yes"
+    }
+  }
+
 #   measure: sum_care_team_hours {
 #     type: sum_distinct
 #     description: "The sum of all CARE Team hours worked"
@@ -305,6 +316,17 @@ SELECT DISTINCT
     }
   }
 
+  measure: sum_non_direct_pay {
+    type: sum
+    description: "The sum of all gross pay for non-direct hours worked (Training, Overtime, Holiday, etc.)"
+    sql: ${gross_pay} ;;
+    value_format: "$#,##0.00"
+    filters: {
+      field: non_direct_hours
+      value: "yes"
+    }
+  }
+
    dimension: counter_name {
     type: string
     description: "The pay category (e.g. 'Regular','Overtime', etc.)"
@@ -330,10 +352,10 @@ SELECT DISTINCT
                              'Solo Shift','On Call Premium','Time and Half');;
   }
 
-  dimension: special_non_direct_hours {
+  dimension: non_direct_hours {
     type: yesno
-    description: "A flag indicating special non-worked hours (e.g. Bereavement, PTO, etc."
-    sql: ${counter_name} IN ('PTO','Bereavement') OR ${shift_name} = 'Administration' ;;
+    description: "A flag indicating non-direct hours (e.g. Training, Bereavement, PTO, etc."
+    sql: ${counter_name} IN ('PTO','Bereavement','Training') ;;
   }
 
   dimension: training_hours {
