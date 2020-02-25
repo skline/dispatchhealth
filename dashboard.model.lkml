@@ -3035,6 +3035,10 @@ explore: sf_activities {
     from: sf_accounts
     sql_on: ${parent_accounts.account_id}  = ${sf_accounts.parent_account_id};;
   }
+  join: sf_contacts {
+    sql_on: ${sf_contacts.account_id} = ${sf_accounts.account_id} ;;
+
+  }
 }
 
 explore: sf_contacts {
