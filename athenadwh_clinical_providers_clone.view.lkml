@@ -100,7 +100,8 @@ view: athenadwh_clinical_providers_clone {
 
   dimension: npi {
     type: string
-    sql: ${TABLE}.npi ;;
+    sql: CASE WHEN ${TABLE}.npi LIKE '%/%' THEN NULL
+          ELSE ${TABLE}.npi END;;
   }
 
   dimension: multicare_provider_flag {
