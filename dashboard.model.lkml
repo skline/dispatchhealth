@@ -3075,6 +3075,11 @@ explore: sf_contacts {
     sql_on: ${sf_contacts.account_id} = ${sf_accounts.account_id} ;;
   }
 
+  join: sf_activities{
+    sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
+  }
+
+
 
 }
 explore: renown_all_data {}
