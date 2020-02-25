@@ -153,6 +153,17 @@ view: genesys_conversation_summary {
     }
   }
 
+  measure: count_distinct_non_inbound {
+    label: "Count Distinct (non-Inbound Demand)"
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key:  ${conversationid};;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+  }
+
   measure: number_abandons {
     label: "Number of Abandons (Inbound Demand)"
     type: count_distinct
