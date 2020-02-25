@@ -154,7 +154,7 @@ view: genesys_conversation_summary {
   }
 
   measure: count_distinct_non_inbound {
-    label: "Count Distinct (non-Inbound Demand)"
+    label: "Count Distinct (Non-Inbound Demand)"
     type: count_distinct
     sql: ${conversationid} ;;
     sql_distinct_key:  ${conversationid};;
