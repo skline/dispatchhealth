@@ -160,7 +160,7 @@ view: genesys_conversation_summary {
     sql_distinct_key:  ${conversationid};;
     filters: {
       field: inbound_demand
-      value: "yes"
+      value: "no"
     }
   }
 
