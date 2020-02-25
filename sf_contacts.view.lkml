@@ -81,7 +81,8 @@ view: sf_contacts {
   }
 
   measure: count {
-    type: count
-    drill_fields: [market_name, full_name]
+    type: count_distinct
+    sql: ${contact_id} ;;
+    sql_distinct_key: ${contact_id} ;;
   }
 }

@@ -65,6 +65,24 @@ view: sf_activities {
     sql: ${TABLE}."start_date" ;;
   }
 
+  dimension: visits_after_activity {
+    type: yesno
+    sql: ${start_date} <= ${care_request_flat.on_scene_date} ;;
+  }
+
+  measure: complete_count_after_activity {
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: care_request_flat.complete
+      value: "yes"
+    }
+    filters: {
+      field: visits_after_activity
+      value: "yes"
+    }
+  }
+
   dimension_group: end {
     type: time
     timeframes: [

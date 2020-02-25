@@ -104,6 +104,12 @@ view: athenadwh_clinical_providers_clone {
           ELSE ${TABLE}.npi END;;
   }
 
+  dimension: npi_set {
+    type: yesno
+    sql: ${npi} is not null ;;
+  }
+
+
   dimension: multicare_provider_flag {
     description: "A flag indicating the provider is Multicare - Use only with the Athena letter recipient provider view"
     type: yesno
