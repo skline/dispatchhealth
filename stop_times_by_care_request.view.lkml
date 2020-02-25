@@ -64,7 +64,7 @@ SELECT
             MIN(ROUND(((ACOS(SIN(RADIANS(geo.latitude )) * SIN(RADIANS(care.latitude)) +
             COS(RADIANS(geo.latitude)) * COS(RADIANS(care.latitude)) * COS(RADIANS(care.longitude - geo.longitude))) * 6371) / 1.60934)::numeric, 4)) AS distance,
             COUNT(DISTINCT care.care_request_id) AS num_patients,
-            ROUND(SUM(geo.minutes_stopped)::int) AS total_stop_time
+            ROUND(SUM(DISTINCT geo.minutes_stopped)::int) AS total_stop_time
         FROM looker_scratch.shift_stop_times AS geo
         LEFT JOIN care
             ON care.shift_team_id = geo.shift_team_id AND
@@ -114,6 +114,7 @@ SELECT
 
   dimension: on_scene_time {
     type: number
+    value_format: "0.0"
     sql: ${TABLE}.on_scene_time ;;
   }
 
@@ -137,14 +138,15 @@ SELECT
 
   measure: total_on_scene_time {
     type: sum_distinct
+    value_format: "0.0"
     sql: ${on_scene_time} ;;
     sql_distinct_key: ${care_request_id} ;;
   }
 
   measure: avg_on_scene_time {
     type: average_distinct
-    sql: ${on_scene_time} ;;
     value_format: "0.0"
+    sql: ${on_scene_time} ;;
     sql_distinct_key: ${care_request_id} ;;
   }
 
