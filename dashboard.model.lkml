@@ -3078,6 +3078,13 @@ explore: sf_contacts {
   join: sf_activities{
     sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
   }
+  join: sf_markets_mapping {
+    sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
+  }
+  join: markets {
+    type: full_outer
+    sql_on: ${markets.id}=${sf_markets_mapping.market_id}   ;;
+  }
 
 
 
