@@ -65,10 +65,6 @@ view: shift_details {
       value: "yes"
     }
     filters: {
-      field: app_shift
-      value: "yes"
-    }
-    filters: {
       field: mcfaker
       value: "yes"
     }
