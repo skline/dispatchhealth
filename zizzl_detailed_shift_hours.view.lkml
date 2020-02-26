@@ -184,7 +184,7 @@ SELECT DISTINCT
     dimension: market_worked {
       type: string
       description: "The long name of the market where the shift worked, taking into account shift lending"
-      sql: COALESCE(${loaned_market}, ${market_name}, NULL) ;;
+      sql: COALESCE(${loaned_market}, ${market_name}, ${location}) ;;
     }
     dimension: employee_id {
       type: number
@@ -243,6 +243,7 @@ SELECT DISTINCT
       type: sum_distinct
       description: "The sum of all direct hours worked"
       sql: ${counter_hours} ;;
+      sql_distinct_key: ${primary_key} ;;
       value_format: "#,##0.00"
       filters: {
         field: direct_shift_hours
@@ -251,12 +252,25 @@ SELECT DISTINCT
     }
 
   measure: sum_special_hours {
-    type: sum
+    type: sum_distinct
     description: "The sum of all hours worked under special counter (Holiday, Overtime, etc.)"
     sql: ${counter_hours} ;;
+    sql_distinct_key: ${primary_key} ;;
     value_format: "#,##0.00"
     filters: {
       field: special_direct_hours
+      value: "yes"
+    }
+  }
+
+  measure: sum_pto_hours {
+    type: sum_distinct
+    description: "The sum of all hours worked under special counter (Holiday, Overtime, etc.)"
+    sql: ${counter_hours} ;;
+    sql_distinct_key: ${primary_key} ;;
+    value_format: "#,##0.00"
+    filters: {
+      field: pto_hours
       value: "yes"
     }
   }
@@ -272,21 +286,6 @@ SELECT DISTINCT
     }
   }
 
-#   measure: sum_care_team_hours {
-#     type: sum_distinct
-#     description: "The sum of all CARE Team hours worked"
-#     sql: ${counter_hours} ;;
-#     value_format: "#,##0.00"
-#     filters: {
-#       field: regular_shift_hours
-#       value: "yes"
-#     }
-#     filters: {
-#       field: care_team_employee
-#       value: "yes"
-#     }
-#   }
-
    dimension: gross_pay {
     type: number
     value_format: "$#,##0.00"
@@ -295,9 +294,10 @@ SELECT DISTINCT
     }
 
   measure: sum_direct_pay {
-    type: sum
+    type: sum_distinct
     description: "The sum of all gross pay for direct hours worked"
     sql: ${gross_pay} ;;
+    sql_distinct_key: ${primary_key};;
     value_format: "$#,##0.00"
     filters: {
       field: direct_shift_hours
@@ -306,12 +306,25 @@ SELECT DISTINCT
   }
 
   measure: sum_special_pay {
-    type: sum
-    description: "The sum of all gross pay for special hours worked (Overtime, Holiday, etc."
+    type: sum_distinct
+    description: "The sum of all gross pay for special hours worked (Overtime, Holiday, etc.)"
     sql: ${gross_pay} ;;
+    sql_distinct_key: ${primary_key} ;;
     value_format: "$#,##0.00"
     filters: {
       field: special_direct_hours
+      value: "yes"
+    }
+  }
+
+  measure: sum_pto_pay {
+    type: sum_distinct
+    description: "The sum of all PTO pay"
+    sql: ${gross_pay} ;;
+    sql_distinct_key: ${primary_key} ;;
+    value_format: "$#,##0.00"
+    filters: {
+      field: pto_hours
       value: "yes"
     }
   }
@@ -342,7 +355,9 @@ SELECT DISTINCT
   dimension: direct_shift_hours {
     type: yesno
     description: "A flag indicating hours worked for direct costs. Administration and training are excluded."
-    sql: ${counter_name} IN ('Regular','Salary Plus') AND ${activities} IS NULL AND (${shift_name} != 'Administration' OR ${shift_name} IS NULL);;
+    sql: ${counter_name} IN ('Regular','Salary Plus') AND ${activities} IS NULL
+         AND (${shift_name} != 'Administration' OR ${shift_name} IS NULL)
+         AND (${shift_name} LIKE 'DHMT/%' OR ${shift_name} LIKE 'NP/PA/%') ;;
   }
 
   dimension: special_direct_hours {
@@ -358,6 +373,12 @@ SELECT DISTINCT
     sql: ${counter_name} IN ('PTO','Bereavement','Training') ;;
   }
 
+  dimension: pto_hours {
+    type: yesno
+    description: "A flag indicating PTO hours"
+    sql: ${counter_name} = 'PTO' ;;
+  }
+
   dimension: training_hours {
     type: yesno
     description: "A flag indicating training hours"
@@ -368,7 +389,9 @@ SELECT DISTINCT
    dimension: location {
     type: string
     description: "The market location of the shift (or 'Corporate/Headquarters')"
-    sql: ${TABLE}.location ;;
+    sql: CASE WHEN ${TABLE}.location LIKE 'Ridgewood%' THEN 'Ridgewood'
+         ELSE ${TABLE}.location
+         END;;
     }
    dimension: shift_name {
     type: string
