@@ -214,7 +214,10 @@ view: shift_details {
     # sql: position('NP/PA' in ${TABLE}.schedule_name) > 0 ;;
     sql: ${schedule_name} LIKE '%NP/PA:%';;
   }
-
+dimension: app_shift_or_mcfaker {
+  type: yesno
+  sql: ${app_shift} or ${mcfaker} ;;
+  }
 
 dimension: dhmt_shift {
   type:  yesno
