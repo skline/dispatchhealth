@@ -70,8 +70,8 @@ view: care_requests {
 
   dimension: DHFU_follow_up {
     type: yesno
-    description: "The string 'dhfu' occurs in Chief Complaint - Dispatch Health Follow Up (Does NOT included Post-Acute"
-    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' ;;
+    description: " - Dispatch Health Follow Up - The string 'dhfu' occurs in Chief Complaint OR Risk Assessment protocol_name = 'Dispatchhealth Acute Care - Follow Up Visit' (Does NOT include Post-Acute)"
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' OR  ${risk_assessments.protocol_name} = 'Dispatchhealth Acute Care - Follow Up Visit';;
   }
 
 
@@ -958,6 +958,20 @@ view: care_requests {
     }
     filters: {
       field: post_acute_follow_up
+      value: "yes"
+    }
+  }
+
+  measure: count_dhfu_followups {
+    type: count_distinct
+    description: "Count of post-acute follow-up visits"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: DHFU_follow_up
       value: "yes"
     }
   }
