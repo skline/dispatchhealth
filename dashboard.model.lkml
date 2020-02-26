@@ -3090,6 +3090,15 @@ explore: sf_contacts {
     sql_on: ${markets.id}=${sf_markets_mapping.market_id}   ;;
   }
 
+  join: mailchimp_audiences_clone {
+    sql_on: ${mailchimp_audiences_clone.email} = ${sf_contacts.email} ;;
+  }
+
+  join: email_unsubscribes_clone {
+    sql_on: ${email_unsubscribes_clone.email} = ${sf_contacts.email} ;;
+  }
+
+
 
 
 }

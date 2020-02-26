@@ -5,6 +5,7 @@ view: genesys_conversation_summary {
     type: yesno
     sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill') and ${markets.id} is not null;;
   }
+
   dimension: abandoned {
     type: number
     sql: ${TABLE}."abandoned" ;;
