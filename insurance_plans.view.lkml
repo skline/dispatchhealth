@@ -41,13 +41,19 @@ view: insurance_plans {
     type: string
     description: "The prioritized note displayed in dashboard: 1. service line, 2. market, 3. insurance plans"
     sql: CASE
-          WHEN ${insurance_plan_service_lines.note}<>'' AND ${insurance_plan_service_lines.note} IS NOT NULL
+          WHEN trim(${insurance_plan_service_lines.note}) <>'' AND ${insurance_plan_service_lines.note} IS NOT NULL
           THEN ${insurance_plan_service_lines.note}
-          WHEN ${market_insurance_plans.note} <> '' AND ${market_insurance_plans.note} IS NOT NULL
+          WHEN trim(${market_insurance_plans.note}) <> '' AND ${market_insurance_plans.note} IS NOT NULL
           THEN ${market_insurance_plans.note}
-          WHEN ${note} <> '' AND ${note} IS NOT NULL THEN ${note}
+          WHEN trim(${note}) <> '' AND ${note} IS NOT NULL THEN ${note}
           ELSE NULL
         END ;;
+  }
+
+  measure: notes_prioritized {
+    type: string
+    description: "The prioritized notes displayed in dashboard: 1. service line, 2. market, 3. insurance plans"
+    sql: array_to_string(array_agg(DISTINCT ${note_prioritized}),' | ') ;;
   }
 
   dimension: package_id {
