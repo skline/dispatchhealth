@@ -2157,9 +2157,24 @@ explore: ga_pageviews_clone {
       sql_on: ${insurance_plans.state_id} = ${states.id};;
     }
 
+    join: insurance_plan_service_lines {
+      relationship: one_to_many
+      sql_on: ${insurance_plans.id} = ${insurance_plan_service_lines.insurance_plan_id} ;;
+    }
+
+    join: service_lines {
+      relationship: many_to_one
+      sql_on: ${insurance_plan_service_lines.service_line_id} = ${service_lines.id} ;;
+    }
+
     join: insurance_network_insurance_plans {
       relationship: one_to_one
       sql_on: ${insurance_plans.package_id} = ${insurance_network_insurance_plans.package_id} ;;
+    }
+
+    join: market_insurance_plans {
+      relationship: one_to_many
+      sql_on: ${insurance_plans.id} = ${market_insurance_plans.insurance_plan_id} ;;
     }
 
     join: insurance_networks {

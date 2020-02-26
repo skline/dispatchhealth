@@ -37,6 +37,19 @@ view: insurance_plans {
     sql: ${TABLE}.note ;;
   }
 
+  dimension: note_prioritized {
+    type: string
+    description: "The prioritized note displayed in dashboard: 1. service line, 2. market, 3. insurance plans"
+    sql: CASE
+          WHEN ${insurance_plan_service_lines.note}<>'' AND ${insurance_plan_service_lines.note} IS NOT NULL
+          THEN ${insurance_plan_service_lines.note}
+          WHEN ${market_insurance_plans.note} <> '' AND ${market_insurance_plans.note} IS NOT NULL
+          THEN ${market_insurance_plans.note}
+          WHEN ${note} <> '' AND ${note} IS NOT NULL THEN ${note}
+          ELSE NULL
+        END ;;
+  }
+
   dimension: package_id {
     type: string
     description: "Athena Package ID"
