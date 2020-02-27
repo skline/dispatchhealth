@@ -2425,19 +2425,19 @@ explore: uhc_ma_houston {
 
 }
 
-explore: shift_routes {
+# explore: shift_routes {
 
-  join: markets {
-    relationship: one_to_many
-    sql_on: ${markets.id} = ${shift_routes.market_id} ;;
-  }
+#   join: markets {
+#     relationship: one_to_many
+#     sql_on: ${markets.id} = ${shift_routes.market_id} ;;
+#   }
 
-  join: cars {
-    relationship: one_to_many
-    sql_on: ${cars.id} = ${shift_routes.car_id} ;;
-  }
+#   join: cars {
+#     relationship: one_to_many
+#     sql_on: ${cars.id} = ${shift_routes.car_id} ;;
+#   }
 
-}
+# }
 
 
 explore:thpg_providers  {
