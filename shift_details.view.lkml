@@ -57,7 +57,7 @@ view: shift_details {
 
   measure:  sum_valid_app_expected_shift_time_hours_mcfaker {
     type: sum
-    label: "Sum Expected App Assigned Hours Mcfaker"
+    label: "McFaker Hours"
     sql: ${expected_shift_time_hours};;
     value_format: "#,##0.00"
     filters: {

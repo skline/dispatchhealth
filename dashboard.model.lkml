@@ -2939,6 +2939,9 @@ explore: budget_projections_by_market_clone {
   join: markets {
     sql_on: ${markets.id} = ${budget_projections_by_market_clone.market_dim_id} ;;
   }
+  join: regional_markets {
+    sql_on: ${markets.id} = ${regional_markets.market_id} ;;
+  }
 }
 
 explore: diversion_savings_gross_by_insurance_group {}

@@ -41,6 +41,7 @@ view: target_staffing {
   }
 
   measure: sum_target_hours_future {
+    label: "Target Hours"
     type: sum_distinct
     sql_distinct_key: concat(${shift_details.local_expected_end_date}::varchar, ${markets_loan.name});;
     sql: ${target_hours} ;;
