@@ -41,6 +41,36 @@ view: sf_accounts {
     sql: ${TABLE}."last_activity" ;;
   }
 
+  dimension_group: now {
+    type: time
+    convert_tz: no
+
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: now();;
+  }
+
+  dimension_group: last_month {
+    type: time
+    convert_tz: no
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: now() - interval '1' month;;
+  }
+
+
   dimension: market {
     type: string
     sql: ${TABLE}."market" ;;
@@ -50,13 +80,22 @@ view: sf_accounts {
     type: string
     sql: ${TABLE}."neighborhood" ;;
   }
+
+
   dimension: priority {
     type: yesno
-    sql: ${priority_account_timestamp_raw} >=  date_trunc('month', now())::date - 70 ;;
+    sql: ${priority_account_timestamp_month} =  ${now_month} ;;
   }
+
+  dimension: priority_last_month {
+    type: yesno
+    sql: ${sf_priority_accounts.date_month} =  ${last_month_month} ;;
+  }
+
 
   dimension_group: priority_account_timestamp {
     type: time
+    convert_tz: no
     timeframes: [
       raw,
       date,
@@ -65,7 +104,7 @@ view: sf_accounts {
       quarter,
       year
     ]
-    sql: ${TABLE}."priority_account_timestamp" ;;
+    sql: ${TABLE}."priority_account_timestamp" + interval '7' day ;;
   }
 
   dimension: priority_action {
@@ -170,6 +209,7 @@ view: sf_accounts {
   }
 
   measure: count_priority {
+    label: "Count Priority (current month)"
     type: count_distinct
     sql: ${account_id} ;;
     sql_distinct_key: ${account_id} ;;
@@ -178,6 +218,18 @@ view: sf_accounts {
       value: "yes"
     }
   }
+
+  measure: count_priority_last_month {
+    label: "Count Priority (last month)"
+    type: count_distinct
+    sql: ${account_id} ;;
+    sql_distinct_key: ${account_id} ;;
+    filters:  {
+      field: priority_last_month
+      value: "yes"
+    }
+  }
+
 
   measure: count_priority_action_set {
     type: count_distinct
@@ -192,6 +244,7 @@ view: sf_accounts {
       value: "yes"
     }
   }
+
   measure: count_priority_dashboard_id_set {
     type: count_distinct
     sql: ${account_id} ;;

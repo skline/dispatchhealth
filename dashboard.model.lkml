@@ -1122,6 +1122,11 @@ explore: care_requests {
   join: sf_accounts{
     sql_on: ${sf_accounts.channel_items_id}=${channel_items.id} ;;
   }
+
+  join: sf_priority_accounts {
+    sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
+  }
+
   join: sf_activities {
     sql_on: ${sf_accounts.account_id} = ${sf_activities.account_id} ;;
   }
@@ -1541,6 +1546,11 @@ explore: channel_items {
  join: sf_accounts {
    sql_on: ${sf_accounts.channel_items_id} = ${channel_items.id} ;;
  }
+
+  join: sf_priority_accounts {
+    sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
+  }
+
 
 join: sf_markets_mapping {
   sql_on: ${sf_accounts.market} = ${sf_markets_mapping.market};;
@@ -2994,6 +3004,10 @@ explore: zizzl_employee_roster {}
 explore: sf_accounts {
   sql_always_where: ( ${markets.name} != 'West Metro Fire Rescue' or  ${markets.name} is null);;
 
+  join: sf_priority_accounts {
+    sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
+  }
+
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
   }
@@ -3032,6 +3046,10 @@ explore: sf_activities {
   join: sf_accounts {
     sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
   }
+  join: sf_priority_accounts {
+    sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
+  }
+
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
   }
@@ -3100,6 +3118,10 @@ explore: sf_contacts {
 
   join: sf_accounts{
     sql_on: ${sf_contacts.account_id} = ${sf_accounts.account_id} ;;
+  }
+
+  join: sf_priority_accounts {
+    sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
   }
 
   join: sf_activities{

@@ -18,7 +18,7 @@ view: sf_priority_accounts {
     ]
     convert_tz: no
     datatype: date
-    sql: ${TABLE}."date" ;;
+    sql: ${TABLE}."date"  + interval '7' day;;
   }
 
   dimension: priority_action {
