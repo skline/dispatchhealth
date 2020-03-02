@@ -56,7 +56,7 @@ view: care_requests {
     type: yesno
     description: "Chief complaint, risk protocol name, channel name or service line is post acute follow-up"
     sql:  ${chief_complaint_trimmed} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
-          ${risk_assessments.protocol_name} = 'Post-Acute Patient' OR
+          lower(${risk_assessments.protocol_name}) LIKE 'post-acute patient%' OR
           lower(${channel_items.name}) SIMILAR TO '%(pafu|post acute|post-acute|bridge-)%' OR
           lower(${service_lines.name}) LIKE 'post acute follow up%' ;;
   }
