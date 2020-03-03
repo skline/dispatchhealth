@@ -44,9 +44,8 @@ SELECT
             employee_ein,
             employee_job_title,
             counter_date,
-            counter_hours,
-            hourly_rate,
-            gross_pay,
+            SUM(counter_hours) AS counter_hours,
+            SUM(gross_pay) AS gross_pay,
             counter_name,
             location,
             provider_type,
@@ -54,8 +53,11 @@ SELECT
             activities,
             partner,
             time_off,
-            RANK() OVER(PARTITION BY employee_id, counter_date, counter_name ORDER BY updated_at DESC) AS row_num
-        FROM looker_scratch.zizzl_detailed_shift_hours)
+            DATE(created_at) AS updated,
+            ROW_NUMBER() OVER(PARTITION BY employee_id, counter_date, counter_name ORDER BY DATE(updated_at) DESC) AS row_num
+        FROM looker_scratch.zizzl_detailed_shift_hours
+        --WHERE counter_date = '2020-02-26' AND employee_id IN (45690,34702,31165,23965,23874,23607,15569,12925,10419)
+        GROUP BY 1,2,3,4,5,6,9,10,11,12,13,14,15,16, DATE(updated_at))
 
 SELECT DISTINCT
     CONCAT(sh.employee_id::varchar,sh.employee_ein,counter_date::varchar,sh.counter_name,sh.position,sh.activities) AS primary_key,
@@ -86,9 +88,10 @@ SELECT DISTINCT
     FROM sh
     LEFT JOIN shift_info
         ON shift_info.user_id = sh.employee_id AND
-        DATE(shift_info.shift_start) = sh.counter_date AND shift_info.row_num = 1 --AND sh.row_num = 1
+        DATE(shift_info.shift_start) = sh.counter_date AND shift_info.row_num = 1
     WHERE sh.row_num = 1
-    ORDER BY counter_date, employee_id, provider_type, counter_name ;;
+    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24
+    ORDER BY 1 ;;
 
   sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
   indexes: ["shift_team_id", "employee_id"]
