@@ -1281,6 +1281,11 @@ explore: zizzl_detailed_shift_hours {
     sql_on: ${zizzl_detailed_shift_hours.market_id} = ${market_start_date.market_id} ;;
   }
 
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${zizzl_detailed_shift_hours.market_id} = ${markets.id} ;;
+  }
+
 }
 
 explore: shift_team_stops {
