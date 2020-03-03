@@ -285,6 +285,19 @@ view: genesys_conversation_summary {
 
   }
 
+  measure: average_talk_time_minutes {
+    label: "Average Talk Time Minutes (Inbound Demand)"
+    type: average_distinct
+    value_format: "0.00"
+    sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
+    sql: ${totalagenttalkduration}::float/1000/60 ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+
+  }
+
 
   measure: median_talk_time {
     label: "Median Talk Time (Inbound Demand)"
@@ -331,7 +344,7 @@ view: genesys_conversation_summary {
     type: sum_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
-    sql: ${totalagenttalkduration}/1000/60 ;;
+    sql: ${totalagenttalkduration}::float/1000/60 ;;
     filters: {
       field: inbound_demand
       value: "yes"
@@ -358,7 +371,7 @@ view: genesys_conversation_summary {
     type: average_distinct
     value_format: "0.00"
     sql_distinct_key: concat(${conversationid}) ;;
-    sql: ${firstacdwaitduration}/1000/60 ;;
+    sql: ${firstacdwaitduration}::float/1000/60 ;;
     filters: {
       field: inbound_demand
       value: "yes"
@@ -505,7 +518,7 @@ view: genesys_conversation_summary {
     label: "Average Handle Time (Inbound Demand)"
 
     type: average_distinct
-    sql: round((${handle_time}/1000)/60,2) ;;
+    sql: ${handle_time}::float/1000/60 ;;
     sql_distinct_key:  ${conversationid};;
     value_format: "0.00"
     filters: {
