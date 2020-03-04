@@ -2854,6 +2854,16 @@ measure:  count_end_of_shift_dead_time_45_mins {
     }
   }
 
+  measure: lwbs_wait_time_too_long_count {
+    type: count_distinct
+    description: "Count of care requests where resolve reason is 'Wait time too long'"
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs_wait_time_too_long
+      value: "yes"
+    }
+  }
+
   measure: escalated_on_scene_count {
     type: count_distinct
     sql: ${care_request_id} ;;
