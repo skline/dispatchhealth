@@ -254,6 +254,18 @@ SELECT DISTINCT
       }
     }
 
+  measure: sum_direct_care_team_hours {
+    type: sum_distinct
+    description: "The sum of all direct CARE Team hours worked"
+    sql: ${counter_hours} ;;
+    sql_distinct_key: ${primary_key} ;;
+    value_format: "#,##0.00"
+    filters: {
+      field: direct_care_team_hours
+      value: "yes"
+    }
+  }
+
   measure: sum_special_hours {
     type: sum_distinct
     description: "The sum of all hours worked under special counter (Holiday, Overtime, etc.)"
@@ -304,6 +316,18 @@ SELECT DISTINCT
     value_format: "$#,##0.00"
     filters: {
       field: direct_shift_hours
+      value: "yes"
+    }
+  }
+
+  measure: sum_direct_care_team_pay {
+    type: sum_distinct
+    description: "The sum of all gross pay for direct hours worked"
+    sql: ${gross_pay} ;;
+    sql_distinct_key: ${primary_key};;
+    value_format: "$#,##0.00"
+    filters: {
+      field: direct_care_team_hours
       value: "yes"
     }
   }
@@ -363,10 +387,17 @@ SELECT DISTINCT
          AND (${shift_name} LIKE 'DHMT/%' OR ${shift_name} LIKE 'NP/PA/%') ;;
   }
 
+  dimension: direct_care_team_hours {
+    type: yesno
+    description: "A flag indicating hours worked for direct CARE Team costs."
+    sql: TRIM(${counter_name}) IN ('Regular')
+         AND (${shift_name} NOT LIKE 'DHMT/%' OR ${shift_name} IS NULL OR ${shift_name}='') ;;
+  }
+
   dimension: special_direct_hours {
     type: yesno
-    description: "A flag indicating special paid hours (e.g. Ambassador, Solo Shift, 1.5 Time, etc."
-    sql: ${counter_name} IN ('Overtime 0.5','Holiday Worked 0.5','Double Pay','Ambassador',
+    description: "A flag indicating special paid hours (e.g. Ambassador, Solo Shift, 1.5 Time, etc.)"
+    sql: ${counter_name} IN ('Overtime 0.5','Overtime','Holiday Worked 0.5','Double Pay','Ambassador',
                              'Solo Shift','On Call Premium','Time and Half');;
   }
 
@@ -375,6 +406,8 @@ SELECT DISTINCT
     description: "A flag indicating non-direct hours (e.g. Training, Bereavement, PTO, etc."
     sql: ${counter_name} IN ('PTO','Bereavement','Training') ;;
   }
+
+
 
   dimension: pto_hours {
     type: yesno
