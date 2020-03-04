@@ -65,6 +65,20 @@ view: sf_activities {
     sql: ${TABLE}."start_date" ;;
   }
 
+  measure: max_start {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      time
+    ]
+    sql: max(${TABLE}."start_date") ;;
+  }
+
   dimension: visits_after_activity {
     type: yesno
     sql: ${start_date} <= ${care_request_flat.on_scene_date} ;;
@@ -382,7 +396,10 @@ view: sf_activities {
       value: "yes"
     }
   }
-
+  dimension: in_person {
+    type: yesno
+    sql: not ${email} and not ${call} and ${actual_activity} ;;
+  }
   measure: count_meetings {
     label: "Count In-person Activity"
     type: count_distinct
