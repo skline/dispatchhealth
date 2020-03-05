@@ -30,6 +30,12 @@ view: power_of_attorneys {
     sql: ${TABLE}.patient_id ;;
   }
 
+  dimension: name {
+    type: string
+    description: "Name of person designated as power of attorney"
+    sql: ${TABLE}.name ;;
+  }
+
   dimension: patient_has_poa {
     type: yesno
     description: "A flag indicating that the patient has a power of attorney"
@@ -39,6 +45,12 @@ view: power_of_attorneys {
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;
+  }
+
+  dimension: relationship {
+    type: string
+    description: "Power of attorney relationship to patient"
+    sql: ${TABLE}.relationship ;;
   }
 
 

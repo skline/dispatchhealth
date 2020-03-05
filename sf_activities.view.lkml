@@ -121,6 +121,12 @@ view: sf_activities {
     sql: lower(${TABLE}."comments") ;;
   }
 
+  dimension: implementation {
+    type: string
+    sql: lower(${TABLE}."implementation") ;;
+  }
+
+
 
   dimension: subject {
     type: string
