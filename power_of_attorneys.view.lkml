@@ -47,7 +47,7 @@ view: power_of_attorneys {
     sql: ${TABLE}.phone ;;
   }
 
-  dimension: realtionship {
+  dimension: relationship {
     type: string
     description: "Power of attorney relationship to patient"
     sql: ${TABLE}.relationship ;;
