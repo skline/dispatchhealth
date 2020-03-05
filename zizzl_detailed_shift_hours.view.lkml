@@ -46,7 +46,10 @@ SELECT
             counter_date,
             SUM(counter_hours) AS counter_hours,
             SUM(gross_pay) AS gross_pay,
-            counter_name,
+            CASE
+                WHEN counter_name = 'Regular' AND provider_type = 'APP' THEN 'Salary Plus'
+                ELSE counter_name
+            END as counter_name,
             location,
             provider_type,
             position,
@@ -56,8 +59,7 @@ SELECT
             DATE(created_at) AS updated,
             ROW_NUMBER() OVER(PARTITION BY employee_id, counter_date, counter_name ORDER BY DATE(updated_at) DESC) AS row_num
         FROM looker_scratch.zizzl_detailed_shift_hours
-        --WHERE counter_date = '2020-02-26' AND employee_id IN (45690,34702,31165,23965,23874,23607,15569,12925,10419)
-        GROUP BY 1,2,3,4,5,6,9,10,11,12,13,14,15,16, DATE(updated_at))
+        GROUP BY 1,2,3,4,5,6,9,10,11,12,13,14,15,16, counter_name, DATE(updated_at))
 
 SELECT DISTINCT
     CONCAT(sh.employee_id::varchar,sh.employee_ein,counter_date::varchar,sh.counter_name,sh.position,sh.activities) AS primary_key,
@@ -100,7 +102,7 @@ SELECT DISTINCT
   dimension: primary_key {
     type: string
     primary_key: yes
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.primary_key ;;
   }
 
@@ -382,7 +384,7 @@ SELECT DISTINCT
   dimension: direct_shift_hours {
     type: yesno
     description: "A flag indicating hours worked for direct costs. Administration and training are excluded."
-    sql: ${counter_name} IN ('Regular','Salary Plus') AND ${activities} IS NULL
+    sql: ${counter_name} IN ('Regular','Salary Plus')
          AND (${shift_name} != 'Administration' OR ${shift_name} IS NULL)
          AND (${shift_name} LIKE 'DHMT/%' OR ${shift_name} LIKE 'NP/PA/%') ;;
   }
