@@ -32,7 +32,7 @@ view: power_of_attorneys {
 
   dimension: name {
     type: string
-    description: "Name of persion designated as POA"
+    description: "Name of person designated as power of attorney"
     sql: ${TABLE}.name ;;
   }
 
@@ -49,7 +49,7 @@ view: power_of_attorneys {
 
   dimension: realtionship {
     type: string
-    description: "Relationship of persion designated as power of attorney to patient"
+    description: "Power of attorney relationship to patient"
     sql: ${TABLE}.relationship ;;
   }
 
