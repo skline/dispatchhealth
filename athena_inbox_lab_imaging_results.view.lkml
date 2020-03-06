@@ -85,7 +85,7 @@ view: athena_inbox_lab_imaging_results {
     WHERE dcr.document_class IN ('LABRESULT','IMAGINGRESULT') AND dcr.document_class <> 'DELETED' ;;
 
       sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
-      indexes: ["document_id", "clinical_encounter_id", "clinical_provider_id"]
+      indexes: ["document_id"]
     }
 
   dimension: document_id {
