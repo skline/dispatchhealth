@@ -1,6 +1,19 @@
 view: care_request_flat {
   derived_table: {
     sql:
+WITH ort AS (
+    SELECT
+        st.id AS shift_team_id,
+        st.start_time,
+        cr.id AS care_request_id,
+        MAX(crs.created_at) AS on_route
+        FROM public.shift_teams st
+        LEFT JOIN public.care_requests cr
+            ON st.id = cr.shift_team_id
+        INNER JOIN public.care_request_statuses crs
+            ON cr.id = crs.care_request_id AND crs.name = 'on_route'
+        WHERE LOWER(cr.chief_complaint) <> 'test' AND crs.deleted_at IS NULL
+        GROUP BY 1,2,3)
     SELECT
         markets.id AS market_id,
         cr.id as care_request_id,
@@ -16,6 +29,7 @@ view: care_request_flat {
         max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_scene_date,
         MIN(coalesce(comp.started_at, esc.started_at)) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
         MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
+        fst_or.on_route AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS first_on_route_date,
         fu3.comment AS followup_3day_result,
         fu3.commentor_id AS followup_3day_id,
         fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS day3_followup_date,
@@ -139,9 +153,16 @@ view: care_request_flat {
               ON ur.role_id = roles.id AND roles.name IN ('csc','provider')
           WHERE crs.name = 'archived' AND crs.comment IS NOT NULL AND crs.deleted_at IS NULL
           GROUP BY 1,3,4,5) AS resolved
-    ON cr.id =resolved.care_request_id
+        ON cr.id =resolved.care_request_id
       LEFT JOIN care_request_statuses AS onroute
       ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
+      LEFT JOIN (
+        SELECT
+                shift_team_id,
+                MIN(on_route) AS on_route
+            FROM ort
+            GROUP BY shift_team_id) AS fst_or
+        ON cr.shift_team_id = fst_or.shift_team_id
       LEFT JOIN (
           SELECT
               care_request_id,
@@ -198,7 +219,7 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,
+      GROUP BY 1,2,3,4,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
                foc.first_on_scene_time,onscene.mins_on_scene_predicted;;
 
@@ -1414,6 +1435,24 @@ view: care_request_flat {
     sql: ${TABLE}.on_route_date ;;
   }
 
+  dimension_group: first_on_route {
+    type: time
+    description: "The first local date and time when the shift team went on-route"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.first_on_route_date ;;
+  }
+
   dimension_group: drive_start {
     type: time
     description: "The on-scene date and time minus the Google drive time"
@@ -2156,6 +2195,13 @@ view: care_request_flat {
     sql: EXTRACT(EPOCH FROM ${shift_end_raw} - ${shift_start_raw})/3600 ;;
   }
 
+  dimension: shift_start_to_first_onroute {
+      type: number
+      description: "The number of minutes between shift start and first on route"
+      sql: EXTRACT(EPOCH FROM ${first_on_route_raw} - ${shift_start_raw})/60 ;;
+      value_format: "0.0"
+  }
+
   dimension: end_of_shift_dead_time {
     type: number
     description: "The number of hours between last updated and shift end"
@@ -2183,6 +2229,13 @@ measure:  count_end_of_shift_dead_time_45_mins {
     field: end_of_shift_dead_time_45_mins
     value: "yes"
   }
+}
+
+measure: avg_first_on_route_mins {
+  type: average_distinct
+  description: "The average minutes between shift start and first on-route"
+  sql: ${shift_start_to_first_onroute} ;;
+  value_format: "0.0"
 }
 
 
