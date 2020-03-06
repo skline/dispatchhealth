@@ -6,13 +6,13 @@ WITH ort AS (
         st.id AS shift_team_id,
         st.start_time,
         cr.id AS care_request_id,
-        MAX(crs.created_at) AS on_route
+        MAX(crs.started_at) AS on_route
         FROM public.shift_teams st
         LEFT JOIN public.care_requests cr
             ON st.id = cr.shift_team_id
         INNER JOIN public.care_request_statuses crs
-            ON cr.id = crs.care_request_id AND crs.name = 'on_route'
-        WHERE LOWER(cr.chief_complaint) <> 'test' AND crs.deleted_at IS NULL
+            ON cr.id = crs.care_request_id AND crs.name = 'on_route' AND crs.deleted_at IS NULL
+        WHERE LOWER(cr.chief_complaint) <> 'test'
         GROUP BY 1,2,3)
     SELECT
         markets.id AS market_id,
@@ -30,6 +30,7 @@ WITH ort AS (
         MIN(coalesce(comp.started_at, esc.started_at)) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
         MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
         fst_or.on_route AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS first_on_route_date,
+        fst_cra.accepted AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS first_accepted_date,
         fu3.comment AS followup_3day_result,
         fu3.commentor_id AS followup_3day_id,
         fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS day3_followup_date,
@@ -164,6 +165,17 @@ WITH ort AS (
             GROUP BY shift_team_id) AS fst_or
         ON cr.shift_team_id = fst_or.shift_team_id
       LEFT JOIN (
+            SELECT
+                CAST(meta_data::json->> 'shift_team_id' AS INT) AS shift_team_id,
+                MIN(crs.started_at) AS accepted
+            FROM public.care_requests cr
+            LEFT JOIN public.care_request_statuses crs
+                ON cr.id = crs.care_request_id
+            WHERE crs.name = 'accepted' AND crs.deleted_at IS NULL AND meta_data::json->> 'shift_team_id' IS NOT NULL AND
+                  LOWER(cr.chief_complaint) <> 'test'
+            GROUP BY 1) AS fst_cra
+        ON cr.shift_team_id = fst_cra.shift_team_id
+      LEFT JOIN (
           SELECT
               care_request_id,
               started_at,
@@ -219,7 +231,7 @@ WITH ort AS (
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,4,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,
+      GROUP BY 1,2,3,4,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
                foc.first_on_scene_time,onscene.mins_on_scene_predicted;;
 
@@ -1451,6 +1463,24 @@ WITH ort AS (
       day_of_month
     ]
     sql: ${TABLE}.first_on_route_date ;;
+  }
+
+  dimension_group: first_accepted {
+    type: time
+    description: "The first local date and time when the shift team was assigned a care request"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.first_accepted_date ;;
   }
 
   dimension_group: drive_start {
