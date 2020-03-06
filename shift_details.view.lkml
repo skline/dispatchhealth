@@ -242,7 +242,11 @@ dimension: dhmt_shift {
   dimension: on_call_placeholder {
     type: yesno
     description: "A flag indicating that the shift is 15 minutes long (placeholder for on-call)"
-    sql: ${shift_time_hours} = 0.25 ;;
+    sql:(${shift_name} = 'DEN12' and ${local_expected_end_month} = '2020-03')
+           OR
+        (${shift_time_hours} = 0.25)
+          OR
+        (${shift_name} = 'DEN13' and ${local_expected_end_month} in('2020-04', '2020-05', '2020-06'));;
   }
 
 
