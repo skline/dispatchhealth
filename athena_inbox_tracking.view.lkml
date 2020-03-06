@@ -3,6 +3,7 @@ view: athena_inbox_tracking {
       sql:
 SELECT DISTINCT
     dc.document_id,
+    rst_rcvd.result_document_id,
     dc.clinical_encounter_id,
     dc.clinical_provider_id,
     dc.document_class,
@@ -12,7 +13,6 @@ SELECT DISTINCT
     new_doc.assigned_to AS assigned_to_new,
     new_doc.created_datetime AS created_new,
     new_doc.created_by AS created_by_new,
-    --new_doc.note AS note_new,
     appr.assigned_to AS assigned_to_approved,
     appr.created_datetime AS created_approved,
     appr.created_by AS created_by_approved,
@@ -20,16 +20,11 @@ SELECT DISTINCT
     qfax.assigned_to AS assigned_to_qfax,
     qfax.created_datetime AS created_qfax,
     qfax.created_by AS created_by_qfax,
-    --qfax.note AS note_qfax,
-    --fxsent.assigned_to AS assigned_to_faxsent,
     fxsent.created_datetime AS created_faxsent,
     fxsent.created_by AS created_by_faxsent,
-    --fxsent.note AS note_faxsent,
-    --fxconf.assigned_to AS assigned_to_faxconf,
     fxconf.created_datetime AS created_faxconf,
     fxconf.created_by AS created_by_faxconf,
     fxconf.note AS note_faxconf,
-    --rst_rcvd.assigned_to AS assigned_to_result,
     rst_rcvd.created_datetime AS created_result,
     rst_rcvd.created_by AS created_by_result,
     rst_rcvd.note AS note_result,
@@ -116,6 +111,10 @@ SELECT DISTINCT
             created_datetime,
             created_by,
             note,
+            CASE
+                WHEN note LIKE 'Result received as document%' THEN CAST(regexp_replace(note, '^.* ', '') AS INT)
+                ELSE NULL
+            END AS result_document_id,
             ROW_NUMBER() OVER(PARTITION BY document_id ORDER BY created_datetime DESC) AS row_num
         FROM looker_scratch.athenadwh_documentaction
         WHERE system_key = 'ORDER_RESULT_RECEIVED') AS rst_rcvd
@@ -131,8 +130,7 @@ SELECT DISTINCT
         FROM looker_scratch.athenadwh_documentaction
         WHERE status = 'CLOSED') AS closed
         ON dc.document_id = closed.document_id AND closed.row_num = 1
-    WHERE dc.document_class IN ('ORDER','PRESCRIPTION') AND dc.clinical_order_type NOT LIKE '%REFERRAL%' --AND dc.document_id IN (1560277)
-    ORDER BY dc.document_id DESC ;;
+    WHERE dc.document_class IN ('ORDER','PRESCRIPTION') AND dc.clinical_order_type NOT LIKE '%REFERRAL%' ;;
 
         sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
         indexes: ["document_id", "clinical_encounter_id", "clinical_provider_id"]
@@ -143,6 +141,12 @@ SELECT DISTINCT
     type: number
     description: "The Athena document ID associated with 'ORDER' or 'PRESCRIPTION'"
     sql: ${TABLE}.document_id ;;
+  }
+
+  dimension: result_document_id {
+    type: number
+    description: "The Athena document ID associated with the LABRESULT or IMAGINGRESULT"
+    sql: ${TABLE}.result_document_id ;;
   }
 
   measure: count_distinct_documents {

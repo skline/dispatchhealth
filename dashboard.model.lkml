@@ -241,6 +241,11 @@ explore: care_requests {
     sql_on: ${athenadwh_documents_clone.document_id} = ${athena_inbox_tracking.document_id} ;;
   }
 
+  join: athena_inbox_lab_imaging_results {
+    relationship: one_to_one
+    sql_on: ${athena_inbox_tracking.result_document_id} = ${athena_inbox_lab_imaging_results.document_id} ;;
+  }
+
   join: athenadwh_documentaction {
     relationship: one_to_many
     sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_documentaction.document_id} ;;
