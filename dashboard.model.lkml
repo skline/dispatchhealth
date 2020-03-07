@@ -402,11 +402,6 @@ explore: care_requests {
     sql_on: ${cpt_code_types_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
   }
 
-  join: on_route_locations {
-    relationship: one_to_one
-    sql_on: ${care_requests.id} = ${on_route_locations.care_request_id} ;;
-  }
-
   join: stop_times_by_care_request {
     relationship: one_to_one
     sql_on: ${care_requests.id} = ${stop_times_by_care_request.care_request_id} ;;
