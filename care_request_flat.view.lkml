@@ -1483,6 +1483,12 @@ WITH ort AS (
     sql: ${TABLE}.first_accepted_date ;;
   }
 
+  dimension: accepted_cr_at_shift_start {
+    description: "Flag indicating if the shift had an accepted care request time occurring before or equal to the shirt start time"
+    type: yesno
+    sql: ${first_accepted_raw} <= ${shift_start_raw} ;;
+  }
+
   dimension_group: drive_start {
     type: time
     description: "The on-scene date and time minus the Google drive time"
