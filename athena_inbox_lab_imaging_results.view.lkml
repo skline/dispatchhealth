@@ -26,7 +26,7 @@ view: athena_inbox_lab_imaging_results {
         closed_res.created_by AS closed_created_by,
         closed_res.note AS closed_note
     FROM looker_scratch.athenadwh_documents_clone dcr
-    INNER JOIN (
+    LEFT JOIN (
         SELECT
             document_id,
             assigned_to,
@@ -35,7 +35,7 @@ view: athena_inbox_lab_imaging_results {
             note,
             ROW_NUMBER() OVER(PARTITION BY document_id ORDER BY created_datetime DESC) AS row_num
         FROM looker_scratch.athenadwh_documentaction
-        WHERE status IN ('NEW','DATAENTRY')) AS new_res
+        WHERE status IN ('NEW','DATAENTRY','QUEUE')) AS new_res
             ON dcr.document_id = new_res.document_id AND new_res.row_num = 1
     LEFT JOIN (
         SELECT
@@ -58,7 +58,7 @@ view: athena_inbox_lab_imaging_results {
             note,
             ROW_NUMBER() OVER(PARTITION BY document_id ORDER BY created_datetime DESC) AS row_num
         FROM looker_scratch.athenadwh_documentaction
-        WHERE status IN ('NOTIFY')) AS ntfy_res
+        WHERE status IN ('NOTIFY','PENDINGLABEL')) AS ntfy_res
             ON dcr.document_id = ntfy_res.document_id AND ntfy_res.row_num = 1
     LEFT JOIN (
         SELECT

@@ -321,12 +321,20 @@ SELECT DISTINCT
     ]
     sql: ${TABLE}.created_faxsent ;;
   }
-  dimension: new_to_created_hours {
-    description: "The number of hours between document creation and submission"
+  dimension: new_to_confirmed_hours {
+    description: "The number of hours between document creation and submission confirmation"
     type: number
-    sql: (EXTRACT(EPOCH FROM ${created_faxsent_raw}) - EXTRACT(EPOCH FROM ${created_new_raw}))/3600;;
+    sql: (EXTRACT(EPOCH FROM ${created_faxconf_raw}) - EXTRACT(EPOCH FROM ${created_new_raw}))/3600;;
     value_format: "0.0"
   }
+
+  dimension: confirmed_to_review_hours {
+    description: "The number of hours between document submission confirmation and provider review"
+    type: number
+    sql: (EXTRACT(EPOCH FROM ${athena_inbox_lab_imaging_results.review_created_raw}) - EXTRACT(EPOCH FROM ${created_faxconf_raw}))/3600;;
+    value_format: "0.0"
+  }
+
   dimension_group: created_faxconf {
     type: time
     description: "The timstamp when the FAX or SureScripts submission was confirmed as successful"
