@@ -473,6 +473,14 @@ explore: care_requests {
     ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
   }
 
+  join: icd_nonprimary_diagnosis_code {
+    from: athenadwh_icdcodeall
+    view_label: "ICD Non-Primary Diagnosis Codes"
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND
+      ${athenadwh_clinicalencounter_diagnosis.ordering} <> 0 ;;
+  }
+
   join: icd_secondary_diagnosis_code {
     from: athenadwh_icdcodeall
     view_label: "ICD Secondary Diagnosis Codes"

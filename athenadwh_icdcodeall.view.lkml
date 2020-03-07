@@ -171,7 +171,7 @@ view: athenadwh_icdcodeall {
   measure: diagnosis_desc_concat {
     label: "ICD 10 Diagnosis Descriptions"
     type: string
-    sql: array_to_string(array_agg(DISTINCT  ${diagnosis_description}), ' | ') ;;
+    sql: array_to_string(array_agg(DISTINCT COALESCE(${diagnosis_description},${icd_code_dimensions_clone.diagnosis_description})), ' | ') ;;
   }
 
   dimension: likely_flu_diganosis {
