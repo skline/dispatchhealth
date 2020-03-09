@@ -2181,6 +2181,13 @@ explore: ga_pageviews_clone {
     }
   }
 
+explore: markets {
+
+  join: regional_markets {
+    sql_on: ${markets.id} = ${regional_markets.market_id} ;;
+  }
+}
+
   explore: insurance_plans {
 
     join: states{
