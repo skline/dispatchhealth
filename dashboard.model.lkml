@@ -2172,11 +2172,14 @@ explore: ga_pageviews_clone {
 
         }
 
-        explore: zipcodes {
-          join: markets {
-            sql_on: ${zipcodes.market_id} = ${markets.id} ;;
-          }
-        }
+  explore: zipcodes {
+    join: markets {
+      sql_on: ${zipcodes.market_id} = ${markets.id} ;;
+    }
+    join: regional_markets {
+      sql_on: ${markets.id} = ${regional_markets.market_id} ;;
+    }
+  }
 
   explore: insurance_plans {
 
