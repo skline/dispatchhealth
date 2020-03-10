@@ -37,7 +37,7 @@ view: patients {
     sql: CASE
           WHEN ${TABLE}.gender = 'f' THEN 'Female'
           WHEN ${TABLE}.gender = 'm' THEN 'Male'
-          ELSE ${TABLE}.gender
+          ELSE INITCAP(${TABLE}.gender)
         END ;;
   }
 
