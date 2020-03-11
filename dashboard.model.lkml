@@ -2928,6 +2928,12 @@ explore: shift_teams
     sql_on: ${users.id} = ${zizzl_detailed_shift_hours.employee_id} ;;
   }
 
+#  join: zizzl_detailed_shift_hours {
+#    relationship: one_to_many
+#   sql_on: ${shift_teams.id} = ${zizzl_detailed_shift_hours.shift_team_id} and ${users.id} = ${zizzl_detailed_shift_hours.employee_id};;
+#
+#  }
+
   join: provider_profiles {
     relationship: one_to_one
     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
