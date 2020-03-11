@@ -2930,7 +2930,7 @@ explore: shift_teams
 
  join: zizzl_detailed_shift_hours {
    relationship: one_to_many
-  sql_on: ${shift_teams.id} = ${zizzl_detailed_shift_hours.shift_team_id} ;;
+  sql_on: ${shift_teams.id} = ${zizzl_detailed_shift_hours.shift_team_id} AND ${users.id} = ${zizzl_detailed_shift_hours.employee_id};;
 
  }
 
