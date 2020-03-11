@@ -355,6 +355,17 @@ view: patients {
     sql: ${id};;
   }
 
+  measure: count_distinct_patients_updated {
+    description: "Count of distinct patients where the updated date is greater than the created date"
+    type: count_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${id};;
+    filters: {
+      field: patient_updated_greater_than_created_time
+      value: "yes"
+    }
+  }
+
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
