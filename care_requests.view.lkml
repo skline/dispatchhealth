@@ -667,8 +667,8 @@ view: care_requests {
 
   dimension: request_type {
     type: string
-    sql:  case when ${request_type_id} = 0 then 'phone'
-               when ${request_type_id} = 1 then 'manual_911'
+    sql:  case when ${request_type_id} = 1 OR lower(${channel_items.name}) in('south metro fire rescue', 'smfr employee clinic', 'west metro fire rescure') then 'manual_911'
+               when ${request_type_id} = 0 then 'phone'
                when ${request_type_id} = 2 then 'mobile'
                when ${request_type_id} = 3 then 'web'
                when ${request_type_id} = 4 then 'mobile_android'
