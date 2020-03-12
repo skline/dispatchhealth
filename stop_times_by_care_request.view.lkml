@@ -19,7 +19,7 @@ view: stop_times_by_care_request {
         JOIN public.care_request_statuses crc
             ON cr.id = crc.care_request_id AND crc.name = 'complete'
         LEFT JOIN public.addressable_items ai
-            ON cr.id = ai.addressable_id
+            ON cr.id = ai.addressable_id AND ai.addressable_type = 'CareRequest'
         LEFT JOIN public.addresses ad
             ON ai.address_id = ad.id
         LEFT JOIN public.shift_teams st
@@ -36,6 +36,7 @@ view: stop_times_by_care_request {
 SELECT
     crd.*,
     np.num_patients,
+    np.distance,
     np.total_stop_time,
     np.total_stop_time / np.num_patients AS on_scene_time
     FROM (
@@ -75,7 +76,8 @@ SELECT
         GROUP BY 1,2,3) AS np
             ON crd.shift_team_id = np.shift_team_id AND
                crd.latitude = np.latitude AND
-               crd.longitude = np.longitude;;
+               crd.longitude = np.longitude
+        ORDER BY 1 DESC;;
 
         sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
         indexes: ["shift_team_id","care_request_id","market_id","car_id"]
