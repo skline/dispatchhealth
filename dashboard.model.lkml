@@ -1376,9 +1376,19 @@ explore: cars {
     sql_on: ${markets.id} = ${cars.market_id} ;;
   }
 
+  join: timezones {
+    relationship: one_to_many
+    sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
+  }
+
   join: shift_teams {
     relationship: one_to_many
     sql_on: ${cars.id} = ${shift_teams.car_id} ;;
+  }
+
+  join: shift_team_market_assignment_logs {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} ;;
   }
 }
 
@@ -2930,7 +2940,7 @@ explore: shift_teams
 
  join: zizzl_detailed_shift_hours {
    relationship: one_to_many
-  sql_on: ${shift_teams.id} = ${zizzl_detailed_shift_hours.shift_team_id} ;;
+  sql_on: ${shift_teams.id} = ${zizzl_detailed_shift_hours.shift_team_id} AND ${users.id} = ${zizzl_detailed_shift_hours.employee_id};;
 
  }
 

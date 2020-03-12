@@ -319,6 +319,26 @@ view: athenadwh_documents_clone {
     sql: ${document_id} ;;
   }
 
+  measure: count_normal_results {
+    type: count_distinct
+    description: "Count of all orders where clinical results were normal"
+    sql: ${document_id} ;;
+    filters: {
+      field: athenadwh_documentaction.action_group
+      value: "Notify Patient - Normal"
+    }
+  }
+
+  measure: count_abnormal_results {
+    type: count_distinct
+    description: "Count of all orders where clinical results were abnormal"
+    sql: ${document_id} ;;
+    filters: {
+      field: athenadwh_documentaction.action_group
+      value: "Notify Patient - Abnormal"
+    }
+  }
+
   measure: count_encounters {
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
