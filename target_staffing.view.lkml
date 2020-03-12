@@ -40,6 +40,12 @@ view: target_staffing {
     sql: ${target_hours} ;;
   }
 
+  measure: sum_target_hours_datetime_explore {
+    type: sum_distinct
+    sql_distinct_key: concat(${date_placeholder.date_placeholder_date}::varchar, ${markets.name});;
+    sql: ${target_hours} ;;
+  }
+
   measure: sum_target_hours_future {
     label: "Target Hours"
     type: sum_distinct

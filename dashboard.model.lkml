@@ -3182,3 +3182,16 @@ explore: sf_contacts {
 
 }
 explore: renown_all_data {}
+
+explore: date_placeholder {
+  join: target_staffing {
+    sql_on:
+       ${date_placeholder.date_placeholder_month}=${target_staffing.month_month}
+      and  ${date_placeholder.date_placeholder_day_of_week} = ${target_staffing.dow};;
+  }
+
+  join: markets {
+    sql_on: ${markets.id} = ${target_staffing.market_id} ;;
+  }
+
+}
