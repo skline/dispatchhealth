@@ -194,6 +194,8 @@ view: patients {
       raw,
       time,
       date,
+      day_of_week_index,
+      day_of_week,
       week,
       month,
       quarter,
@@ -320,6 +322,27 @@ view: patients {
     sql: ${TABLE}.updated_at ;;
   }
 
+  dimension_group: updated_mountain {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      day_of_week_index,
+      day_of_week,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.updated_at  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain'  ;;
+  }
+
+  dimension: patient_updated_greater_than_created_time {
+    type: yesno
+    sql: ${updated_mountain_raw} > ${created_mountain_raw} ;;
+  }
+
   dimension: user_id {
     type: number
     sql: ${TABLE}.user_id ;;
@@ -334,6 +357,17 @@ view: patients {
     type: count_distinct
     sql_distinct_key: ${id} ;;
     sql: ${id};;
+  }
+
+  measure: count_distinct_patients_updated {
+    description: "Count of distinct patients where the updated date is greater than the created date"
+    type: count_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${id};;
+    filters: {
+      field: patient_updated_greater_than_created_time
+      value: "yes"
+    }
   }
 
   # ----- Sets of fields for drilling ------

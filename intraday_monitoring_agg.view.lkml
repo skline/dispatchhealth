@@ -2,6 +2,8 @@ view: intraday_monitoring_agg {
     derived_table: {
       explore_source: intraday_monitoring {
         column: created_date {}
+        column: created_day_of_week {}
+
         column: created_hour {}
         column: market {}
         column: complete_est {}
@@ -21,6 +23,10 @@ view: intraday_monitoring_agg {
     dimension: created_date {
       type: date
     }
+
+  dimension: created_day_of_week {
+    type: string
+  }
     dimension: created_hour {
       type: number
     }
