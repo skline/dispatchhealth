@@ -2873,6 +2873,16 @@ explore: genesys_conversation_summary {
     sql_on: ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id};;
   }
 
+  join: care_requests {
+    relationship: one_to_one
+    sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: risk_assessments {
+    relationship: one_to_one
+    sql_on: ${care_request_flat.care_request_id} = ${risk_assessments.care_request_id} ;;
+  }
+
   join: patients {
     sql_on:   (
                 ${patients.mobile_number} = ${genesys_conversation_summary.ani}
