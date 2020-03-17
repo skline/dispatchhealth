@@ -2578,6 +2578,24 @@ measure: avg_first_on_route_mins {
     sql: trim(split_part(${resolved_reason_full}, ':', 3)) ;;
   }
 
+  dimension: resolved_to_advanced_care {
+    description: "Resolved to Advanced Care (resolved reason contains 'Advanced Care)"
+    type: yesno
+    sql: lower(${resolved_reason_full}) LIKE '%advanced care%' ;;
+  }
+
+  measure: resolved_to_advanced_care_count {
+    description: "Count of Resolved to Advanced Care (resolved reason contains 'Advanced Care)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: resolved_to_advanced_care
+      value: "yes"
+    }
+
+  }
+
+
   dimension: escalation_type {
     type: string
     sql: CASE

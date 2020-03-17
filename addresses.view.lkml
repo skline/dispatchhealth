@@ -125,6 +125,12 @@ view: addresses {
     sql: ${zipcode_short} = '23139' ;;
   }
 
+  dimension: zip_code_in_dh_market {
+    description: "The address of the care rquest zip code is a DH market assigned zip code"
+    type:  yesno
+    sql:${zipcodes.zip} IS NOT NULL  ;;
+  }
+
   measure: zipcode_list {
     type: string
     sql: array_agg(${zipcode_short}) ;;
