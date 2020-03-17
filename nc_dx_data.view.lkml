@@ -16,6 +16,11 @@ view: nc_dx_data {
     sql: ${TABLE}.population ;;
   }
 
+  dimension: population_under_65 {
+    type: number
+    sql: ${population} -${age_65};;
+  }
+
   dimension: top_20 {
     type: number
     sql: ${TABLE}.top_20 ;;
@@ -30,6 +35,12 @@ view: nc_dx_data {
     type: number
     sql: ${TABLE}.top_20_age_65 ;;
   }
+
+  dimension: top_20_under_age_65 {
+    type: number
+    sql: ${top_20} - ${top_20_age_65} ;;
+  }
+
 
   dimension: zipcode {
     type: zipcode

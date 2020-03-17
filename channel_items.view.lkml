@@ -235,7 +235,9 @@ view: channel_items {
 ;;
   }
   measure: count {
-    type: count
+    type: count_distinct
+    sql: ${id} ;;
+    sql_distinct_key: ${id} ;;
     drill_fields: [id, name, source_name, type_name]
   }
 
