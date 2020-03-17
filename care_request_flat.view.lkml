@@ -2584,6 +2584,18 @@ measure: avg_first_on_route_mins {
     sql: lower(${resolved_reason_full}) LIKE '%advanced care%' ;;
   }
 
+  measure: resolved_to_advanced_care_count {
+    description: "Count of Resolved to Advanced Care (resolved reason contains 'Advanced Care)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: resolved_to_advanced_care
+      value: "yes"
+    }
+
+  }
+
+
   dimension: escalation_type {
     type: string
     sql: CASE
