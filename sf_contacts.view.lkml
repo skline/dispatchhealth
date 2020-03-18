@@ -35,6 +35,11 @@ view: sf_contacts {
     sql: ${TABLE}."email" ;;
   }
 
+  dimension: invalid_emails {
+    type: yesno
+    sql: ${email} in('jeannek2@concast.net') ;;
+  }
+
   dimension: full_name {
     type: string
     sql: ${TABLE}."full_name" ;;
