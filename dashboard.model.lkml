@@ -3201,7 +3201,7 @@ explore: sf_contacts {
 
   join: senior_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${senior_mailchimp_audiences_clone.email} and ${senior_mailchimp_audiences_clone.list_id} in('9475762e4e');;
+    sql_on: ${senior_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${senior_mailchimp_audiences_clone.list_id} in('9475762e4e');;
   }
 
   join: email_unsubscribes_clone {
