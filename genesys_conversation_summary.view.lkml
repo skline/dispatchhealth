@@ -3,7 +3,12 @@ view: genesys_conversation_summary {
 
   dimension: inbound_demand {
     type: yesno
-    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill') and ${markets.id} is not null;;
+    sql:${inbound_demand_minus_market} and ${markets.id} is not null;;
+  }
+
+  dimension: inbound_demand_minus_market {
+    type: yesno
+    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill', 'testing');;
   }
 
   dimension: abandoned {
@@ -150,6 +155,17 @@ view: genesys_conversation_summary {
     sql_distinct_key:  ${conversationid};;
     filters: {
       field: inbound_demand
+      value: "yes"
+    }
+  }
+
+  measure: count_distinct_minus_market {
+    label: "Count Distinct (Inbound Demand Minus Market)"
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key:  ${conversationid};;
+    filters: {
+      field: inbound_demand_minus_market
       value: "yes"
     }
   }
