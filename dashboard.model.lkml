@@ -468,6 +468,19 @@ explore: care_requests {
     ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
   }
 
+  join: diagnosis_rank_clone {
+      type: inner
+      relationship: many_to_one
+      sql_on: ${athenadwh_icdcodeall.diagnosis_description} = ${diagnosis_rank_clone.diagnosis_description} ;;
+    }
+  join: diagnosis_code_group_rank_clone {
+    type: inner
+    relationship: many_to_one
+    sql_on: ${athenadwh_icdcodeall.diagnosis_code_group} = ${diagnosis_code_group_rank_clone.diagnosis_code_group} ;;
+  }
+
+
+
   join: icd_nonprimary_diagnosis_code {
     from: athenadwh_icdcodeall
     view_label: "ICD Non-Primary Diagnosis Codes"
