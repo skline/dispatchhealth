@@ -129,6 +129,28 @@ view: shift_teams {
     }
   }
 
+  dimension: shift_hours_coalesce {
+    description: "Zizzl hours if available.  Otherwise, shift team hours"
+    type: number
+    value_format: "0.00"
+    sql: CASE WHEN ${zizzl_detailed_shift_hours.shift_team_id} IS NOT NULL
+            THEN ${zizzl_detailed_shift_hours.counter_hours}
+          ELSE ${shift_hours}
+         END ;;
+  }
+
+  measure: sum_shift_hours_coalesce {
+    description: "The sum of Zizzl hours (if available) or shift teams hours"
+    type: sum_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${id} ;;
+    sql: ${shift_hours_coalesce} ;;
+    filters:  {
+      field: cars.test_car
+      value: "no"
+    }
+  }
+
   measure: sum_shift_hours_no_arm_advanced {
     type: sum_distinct
     value_format: "0.0"
