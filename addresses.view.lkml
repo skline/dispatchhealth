@@ -126,9 +126,10 @@ view: addresses {
   }
 
   dimension: zip_code_in_dh_market {
-    description: "The address of the care rquest zip code is a DH market assigned zip code"
+    description: "The address of the care rquest zip code is in a DH market assigned zip code and is not a saftey warned zip code"
     type:  yesno
-    sql:${zipcodes.zip} IS NOT NULL  ;;
+    sql:${zipcodes.zip} IS NOT NULL AND
+    ${zipcodes.safety_warning} != 'yes';;
   }
 
   measure: zipcode_list {
