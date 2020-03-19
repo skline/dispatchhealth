@@ -508,7 +508,7 @@ view: intraday_care_requests {
   dimension_group: now_mountain{
     type: time
     convert_tz: no
-    timeframes: [day_of_week_index, week, month, day_of_month, time_of_day,raw]
+    timeframes: [day_of_week_index, week, month, day_of_month, time_of_day,raw, date]
     sql:  now() AT TIME ZONE 'US/Mountain' ;;
   }
 
@@ -550,6 +550,115 @@ view: intraday_care_requests {
     type: string
     sql:  (meta_data ->> 'street_address_1') ;;
   }
+
+  dimension: patient_dob {
+    type: date
+    sql:  (meta_data ->> 'patient_dob') ;;
+  }
+
+  dimension: risk_protocol_name {
+    type: string
+    sql:  trim(lower((meta_data ->> 'risk_protocol_name'))) ;;
+  }
+
+  dimension: risk_score {
+    type: number
+    sql:  (meta_data ->> 'risk_score')::float ;;
+  }
+
+  dimension: risk_worst_case_score {
+    type: string
+    sql:  (meta_data ->> 'risk_worst_case_score') ;;
+  }
+
+  dimension_group: on_accepted_eta {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: (meta_data->>'on_accepted_eta')::timestamp WITH TIME ZONE ;;
+  }
+
+  dimension_group: on_route_eta {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: (meta_data->>'on_route_eta')::timestamp WITH TIME ZONE ;;
+  }
+
+  dimension_group: eta_coalesce {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: coalesce(${on_route_eta_raw}, ${on_accepted_eta_raw});;
+  }
+
+  dimension: risk_category {
+    type: string
+    description: "0 - 5.4 = Green, 5.5 - 9.9 = Yellow, 10+ = Red"
+    sql: CASE
+          WHEN ${risk_score} >= 0 AND ${risk_score} < 5.5 THEN 'Green - Low Risk'
+          WHEN ${risk_score} >= 5.5 AND ${risk_score} < 10 THEN 'Yellow - Medium Risk'
+          WHEN ${risk_score} >= 10 THEN 'Red - High Risk'
+          ELSE 'Unknown'
+        END ;;
+  }
+
+  dimension: age {
+    type: number
+    sql: CAST(EXTRACT(YEAR from AGE(${now_mountain_date}, ${patient_dob})) AS INT) ;;
+  }
+
+  dimension: telemedicine_eligible{
+    type: yesno
+    sql:
+    ${risk_category} = 'Green - Low Risk'
+    AND
+    ${risk_protocol_name} in('general complaint', 'sore throat', 'sore throat 2', 'headache', 'ear pain', 'rash', 'rash - pediatric', 'cough/upper respiratory symptoms', 'cough/upper respiratory infection', 'cough/uri', 'rash', 'rash - pediatric', 'sinus pain', 'flu-like symptoms')
+    AND
+    ${markets_intra.name} in ('Denver', 'Colorado Springs')
+    and
+    ${age} > 2
+    and ${primary_payer_dimensions_intra.custom_insurance_grouping} in('(MCARE)MEDICARE', '(MAID)MEDICAID')
+    ;;
+
+  }
+
+
+  dimension: now_to_on_scene {
+    label: "Time to On-scene Hours"
+    type: number
+    value_format: "0.0"
+    sql: EXTRACT(EPOCH FROM  (${eta_coalesce_raw} AT TIME ZONE 'US/Mountain') - ${now_mountain_raw})/3600 ;;
+  }
+
+
 
  # dimension: inqueue_over_hour {
 #    type: yesno
