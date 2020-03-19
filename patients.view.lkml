@@ -348,6 +348,11 @@ view: patients {
     sql: ${TABLE}.user_id ;;
   }
 
+  dimension: ssn {
+    type: string
+    sql: ${TABLE}.ssn ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [detail*]
