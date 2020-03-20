@@ -2130,6 +2130,23 @@ WITH ort AS (
          END ;;
   }
 
+  dimension_group: claim_created_resolved {
+    type: time
+    description: "The claim created date or archive date, depending on whether the request was complete or resolved"
+    convert_tz: no
+    timeframes: [
+      raw,
+      date,
+      time,
+      week,
+      month
+    ]
+    sql: CASE
+          WHEN ${archive_comment} IS NOT NULL AND LOWER(${primary_resolved_reason}) <> 'referred - point of care' THEN ${archive_raw}
+          ELSE ${athenadwh_claims_clone.claim_created_datetime_raw}
+         END ;;
+  }
+
   dimension: eta_to_on_scene_resolved_minutes  {
     type: number
     description: "The number of minutes between the initial ETA and either the on-scene or resolved time"
