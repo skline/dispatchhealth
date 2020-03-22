@@ -571,6 +571,11 @@ view: intraday_care_requests {
     sql:  (meta_data ->> 'risk_worst_case_score') ;;
   }
 
+  dimension: risk_protocol {
+    type: string
+    sql:  (meta_data ->> 'risk_protocol') ;;
+  }
+
   dimension_group: on_accepted_eta {
     type: time
     timeframes: [
