@@ -63,7 +63,10 @@ view: intraday_care_requests {
     sql: (${TABLE}.meta_data ->> 'etos')::int ;;
   }
 
-
+  dimension: etos_interval {
+    type: number
+    sql: concat('''', (${TABLE}.meta_data ->> 'etos')::varchar, ' minute''') ;;
+  }
 
   dimension: channel_item_id {
     type: number
@@ -608,6 +611,22 @@ view: intraday_care_requests {
     sql: (meta_data->>'on_route_eta')::timestamp WITH TIME ZONE ;;
   }
 
+  dimension_group: estimated_eta {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: (${etc_raw} -${etos_interval}::interval)::timestamp WITH TIME ZONE ;;
+  }
+
   dimension_group: eta_coalesce {
     type: time
     timeframes: [
@@ -621,7 +640,7 @@ view: intraday_care_requests {
       hour_of_day,
       day_of_week
     ]
-    sql: coalesce(${on_route_eta_raw}, ${on_accepted_eta_raw});;
+    sql: coalesce(${estimated_eta_raw}, ${on_route_eta_raw}, ${on_accepted_eta_raw});;
   }
 
   dimension: risk_category {
