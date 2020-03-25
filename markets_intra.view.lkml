@@ -11,6 +11,8 @@ view: markets_intra {
     type: string
     sql: case when ${cars_intra.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
              when ${cars_intra.name} = 'Denver_Advanced Care ' then 'Denver Advanced Care'
+            when trim(${cars_intra.name}) = 'Virtual Visit' then 'Telemedicine'
+
          else ${TABLE}.name end ;;
   }
   dimension: fee_for_service {
