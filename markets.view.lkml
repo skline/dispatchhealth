@@ -165,6 +165,7 @@ view: markets {
     type: string
     sql: case when ${cars.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
            when ${cars.name} = 'Denver_Advanced Care ' then 'Denver Advanced Care'
+          when trim(${cars_intra.name}) = 'Virtual Visit' then 'Telemedicine'
          else ${name} end ;;
   }
 

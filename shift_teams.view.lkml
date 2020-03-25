@@ -152,6 +152,7 @@ view: shift_teams {
   }
 
   measure: sum_shift_hours_no_arm_advanced {
+    label: "Sum Shift Hours (no arm, advanced or tele)"
     type: sum_distinct
     value_format: "0.0"
     sql_distinct_key: ${id} ;;
@@ -162,6 +163,10 @@ view: shift_teams {
     }
     filters:  {
       field: cars.advanced_care_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.telemedicine_car
       value: "no"
     }
     filters:  {

@@ -3340,6 +3340,7 @@ measure: avg_first_on_route_mins {
   }
 
   measure: complete_count_no_arm_advanced{
+    label: "Complete Count (no arm, advanced or tele)"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters:  {
@@ -3350,11 +3351,17 @@ measure: avg_first_on_route_mins {
       field: cars.advanced_care_car
       value: "no"
     }
+    filters:  {
+      field: cars.telemedicine_car
+      value: "no"
+    }
     filters: {
       field: complete
       value: "yes"
     }
   }
+
+
 
   measure: complete_count_advanced{
     type: count_distinct
@@ -3368,6 +3375,20 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
   }
+
+  measure: complete_count_telemedicine{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.telemedicine_car
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
 
 
 
