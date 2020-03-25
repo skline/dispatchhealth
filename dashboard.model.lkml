@@ -3010,6 +3010,19 @@ explore: shift_teams
   join: goals_by_day_of_week {
     sql_on: ${markets.id_adj} =${goals_by_day_of_week.market_id} and ${goals_by_day_of_week.month_month}=${shift_teams.start_month};;
   }
+  join: service_lines {
+    sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+  join: channel_items {
+    relationship: many_to_one
+    sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: risk_assessments {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
+  }
+
 
   join: budget_projections_by_market_clone {
     sql_on: ${markets.id_adj} = ${budget_projections_by_market_clone.market_dim_id} AND ${shift_teams.start_month} = ${budget_projections_by_market_clone.month_month} ;;
