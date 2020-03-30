@@ -43,6 +43,13 @@ view: provider_network {
     sql: ${TABLE}."name" ;;
   }
 
+  filter: provider_network_select
+  { type: string
+    suggest_dimension: provider_network.name
+    sql: EXISTS (SELECT name FROM provider_network WHERE {% condition %}
+      provider_network.name {% endcondition %}) ;;
+  }
+
   dimension_group: updated {
     type: time
     hidden: yes

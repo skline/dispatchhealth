@@ -135,6 +135,27 @@ view: athenadwh_clinical_providers_clone {
     sql: ${thpg_provider_count} > 0 ;;
   }
 
+  dimension: network_provider_flag
+  { hidden: no
+    type: yesno
+    sql: {% condition provider_network.provider_network_select %}
+      ${provider_network.name} {% endcondition %} ;;
+  }
+
+  measure: count_provider {
+    type: count_distinct
+    sql: ${provider_roster.npi} ;;
+    filters:
+
+    { field: network_provider_flag value: "yes" }
+  }
+
+  measure: network_provider_boolean {
+    description: "A flag indicating the provider is in the network roster - Use only with the Athena letter recipient provider view"
+    type: yesno
+    sql: ${count_provider} > 0 ;;
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;
