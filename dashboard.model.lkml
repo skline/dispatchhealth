@@ -3235,6 +3235,12 @@ explore: sf_contacts {
     sql_on: ${senior_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${senior_mailchimp_audiences_clone.list_id} in('9475762e4e');;
   }
 
+  join: homehealth_mailchimp_audiences_clone {
+    from: mailchimp_audiences_clone
+    sql_on: ${homehealth_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${homehealth_mailchimp_audiences_clone.list_id} in('6a495c44b4');;
+  }
+
+
   join: email_unsubscribes_clone {
     sql_on: ${email_unsubscribes_clone.email} = ${sf_contacts.email} ;;
   }
