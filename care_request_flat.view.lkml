@@ -1807,6 +1807,7 @@ WITH ort AS (
   }
 
   dimension: first_visit_pafu {
+    label: "First Visit Bridge Care Visit"
     type: yesno
     description: "A flag indicating that the first visit is a post-acute follow up"
     sql: ${first_visit_raw} IS NOT NULL AND ${care_requests.post_acute_follow_up} ;;
@@ -2809,6 +2810,7 @@ measure: avg_first_on_route_mins {
   }
 
   dimension: pafu_or_follow_up {
+    label: "Bridge Care Visit OR DH Follow Up"
     description: "DH Followup AND Post Acute Followups are counted. Use the 'Post Acute Followups' flag in the 'Care Request' view to report on PAFU only"
     type: yesno
     sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} or lower(${service_lines.name}) like '%post acute%' or lower(${service_lines.name}) like '%post-acute%' ;;
