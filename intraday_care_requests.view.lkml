@@ -448,6 +448,7 @@ view: intraday_care_requests {
   }
 
   measure: inqueue_crs_pafu {
+    label: "Inqueue CRS Bridge Care Visits"
     type: count_distinct
     sql: ${care_request_id};;
     filters: {

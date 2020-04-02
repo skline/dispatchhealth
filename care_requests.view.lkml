@@ -53,6 +53,7 @@ view: care_requests {
   }
 
   dimension: post_acute_follow_up {
+    label: "Bridge Care Visit"
     type: yesno
     description: "Chief complaint, risk protocol name, channel name or service line is post acute follow-up"
     sql:  ${chief_complaint_trimmed} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
@@ -446,6 +447,7 @@ view: care_requests {
   }
 
   measure: count_visits_within_30_days_first_pafu_visit {
+    label: "Count Visits within 30 Days of First Bridge Care Visit"
     type: count
     description: "Count of patient visits within 30 days of the first post-acute visit"
     sql: ${patient_id} ;;
@@ -949,6 +951,7 @@ view: care_requests {
   }
 
   measure: count_post_acute_followups {
+    label: "Count Bridge Care Visits"
     type: count_distinct
     description: "Count of post-acute follow-up visits"
     sql: ${id} ;;
