@@ -9,6 +9,7 @@ view: cars {
 
   dimension: base_location_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.base_location_id ;;
   }
 
@@ -28,6 +29,7 @@ view: cars {
 
   dimension: last_location_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.last_location_id ;;
   }
 
@@ -101,11 +103,19 @@ view: cars {
     sql: lower(${name}) like '%test%' ;;
   }
   measure: count_distinct_cars {
-    description: "Count of distinct cars, not including SMFR/WMFR/Flex"
+    description: "Count of distinct cars, not including SMFR/WMFR/Flex/Virtual/Advanced"
     type: count_distinct
     sql: ${name} ;;
     filters: {
       field: mfr_flex_car
+      value: "no"
+    }
+    filters: {
+      field: advanced_care_car
+      value: "no"
+    }
+    filters: {
+      field: telemedicine_car
       value: "no"
     }
   }
