@@ -856,7 +856,7 @@ view: care_requests {
 
   dimension:  referred_point_of_care {
     type: yesno
-    sql: ${care_request_flat.complete_comment} like '%Referred - Point of Care%';;
+    sql: LOWER(${care_request_flat.complete_comment}) like '%referred - point of care%';;
   }
 
   dimension:  billable_est {
