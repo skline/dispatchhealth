@@ -865,7 +865,7 @@ explore: care_requests {
   # }
 
   join: risk_assessments {
-    relationship: one_to_one
+    relationship: one_to_many
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
