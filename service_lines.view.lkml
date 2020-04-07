@@ -47,12 +47,11 @@ view: service_lines {
   }
 
   dimension: service_line_name_consolidated {
-    description: "Similar Service Line categories combined. In addition, request type / channel is considered for '911 Service' and resolved reason is considered for 'Advanced Care'"
+    description: "Similar Service Line categories combined. In addition, request type / channel is considered for '911 Service' and 'Advanced Care' is considered 'Acute Care'"
     type:  string
     sql:  CASE
       WHEN ${care_requests.request_type} = 'manual_911' OR lower(${name}) = '911 service' THEN '911 Service'
-      WHEN lower(${name}) = 'advanced care' OR ${care_request_flat.resolved_to_advanced_care} = 'yes' THEN 'Advanced Care'
-      WHEN lower(${name}) in('acute care', 'acute care (hpn)', 'acute care (senior living)', 'asthma education') THEN 'Acute Care'
+      WHEN lower(${name}) in('acute care', 'acute care (hpn)', 'acute care (senior living)', 'asthma education', 'advanced care') THEN 'Acute Care'
       WHEN lower(${name}) in('post acute follow up', 'post acute follow up (hpn)') THEN 'Post Acute Follow Up'
       ELSE ${name}
     END
