@@ -87,4 +87,22 @@ view: service_lines {
     type: count
     drill_fields: [id, name]
   }
+
+  measure: tele_presentation_count {
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: service_lines.name
+      value: "Tele-Presentation"
+    }
+  }
+
+  measure: virtual_visit_count {
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: service_lines.name
+      value: "Virtual Visit"
+    }
+  }
 }

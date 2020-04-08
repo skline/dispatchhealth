@@ -106,7 +106,7 @@ view: risk_assessment_covid_19_questions {
   }
 
   measure: count_answer_yes_any {
-    label: "Patient answered yes to any of the three COVID-19 Questions"
+    label: "Patient answered yes to any of the three COVID-19 questions"
     type: count_distinct
     sql: ${care_requests.id} ;;
     filters: {
