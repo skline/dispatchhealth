@@ -63,6 +63,18 @@ view: risk_assessment_covid_19_questions {
     sql: ${TABLE}.covid_19_answer2 ;;
   }
 
+  dimension: covid_19_answer_yes_any {
+    description: "Patient asnwered yes to any of the three COVID-19 questions"
+    type: yesno
+    sql: lower(${covid_19_answer0}) =  'yes' OR lower(${covid_19_answer1}) = 'yes' OR lower(${covid_19_answer0}) =  'yes' ;;
+  }
+
+  dimension: covid_19_answer_yes_positive {
+    description: "Patient asnwered yes to personally or someone in their household testing positive for COVID-19"
+    type: yesno
+    sql: lower(${covid_19_answer0}) =  'yes' OR lower(${covid_19_answer1}) = 'yes' ;;
+  }
+
   measure: count_answer0 {
     label: "Answer: Have you tested positive for COVID-19"
     type: count_distinct
@@ -89,6 +101,27 @@ view: risk_assessment_covid_19_questions {
     sql: ${care_requests.id} ;;
     filters: {
       field: covid_19_answer2
+      value: "Yes"
+    }
+  }
+
+  measure: count_answer_yes_any {
+    label: "Patient answered yes to any of the three COVID-19 Questions"
+    type: count_distinct
+    sql: ${care_requests.id} ;;
+    filters: {
+      field: covid_19_answer_yes_any
+      value: "Yes"
+    }
+  }
+
+
+  measure: count_covid_19_answer_yes_positive {
+    label: "Patient asnwered yes to personally or someone in their household testing positive for COVID-19"
+    type: count_distinct
+    sql: ${care_requests.id} ;;
+    filters: {
+      field: covid_19_answer_yes_positive
       value: "Yes"
     }
   }
