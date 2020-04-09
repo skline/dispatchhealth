@@ -3258,6 +3258,13 @@ explore: date_placeholder {
       and  ${date_placeholder.date_placeholder_day_of_week} = ${target_staffing.dow};;
   }
 
+  join: budget_hours {
+    sql_on: ${date_placeholder.date_placeholder_month}=${budget_hours.month_month}
+            and
+            ${target_staffing.market_id} = ${budget_hours.market_id};;
+
+  }
+
   join: markets {
     sql_on: ${markets.id} = ${target_staffing.market_id} ;;
   }
