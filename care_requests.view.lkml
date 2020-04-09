@@ -822,7 +822,7 @@ view: care_requests {
 
   dimension:  complete_visit {
     type: yesno
-    sql: ${care_request_flat.complete_date} is not null;;
+    sql: ${care_request_flat.complete_date} is not null AND (${care_request_flat.primary_resolved_reason} IS NULL OR ${care_request_flat.escalated_on_scene});;
   }
 
   dimension:  complete_non_escalated_visit {

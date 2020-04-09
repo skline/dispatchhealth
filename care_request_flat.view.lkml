@@ -2189,6 +2189,35 @@ WITH ort AS (
     sql: EXTRACT(EPOCH FROM COALESCE(${on_scene_raw},${archive_raw}) - ${eta_raw})/60 ;;
   }
 
+  dimension: initial_eta_end_to_on_scene_minutes  {
+    type: number
+    description: "The number of minutes between the initial ETA end time and the on-scene time"
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw} - ${eta_range_end_raw})/60;;
+  }
+
+  dimension: initial_eta_window_to_on_scene_2_groups {
+    description: "On-scene time relative to initial ETA window grouping (2 bins)"
+    sql: CASE
+          WHEN ${initial_eta_end_to_on_scene_minutes} <= 15 THEN 'Arrived as Expected'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 15 THEN 'Arrived 15 Minutes or Later'
+          ELSE NULL
+          END
+          ;;
+  }
+
+  dimension: initial_eta_window_to_on_scene_expanded_groups {
+    description: "On-scene time relative to initial ETA window grouping (5 bins)"
+    sql:  CASE
+          WHEN ${on_scene_raw} <  ${eta_range_start_raw} THEN 'Early'
+          WHEN ${initial_eta_end_to_on_scene_minutes} <= 15 THEN 'On Time'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 15 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '16-60 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 60 AND ${initial_eta_end_to_on_scene_minutes} <= 240 THEN '61 Minutes to 4 Hours Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 240 THEN 'Greater than 4 Hours Late'
+          ELSE NULL
+          END
+          ;;
+  }
+
   dimension: accepted_to_initial_eta_minutes  {
     type: number
     description: "The number of minutes between when the care request was created and the initial ETA"
@@ -3304,7 +3333,7 @@ measure: avg_first_on_route_mins {
 
   dimension: complete {
     type: yesno
-    sql: ${complete_date} is not null ;;
+    sql: ${complete_date} is not null AND (${primary_resolved_reason} IS NULL OR ${escalated_on_scene}) ;;
   }
 
   dimension: accepted {

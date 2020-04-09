@@ -869,6 +869,11 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
+  join: risk_assessment_covid_19_questions {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${risk_assessment_covid_19_questions.care_request_id} ;;
+  }
+
   join: icd_code_risk_assessment_crosswalk {
     relationship: one_to_many
     sql_on:upper(trim(${icd_primary_diagnosis_code.diagnosis_code_full})) = upper(trim(${icd_code_risk_assessment_crosswalk.diagnosis_code})) and upper(trim(${risk_assessments.protocol_name})) = upper(trim(${icd_code_risk_assessment_crosswalk.risk_assessments_protocol_name})) ;;
@@ -913,9 +918,6 @@ explore: care_requests {
     from: csc_agent_location
     sql_on: ${csc_created.csc_name} = ${csc_agent_location_created.agent_name} ;;
   }
-
-
-
 
   join: markets {
     relationship: many_to_one
@@ -1569,6 +1571,11 @@ explore: channel_items {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
   }
 
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${care_requests.market_id} = ${markets.id} ;;
+  }
+
   join: care_request_flat {
     relationship: many_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
@@ -1597,9 +1604,10 @@ join: sf_markets_mapping {
   sql_on: ${sf_accounts.market} = ${sf_markets_mapping.market};;
 }
 
-  join: markets {
+  join: sf_market_name {
+    from: markets
     relationship: many_to_one
-    sql_on: ${sf_markets_mapping.market_id} = ${markets.id} ;;
+    sql_on: ${sf_markets_mapping.market_id} = ${sf_market_name.id} ;;
   }
 
 

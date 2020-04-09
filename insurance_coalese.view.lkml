@@ -1,11 +1,12 @@
 view: insurance_coalese {
     derived_table: {
       sql:
-      SELECT
+    SELECT
     cr.id as care_request_id,
     COALESCE(athena.insurance_package_id, sri.package_id) package_id_coalese,
     athena.insurance_package_id as athena_package_id,
     sri.package_id as self_report_package_id,
+    sri.member_id,
     cig.custom_insurance_grouping
     FROM public.care_requests cr
     JOIN public.patients pt
@@ -14,6 +15,7 @@ view: insurance_coalese {
         SELECT
             cr2.id AS care_request_id,
             package_id,
+            member_id,
             ROW_NUMBER() OVER(PARTITION BY cr2.id ORDER BY ins.created_at desc) as rn
     FROM public.care_requests cr2
     JOIN (
@@ -57,7 +59,7 @@ view: insurance_coalese {
               WHERE custom_insurance_grouping IS NOT NULL
               GROUP BY 1,2) AS cig
           ON COALESCE(athena.insurance_package_id, sri.package_id) = cig.insurance_package_id
-      GROUP BY 1,2,3,4,5;;
+      GROUP BY 1,2,3,4,5,6;;
 
       sql_trigger_value:  select sum(timevalue)
 from
@@ -78,6 +80,11 @@ from looker_scratch.transaction_facts_clone
   dimension: package_id_coalese {
     type: number
     sql: ${TABLE}.package_id_coalese ;;
+  }
+
+  dimension: member_id {
+    type: string
+    sql: ${TABLE}.member_id ;;
   }
 
   dimension: custom_insurance_grouping {
