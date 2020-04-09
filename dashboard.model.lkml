@@ -919,9 +919,6 @@ explore: care_requests {
     sql_on: ${csc_created.csc_name} = ${csc_agent_location_created.agent_name} ;;
   }
 
-
-
-
   join: markets {
     relationship: many_to_one
     sql_on: ${care_requests.market_id} = ${markets.id} ;;
@@ -1574,6 +1571,11 @@ explore: channel_items {
     sql_on:  ${channel_items.id} =${care_requests.channel_item_id} ;;
   }
 
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${care_requests.market_id} = ${markets.id} ;;
+  }
+
   join: care_request_flat {
     relationship: many_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
@@ -1602,9 +1604,10 @@ join: sf_markets_mapping {
   sql_on: ${sf_accounts.market} = ${sf_markets_mapping.market};;
 }
 
-  join: markets {
+  join: sf_market_name {
+    from: markets
     relationship: many_to_one
-    sql_on: ${sf_markets_mapping.market_id} = ${markets.id} ;;
+    sql_on: ${sf_markets_mapping.market_id} = ${sf_market_name.id} ;;
   }
 
 
