@@ -2555,9 +2555,25 @@ measure: avg_first_on_route_mins {
     sql:max(${on_scene_date}) ;;
   }
 
+  measure: min_day_created {
+    type: date
+    sql: min(${created_date}) ;;
+  }
+
+  measure: max_day_created{
+    type: date
+    sql:max(${created_date}) ;;
+  }
+
+
   measure: min_week_on_scene {
     type: string
     sql: min(${on_scene_week}) ;;
+  }
+
+  measure: min_week_created{
+    type: string
+    sql: min(${created_week}) ;;
   }
 
   measure: max_week_on_scene {
@@ -2575,6 +2591,14 @@ measure: avg_first_on_route_mins {
   }
 
   measure: min_max_range_day_on_scene {
+    type: string
+    sql:
+      case when ${min_week_on_scene} =  ${yesterday_mountain_week} then ${min_day_on_scene}::text
+      else concat(trim(to_char(current_date - interval '1 day', 'day')), 's ', ${min_day_on_scene}, ' thru ', ${max_day_on_scene}) end ;;
+
+    }
+
+  measure: min_max_range_day_created {
     type: string
     sql:
       case when ${min_week_on_scene} =  ${yesterday_mountain_week} then ${min_day_on_scene}::text
