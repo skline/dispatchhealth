@@ -3278,3 +3278,24 @@ explore: date_placeholder {
   }
 
 }
+
+explore: non_phone_cr {
+  join: genesys_conversation_summary{
+    sql_on: ${genesys_conversation_summary.conversationstarttime_date} = ${non_phone_cr.created_date};;
+  }
+
+  join: care_request_flat{
+    sql_on: ${care_request_flat.first_accepted_date} = ${non_phone_cr.created_date};;
+  }
+
+  join: number_to_market {
+    relationship: one_to_one
+    sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
+  }
+
+  join: markets {
+    relationship: one_to_one
+    sql_on: ${markets.id}=${number_to_market.market_id} ;;
+  }
+
+}
