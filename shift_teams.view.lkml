@@ -217,6 +217,14 @@ view: shift_teams {
     type: count_distinct
     sql_distinct_key: ${car_date_id} ;;
     sql: ${car_date_id} ;;
+    filters:  {
+      field: cars.telemedicine_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.test_car
+      value: "no"
+    }
   }
 
 
@@ -225,6 +233,14 @@ view: shift_teams {
     type: count_distinct
     sql_distinct_key: ${car_hour_id} ;;
     sql: ${car_hour_id} ;;
+    filters:  {
+      field: cars.telemedicine_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.test_car
+      value: "no"
+    }
   }
 
   measure: hourly_productivity {
