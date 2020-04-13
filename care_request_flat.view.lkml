@@ -2508,10 +2508,18 @@ measure: avg_first_on_route_mins {
     sql: count(DISTINCT ${on_scene_date}) ;;
   }
 
+
+
   measure: distinct_days_created {
     type: number
     sql: count(DISTINCT ${created_date}) ;;
   }
+
+  measure: distinct_weeks_created {
+    type: number
+    sql: count(DISTINCT ${created_week}) ;;
+  }
+
 
 
   measure: distinct_weeks_on_scene {
@@ -2525,6 +2533,7 @@ measure: avg_first_on_route_mins {
     sql: ${complete_count}::float/(nullif(${distinct_days_on_scene},0))::float  ;;
   }
 
+
   measure: daily_average_created {
     type: number
     value_format: "0.0"
@@ -2537,6 +2546,13 @@ measure: avg_first_on_route_mins {
     value_format: "0.0"
     sql: ${complete_count}/(nullif(${distinct_weeks_on_scene},0))::float  ;;
   }
+
+  measure: weekly_average_created{
+    type: number
+    value_format: "0.0"
+    sql: ${care_request_count}/(nullif(${distinct_weeks_created},0))::float  ;;
+  }
+
 
   measure: monthly_average_complete {
     type: number
