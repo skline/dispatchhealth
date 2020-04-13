@@ -2822,6 +2822,7 @@ measure: avg_first_on_route_mins {
           WHEN ${resolved_911_divert} THEN '911 Diversion'
           WHEN ${escalated_on_phone} THEN 'Escalated Over Phone'
           WHEN ${resolved_other} THEN 'Other Resolved'
+          WHEN ${booked_shaping_placeholder_resolved} THEN 'Booked or Shaping'
           ELSE 'Billable Visit'
         END
           ;;
