@@ -2439,6 +2439,12 @@ measure: avg_first_on_route_mins {
     sql: current_date - interval '1 day';;
   }
 
+  dimension_group: last_week_mountain{
+    type: time
+    timeframes: [date, day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '7 day';;
+  }
+
   dimension:  same_day_of_week_on_scene {
     type: yesno
     sql:  ${yesterday_mountain_day_of_week_index} = ${on_scene_day_of_week_index};;
@@ -2471,6 +2477,19 @@ measure: avg_first_on_route_mins {
     sql: ${yesterday_mountain_week} =  ${on_scene_week};;
 
   }
+
+  dimension: last_week_on_scene {
+    type:  yesno
+    sql: ${last_week_mountain_week} =  ${on_scene_week};;
+
+  }
+
+  dimension: last_week_created {
+    type:  yesno
+    sql: ${last_week_mountain_week} =  ${created_week};;
+
+  }
+
 
   dimension: this_week_created {
     type:  yesno
