@@ -6,18 +6,22 @@ view: non_phone_cr {
     explore_source: care_requests {
       column: care_request_count { field: care_request_flat.care_request_count }
       column: created_date { field: care_request_flat.created_date }
+      column: created_week { field: care_request_flat.created_week }
+
       column: this_week_created { field: care_request_flat.this_week_created }
+      column: same_day_of_week_created { field: care_request_flat.same_day_of_week_created}
+      column: last_week_created { field: care_request_flat.last_week_created}
+
+
+
+
       filters: {
         field: care_requests.request_type
         value: "-phone"
       }
       filters: {
         field: care_request_flat.created_month
-        value: "6 weeks"
-      }
-      filters: {
-        field: care_request_flat.same_day_of_week_created
-        value: "Yes"
+        value: "7 weeks"
       }
       filters: {
         field: care_request_flat.care_request_count
@@ -40,12 +44,55 @@ view: non_phone_cr {
     type: number
     sql: ${genesys_conversation_summary.count_answered} +${sum_care_request_count};;
   }
+
   dimension: created_date {
     description: "The local date/time that the care request was created."
     type: date
   }
+
+  dimension: created_week {
+    description: "The local week that the care request was created."
+    type: date
+  }
+
   dimension: this_week_created {
-    label: "Care Request Flat This Week Created (Yes / No)"
+    label: "Care Request Flat This Week Created"
     type: yesno
   }
+
+  dimension: same_day_of_week_created {
+    label: "Same Day of Week Created"
+    type: yesno
+  }
+
+  dimension: last_week_created {
+    label: "Last Week Created"
+    type: yesno
+  }
+  measure: distinct_weeks_created {
+    label: "Distinct Weeks Created"
+    type: count_distinct
+    sql_distinct_key: ${created_week} ;;
+    sql: ${created_week}  ;;
+  }
+
+  measure: distinct_days_created {
+    label: "Distinct Days Created"
+    type: count_distinct
+    sql_distinct_key: ${created_date} ;;
+    sql: ${created_date}  ;;
+    }
+
+  measure: daily_average_created {
+    type: number
+    value_format: "0.0"
+    sql: ${sum_inbound_demand}::float/(nullif(${distinct_days_created},0))::float  ;;
+  }
+
+  measure: weekly_average_created{
+    type: number
+    value_format: "0.0"
+    sql: ${sum_inbound_demand}/(nullif(${distinct_weeks_created},0))::float  ;;
+  }
+
 }
