@@ -281,6 +281,21 @@ view: channel_items {
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
 
+  dimension: high_level_clinical_integration {
+    type: string
+    label: "High Level Category (Clinical Integration)"
+    sql: case
+         when ${name_no_tabs} is null then 'No Channel'
+         when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue', 'ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind', 'presentation / meeting','event/in-service', 'bridgewater assisted living avondale', 'dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo', 'jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event'))  then 'Direct to Consumer'
+         when lower(${name_no_tabs}) in('healthcare provider') then 'Provider (Generic)'
+         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'home health') or  lower(${name_no_tabs}) in('ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind','presentation / meeting', 'event/in-service', 'bridgewater assisted living avondale','dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo','jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event')  then 'Senior Care'
+         when lower(${type_name}) in('health system', 'snf', 'payer', 'provider group') or lower(${name_no_tabs}) in('health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Clinical Integration'
+         when lower(${type_name}) in('employer', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization') then 'Other'
+         when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
+        else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
+  }
+
+
   dimension: high_level_category_new_percent {
     type: number
     sql: case when ${high_level_category_new} =  'Direct to Consumer' then .05
