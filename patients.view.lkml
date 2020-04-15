@@ -350,7 +350,9 @@ view: patients {
 
   dimension: ssn {
     type: string
-    sql: ${TABLE}.ssn ;;
+    sql: CASE WHEN ${TABLE}.ssn = '000-00-0000' THEN NULL
+        ELSE ${TABLE}.ssn
+        END ;;
   }
 
   measure: count {
