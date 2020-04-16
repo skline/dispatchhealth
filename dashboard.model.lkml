@@ -3279,6 +3279,18 @@ explore: date_placeholder {
 
 }
 
+explore: bi_events {
+  join: markets {
+    relationship: one_to_many
+    sql_on: ${markets.id} = ${bi_events.subject_id} ;;
+  }
+
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+}
+
 explore: non_phone_cr {
   join: genesys_conversation_summary{
     sql_on: ${genesys_conversation_summary.conversationstarttime_date} = ${non_phone_cr.created_date};;
