@@ -4229,6 +4229,272 @@ end  ;;
     }
   }
 
+  dimension: clinical_service_not_offered {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%clinical service not offered (scope)%' and not ${covid_resolved};;
+  }
+  measure: clinical_service_not_offered_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: clinical_service_not_offered
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: covid_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%covid%' or lower(${archive_comment}) LIKE '%corona%'  ;;
+  }
+
+  measure: covid_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: covid_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: insurance_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%no insurance / financial%' or lower(${archive_comment}) LIKE '%insurance not contracted (out of network)%'  ;;
+  }
+
+  measure: insurance_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: insurance_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: poa_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%unable to obtain consent from poa or patient%'  ;;
+  }
+
+  measure: poa_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: poa_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: zipcode_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%not in service area%'  ;;
+  }
+
+  measure: zipcode_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: zipcode_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: cancelled_by_patient_other_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%cancelled by patient%' and lower(${archive_comment}) LIKE '%other%' and not ${covid_resolved} and not ${booked_shaping_placeholder_resolved} ;;
+  }
+
+  measure: cancelled_by_patient_other_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: cancelled_by_patient_other_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: insufficient_information_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%unable to fulfill request: insufficient information to create care request (referral)%' and not ${booked_shaping_placeholder_resolved}  ;;
+  }
+
+  measure: insufficient_information_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: insufficient_information_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+  measure: lwbs_rate_bottom_funnel_minus_overflow
+  {
+    value_format: "0%"
+    type: number
+    sql: ${lwbs_minus_overflow}/${count_distinct_bottom_funnel_care_requests} ;;
+  }
+
+  measure: lwbs_lost_raw
+  {
+    type: number
+    sql: (${lwbs_rate_bottom_funnel_minus_overflow}-(.08))*${count_distinct_bottom_funnel_care_requests}*(.63);;
+  }
+
+  measure: lwbs_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: case when ${lwbs_lost_raw} > 0 then ${lwbs_lost_raw} else 0 end  ;;
+  }
+
+  measure: overflow_complete_rate
+  {
+    value_format: "0%"
+    type: number
+    sql: ${count_complete_overflow}::float/(${count_resolved_overflow}::float+${count_complete_overflow}::float)
+    ;;
+  }
+
+  measure: overflow_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: case when (.93-${overflow_complete_rate})*(${count_resolved_overflow}+${count_complete_overflow}) >0 then (.93-${overflow_complete_rate})*(${count_resolved_overflow}+${count_complete_overflow})
+      else 0 end
+      ;;
+  }
+
+  measure: booked_shaping_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: .63*${booked_shaping_placeholder_resolved_count_minus_overflow}
+      ;;
+  }
+
+  measure: limbo_overflow_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: ${care_request_flat.limbo_overflow}*(.3)
+      ;;
+  }
+
+  measure: total_lost
+  {
+    type: number
+    label: "Total Lost Capacity Constraints"
+    value_format: "#,##0"
+    sql: case when ${booked_shaping_lost} is not null then ${booked_shaping_lost} else 0 end
+        +
+        case when ${lwbs_lost} is not null then ${lwbs_lost} else 0 end
+        +
+        case when ${overflow_lost} is not null then ${overflow_lost} else 0 end
+        +
+        case when ${limbo_overflow_lost} is not null then ${limbo_overflow_lost} else 0 end
+      ;;
+  }
+
+  measure: total_lost_above_baseline
+  {
+    type: number
+    label: "Total Lost Capacity Constraints Above Baseline (2.5%)"
+    value_format: "#,##0"
+    sql: case when ${total_lost}-(${count_distinct_bottom_funnel_care_requests}*.025) >0 then ${total_lost}-(${count_distinct_bottom_funnel_care_requests}*25/1000)
+    else 0 end
+      ;;
+  }
+
+
   measure: booked_shaping_placeholder_resolved_count_minus_overflow {
     description: "Care requests resolved for booked, shaping or placeholder"
     type: count_distinct
@@ -4288,6 +4554,36 @@ end  ;;
     }
     filters: {
       field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: clinical_service_not_offered
+      value: "no"
+    }
+
+    filters: {
+      field: covid_resolved
+      value: "no"
+    }
+
+    filters: {
+      field: insurance_resolved
+      value: "no"
+    }
+    filters: {
+      field: poa_resolved
+      value: "no"
+    }
+    filters: {
+      field: zipcode_resolved
+      value: "no"
+    }
+    filters: {
+      field: cancelled_by_patient_other_resolved
+      value: "no"
+    }
+    filters: {
+      field: insufficient_information_resolved
       value: "no"
     }
   }
