@@ -412,7 +412,7 @@ view: intraday_shift_teams {
 measure: sum_shift_hours {
   type: sum_distinct
   value_format: "0.00"
-  sql_distinct_key: concat(${cars_intra.name}, ${start_raw}) ;;
+  sql_distinct_key: concat(${cars_intra.name}, case when ${cars_intra.name} ='Virtual Visit' then ${id}::varchar else ${start_raw}::varchar end) ;;
   sql: ${hours_in_shift_no_agg} ;;
 }
 
