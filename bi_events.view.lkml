@@ -29,7 +29,7 @@ view: bi_events {
 
   dimension: market_capacity {
     type: string
-    sql:${TABLE}."details"::json#>>'{availability}' ;;
+    sql:${TABLE}."details"::json->>'availability' ;;
   }
 
   dimension: event_type {
