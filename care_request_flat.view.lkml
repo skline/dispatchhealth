@@ -4472,7 +4472,7 @@ end  ;;
   measure: total_lost
   {
     type: number
-    label: "Total Lost Capacity Constraints"
+    label: "Total Lost Due to Capacity Constraints"
     value_format: "#,##0"
     sql: case when ${booked_shaping_lost} is not null then ${booked_shaping_lost} else 0 end
         +
@@ -4487,7 +4487,7 @@ end  ;;
   measure: total_lost_above_baseline
   {
     type: number
-    label: "Total Lost Capacity Constraints Above Baseline (2.5%)"
+    label: "Total Lost Due to Capacity Constraints Above Baseline (2.5%)"
     value_format: "#,##0"
     sql: case when ${total_lost}-(${count_distinct_bottom_funnel_care_requests}*.025) >0 then ${total_lost}-(${count_distinct_bottom_funnel_care_requests}*25/1000)
     else 0 end
