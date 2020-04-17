@@ -268,6 +268,23 @@ view: athenadwh_medical_history_flat {
         ELSE NULL END ;;
   }
 
+dimension: comorbidities_greater_0 {
+  type: yesno
+  sql: ${number_comorbidities} > 0 ;;
+}
+
+  measure: count_comorbidities_greater_0 {
+    type: count_distinct
+    sql: ${patients.id} ;;
+    sql_distinct_key:  ${patients.id} ;;
+    filters: {
+      field: comorbidities_greater_0
+      value: "yes"
+    }
+  }
+
+
+
   dimension: medical_history_collected {
     type: yesno
     sql: ${chart_id} IS NOT NULL;;
