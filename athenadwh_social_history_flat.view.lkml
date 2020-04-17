@@ -337,7 +337,7 @@ ORDER BY base.chart_id  ;;
 
   dimension: lack_of_transportation_flag {
     type: yesno
-    sql: LOWER(${transportation}) SIMILAR TO '%(no:|dementia|bed bound|quadraplegic)%' ;;
+    sql: ${transportation} LIKE 'Yes%' ;;
   }
 
   dimension: fall_risk_provider {
@@ -466,11 +466,33 @@ ORDER BY base.chart_id  ;;
     description: "Has it ever happened within the past 12 months that the food you bought
     just didn’t last, and you didn’t have money to get more?"
   }
+
+  measure: count_food_insecurity {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: food_insecurity
+      value: "Yes"
+    }
+  }
+
   dimension: food_insecurity_worry {
     type: string
     sql: ${TABLE}.food_insecurity_worry ;;
     description: "Within the past 12 months we worried that our food would run out before we got money to buy more."
   }
+
+  measure: count_food_insecurity_worry {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: food_insecurity_worry
+      value: "Yes"
+    }
+  }
+
   dimension: social_interactions {
     type: string
     sql: ${TABLE}.social_interactions ;;
