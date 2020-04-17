@@ -15,6 +15,11 @@ view: adwords_campaigns_clone {
     type: yesno
     sql: ${campaign_name_lower} like '%search%' ;;
   }
+
+  dimension: brand {
+    type: yesno
+    sql: ${campaign_name_lower} like '%brand%' ;;
+  }
   dimension: campaign_name_lower {
     type: string
     sql: lower(${campaign_name}) ;;
