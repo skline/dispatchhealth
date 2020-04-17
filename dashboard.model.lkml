@@ -3055,13 +3055,66 @@ explore: idle_time_summary {
 }
 
 explore: ga_adwords_cost_clone{
-  sql_always_where: (lower(${adwords_campaigns_clone.campaign_name}) like '%search%' or ${adwords_campaigns_clone.campaign_name} is null)  and ${date_raw} >= '2020-01-01' and ${adcost} is not null;;
+  sql_always_where:  ${adcost} is not null;;
   join: adwords_campaigns_clone {
     sql_on: ${adwords_campaigns_clone.campaign_id} =${ga_adwords_cost_clone.adwordscampaignid} ;;
   }
   join: markets {
     sql_on: ${adwords_campaigns_clone.market_id_new} =${markets.id} ;;
   }
+  join: number_to_market{
+    sql_on: ${number_to_market.market_id} = ${markets.id} ;;
+  }
+  join: genesys_conversation_summary {
+    sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis}
+            and
+            ${ga_adwords_cost_clone.date_date} = ${genesys_conversation_summary.conversationstarttime_date}
+            AND ${genesys_conversation_summary.queuename} = 'DTC Pilot'
+            ;;
+  }
+  join: patients {
+    sql_on:   (
+                ${patients.mobile_number} = ${genesys_conversation_summary.ani}
+              )
+             and ${patients.mobile_number} is not null   ;;
+  }
+
+  join: care_request_flat{
+    sql_on: (${patients.id} = ${care_request_flat.patient_id}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.ani})
+      and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000;;
+  }
+
+  join: ga_adwords_stats_clone {
+    sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
+                and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
+                and ${ga_adwords_stats_clone.keyword} =${ga_adwords_cost_clone.keyword}
+                and ${ga_adwords_stats_clone.adwordsadgroupid} =${ga_adwords_cost_clone.adwordsadgroupid}
+                and ${ga_adwords_stats_clone.admatchtype} =${ga_adwords_cost_clone.admatchtype}
+                      and ${ga_adwords_stats_clone.page_timestamp_date} =${ga_adwords_cost_clone.date_date}
+
+                ;;
+  }
+  join: ga_pageviews_clone {
+    sql_on: ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
+      and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
+  }
+
+  #join: web_care_requests {
+  #  from: care_requests
+  #  sql_on:
+  #      (
+  #        abs(EXTRACT(EPOCH FROM ${ga_pageviews_clone.timestamp_mst_raw})-EXTRACT(EPOCH FROM ${web_care_requests.created_mountain_raw})) < (60*60*1.5)
+  #        AND
+  #        web_care_requests.marketing_meta_data->>'ga_client_id' = ${ga_pageviews_clone.client_id}
+  #       ) ;;
+  #}
+  #join: web_care_request_flat {
+  #  from: care_request_flat
+  #  relationship: many_to_one
+  #  sql_on: ${web_care_request_flat.care_request_id} = ${web_care_requests.id} ;;
+  #}
+
+
 }
 
 explore: cac_costs {

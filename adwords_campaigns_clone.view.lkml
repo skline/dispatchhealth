@@ -11,6 +11,10 @@ view: adwords_campaigns_clone {
     sql: ${TABLE}.campaign_name ;;
   }
 
+  dimension: sem {
+    type: yesno
+    sql: ${campaign_name_lower} like '%search%' ;;
+  }
   dimension: campaign_name_lower {
     type: string
     sql: lower(${campaign_name}) ;;
