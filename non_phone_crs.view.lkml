@@ -28,7 +28,7 @@ view: non_phone_cr {
         value: "NOT NULL"
       }
     }
-    sql_trigger_value: SELECT count(*) FROM care_requests ;;
+    sql_trigger_value: SELECT count(*) FROM public.care_requests ;;
     indexes: ["created_date"]
   }
   dimension: care_request_count {
