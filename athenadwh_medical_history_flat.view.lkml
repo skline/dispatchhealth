@@ -114,7 +114,7 @@ view: athenadwh_medical_history_flat {
     GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14
     ORDER BY base.chart_id ;;
 
-      sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+      sql_trigger_value: SELECT COUNT(*) FROM athenadwh_medical_history_clone ;;
       indexes: ["chart_id"]
     }
 

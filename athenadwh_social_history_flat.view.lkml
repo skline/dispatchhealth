@@ -260,7 +260,7 @@ LEFT JOIN (
         ON base.chart_id = costs.chart_id AND costs.rownum = 1
 ORDER BY base.chart_id  ;;
 
-      sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+      sql_trigger_value: SELECT COUNT(*) FROM athenadwh_social_history_clone ;;
       indexes: ["chart_id"]
     }
 

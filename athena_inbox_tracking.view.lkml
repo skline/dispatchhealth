@@ -132,7 +132,7 @@ SELECT DISTINCT
         ON dc.document_id = closed.document_id AND closed.row_num = 1
     WHERE dc.document_class IN ('ORDER','PRESCRIPTION') AND dc.clinical_order_type NOT LIKE '%REFERRAL%' ;;
 
-        sql_trigger_value: SELECT COUNT(*) FROM care_requests ;;
+        sql_trigger_value: SELECT COUNT(*) FROM athenadwh_documents_clone ;;
         indexes: ["document_id", "clinical_encounter_id", "clinical_provider_id"]
       }
 
