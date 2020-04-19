@@ -3,7 +3,7 @@
 
 view: sem_run_rate {
   derived_table: {
-    sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+    sql_trigger_value: SELECT MAX(created_at) FROM public.care_request_statuses ;;
     indexes: ["date_month", "id_adj"]
     explore_source: ga_adwords_cost_clone {
       column: date_month {}
