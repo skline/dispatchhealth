@@ -3283,7 +3283,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('1a504d3204',  '08f503ca35', 'd2d35689f3',  'fe16ea8819', '10c4662004', '359b4df3c9', '2f6240d04e', 'c271f77a7d', 'fc950cb88d', '91510a27e3','05ed225c96', '495c077092', 'c254664a41', 'ddc3665531', '61b3648256', '6181b333dd', '7cb28f6e1f', '91510a27e3');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('1a504d3204',  '08f503ca35', 'd2d35689f3',  'fe16ea8819', '10c4662004', '359b4df3c9', '2f6240d04e', 'c271f77a7d', 'fc950cb88d', '91510a27e3','05ed225c96', '495c077092', 'c254664a41', 'ddc3665531', '61b3648256', '6181b333dd', '7cb28f6e1f', '91510a27e3', 'c72570cb2e');;
   }
 
   join: senior_mailchimp_audiences_clone {
