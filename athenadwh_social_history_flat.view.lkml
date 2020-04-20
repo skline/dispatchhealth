@@ -322,6 +322,17 @@ ORDER BY base.chart_id  ;;
     sql: ${TABLE}.fall_risk_unsteady ;;
   }
 
+  measure: count_fall_risk_unsteady {
+    type: count_distinct
+    description: "Count of patients who indicate they feel unsteady when standing or walking"
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: fall_risk_unsteady
+      value: "Y%"
+    }
+  }
+
   dimension: activities_daily_living {
     type: string
     description: "ADL: Do you need help with daily activities such as bathing, preparing meals, dressing, or cleaning?"
@@ -364,12 +375,14 @@ ORDER BY base.chart_id  ;;
 
   dimension: fall_risk_worry {
     type: string
+    hidden: yes
     description: "Fall Risk: Do you worry about falling?"
     sql: ${TABLE}.fall_risk_worry ;;
   }
 
   dimension: fall_risk_worry_flag {
     type: yesno
+    hidden: yes
     sql: ${fall_risk_worry} = 'Y' ;;
   }
 
@@ -386,12 +399,14 @@ ORDER BY base.chart_id  ;;
 
   dimension: lack_of_access_healthy_foods {
     type: yesno
+    hidden: yes
     description: "Does the patient indicate they have a lack of access to healthy foods"
     sql: lower(${nutrition_access}) SIMILAR TO '%(no:|no,|moc )%'  ;;
   }
 
   dimension: nutrition_status {
     type: string
+    hidden: yes
     description: "Nutrition: What is the overall nutritional status of patient?"
     sql: ${TABLE}.nutrition_status ;;
   }
@@ -402,25 +417,40 @@ ORDER BY base.chart_id  ;;
     sql: ${TABLE}.safety_feeling ;;
   }
 
+  measure: count_feels_unsafe {
+    type: count_distinct
+    description: "Count of patients who indicate 'N' when asked if they feel safe (does not include other free-form text)"
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: safety_feeling
+      value: "N"
+    }
+  }
+
   dimension: taking_advantage {
     type: string
+    hidden: yes
     description: "Social Support: Do you feel that anyone is taking advantage of you?"
     sql: ${TABLE}.taking_advantage ;;
   }
 
   dimension: afford_medications {
     type: string
+    hidden: yes
     description: "Financial: Can you afford the medications that your medical team has prescribed you?"
     sql: ${TABLE}.afford_medications ;;
   }
 
   dimension: cant_afford_medications_flag {
     type: yesno
+    hidden: yes
     sql: ${afford_medications} = 'N' OR LOWER(${afford_medications}) SIMILAR TO '%(t afford|struggl)%';;
   }
 
   dimension: heavy_drinking {
     type: string
+    hidden: yes
     description: "How many days in the past year have you had a heavy drinking consumption (4+ female, 5+ male)?"
     sql: ${TABLE}.heavy_drinking ;;
   }
@@ -444,18 +474,21 @@ ORDER BY base.chart_id  ;;
 
   dimension: fall_hazards {
     type: string
+    hidden: yes
     description: "Trip/Fall Hazards"
     sql: ${TABLE}.fall_hazards ;;
   }
 
   dimension: general_cleanliness {
     type: string
+    hidden: yes
     description: "Review of the general cleanliness of the home"
     sql: ${TABLE}.general_cleanliness ;;
   }
 
   dimension: nutritional_status {
     type: string
+    hidden: yes
     description: "Overall nutritional status of the patient"
     sql: ${TABLE}.nutritional_status ;;
   }
@@ -547,14 +580,52 @@ ORDER BY base.chart_id  ;;
     sql: ${TABLE}.housing_insecurity ;;
     description: "Do you have any concerns about your current housing situation?"
   }
+
+  dimension: housing_insecurity_flag {
+    type: yesno
+    sql: ${housing_insecurity} LIKE 'I Have Housing Today But%' OR
+    ${housing_insecurity} LIKE 'I Do Not Have Housing%' OR
+    ${housing_insecurity} LIKE 'Needs %';;
+  }
+
+  measure: count_lack_housing_security {
+    type: count_distinct
+    description: "Count of patients who have indicated they have housing insecurity"
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: housing_insecurity_flag
+      value: "yes"
+    }
+  }
+
+
   dimension: resource_help_requested {
     type: string
     sql: ${TABLE}.resource_help_requested ;;
     description: "Would you like help connecting to resources?"
   }
 
+  dimension: resource_requested_flag {
+    type: yesno
+    sql: ${resource_help_requested} IS NOT NULL AND ${resource_help_requested} <> 'None' AND
+    ${resource_help_requested} <> 'No Assistance Needed';;
+  }
+
+  measure: count_requested_resources {
+    type: count_distinct
+    description: "Count of patients who have indicated they would like to be connected to resources"
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: resource_requested_flag
+      value: "yes"
+    }
+  }
+
   dimension: overweight_obese_flag {
     type: yesno
+    hidden: yes
     sql: LOWER(${nutrition_status}) SIMILAR TO '(overweight|obese)%' ;;
   }
 
@@ -632,6 +703,7 @@ ORDER BY base.chart_id  ;;
 
   measure: count_cant_afford_medications {
     type: count_distinct
+    hidden: yes
     sql: ${chart_id} ;;
     drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
     filters: {
