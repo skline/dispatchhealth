@@ -328,6 +328,17 @@ ORDER BY base.chart_id  ;;
     sql: ${TABLE}.activities_daily_living ;;
   }
 
+  measure: count_activities_daily_living {
+    type: count_distinct
+    description: "Count of patients who indicate they need help with activities of daily living"
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: activities_daily_living
+      value: "Y"
+    }
+  }
+
   dimension: transportation {
     type: string
     description: "Has lack of transportation kept you from medical appointments, meetings, work,
@@ -454,11 +465,31 @@ ORDER BY base.chart_id  ;;
     sql: ${TABLE}.cost_concerns ;;
     description: "In the past year, have you been unable to get any of the following when it was really needed?"
   }
+
+  dimension: cost_concerns_flag {
+    type: yesno
+    sql: ${cost_concerns} <> 'No' AND ${cost_concerns} <> 'Choose not to answer this question'
+    AND ${cost_concerns} IS NOT NULL ;;
+  }
+
+  measure: count_cost_concerns {
+    type: count_distinct
+    description: "Count of patients who indicate they have financial concerns"
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: cost_concerns_flag
+      value: "yes"
+    }
+  }
+
   dimension: home_situation {
     type: string
+    hidden: yes
     sql: ${TABLE}.home_situation ;;
     description: "Home situation"
   }
+
   dimension: food_insecurity {
     type: string
     sql: CASE WHEN ${TABLE}.food_insecurity IN ('Yes','No') THEN ${TABLE}.food_insecurity
@@ -499,6 +530,18 @@ ORDER BY base.chart_id  ;;
     description: "How often do you have the opportunity to see or talk to people that you care about
     and feel close to?"
   }
+
+  measure: count_lack_social_interactions {
+    type: count_distinct
+    description: "Count of patients who have social interactions less than once per week"
+    sql: ${chart_id} ;;
+    drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
+    filters: {
+      field: social_interactions
+      value: "Less Than Once Per Week"
+    }
+  }
+
   dimension: housing_insecurity {
     type: string
     sql: ${TABLE}.housing_insecurity ;;
