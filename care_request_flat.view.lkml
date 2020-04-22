@@ -235,7 +235,7 @@ WITH ort AS (
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
                foc.first_on_scene_time,onscene.mins_on_scene_predicted;;
 
-    sql_trigger_value: SELECT MAX(created_at) FROM care_requests;;
+    sql_trigger_value:  SELECT MAX(id) FROM public.care_requests;;
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date"]
   }
 
