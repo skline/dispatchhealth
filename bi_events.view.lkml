@@ -10,9 +10,12 @@ view: bi_events {
 
   dimension_group: created {
     type: time
+    description: "The created timestamp, converted to local market time"
     timeframes: [
       raw,
       time,
+      hour_of_day,
+      day_of_week,
       date,
       week,
       month,
@@ -20,6 +23,20 @@ view: bi_events {
       year
     ]
     sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
+  }
+
+  dimension: created_decimal {
+    description: "created time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
+    type: number
+    value_format: "0.00"
+    sql: (CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT)) / 60) ;;
+  }
+
+  measure: average_hour_of_day {
+    type: average
+    value_format: "0.0"
+    sql: ${created_decimal} ;;
   }
 
   dimension: details {
@@ -49,9 +66,12 @@ view: bi_events {
 
   dimension_group: updated {
     type: time
+    description: "The updated timestamp, converted to local market time"
     timeframes: [
       raw,
       time,
+      hour_of_day,
+      day_of_week,
       date,
       week,
       month,
