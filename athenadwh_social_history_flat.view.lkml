@@ -89,9 +89,15 @@ LEFT JOIN (
     ) AS adl
       ON base.chart_id = adl.chart_id AND adl.rownum = 1
     LEFT JOIN (
-      SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
-              FROM athenadwh_social_history_clone
-        WHERE question = 'Transportation: Do you have transportation to your medical appointments?' OR
+      SELECT chart_id, question,
+        CASE WHEN created_datetime <= '2019-12-13 14:25:00' AND INITCAP(answer) = 'Yes' THEN 'No'
+         WHEN created_datetime <= '2019-12-13 14:25:00' AND INITCAP(answer) LIKE 'No%' THEN 'Yes'
+         ELSE INITCAP(answer)
+        END
+         AS answer,
+         created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+              FROM looker_scratch.athenadwh_social_history_clone
+        WHERE question LIKE '%Has lack of transportation kept you from medical appointments, meetings, work, or from getting things needed for daily living?' AND
         social_history_key = 'SOCIALHISTORY.LOCAL.141'
         GROUP BY 1,2,3,4
     ) AS trn
@@ -220,15 +226,22 @@ LEFT JOIN (
                 FROM athenadwh_social_history_clone
           WHERE social_history_key = 'SOCIALHISTORY.LOCAL.142' AND
           question = 'Has it ever happened within the past 12 months that the food you bought just didn’t last, and you didn’t have money to get more?'
+          AND created_datetime >= '2019-12-13 14:25:00'
           GROUP BY 1,2,3,4
       ) AS fis
         ON base.chart_id = fis.chart_id AND fis.rownum = 1
 LEFT JOIN (
-        SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
-                FROM athenadwh_social_history_clone
-          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.143' AND
-          question LIKE '%Within the past 12 months we worried that our food would run out before we got money to buy more.'
-          GROUP BY 1,2,3,4
+        SELECT chart_id, question,
+CASE WHEN created_datetime <= '2019-12-13 14:25:00' AND INITCAP(answer) = 'Yes' THEN 'No'
+         WHEN created_datetime <= '2019-12-13 14:25:00' AND INITCAP(answer) LIKE 'No%' THEN 'Yes'
+         ELSE INITCAP(answer)
+        END
+         AS answer,
+         created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
+              FROM looker_scratch.athenadwh_social_history_clone
+        WHERE question LIKE '%Within the past 12 months we worried that our food would run out before we got money to buy more.' AND
+        social_history_key = 'SOCIALHISTORY.LOCAL.143'
+        GROUP BY 1,2,3,4
       ) AS fw
         ON base.chart_id = fw.chart_id AND fw.rownum = 1
 LEFT JOIN (
@@ -241,14 +254,16 @@ LEFT JOIN (
 LEFT JOIN (
         SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
                 FROM athenadwh_social_history_clone
-          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.91'
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.91' AND
+          question LIKE '%Do you have any concerns about your current housing situation?'
           GROUP BY 1,2,3,4
       ) AS homeis
         ON base.chart_id = homeis.chart_id AND homeis.rownum = 1
 LEFT JOIN (
         SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
                 FROM athenadwh_social_history_clone
-          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.94'
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.94' AND
+          question = 'Would you like help connecting to resources?'
           GROUP BY 1,2,3,4
       ) AS rcs
         ON base.chart_id = rcs.chart_id AND rcs.rownum = 1
@@ -502,7 +517,7 @@ ORDER BY base.chart_id  ;;
 
   dimension: cost_concerns_flag {
     type: yesno
-    sql: ${cost_concerns} <> 'No' AND ${cost_concerns} <> 'Choose not to answer this question'
+    sql: ${cost_concerns} <> 'No' AND ${cost_concerns} <> 'Choose Not To Answer This Question'
     AND ${cost_concerns} IS NOT NULL ;;
   }
 
@@ -609,8 +624,7 @@ ORDER BY base.chart_id  ;;
 
   dimension: resource_requested_flag {
     type: yesno
-    sql: ${resource_help_requested} IS NOT NULL AND ${resource_help_requested} <> 'None' AND
-    ${resource_help_requested} <> 'No Assistance Needed';;
+    sql: ${resource_help_requested} IN ('Food','Housing','Medicine','Transportation','Utilities (gas or heat)') ;;
   }
 
   measure: count_requested_resources {
