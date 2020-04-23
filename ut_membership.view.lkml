@@ -11,6 +11,11 @@ view: ut_membership {
     sql: ${TABLE}.zipcode ;;
   }
 
+  measure: sum_ut_membership{
+    type: sum_distinct
+    sql: ${ut_membership} ;;
+    sql_distinct_key: ${zipcode} ;;
+  }
   measure: count {
     type: count
     drill_fields: []
