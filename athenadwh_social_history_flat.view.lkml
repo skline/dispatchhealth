@@ -226,7 +226,8 @@ LEFT JOIN (
 LEFT JOIN (
         SELECT chart_id, question, INITCAP(answer) AS answer, created_datetime, ROW_NUMBER() OVER (PARTITION BY chart_id ORDER BY created_datetime DESC) AS rownum
                 FROM athenadwh_social_history_clone
-          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.143'
+          WHERE social_history_key = 'SOCIALHISTORY.LOCAL.143' AND
+          question LIKE '%Within the past 12 months we worried that our food would run out before we got money to buy more.'
           GROUP BY 1,2,3,4
       ) AS fw
         ON base.chart_id = fw.chart_id AND fw.rownum = 1
