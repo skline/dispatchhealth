@@ -14,25 +14,36 @@ view: insurance_coalese {
     LEFT JOIN (
         SELECT
             cr2.id AS care_request_id,
+            cr2.patient_id,
             package_id,
             member_id,
+            crs.created_date,
+            cro.on_scene_date,
             ROW_NUMBER() OVER(PARTITION BY cr2.id ORDER BY ins.created_at desc) as rn
     FROM public.care_requests cr2
     JOIN (
         SELECT
             care_request_id,
+            MAX(started_at) AS created_date
+        FROM public.care_request_statuses
+        WHERE name = 'requested'
+        GROUP BY 1) crs
+        ON cr2.id = crs.care_request_id
+    LEFT JOIN (
+        SELECT
+            care_request_id,
             MAX(started_at) AS on_scene_date
         FROM public.care_request_statuses
         WHERE name = 'on_scene'
-        GROUP BY 1) crs
-        ON cr2.id = crs.care_request_id
-    JOIN public.patients pt
+        GROUP BY 1) cro
+        ON cr2.id = cro.care_request_id
+    LEFT JOIN public.patients pt
         ON pt.id=cr2.patient_id
-    JOIN public.insurances ins
+    LEFT JOIN public.insurances ins
     ON cr2.patient_id = ins.patient_id AND ins.priority = '1'
         AND ins.patient_id IS NOT NULL
-        AND COALESCE(ins.start_date,crs.on_scene_date) <= crs.on_scene_date AND
-        COALESCE(ins.end_date,crs.on_scene_date) >= crs.on_scene_date
+        AND COALESCE(ins.start_date,crs.created_date) <= crs.created_date AND
+        COALESCE(ins.end_date,crs.created_date) >= crs.created_date
         AND ins.package_id IS NOT NULL
         AND TRIM(ins.package_id)!='') AS sri
       ON sri.care_request_id=cr.id AND sri.rn=1
