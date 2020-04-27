@@ -3176,9 +3176,23 @@ explore: sf_accounts {
   join: sf_contacts {
     sql_on: ${sf_contacts.account_id} =${sf_accounts.account_id} ;;
   }
-  join: parent_accounts {
-    from: sf_accounts
-    sql_on: ${parent_accounts.account_id} =  ${sf_accounts.parent_account_id};;
+  #join: parent_accounts {
+  #  from: sf_accounts
+  #  sql_on: ${parent_accounts.account_id} =  ${sf_accounts.parent_account_id};;
+  #}
+  join:  sf_yesterday_accounts_health_score {
+    sql_on: ${sf_accounts.account_id} =${sf_yesterday_accounts_health_score.account_id} ;;
+  }
+  join:  sf_last_week_accounts_health_score {
+    sql_on: ${sf_accounts.account_id} =${sf_last_week_accounts_health_score.account_id} ;;
+  }
+
+  join:  sf_last_month_accounts_health_score {
+    sql_on: ${sf_accounts.account_id} =${sf_last_month_accounts_health_score.account_id} ;;
+  }
+
+  join:  sf_last_quarter_accounts_health_score {
+    sql_on: ${sf_accounts.account_id} =${sf_last_quarter_accounts_health_score.account_id} ;;
   }
 }
 
@@ -3213,10 +3227,10 @@ explore: sf_activities {
   join: care_request_flat{
     sql_on: ${care_request_flat.care_request_id}=${care_requests.id} ;;
   }
-  join: parent_accounts {
-    from: sf_accounts
-    sql_on: ${parent_accounts.account_id}  = ${sf_accounts.parent_account_id};;
-  }
+  #join: parent_accounts {
+  #  from: sf_accounts
+  #  sql_on: ${parent_accounts.account_id}  = ${sf_accounts.parent_account_id};;
+  #}
   join: sf_contacts {
     sql_on: ${sf_contacts.account_id} = ${sf_accounts.account_id} ;;
 
