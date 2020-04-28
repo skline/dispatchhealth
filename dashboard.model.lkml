@@ -1291,6 +1291,14 @@ join: ga_pageviews_clone {
     relationship: many_to_one
     sql_on: ${breaks.market_break_config_id} = ${market_break_configs.id};;
   }
+  join: sf_contacts_npi {
+    from: sf_contacts
+    sql_on:  ${athenadwh_primary_care_provider.npi} = ${sf_contacts_npi.npi_number};;
+  }
+  join: sf_accounts_npi {
+    from: sf_accounts
+    sql_on:  ${sf_accounts_npi.account_id} = ${sf_contacts_npi.account_id};;
+  }
 
 }
 
