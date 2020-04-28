@@ -215,6 +215,12 @@ explore: care_requests {
     sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_order_providers.clinical_provider_id} ;;
   }
 
+  join: athenadwh_clinical_providers_clone {
+    type: inner
+    relationship: one_to_one
+    sql_on: ${athenadwh_documents_clone.clinical_provider_id} = ${athenadwh_clinical_providers_clone.clinical_provider_id} ;;
+  }
+
   join: athenadwh_referrals {
     from:  athenadwh_documents_clone
     relationship:  one_to_many
