@@ -3088,6 +3088,14 @@ explore: ga_adwords_cost_clone{
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000;;
   }
 
+  join: care_requests {
+    sql_on: ${care_request_flat.care_request_id} =${care_requests.id} ;;
+  }
+
+  join: service_lines {
+    sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+
   join: ga_adwords_stats_clone {
     sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
                 and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
@@ -3102,6 +3110,22 @@ explore: ga_adwords_cost_clone{
     sql_on: ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
       and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
   }
+
+  join: diversions_by_care_request {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
+  }
+
+  join: channel_items {
+    relationship: many_to_one
+    sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: risk_assessments {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
+  }
+
 
   #join: web_care_requests {
   #  from: care_requests
