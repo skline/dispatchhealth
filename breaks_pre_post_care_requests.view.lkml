@@ -144,7 +144,7 @@ LEFT JOIN
 
   ON crpre.shift_team_id = break.shift_team_id ;;
 
-  sql_trigger_value: SELECT MAX(shift_team_id) FROM breaks ;;
+  sql_trigger_value: SELECT 1 ;;
   indexes: ["shift_team_id"]
 }
 
