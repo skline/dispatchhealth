@@ -215,6 +215,12 @@ explore: care_requests {
     sql_on: ${athenadwh_orders.clinical_provider_id} = ${athenadwh_order_providers.clinical_provider_id} ;;
   }
 
+  join: athenadwh_clinical_providers_clone {
+    type: inner
+    relationship: one_to_one
+    sql_on: ${athenadwh_documents_clone.clinical_provider_id} = ${athenadwh_clinical_providers_clone.clinical_provider_id} ;;
+  }
+
   join: athenadwh_referrals {
     from:  athenadwh_documents_clone
     relationship:  one_to_many
@@ -754,11 +760,6 @@ explore: care_requests {
     sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} ;;
   }
 
-  join: breaks_pre_post_care_requests {
-    relationship: one_to_one
-    sql_on: ${shift_teams.id} = ${breaks_pre_post_care_requests.shift_team_id} ;;
-  }
-
   join: shift_team_members {
     relationship: many_to_one
     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
@@ -1284,6 +1285,14 @@ join: ga_pageviews_clone {
   join: market_break_configs {
     relationship: many_to_one
     sql_on: ${breaks.market_break_config_id} = ${market_break_configs.id};;
+  }
+  join: sf_contacts_npi {
+    from: sf_contacts
+    sql_on:  ${athenadwh_primary_care_provider.npi} = ${sf_contacts_npi.npi_number};;
+  }
+  join: sf_accounts_npi {
+    from: sf_accounts
+    sql_on:  ${sf_accounts_npi.account_id} = ${sf_contacts_npi.account_id};;
   }
 
 }
@@ -3079,6 +3088,14 @@ explore: ga_adwords_cost_clone{
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000;;
   }
 
+  join: care_requests {
+    sql_on: ${care_request_flat.care_request_id} =${care_requests.id} ;;
+  }
+
+  join: service_lines {
+    sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+
   join: ga_adwords_stats_clone {
     sql_on:   ${ga_adwords_stats_clone.adwordscampaignid} =${ga_adwords_cost_clone.adwordscampaignid}
                 and ${ga_adwords_stats_clone.adwordscreativeid} =${ga_adwords_cost_clone.adwordscreativeid}
@@ -3093,6 +3110,22 @@ explore: ga_adwords_cost_clone{
     sql_on: ${ga_adwords_stats_clone.client_id} = ${ga_pageviews_clone.client_id}
       and ${ga_adwords_stats_clone.page_timestamp_raw} = ${ga_pageviews_clone.timestamp_raw};;
   }
+
+  join: diversions_by_care_request {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
+  }
+
+  join: channel_items {
+    relationship: many_to_one
+    sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: risk_assessments {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
+  }
+
 
   #join: web_care_requests {
   #  from: care_requests
