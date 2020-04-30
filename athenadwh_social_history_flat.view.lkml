@@ -680,6 +680,29 @@ ORDER BY base.chart_id  ;;
     value_format: "0.0"
   }
 
+  dimension: number_questions_asked_primary_10_sdoh {
+    type: number
+    sql:
+    (CASE WHEN ${fall_risk_unsteady} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${activities_daily_living} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${safety_feeling} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${cost_concerns} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${food_insecurity} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${food_insecurity_worry} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${social_interactions} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${housing_insecurity} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${resource_help_requested} IS NULL THEN 0 ELSE 1 END) +
+    (CASE WHEN ${transportation} IS NULL THEN 0 ELSE 1 END)
+    ;;
+  }
+
+  measure: avg_questions_asked_primary_10_sdoh {
+    type: average_distinct
+    sql_distinct_key: ${chart_id} ;;
+    sql: ${number_questions_asked_primary_10_sdoh} ;;
+    value_format: "0.0"
+  }
+
   measure: count_distinct_charts {
     type: count_distinct
     sql: ${chart_id} ;;
@@ -708,6 +731,7 @@ ORDER BY base.chart_id  ;;
 
   measure: count_lack_of_access_healthy_foods {
     type: count_distinct
+    hidden: yes
     sql: ${chart_id} ;;
     drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
     filters: {
