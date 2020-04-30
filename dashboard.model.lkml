@@ -3406,3 +3406,36 @@ explore: non_phone_cr {
   }
 
 }
+
+explore: mailchimp_sends {
+  join: mailchimp_activities {
+    sql_on: ${mailchimp_sends.email_id} = ${mailchimp_activities.email_id} ;;
+  }
+  join: mailchimp_campaigns {
+    sql_on:  ${mailchimp_sends.campaign_id}  =${mailchimp_campaigns.campaign_id} ;;
+  }
+
+  join: mailchimp_lists{
+    sql_on:  ${mailchimp_lists.list_id}  =${mailchimp_campaigns.list_id} ;;
+  }
+
+  join: mailchimp_audiences_clone{
+    sql_on:  ${mailchimp_audiences_clone.email}  =${mailchimp_sends.email_address} ;;
+  }
+
+  join: sf_contacts{
+    sql_on:  ${sf_contacts.email}  = ${mailchimp_sends.email_address} ;;
+  }
+
+  join: sf_accounts{
+    sql_on:  ${sf_contacts.account_id}  = ${sf_accounts.account_id} ;;
+  }
+
+  join: sf_contacts_activities {
+    sql_on: ${sf_contacts_activities.contact_id} =${sf_contacts.contact_id} ;;
+  }
+
+  join: sf_activities{
+    sql_on:  ${sf_contacts_activities.activity_id}  =  ${sf_activities.activity_id} ;;
+  }
+}
