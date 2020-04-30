@@ -2973,6 +2973,11 @@ explore: shift_teams
     sql_on: ${shift_team_members.user_id} = ${users.id} ;;
   }
 
+  join: provider_fit_testing {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_fit_testing.user_id} ;;
+  }
+
 #  join: zizzl_detailed_shift_hours {
 #    relationship: one_to_many
 #   sql_on: ${shift_teams.id} = ${zizzl_detailed_shift_hours.shift_team_id} AND ${users.id} = ${zizzl_detailed_shift_hours.employee_id};;
