@@ -297,6 +297,11 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
+  join: collective_medical {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${collective_medical.care_request_id} ;;
+  }
+
   join: provider_roster {
     relationship: one_to_one
     sql_on: ${athenadwh_letter_recipient_provider.npi} = ${provider_roster.npi}::varchar ;;
