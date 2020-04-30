@@ -297,6 +297,11 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
+  join: collective_medical {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${collective_medical.care_request_id} ;;
+  }
+
   join: provider_roster {
     relationship: one_to_one
     sql_on: ${athenadwh_letter_recipient_provider.npi} = ${provider_roster.npi}::varchar ;;
@@ -2966,6 +2971,11 @@ explore: shift_teams
   join: users {
     relationship: one_to_one
     sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+  join: provider_fit_testing {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_fit_testing.user_id} ;;
   }
 
 #  join: zizzl_detailed_shift_hours {
