@@ -11,6 +11,16 @@ view: sf_accounts {
     sql: ${TABLE}."account_name" ;;
   }
 
+  dimension: al_il_distinction {
+    type: string
+    sql: case when
+     lower(${account_name}) like '%-mc%' or lower(${channel_items.name}) like '%-mc%' or lower(${account_name}) like '% mc%' or lower(${channel_items.name}) like '% mc%' or
+     lower(${account_name}) like '%memory%' or lower(${channel_items.name}) like '%memory%' or
+     lower(${account_name}) like '% al%' or lower(${account_name}) like '%-al%' or lower(${channel_items.name}) like '%-al%' or lower(${account_name}) like '%assisted%'  OR lower(${channel_items.name}) like '% al%' or lower(${channel_items.name}) like '%assisted%' then 'Senior Living Community: AL/MC'
+              when  lower(${account_name}) like '% il%' or lower(${account_name}) like '%independent%'  OR lower(${channel_items.name}) like '% il%' or lower(${channel_items.name}) like '%independent%' then 'Senior Living Community: IL'
+              else null end ;;
+  }
+
   dimension: channel_items_id {
     type: number
     sql: ${TABLE}."channel_items_id" ;;
