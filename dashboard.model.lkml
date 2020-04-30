@@ -3419,7 +3419,7 @@ explore: non_phone_cr {
 
 explore: mailchimp_sends {
   join: mailchimp_activities {
-    sql_on: ${mailchimp_sends.email_id} = ${mailchimp_activities.email_id} ;;
+    sql_on: ${mailchimp_sends.email_id} = ${mailchimp_activities.email_id} and ${mailchimp_activities.campaign_id} =${mailchimp_sends.campaign_id};;
   }
   join: mailchimp_campaigns {
     sql_on:  ${mailchimp_sends.campaign_id}  =${mailchimp_campaigns.campaign_id} ;;

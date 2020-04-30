@@ -34,4 +34,10 @@ view: mailchimp_activities {
     type: count
     drill_fields: []
   }
+
+  dimension: campaign_id {
+    type: string
+    sql: ${TABLE}."campaign_id" ;;
+  }
+
 }

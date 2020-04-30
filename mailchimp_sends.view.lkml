@@ -28,15 +28,15 @@ view: mailchimp_sends {
 
   measure: count_distinct_sends {
     type: count_distinct
-    sql: ${email_id} ;;
-    sql_distinct_key: ${email_id} ;;
+    sql: concat(${email_id}, ${campaign_id}) ;;
+    sql_distinct_key: concat(${email_id}, ${campaign_id}) ;;
 
   }
 
   measure: count_distinct_opens {
     type: count_distinct
-    sql: ${mailchimp_activities.email_id} ;;
-    sql_distinct_key: ${mailchimp_activities.email_id} ;;
+    sql: concat(${mailchimp_activities.email_id},  ${mailchimp_activities.campaign_id});;
+    sql_distinct_key: concat(${mailchimp_activities.email_id},  ${mailchimp_activities.campaign_id}) ;;
     filters: {
       field: mailchimp_activities.type
       value: "open"
@@ -44,8 +44,8 @@ view: mailchimp_sends {
   }
   measure: count_distinct_clicks {
     type: count_distinct
-    sql: ${mailchimp_activities.email_id} ;;
-    sql_distinct_key: ${mailchimp_activities.email_id} ;;
+    sql: concat(${mailchimp_activities.email_id},  ${mailchimp_activities.campaign_id}) ;;
+    sql_distinct_key: concat(${mailchimp_activities.email_id},  ${mailchimp_activities.campaign_id});;
     filters: {
       field: mailchimp_activities.type
       value: "click"
@@ -54,8 +54,8 @@ view: mailchimp_sends {
 
   measure: count_distinct_bounces {
     type: count_distinct
-    sql: ${mailchimp_activities.email_id} ;;
-    sql_distinct_key: ${mailchimp_activities.email_id} ;;
+    sql: concat(${mailchimp_activities.email_id},  ${mailchimp_activities.campaign_id}) ;;
+    sql_distinct_key: concat(${mailchimp_activities.email_id},  ${mailchimp_activities.campaign_id}) ;;
     filters: {
       field: mailchimp_activities.type
       value: "hard bounce"
