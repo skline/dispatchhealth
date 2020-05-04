@@ -134,7 +134,7 @@ explore: care_requests {
   }
 
   join: prior_claims {
-    view_label: "Claims created at least 2 days ago - For use with HPN data feed only!"
+    view_label: "Claims created 2 or more days ago - HPN"
     from: athenadwh_claims_clone
     relationship: one_to_one
     sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${prior_claims.claim_appointment_id}
