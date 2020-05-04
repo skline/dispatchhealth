@@ -3144,6 +3144,38 @@ explore: ga_adwords_cost_clone{
     sql_on: ${care_requests.id} = ${risk_assessments.care_request_id} and ${risk_assessments.score} is not null ;;
   }
 
+  join: athenadwh_clinical_encounters_clone {
+    relationship:  one_to_one
+    sql_on: ${care_requests.ehr_id} = ${athenadwh_clinical_encounters_clone.appointment_id}::varchar;;
+  }
+
+
+  join: athenadwh_claims_clone {
+    relationship: one_to_one
+    # type: inner
+    sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id} ;;
+  }
+
+  join: athenadwh_transactions_clone {
+    relationship: one_to_many
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_transactions_clone.claim_id} ;;
+  }
+
+  join: athenadwh_valid_claims {
+    relationship: one_to_one
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_valid_claims.claim_id} ;;
+  }
+
+  join: athenadwh_patient_insurances_clone {
+    relationship: one_to_many
+    sql_on: ${patients.ehr_id} = ${athenadwh_patient_insurances_clone.patient_id}::varchar
+          AND ${athenadwh_patient_insurances_clone.cancellation_date} IS NULL
+          AND (${athenadwh_patient_insurances_clone.sequence_number}::int = 1 OR ${athenadwh_patient_insurances_clone.insurance_package_id}::int = -100)
+            /*AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0 */ ;;
+  }
+
+
+
 
   #join: web_care_requests {
   #  from: care_requests
