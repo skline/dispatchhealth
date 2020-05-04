@@ -133,6 +133,14 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id} ;;
   }
 
+  join: prior_claims {
+    view_label: "Claims created at least 2 days ago - For use with HPN data feed only!"
+    from: athenadwh_claims_clone
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${prior_claims.claim_appointment_id}
+    AND ${prior_claims.claim_created_datetime_date} < CURRENT_DATE - 2 ;;
+  }
+
   join: athenadwh_valid_claims {
     relationship: one_to_one
     sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_valid_claims.claim_id} ;;
