@@ -703,6 +703,106 @@ ORDER BY base.chart_id  ;;
     value_format: "0.0"
   }
 
+  measure: count_one_or_more_10_SDOH_asked {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    value_format: "0"
+    filters: {
+      field: number_questions_asked_primary_10_sdoh
+      value: ">0"
+    }
+  }
+
+  measure: sdoh_qn_asked_fall_risk_unsteady {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: fall_risk_unsteady
+      value: "-NULL"
+    }
+    }
+
+  measure: sdoh_qn_asked_activities_daily_living {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: activities_daily_living
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_safety_feeling {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: safety_feeling
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_cost_concerns {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: cost_concerns
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_food_insecurity {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: food_insecurity
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_food_insecurity_worry {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: food_insecurity_worry
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_social_interactions {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: social_interactions
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_housing_insecurity {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: housing_insecurity
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_resource_help_requested {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: resource_help_requested
+      value: "-NULL"
+    }
+  }
+
+  measure: sdoh_qn_asked_transportation {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: transportation
+      value: "-NULL"
+    }
+  }
+
   measure: count_distinct_charts {
     type: count_distinct
     sql: ${chart_id} ;;
