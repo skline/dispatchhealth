@@ -713,6 +713,15 @@ ORDER BY base.chart_id  ;;
     }
   }
 
+  measure: qn_asked_fall_risk_per_provider {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    filters: {
+      field: fall_risk_unsteady
+      value: "-NULL"
+    }
+  }
+
   measure: sdoh_qn_asked_fall_risk_unsteady {
     type: count_distinct
     sql: ${chart_id} ;;
