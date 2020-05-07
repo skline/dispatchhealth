@@ -173,7 +173,7 @@ view: athenadwh_transactions_clone {
     type: yesno
     sql: ${transaction_type} = 'CHARGE' AND (
     (${transaction_transfer_type} = 'Primary')
-    OR (${transaction_transfer_type} != 'Primary' AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int = -100));;
+    OR (${transaction_transfer_type} != 'Primary' AND ${insurance_coalese_crosswalk.insurance_package_id}::int IN (0,-100)));;
   }
 
   dimension: fixed_expected_allowable {
@@ -193,6 +193,10 @@ view: athenadwh_transactions_clone {
     value_format: "$#,##0.00"
     filters: {
       field: is_valid_exp_allowable
+      value: "yes"
+    }
+    filters: {
+      field: is_valid_claim
       value: "yes"
     }
   }
