@@ -16,6 +16,11 @@ view: mailchimp_sends {
     sql: ${TABLE}."email_id" ;;
   }
 
+  dimension: email_id_campaign_id {
+    type: string
+    sql: concat(${email_id}, ${campaign_id});;
+  }
+
   dimension: list_id {
     type: string
     sql: ${TABLE}."list_id" ;;

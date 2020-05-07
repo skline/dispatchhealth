@@ -3173,6 +3173,18 @@ explore: ga_adwords_cost_clone{
           AND (${athenadwh_patient_insurances_clone.sequence_number}::int = 1 OR ${athenadwh_patient_insurances_clone.insurance_package_id}::int = -100)
             /*AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0 */ ;;
   }
+  join: insurance_coalese {
+    relationship: many_to_one
+    sql_on: ${insurance_coalese.care_request_id} = ${care_requests.id} ;;
+  }
+
+
+  join: insurance_coalese_crosswalk {
+    from: primary_payer_dimensions_clone
+    relationship: many_to_one
+    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
+      AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
+  }
 
 
 
