@@ -2961,6 +2961,10 @@ explore: tivity_data {
 explore: shift_teams
  {
 
+  sql_always_where: ${care_requests.deleted_raw} IS NULL AND
+  (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL)
+  AND ${patients.last_name} NOT LIKE '%Test%' ;;
+
   join: care_requests {
     relationship: one_to_many
     sql_on: ${shift_teams.id} = ${care_requests.shift_team_id} ;;
@@ -3056,6 +3060,11 @@ explore: shift_teams
 
   join: budget_projections_by_market_clone {
     sql_on: ${markets.id_adj} = ${budget_projections_by_market_clone.market_dim_id} AND ${shift_teams.start_month} = ${budget_projections_by_market_clone.month_month} ;;
+  }
+
+  join: patients {
+    relationship: many_to_one
+    sql_on:  ${care_requests.patient_id} = ${patients.id} ;;
   }
 
 }
