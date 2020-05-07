@@ -132,6 +132,7 @@ view: collective_medical {
 
   dimension: major_class {
     type: string
+    description: "Emergency, Inpatient, or Observation"
     sql: ${TABLE}."major_class" ;;
   }
 
@@ -156,6 +157,7 @@ view: collective_medical {
 
   dimension: visit_type {
     type: string
+    description: "The reason for the visit: Surgery, Oncology, General Medicine, etc."
     sql: ${TABLE}."visit_type" ;;
   }
 
