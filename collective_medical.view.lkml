@@ -58,7 +58,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}."admit_date" ;;
+    sql: ${TABLE}.admit_date ;;
   }
 
   dimension: admitted_ip {
@@ -107,7 +107,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}."discharge_date" ;;
+    sql: ${TABLE}.discharge_date ;;
   }
 
   dimension: encounter_account_number {
@@ -165,4 +165,150 @@ view: collective_medical {
     type: count
     drill_fields: [id]
   }
+
+   dimension: 3_day_cm_admit_inpatient {
+    description: "Inpatient admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 3 and lower(${major_class}) = 'inpatient';;
+  }
+
+  dimension: 3_day_cm_admit_observation {
+    description: "Observation admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 3 and lower(${major_class}) = 'observation';;
+  }
+
+  dimension: 3_day_cm_admit_emergency {
+    description: "Emergency admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 3 and lower(${major_class}) = 'emergency';;
+  }
+
+  dimension: 14_day_cm_admit_inpatient {
+    description: "Inpatient admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 14 and lower(${major_class}) = 'inpatient';;
+  }
+
+  dimension: 14_day_cm_admit_observation {
+    description: "Observation admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 14 and  lower(${major_class}) = 'observation';;
+  }
+
+  dimension: 14_day_cm_admit_emergency {
+    description: "Emergency admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 14 and  lower(${major_class}) = 'emergency';;
+  }
+
+  dimension: 30_day_cm_admit_inpatient {
+    description: "Inpatient admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 30 and lower(${major_class}) = 'inpatient';;
+  }
+
+  dimension: 30_day_cm_admit_observation {
+    description: "Observation admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 30 and  lower(${major_class}) = 'observation';;
+  }
+
+  dimension: 30_day_cm_admit_emergency {
+    description: "Emergency admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 30 and  lower(${major_class}) = 'emergency';;
+  }
+
+  measure: count_3_day_cm_admit_inpatient {
+    description: "Count Inpatient admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 3_day_cm_admit_inpatient
+      value: "yes"
+    }
+  }
+
+  measure: count_3_day_cm_admit_observation {
+    description: "Count Observation admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 3_day_cm_admit_observation
+      value: "yes"
+    }
+  }
+
+    measure: count_3_day_cm_admit_emergency {
+      description: "Count Emergency admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
+      type: count_distinct
+      sql: ${id} ;;
+      filters: {
+        field: 3_day_cm_admit_emergency
+        value: "yes"
+      }
+  }
+
+  measure: count_14_day_cm_admit_inpatient {
+    description: "Count Inpatient admittances recorded by Collective Medical within 14 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 14_day_cm_admit_inpatient
+      value: "yes"
+    }
+  }
+
+  measure: count_14_day_cm_admit_observation {
+    description: "Count Observation admittances recorded by Collective Medical within 14 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 14_day_cm_admit_observation
+      value: "yes"
+    }
+  }
+
+  measure: count_14_day_cm_admit_emergency {
+    description: "Count Emergency admittances recorded by Collective Medical within 14 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 14_day_cm_admit_emergency
+      value: "yes"
+    }
+  }
+
+  measure: count_30_day_cm_admit_inpatient {
+    description: "Count Inpatient admittances recorded by Collective Medical within 30 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 30_day_cm_admit_inpatient
+      value: "yes"
+    }
+  }
+
+  measure: count_30_day_cm_admit_observation {
+    description: "Count Observation admittances recorded by Collective Medical within 30 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 30_day_cm_admit_observation
+      value: "yes"
+    }
+  }
+
+  measure: count_30_day_cm_admit_emergency {
+    description: "Count Emergency admittances recorded by Collective Medical within 30 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: 30_day_cm_admit_emergency
+      value: "yes"
+    }
+  }
+
+
 }
