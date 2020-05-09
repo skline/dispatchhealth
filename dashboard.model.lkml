@@ -14,7 +14,7 @@ explore: care_requests {
 
   sql_always_where: ${deleted_raw} IS NULL AND
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL)
-  AND ${patients.last_name} NOT LIKE '%Test%' ;;
+  AND (${patients.last_name} NOT LIKE '%Test%' OR ${patients.last_name} IS NULL) ;;
 
   access_filter: {
     field: markets.name
@@ -2963,7 +2963,7 @@ explore: shift_teams
 
   sql_always_where: ${care_requests.deleted_raw} IS NULL AND
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL)
-  AND ${patients.last_name} NOT LIKE '%Test%' ;;
+  AND (${patients.last_name} NOT LIKE '%Test%' OR ${patients.last_name} IS NULL) ;;
 
   join: care_requests {
     relationship: one_to_many
