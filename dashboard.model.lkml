@@ -3471,7 +3471,7 @@ explore: non_phone_cr {
 
 explore: mailchimp_sends {
   join: mailchimp_activities {
-    sql_on: ${mailchimp_sends.email_id} = ${mailchimp_activities.email_id} and ${mailchimp_activities.campaign_id} =${mailchimp_sends.campaign_id};;
+    sql_on: ${mailchimp_sends.mailchimp_id} = ${mailchimp_activities.mailchimp_id} ;;
   }
   join: mailchimp_campaigns {
     sql_on:  ${mailchimp_sends.campaign_id}  =${mailchimp_campaigns.campaign_id} ;;
@@ -3499,5 +3499,20 @@ explore: mailchimp_sends {
 
   join: sf_activities{
     sql_on:  ${sf_contacts_activities.activity_id}  =  ${sf_activities.activity_id} ;;
+  }
+
+  join: loaded_sf_activities {
+    from: sf_activities
+    sql_on: ${mailchimp_sends.mailchimp_id} = ${loaded_sf_activities.mailchimp_id};;
+  }
+
+  join: loaded_sf_contacts_activities {
+    from: sf_contacts_activities
+    sql_on: ${loaded_sf_contacts_activities.activity_id} =${loaded_sf_activities.activity_id} ;;
+  }
+
+  join: loaded_sf_contacts {
+    from: sf_contacts
+    sql_on: ${loaded_sf_contacts_activities.contact_id} =${loaded_sf_contacts.contact_id} ;;
   }
 }
