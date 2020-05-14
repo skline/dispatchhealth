@@ -136,4 +136,9 @@ view: insurance_plans {
     type: count
     drill_fields: [id, name]
   }
+
+  dimension: contracted {
+    type: yesno
+    sql: ${TABLE}.contracted ;;
+  }
 }
