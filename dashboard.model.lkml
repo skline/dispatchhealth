@@ -3396,9 +3396,9 @@ explore: sf_contacts {
     sql_on:  ${sf_contacts_activities.activity_id} = ${explicit_activities.activity_id};;
   }
 
-  join: sf_fax_activities {
-    sql_on: ${explicit_activities.activity_id} = ${sf_fax_activities.activity_id} ;;
-  }
+#  join: sf_fax_activities {
+#    sql_on: ${explicit_activities.activity_id} = ${sf_fax_activities.activity_id} ;;
+#  }
 
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
