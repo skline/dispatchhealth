@@ -1170,6 +1170,23 @@ WITH ort AS (
     }
   }
 
+  dimension: ed_any_14day_followup_in_sample {
+    type: yesno
+    sql: ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)  OR
+      ((UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) ;;
+  }
+
+  measure: count_ed_any_14day_followup_in_sample {
+    label: "14-Day Any ED (same or different complaint) Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: ed_any_14day_followup_in_sample
+      value: "yes"
+    }
+  }
+
   dimension: hospitalization_any_14day_followup_in_sample {
     type: yesno
     sql: ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)  OR
@@ -1407,6 +1424,23 @@ WITH ort AS (
     sql: ${care_request_id} ;;
     filters: {
       field: bounceback_3day
+      value: "yes"
+    }
+  }
+
+  dimension: ed_any_3day_followup {
+    type: yesno
+    sql: UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR
+      UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT'  ;;
+  }
+
+  measure: count_ed_any_3day_followup {
+    label: "3-Day Any ED (same or different complaint) Bounce back Count"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: ed_any_3day_followup
       value: "yes"
     }
   }
