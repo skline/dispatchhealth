@@ -120,8 +120,23 @@ view: users {
   }
 
   dimension: csc_name {
+    label: "Full Name"
     type: string
     sql: initcap(concat(trim(${last_name}), ', ', trim(${first_name})));;
+  }
+
+  filter: provider_select {
+    suggest_dimension: csc_name
+  }
+
+  dimension: provider_comparitor {
+    type: string
+    sql:
+    CASE
+      WHEN {% condition provider_select %} ${csc_name} {% endcondition %}
+        THEN ${csc_name}
+      ELSE 'All Other Providers'
+    END ;;
   }
 
   dimension: chart_scrubbing_name {
