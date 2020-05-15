@@ -10,6 +10,11 @@ view: sf_activities {
     sql:  lower(${assigned}) not in ('syeda abbas', 'matthew callman', 'melanie plaksin', 'karrie austin escobedo', 'christine greimann','kendra tinsley');;
   }
 
+  dimension: mailchimp_id {
+    type: string
+    sql: ${TABLE}."mailchimp_id" ;;
+  }
+
   dimension: call {
     type: yesno
     sql: (${subject} like '%call%' or  ${task_type} ='call') and ${subject} not like '%email%' and ${task_type} !='email' and (${result} != 'need to contact' or ${result} is null);;

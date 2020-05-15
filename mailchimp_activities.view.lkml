@@ -30,6 +30,11 @@ view: mailchimp_activities {
     sql: ${TABLE}."type" ;;
   }
 
+  dimension: mailchimp_id {
+    type: string
+    sql: ${TABLE}."mailchimp_id" ;;
+  }
+
   measure: count {
     type: count
     drill_fields: []

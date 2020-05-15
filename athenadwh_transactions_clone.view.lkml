@@ -295,6 +295,20 @@ view: athenadwh_transactions_clone {
     }
   }
 
+  measure: count_insurance_contracted_claims {
+    type: count_distinct
+    sql: ${claim_id} ;;
+    filters: {
+      field: is_valid_claim
+      value: "yes"
+    }
+    filters: {
+      field: insurance_plans.contracted
+      value: "yes"
+    }
+  }
+
+
   dimension_group: created {
     type: time
     timeframes: [

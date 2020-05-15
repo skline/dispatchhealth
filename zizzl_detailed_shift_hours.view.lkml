@@ -244,6 +244,41 @@ SELECT DISTINCT
     sql: ${TABLE}.counter_hours ;;
     }
 
+    dimension: counter_hours_range {
+      type: string
+      sql: case when ${counter_hours} >= 14 then 'Greater than 14 hours'
+                when ${counter_hours} >= 9.5 and  ${counter_hours} < 14 then 'Greater than 9.5 and less than 14 hours'
+                when ${counter_hours} < 9.5  and ${counter_hours} >= 8.5  then 'Greater 8.5 and less than 9.5 hours'
+                when ${counter_hours} < 8.5  and ${counter_hours} >= 7.5  then 'Greater 7.5 and less than 8.5 hours'
+                when ${counter_hours} < 7.5 then '7.5 or less hours' else null end;;
+    }
+
+  dimension: counter_hours_range_simple {
+    type: string
+    sql: case when ${counter_hours} >= 14 then 'Greater than 14 hours'
+                when ${counter_hours} >= 11 and  ${counter_hours} < 14 then 'Greater than 11 and less than 14 hours'
+                when ${counter_hours} >= 9.5 and  ${counter_hours} <11 then 'Greater than 9.5 and less than 11 hours'
+                when ${counter_hours} < 9.5   then '9.5 or less hours'
+            else null end;;
+  }
+
+    measure: count_distinct {
+      type: count_distinct
+      sql: ${primary_key} ;;
+      sql_distinct_key: ${primary_key} ;;
+    }
+
+  measure: average_direct_hours {
+    value_format: "0.00"
+    type: average_distinct
+    sql: ${counter_hours} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: direct_shift_hours
+      value: "yes"
+    }
+  }
+
     measure: sum_direct_hours {
       type: sum_distinct
       description: "The sum of all direct hours worked"
