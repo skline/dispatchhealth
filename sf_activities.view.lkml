@@ -84,6 +84,20 @@ view: sf_activities {
     sql: max(${TABLE}."start_date") ;;
   }
 
+  measure: min_start {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      time
+    ]
+    sql: min(${TABLE}."start_date") ;;
+  }
+
   dimension: visits_after_activity {
     type: yesno
     sql: ${start_date} <= ${care_request_flat.on_scene_date} ;;
@@ -131,6 +145,11 @@ view: sf_activities {
     sql: lower(${TABLE}."implementation") ;;
   }
 
+  dimension: fax {
+    label: "fax campaign"
+    type: yesno
+    sql: ${subject} like '%fax campaign%' ;;
+  }
 
 
   dimension: subject {

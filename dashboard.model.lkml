@@ -3386,6 +3386,20 @@ explore: sf_contacts {
   join: sf_activities{
     sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
   }
+
+  join: sf_contacts_activities {
+    sql_on: ${sf_contacts_activities.contact_id} = ${sf_contacts.contact_id} ;;
+  }
+
+  join: explicit_activities {
+    from: sf_activities
+    sql_on:  ${sf_contacts_activities.activity_id} = ${explicit_activities.activity_id};;
+  }
+
+  join: sf_fax_activities {
+    sql_on: ${explicit_activities.activity_id} = ${sf_fax_activities.activity_id} ;;
+  }
+
   join: sf_markets_mapping {
     sql_on: ${sf_markets_mapping.market}=${sf_accounts.market} ;;
   }
