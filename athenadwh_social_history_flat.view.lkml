@@ -717,7 +717,7 @@ ORDER BY base.chart_id  ;;
     type: count_distinct
     sql: ${chart_id} ;;
     filters: {
-      field: fall_risk_unsteady
+      field: fall_risk_provider
       value: "-NULL"
     }
   }
