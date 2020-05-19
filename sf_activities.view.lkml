@@ -157,6 +157,11 @@ view: sf_activities {
     sql: lower(${TABLE}."subject") ;;
   }
 
+  measure: all_subjects {
+    type: string
+    sql: array_agg(distinct ${subject}) ;;
+  }
+
   dimension: task_type {
     type: string
     sql: lower(${TABLE}."task_type") ;;
