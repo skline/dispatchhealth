@@ -156,10 +156,14 @@ view: sf_activities {
     type: string
     sql: lower(${TABLE}."subject") ;;
   }
+  dimension: subject_date {
+    type: string
+    sql: concat(${subject}, ': ', ${start_date}) ;;
+  }
 
   measure: all_subjects {
     type: string
-    sql: array_agg(distinct ${subject}) ;;
+    sql: array_agg(distinct ${subject_date})  ;;
   }
 
   dimension: task_type {
