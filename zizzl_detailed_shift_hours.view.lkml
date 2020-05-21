@@ -279,6 +279,26 @@ SELECT DISTINCT
     }
   }
 
+  measure: sum_total_hours {
+    type: sum_distinct
+    description: "The sum of all hours worked"
+    sql: ${counter_hours} ;;
+    sql_distinct_key: ${primary_key} ;;
+    value_format: "#,##0.00"
+    filters: {
+      field: regular_shift_hours
+      value: "yes"
+    }
+  }
+
+  measure: sum_total_pay {
+    type: sum_distinct
+    description: "The sum of all gross pay for all hours worked"
+    sql: ${gross_pay} ;;
+    sql_distinct_key: ${primary_key};;
+    value_format: "$#,##0.00"
+  }
+
     measure: sum_direct_hours {
       type: sum_distinct
       description: "The sum of all direct hours worked"
