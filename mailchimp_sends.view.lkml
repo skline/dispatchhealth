@@ -31,6 +31,13 @@ view: mailchimp_sends {
     drill_fields: []
   }
 
+  measure: count_distinct_emails {
+    type: count_distinct
+    sql: concat(${email_id}) ;;
+    sql_distinct_key: concat(${email_id}) ;;
+
+  }
+
   measure: count_distinct_sends {
     type: count_distinct
     sql: concat(${email_id}, ${campaign_id}) ;;
