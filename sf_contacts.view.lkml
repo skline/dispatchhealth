@@ -86,6 +86,7 @@ view: sf_contacts {
   }
 
   measure: count {
+    label: "Count Distinct SF Contacts"
     type: count_distinct
     sql: ${contact_id} ;;
     sql_distinct_key: ${contact_id} ;;
