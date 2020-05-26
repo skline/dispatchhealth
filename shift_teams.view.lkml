@@ -228,6 +228,26 @@ view: shift_teams {
   }
 
 
+  measure: count_distinct_car_date_shift_hours_greater_5 {
+    label: "Count of Distinct Cars by Date where shift hours > 5 (Shift Teams)"
+    type: count_distinct
+    sql_distinct_key: ${car_date_id} ;;
+    sql: ${car_date_id} ;;
+    filters:  {
+      field: cars.telemedicine_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.test_car
+      value: "no"
+    }
+    filters:  {
+      field: shift_hours
+      value: ">5"
+    }
+  }
+
+
   measure: count_distinct_car_hour_shift {
     label: "Count of Distinct Cars by Hour (Shift Teams)"
     type: count_distinct

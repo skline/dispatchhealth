@@ -630,6 +630,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
+      field: care_requests.DHFU_follow_up
+      value: "No"
+    }
+    filters: {
       field: diversion_911
       value: "Yes"
     }
@@ -654,6 +658,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
+      field: care_requests.DHFU_follow_up
+      value: "No"
+    }
+    filters: {
       field: diversion_911
       value: "Yes"
     }
@@ -674,6 +682,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: care_requests.DHFU_follow_up
       value: "No"
     }
     filters: {
@@ -701,6 +713,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
+      field: care_requests.DHFU_follow_up
+      value: "No"
+    }
+    filters: {
       field: diversion_er
       value: "Yes"
     }
@@ -720,6 +736,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: care_requests.DHFU_follow_up
       value: "No"
     }
     filters: {
@@ -747,6 +767,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
+      field: care_requests.DHFU_follow_up
+      value: "No"
+    }
+    filters: {
       field: diversion_observation
       value: "Yes"
     }
@@ -766,6 +790,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: care_requests.DHFU_follow_up
       value: "No"
     }
     filters: {
@@ -790,6 +818,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: care_requests.DHFU_follow_up
       value: "No"
     }
     filters: {
@@ -840,6 +872,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
+      field: care_requests.DHFU_follow_up
+      value: "No"
+    }
+    filters: {
       field: diversion
       value: "Yes"
     }
@@ -864,6 +900,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: care_requests.post_acute_follow_up
       value: "No"
     }
+    filters: {
+      field: care_requests.DHFU_follow_up
+      value: "No"
+    }
 
   }
 
@@ -881,6 +921,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: care_requests.post_acute_follow_up
       value: "No"
     }
+    filters: {
+      field: care_requests.DHFU_follow_up
+      value: "No"
+    }
 
   }
 
@@ -894,6 +938,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
 
     filters: {
       field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: care_requests.DHFU_follow_up
       value: "No"
     }
 
@@ -911,6 +959,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
 
     filters: {
       field: care_requests.post_acute_follow_up
+      value: "No"
+    }
+    filters: {
+      field: care_requests.DHFU_follow_up
       value: "No"
     }
   }
