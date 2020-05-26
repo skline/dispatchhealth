@@ -25,6 +25,10 @@ view: mailchimp_campaigns {
     type: string
     sql: ${TABLE}."subject" ;;
   }
+  dimension: campaign_name {
+    type: string
+    sql: ${TABLE}."campaign_name" ;;
+  }
 
   dimension_group: timestamp {
     type: time
