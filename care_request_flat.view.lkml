@@ -2126,6 +2126,35 @@ WITH ort AS (
     sql: ${TABLE}.complete_date ;;
   }
 
+   parameter: care_request_complete_timeframe_picker {
+    label: "Select care request Complete Date grouping "
+    type: string
+    allowed_value: { value: "Date" }
+    allowed_value: { value: "Week" }
+    allowed_value: { value: "Month" }
+    allowed_value: { value: "Quarter" }
+    allowed_value: { value: "Year" }
+    default_value: "Date"
+  }
+
+  dimension: dynamic_care_request_complete_timeframe {
+    type: string
+    sql:
+    CASE
+    WHEN {% parameter care_request_complete_timeframe_picker %} = 'Date' THEN TO_CHAR(${care_request_flat.complete_date},'YYYY-MM-DD')
+    WHEN {% parameter care_request_complete_timeframe_picker %} = 'Week' THEN ${care_request_flat.complete_week}
+    WHEN{% parameter care_request_complete_timeframe_picker %} = 'Month' THEN ${care_request_flat.complete_month}
+    WHEN{% parameter care_request_complete_timeframe_picker %} = 'Quarter' THEN
+      CASE
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '01' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q1'
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '04' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q2'
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '07' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q3'
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '10' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q4'
+      END
+    WHEN{% parameter care_request_complete_timeframe_picker %} = 'Year' THEN to_char(${care_request_flat.complete_date},'YYYY')
+    END ;;
+  }
+
   dimension: complete_decimal_half_hour_increment {
     description: "Complete Time of Day as Decimal rounded to the nearest 1/2 hour increment"
     type: number
