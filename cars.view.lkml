@@ -52,6 +52,10 @@ view: cars {
     type: string
     sql: ${TABLE}.name ;;
   }
+  dimension: non_actue_car {
+    type: yesno
+    sql: lower(${name}) like '%swab%' ;;
+  }
 
   dimension: smfr_wmfr_other {
     description: "Car names broken out by SMFR, WMFR or Other"
