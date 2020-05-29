@@ -388,4 +388,11 @@ when lower(${name_no_tabs}) like '%life care center%' or lower(${preferred_partn
 else null end;;
   }
 
+  dimension: partner_pop_bon_secours {
+    type: yesno
+    sql: lower(${name}) LIKE '%bon secours%' OR
+    ${population_health_channels.name} = 'bon secours mssp' OR
+    (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') ;;
+  }
+
 }
