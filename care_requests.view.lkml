@@ -903,6 +903,23 @@ view: care_requests {
     ]
   }
 
+  dimension: billable_est_numeric {
+    description: "Numeric representation of Billable Est to use in LookML to allow billable_Est to be summed"
+    hidden: yes
+    type: number
+    sql: CASE WHEN ${billable_est} = 'yes' THEN 1
+    ELSE 0
+    END;;
+  }
+
+  measure: sum_billable_est {
+    description: "Sum of billable Est to use in LookML calculations in place of count_billable_est (return the same results)"
+    hidden: yes
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${billable_est_numeric} ;;
+  }
+
   measure: count_antibiotics_prescriptions {
     type: count_distinct
     description: "Count of completed care requests where antibiotics were prescribed"
