@@ -186,10 +186,11 @@ view: athenadwh_transactions_clone {
   }
 
   measure: total_expected_allowable_test {
-    type: sum
+    type: sum_distinct
     alias: [total_expected_allowable]
     description: "Transaction type is CHARGE and transfer type is PRIMARY or patient is self-pay"
     sql: ${fixed_expected_allowable}::float ;;
+    sql_distinct_key: ${transaction_id} ;;
     value_format: "$#,##0.00"
     filters: {
       field: is_valid_exp_allowable
