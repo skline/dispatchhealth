@@ -1050,13 +1050,4 @@ measure: sum_diagnosis_olny {
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
 
-
-  measure: pct_survey_yes_to_er {
-    type: number
-    sql: ${sum_survey_yes_to_er} / ${care_requests.sum_billable_est} ;;
-    value_format: "0.00%"
-    group_label: "Diversion Category Pct of Billable Est Measures"
-  }
-
-
 }
