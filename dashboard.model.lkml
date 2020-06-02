@@ -1217,8 +1217,13 @@ join: ga_pageviews_clone {
   }
 
   join: genesys_conversation_summary {
-    sql_on: ${care_request_flat.contact_id} = ${genesys_conversation_summary.conversationid}
+    sql_on: (${patients.mobile_number} = ${genesys_conversation_summary.ani}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.ani})
+      and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000
       ;;
+  }
+
+  join: genesys_conversation_wrapup {
+    sql_on: ${genesys_conversation_summary.conversationid}=${genesys_conversation_wrapup.conversationid} ;;
   }
 
   join: ga_experiments {
