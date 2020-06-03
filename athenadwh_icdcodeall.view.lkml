@@ -33,7 +33,7 @@ view: athenadwh_icdcodeall {
     sql: CASE
           WHEN ${diagnosis_code} = 'J01' THEN 'Sinusitis'
           WHEN ${diagnosis_code} = 'J02' THEN 'Pharyngitis'
-          WHEN ${diagnosis_code} IN ('J20','J40') THEN 'Bronchitis'
+          WHEN ${diagnosis_code} IN ('J20','J40') OR ${unstripped_diagnosis_code} = 'J06.9' THEN 'Bronchitis'
           ELSE 'Other'
         END ;;
   }
