@@ -395,4 +395,12 @@ else null end;;
     (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') ;;
   }
 
+  dimension: parnter_population {
+    type: string
+    sql:  CASE WHEN  lower(${name}) LIKE '%bon secours%' OR
+    ${population_health_channels.name} = 'bon secours mssp' OR
+    (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') THEN 'Bon Secours'
+    End;;
+  }
+
 }
