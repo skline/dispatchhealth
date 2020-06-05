@@ -49,6 +49,49 @@ view: bi_events {
     sql:${TABLE}."details"::json->>'availability' ;;
   }
 
+  measure: min_booked {
+    type: time
+    sql: min(case when ${market_capacity} = 'full' then ${created_raw} else null end) ;;
+  }
+
+  measure: max_booked {
+    type: time
+    sql: max(case when ${market_capacity} = 'full' then ${created_raw} else null end) ;;
+  }
+
+  measure: min_open {
+    type: time
+    sql: min(case when ${market_capacity} != 'full' then ${created_raw} else null end) ;;
+  }
+
+  measure: max_open {
+    type: time
+    sql: max(case when ${market_capacity} != 'full' then ${created_raw} else null end) ;;
+  }
+
+  measure: diff_min_booked_max_open {
+    value_format: "0"
+    type: number
+    sql: EXTRACT(epoch FROM (${max_open_raw})-(${min_booked_raw}))/60.0  ;;
+  }
+  measure: count_booked {
+    type: count_distinct
+    sql: ${id} ;;
+    sql_distinct_key: ${id} ;;
+    filters: {
+      field: market_capacity
+      value: "full"
+    }
+
+  }
+
+  measure: count_distinct {
+    type: count_distinct
+    sql: ${id} ;;
+    sql_distinct_key: ${id} ;;
+
+  }
+
   dimension: event_type {
     type: string
     sql: ${TABLE}."event_type" ;;
