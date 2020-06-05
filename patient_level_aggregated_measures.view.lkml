@@ -5,11 +5,22 @@ view: patient_level_aggregated_measures {
       column: id { field: patients.id }
       column: count_distinct {}
       column: count_billable_est {}
+      column: count_visits_within_30_days_first_visit {}
 
 
       bind_filters: {
         to_field: care_request_flat.complete_date
         from_field: care_request_flat.complete_date
+      }
+
+      bind_filters: {
+        to_field: care_request_flat.on_scene_date
+        from_field: care_request_flat.on_scene_date
+      }
+
+      bind_filters: {
+        to_field: care_requests.billable_est
+        from_field: care_requests.billable_est
       }
 
       bind_filters: {
@@ -21,6 +32,11 @@ view: patient_level_aggregated_measures {
       bind_filters: {
         to_field: service_lines.name
         from_field: service_lines.name
+      }
+
+      bind_filters: {
+        to_field: service_lines.service_line_name_consolidated
+        from_field: service_lines.service_line_name_consolidated
       }
 
       bind_filters: {
@@ -74,6 +90,10 @@ view: patient_level_aggregated_measures {
     type: number
   }
   dimension: count_billable_est {
+    description: "Count of completed care requests OR on-scene escalations"
+    type: number
+  }
+  dimension: count_visits_within_30_days_first_visit {
     description: "Count of completed care requests OR on-scene escalations"
     type: number
   }
@@ -133,6 +153,14 @@ view: patient_level_aggregated_measures {
       field: 2_or_more_patient_visits
       value: "yes"
     }
+  }
+
+  measure: average_visits_within_30_days_first_visit {
+    type: average_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${count_visits_within_30_days_first_visit} ;;
+    value_format: "0.000"
+
   }
 
 }
