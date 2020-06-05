@@ -1624,7 +1624,8 @@ measure: distinct_day_of_week {
   dimension: escalated_on_scene_ed {
     type: yesno
     sql: ${care_request_flat.complete_comment} = 'Referred - Point of Care: ED'
-      OR ${care_request_flat.complete_comment} = 'Referred - Point of care: ED';;
+      OR ${care_request_flat.complete_comment} = 'Referred - Point of care: ED'
+      OR ${care_request_flat.complete_comment} = 'Referred - Point of Care: Emergency Department';;
   }
 
   dimension: escalated_on_phone {
