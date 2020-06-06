@@ -3556,6 +3556,9 @@ explore: mailchimp_sends {
   }
 }
 
+explore: day_of_week_variation {}
+
+
 include: "redshift.*.view.lkml"
 
 explore: fast_facts {
