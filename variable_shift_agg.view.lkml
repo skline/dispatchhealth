@@ -1,5 +1,6 @@
 view: variable_shift_agg {
     derived_table: {
+      sql_trigger_value: SELECT MAX(created_at) FROM public.care_request_statuses ;;
       explore_source: variable_shift_tracking {
         column: date_date {}
         column: date_week {}
