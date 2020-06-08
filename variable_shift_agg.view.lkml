@@ -52,7 +52,8 @@ view: variable_shift_agg {
     }
     dimension: actual_vs_recommendation_diff_category {
       type: string
-      sql: case when ${actual_vs_recommendation_diff} < -3 or ${actual_vs_recommendation_diff} > 3 then 'Likely Bad Data or Anomaly'
+      sql: case when ${actual_vs_recommendation_diff} < 2.5 then 'Likely Bad Data'
+                when ${actual_vs_recommendation_diff} > 2.5 then 'Short Shift'
                 when ${actual_vs_recommendation_diff} between -.5 and .5 then 'Followed'
                 when ${actual_vs_recommendation_diff} <= -.5 then 'Shift Left Long'
                 when ${actual_vs_recommendation_diff} >= .5 then 'Shift Left Short'
