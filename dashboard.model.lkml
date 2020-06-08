@@ -3622,3 +3622,9 @@ explore: fast_facts {
     required_joins: [tract_zcta_map]
   }
 }
+
+explore: test_care_requests_dev {
+extends: [care_requests]
+from: care_request_flat
+fields: [care_requests.billable_est, insurance_coalese_crosswalk.custom_insurance_grouping, care_request_flat.care_request_id, athenadwh_transactions_clone.count_claims, care_request_flat.dynamic_care_request_complete_timeframe, care_request_flat.care_request_complete_timeframe_picker ]
+}
