@@ -49,4 +49,9 @@ view: variable_shift_tracking {
     type: count
     drill_fields: [shift_name]
   }
+  measure: actual_vs_recommendation_diff {
+    type: number
+    sql: max(${recommendation})-${shift_teams.sum_shift_hours} ;;
+
+  }
 }

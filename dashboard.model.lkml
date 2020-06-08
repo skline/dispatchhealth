@@ -3558,6 +3558,24 @@ explore: mailchimp_sends {
 
 explore: day_of_week_variation {}
 
+explore: variable_shift_tracking {
+  join: cars {
+    sql_on: ${cars.name} = ${variable_shift_tracking.shift_name} ;;
+  }
+  join: shift_teams {
+    sql_on: ${shift_teams.start_date} = ${variable_shift_tracking.date_date} and ${cars.id} = ${shift_teams.car_id} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id}=${cars.market_id} ;;
+  }
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+}
+
+explore: variable_shift_agg {}
+
 
 include: "redshift.*.view.lkml"
 
