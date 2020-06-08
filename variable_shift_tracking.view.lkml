@@ -50,8 +50,16 @@ view: variable_shift_tracking {
     drill_fields: [shift_name]
   }
   measure: actual_vs_recommendation_diff {
+    label: "Dashboard vs Recommendation Diff"
+    value_format: "0.0"
     type: number
     sql: max(${recommendation})-${shift_teams.sum_shift_hours} ;;
+
+  }
+  measure: zizzl_vs_recommendation_diff {
+    type: number
+    value_format: "0.0"
+    sql: max(${recommendation})-${zizzl_detailed_shift_hours.sum_direct_hours} ;;
 
   }
 }
