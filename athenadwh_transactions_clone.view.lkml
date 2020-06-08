@@ -223,7 +223,15 @@ view: athenadwh_transactions_clone {
     description: "Claim ID is not null and expected allowed amount is greater than 0.01"
     type: yesno
     sql: ${athenadwh_valid_claims.claim_id} IS NOT NULL AND
+         ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL AND
          ${expected_allowed_amount}::float > 0.01 ;;
+  }
+
+  dimension: is_zero_exp_allow_claim {
+    description: "Claim ID is not null and expected allowed amount is $0.00"
+    type: yesno
+    sql: ${athenadwh_valid_claims.claim_id} IS NOT NULL AND
+      ${expected_allowed_amount}::float = 0.0 ;;
   }
 
   # measure: total_expected_allowable {
@@ -262,9 +270,20 @@ view: athenadwh_transactions_clone {
 
   measure: count_claims {
     type: count_distinct
+    description: "Count of claims where expected allowable > $0.01"
     sql: ${claim_id} ;;
     filters: {
       field: is_valid_claim
+      value: "yes"
+    }
+  }
+
+  measure: count_zero_dollar_claims {
+    type: count_distinct
+    description: "Count of claims with zero dollar exp. allowable"
+    sql: ${claim_id} ;;
+    filters: {
+      field: is_zero_exp_allow_claim
       value: "yes"
     }
   }
