@@ -490,8 +490,8 @@ SELECT DISTINCT
     type: string
     description: "The Zizzl shift name (e.g. 'NP/PA/DEN01')"
     sql: CASE
-          WHEN shift_name IS NULL AND ${provider_type} = 'APP' THEN CONCAT('NP/PA/',${car_name})
-          WHEN shift_name IS NULL AND ${provider_type} = 'DHMT' THEN CONCAT('DHMT/',${car_name})
+          WHEN ${TABLE}.shift_name IS NULL AND ${provider_type} = 'APP' THEN CONCAT('NP/PA/',${car_name})
+          WHEN ${TABLE}.shift_name IS NULL AND ${provider_type} = 'DHMT' THEN CONCAT('DHMT/',${car_name})
           ELSE ${TABLE}.shift_name
         END ;;
     }

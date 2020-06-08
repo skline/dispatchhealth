@@ -11,7 +11,7 @@ view: day_of_week_variation {
         }
         filters: {
           field: care_request_flat.scheduled_care_created_coalese_date
-          value: "14 weeks ago for 14 weeks"
+          value: "42 days ago for 42 days"
         }
       }
     }
