@@ -135,8 +135,18 @@ view: users {
     CASE
       WHEN {% condition provider_select %} ${csc_name} {% endcondition %}
         THEN ${csc_name}
-      ELSE 'All Other Providers'
+      ELSE ${id}::varchar
     END ;;
+
+#     html:
+#     {% if value == {{ _name }}%}
+#     <font color="blue">{{ rendered_value }}</font>
+#     {% endif %};;
+  }
+
+  dimension: selected_provider {
+    type: string
+    sql: {% parameter provider_select %} ;;
   }
 
   dimension: chart_scrubbing_name {
