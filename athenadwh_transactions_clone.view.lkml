@@ -200,6 +200,10 @@ view: athenadwh_transactions_clone {
       field: is_valid_claim
       value: "yes"
     }
+    filters: {
+      field: voided_date_is_null
+      value: "yes"
+    }
   }
 
   dimension: ghost_transaction {
