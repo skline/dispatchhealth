@@ -252,8 +252,8 @@ view: shift_teams {
     }
   }
 
-  measure: test_count_distinct_car_date_car_shift_hours_greater_5 {
-    label: "Test Count of Distinct Cars by Date where shift hours > 5 (Shift Teams)"
+  measure: count_distinct_car_date_car_assigned_shift_hours_greater_5 {
+    label: "Count of Distinct Cars by Date where the total shift/s hours assigned to a car is > 5 (Shift Teams)"
     type: count_distinct
     sql_distinct_key: ${car_date_id} ;;
     sql: ${car_date_id} ;;
@@ -266,7 +266,7 @@ view: shift_teams {
       value: "no"
     }
     filters:  {
-      field: shifts_by_cars.sum_shift_time_by_car
+      field: shifts_by_cars.daily_shift_time_by_car
       value: ">18000"
     }
   }

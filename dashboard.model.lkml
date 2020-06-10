@@ -778,6 +778,11 @@ explore: care_requests {
     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
   }
 
+  join: shifts_by_cars {
+    relationship: many_to_one
+    sql_on: ${shift_teams.car_id_start_date_id} = ${shifts_by_cars.car_id_start_date_id} ;;
+  }
+
   join: geo_locations {
     relationship: one_to_many
     sql_on: ${shift_teams.car_id} = ${geo_locations.car_id} AND ${shift_teams.start_date} = ${geo_locations.created_date} ;;

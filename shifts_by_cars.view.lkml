@@ -5,7 +5,7 @@ view: shifts_by_cars {
     sql: select
     car_id,
     concat(car_id,date(start_time at time zone 'utc' at time zone 'US/Mountain')) as car_id_start_date_id,
-    sum(EXTRACT(EPOCH FROM end_time) - EXTRACT(EPOCH FROM start_time)) as sum_shift_time_by_car,
+    sum(EXTRACT(EPOCH FROM end_time at time zone 'utc' at time zone 'US/Mountain') - EXTRACT(EPOCH FROM start_time at time zone 'utc' at time zone 'US/Mountain')) as sum_shift_time_by_car,
     count(id) as count_shifts
     from public.shift_teams
     group by car_id, car_id_start_date_id order by count_shifts desc
@@ -31,7 +31,7 @@ view: shifts_by_cars {
     sql: ${TABLE}.car_id_start_date_id;;
   }
 
-  dimension: sum_shift_time_by_car {
+  dimension: daily_shift_time_by_car {
     description: "Sum of total shift seconds assigned to a car_id on a given date"
     type: number
     sql: ${TABLE}.sum_shift_time_by_car ;;
@@ -43,9 +43,9 @@ view: shifts_by_cars {
     sql: ${TABLE}.count_shifts ;;
   }
 
-  dimension: sum_shift_hours_by_car {
+  dimension: daily_shift_hours_by_car {
     type: number
-    sql: ${sum_shift_time_by_car} / 3600 ;;
+    sql: ${daily_shift_time_by_car} / 3600 ;;
     value_format: "0.0"
   }
 
