@@ -202,6 +202,11 @@ view: shift_teams {
     sql: CONCAT(${cars.name}, ${start_mountain_date});;
   }
 
+  dimension: car_id_start_date_id {
+  type: string
+  sql: CONCAT(${car_id}, ${start_mountain_date});;
+}
+
   dimension: car_hour_id {
     type: string
     sql: CONCAT(${cars.name}, ${start_mountain_date}, ${dates_hours_reference_clone.datehour_timezone_hour_of_day});;
@@ -246,6 +251,26 @@ view: shift_teams {
       value: ">5"
     }
   }
+
+  measure: test_count_distinct_car_date_car_shift_hours_greater_5 {
+    label: "Test Count of Distinct Cars by Date where shift hours > 5 (Shift Teams)"
+    type: count_distinct
+    sql_distinct_key: ${car_date_id} ;;
+    sql: ${car_date_id} ;;
+    filters:  {
+      field: cars.telemedicine_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.test_car
+      value: "no"
+    }
+    filters:  {
+      field: shifts_by_cars.sum_shift_time_by_car
+      value: ">18000"
+    }
+  }
+
 
 
   measure: count_distinct_car_hour_shift {

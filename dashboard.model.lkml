@@ -2996,6 +2996,11 @@ explore: shift_teams
     sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
   }
 
+  join: shifts_by_cars {
+    relationship: many_to_one
+    sql_on: ${shift_teams.car_id_start_date_id} = ${shifts_by_cars.car_id_start_date_id} ;;
+  }
+
   join: users {
     relationship: one_to_one
     sql_on: ${shift_team_members.user_id} = ${users.id} ;;
