@@ -1167,7 +1167,7 @@ explore: care_requests {
   }
 
   join: sf_accounts{
-    sql_on: ${sf_accounts.channel_items_id}=${channel_items.id} ;;
+    sql_on: ${sf_accounts.channel_items_id}=${channel_items.id} and lower(${sf_accounts.account_name}) not like '%test%' ;;
   }
 
   join: sf_priority_accounts {
@@ -1320,7 +1320,7 @@ join: ga_pageviews_clone {
   }
   join: sf_accounts_npi {
     from: sf_accounts
-    sql_on:  ${sf_accounts_npi.account_id} = ${sf_contacts_npi.account_id};;
+    sql_on:  ${sf_accounts_npi.account_id} = ${sf_contacts_npi.account_id} and lower(${sf_accounts_npi.account_name}) not like '%test%';;
   }
 
 }
@@ -1624,7 +1624,7 @@ explore: channel_items {
   }
 
  join: sf_accounts {
-   sql_on: ${sf_accounts.channel_items_id} = ${channel_items.id} ;;
+   sql_on: ${sf_accounts.channel_items_id} = ${channel_items.id} and  lower(${sf_accounts.account_name}) not like '%test%';;
  }
 
   join: sf_priority_accounts {
@@ -3273,7 +3273,7 @@ explore: mbo_metrics_quarterly_goals {}
 explore: zizzl_employee_roster {}
 
 explore: sf_accounts {
-  sql_always_where: ( ${markets.name} != 'West Metro Fire Rescue' or  ${markets.name} is null);;
+  sql_always_where: ( ${markets.name} != 'West Metro Fire Rescue' or  ${markets.name} is null and lower(${sf_accounts.account_name}) not like '%test%');;
 
   join: sf_priority_accounts {
     sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
@@ -3329,7 +3329,7 @@ explore: sf_accounts {
 explore: sf_activities {
   sql_always_where: ( ${markets.name} != 'West Metro Fire Rescue' or  ${markets.name} is null);;
   join: sf_accounts {
-    sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} ;;
+    sql_on: ${sf_activities.account_id} = ${sf_accounts.account_id} and lower(${sf_accounts.account_name}) not like '%test%' ;;
   }
   join: sf_priority_accounts {
     sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
@@ -3402,7 +3402,7 @@ explore: sf_contacts {
   }
 
   join: sf_accounts{
-    sql_on: ${sf_contacts.account_id} = ${sf_accounts.account_id} ;;
+    sql_on: ${sf_contacts.account_id} = ${sf_accounts.account_id} and lower(${sf_accounts.account_name}) not like '%test%' ;;
   }
 
   join: sf_priority_accounts {
@@ -3539,7 +3539,7 @@ explore: mailchimp_sends {
   }
 
   join: sf_accounts{
-    sql_on:  ${sf_contacts.account_id}  = ${sf_accounts.account_id} ;;
+    sql_on:  ${sf_contacts.account_id}  = ${sf_accounts.account_id} and lower(${sf_accounts.account_name}) not like '%test%' ;;
   }
 
   join: sf_contacts_activities {
