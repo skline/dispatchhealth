@@ -16,6 +16,7 @@ view: variable_shift_agg {
       column: actual_vs_recommendation_diff {}
       column: sum_direct_hours { field: zizzl_detailed_shift_hours.sum_direct_hours }
       column: zizzl_vs_recommendation_diff {}
+      column: dashboard_vs_zizzl_diff {}
       filters: {
         field: variable_shift_tracking.date_date
         value: "NOT NULL"
@@ -51,7 +52,7 @@ view: variable_shift_agg {
     type: number
   }
   dimension: actual_vs_recommendation_diff {
-    label: "Variable Shift Tracking Dashboard vs Recommendation Diff"
+    label: "Dashboard vs Recommendation Diff"
     value_format: "0.0"
     type: number
   }
@@ -62,6 +63,11 @@ view: variable_shift_agg {
     type: number
   }
   dimension: zizzl_vs_recommendation_diff {
+    value_format: "0.0"
+    type: number
+  }
+
+  dimension: dashboard_vs_zizzl_diff {
     value_format: "0.0"
     type: number
   }
@@ -85,6 +91,18 @@ view: variable_shift_agg {
                 when ${zizzl_vs_recommendation_diff} between -.5 and .5 then 'Followed'
                 when ${zizzl_vs_recommendation_diff} <= -.5 then 'Shift Left Long'
                 when ${zizzl_vs_recommendation_diff} >= .5 then 'Shift Left Short'
+                else null end;;
+  }
+
+  dimension: zizzl_vs_dashboard_diff_category {
+    type: string
+    label: "Dashboard vs Zizzl Diff Category"
+    sql: case when ${dashboard_vs_zizzl_diff} < -2.5 then 'Likely Bad Data'
+                when ${dashboard_vs_zizzl_diff} > 7 then 'No Zizzl Data'
+                when ${dashboard_vs_zizzl_diff} > 2.5 then 'Short Shift'
+                when ${dashboard_vs_zizzl_diff} between -.5 and .5 then 'Followed'
+                when ${dashboard_vs_zizzl_diff} <= -.5 then 'Shift Left Long'
+                when ${dashboard_vs_zizzl_diff} >= .5 then 'Shift Left Short'
                 else null end;;
   }
 }

@@ -156,6 +156,7 @@ view: sf_activities {
     type: string
     sql: lower(${TABLE}."subject") ;;
   }
+
   dimension: subject_date {
     type: string
     sql: concat(${subject}, ': ', ${start_date}) ;;
