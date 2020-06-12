@@ -68,7 +68,7 @@ view: appointment {
 
   dimension_group: appointment_cancelled_datetime {
     type: time
-    group_label: "Dates"
+    label: "Datetime Cancelled"
 #     group_item_label: "Cancelled"
     timeframes: [
       raw,
@@ -90,7 +90,7 @@ view: appointment {
 
   dimension_group: appointment_check_in_datetime {
     type: time
-    group_label: "Dates"
+    label: "Datetime Check In"
 #     group_item_label: "Check-In"
     timeframes: [
       raw,
@@ -106,7 +106,7 @@ view: appointment {
 
   dimension_group: appointment_check_out_datetime {
     type: time
-    group_label: "Dates"
+    label: "Datetime Check Out"
 #     group_item_label: "Check-Out"
     timeframes: [
       raw,
@@ -129,7 +129,7 @@ view: appointment {
 
   dimension_group: appointment_created_datetime {
     type: time
-    group_label: "Dates"
+    label: "Datetime Created"
 #     group_item_label: "Created"
     timeframes: [
       raw,
@@ -145,7 +145,7 @@ view: appointment {
 
   dimension_group: appointment {
     type: time
-    group_label: "Dates"
+    label: "Datetime Appointment"
 #     group_item_label: "Appointment"
     timeframes: [
       raw,
@@ -169,7 +169,7 @@ view: appointment {
 
   dimension_group: appointment_deleted_datetime {
     type: time
-    group_label: "Dates"
+    label: "Datetime Deleted"
 #     group_item_label: "Deleted"
     timeframes: [
       raw,
@@ -206,7 +206,7 @@ view: appointment {
 
   dimension_group: appointment_scheduled_datetime {
     type: time
-    group_label: "Dates"
+    label: "Datetime Scheduled"
 #     group_item_label: "Scheduled"
     timeframes: [
       raw,
@@ -222,16 +222,13 @@ view: appointment {
 
   dimension_group: appointment_starttime {
     type: time
-    group_label: "Dates"
+    label: "Datetime Start"
 #     group_item_label: "Start"
     timeframes: [
       raw,
       time,
-      date,
-      week,
-      month,
-      quarter,
-      year
+      time_of_day,
+      hour_of_day
     ]
     sql: ${TABLE}."appointment_starttime" ;;
   }
@@ -302,7 +299,7 @@ view: appointment {
 
   dimension_group: created {
     type: time
-    group_label: "Dates"
+    label: "Datetime Created"
     group_item_label: "Created"
     timeframes: [
       raw,
@@ -318,8 +315,8 @@ view: appointment {
 
   dimension_group: cycle {
     type: time
-    group_label: "Dates"
-    group_item_label: "Cycle"
+    label: "Datetime Cycle"
+#     group_item_label: "Cycle"
     timeframes: [
       raw,
       time,
@@ -484,8 +481,8 @@ view: appointment {
 
   dimension_group: rescheduled_datetime {
     type: time
-    group_label: "Dates"
-    group_item_label: "Rescheduled"
+    label: "Datetime Rescheduled"
+#     group_item_label: "Rescheduled"
     timeframes: [
       raw,
       time,
@@ -528,8 +525,8 @@ view: appointment {
 
   dimension_group: start_check_in_datetime {
     type: time
-    group_label: "Dates"
-    group_item_label: "Check-In Start"
+    label: "Datetime Check In Start"
+#     group_item_label: "Check-In Start"
     timeframes: [
       raw,
       time,
@@ -544,8 +541,7 @@ view: appointment {
 
   dimension_group: stop_sign_off_datetime {
     type: time
-    group_label: "Dates"
-    group_item_label: "Sign-Off Stop"
+    label: "Datetime Sign Off Stop"
     timeframes: [
       raw,
       time,
@@ -566,8 +562,7 @@ view: appointment {
 
   dimension_group: updated {
     type: time
-    group_label: "Dates"
-    group_item_label: "Updated"
+    label: "Datetime Updated"
     timeframes: [
       raw,
       time,
