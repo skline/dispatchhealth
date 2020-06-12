@@ -393,6 +393,12 @@ explore: care_requests {
 
 # End Athena data warehouse tables
 
+# New Athena Feed - 06/12/2020 - DE
+join: appointment {
+  relationship: one_to_one
+  sql_on: ${care_requests.ehr_id} = ${appointment.appointment_char} ;;
+}
+
   # Join all cloned tables from the BI database -- DE,
   join: visit_facts_clone {
     view_label: "Visit Facts relevant ID's used for matching"
