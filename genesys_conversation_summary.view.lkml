@@ -166,6 +166,13 @@ view: genesys_conversation_summary {
     sql: ${count_distinct}::float/(nullif(${count_distinct_days},0))::float  ;;
   }
 
+  measure: weekly_average_inbound_demand {
+    type: number
+    value_format: "0.0"
+    sql: ${count_distinct}/(nullif(${count_distinct_weeks},0))::float  ;;
+  }
+
+
 
   measure: count_distinct_days {
     type: count_distinct
@@ -174,9 +181,30 @@ view: genesys_conversation_summary {
 
   }
 
+
+  measure: count_distinct_weeks {
+    type: count_distinct
+    sql_distinct_key: ${conversationstarttime_week} ;;
+    sql: ${conversationstarttime_week} ;;
+
+  }
+
   dimension:  same_day_of_week {
     type: yesno
     sql:  ${yesterday_mountain_day_of_week_index} = ${conversationstarttime_day_of_week_index};;
+  }
+
+  dimension_group: last_week_mountain{
+    type: time
+    timeframes: [date, day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '7 day';;
+  }
+
+
+  dimension: last_week {
+    type:  yesno
+    sql: ${last_week_mountain_week} =  ${conversationstarttime_week};;
+
   }
 
   dimension: this_week {
