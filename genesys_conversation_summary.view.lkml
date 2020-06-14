@@ -45,6 +45,7 @@ view: genesys_conversation_summary {
       week,
       month,
       day_of_week,
+      day_of_week_index,
       hour_of_day,
       quarter,
       year
@@ -158,6 +159,33 @@ view: genesys_conversation_summary {
       value: "yes"
     }
   }
+
+  measure: daily_average_inbound_demand {
+    type: number
+    value_format: "0.0"
+    sql: ${count_distinct}::float/(nullif(${count_distinct_days},0))::float  ;;
+  }
+
+
+  measure: count_distinct_days {
+    type: count_distinct
+    sql_distinct_key: ${conversationstarttime_date} ;;
+    sql: ${conversationstarttime_date} ;;
+
+  }
+
+  dimension:  same_day_of_week {
+    type: yesno
+    sql:  ${yesterday_mountain_day_of_week_index} = ${conversationstarttime_day_of_week_index};;
+  }
+
+  dimension: this_week {
+    type:  yesno
+    sql: ${yesterday_mountain_week} =  ${conversationstarttime_week};;
+
+  }
+
+
 
   measure: count_distinct_minus_market {
     label: "Count Distinct (Inbound Demand Minus Market)"
