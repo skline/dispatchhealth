@@ -2960,6 +2960,60 @@ explore: genesys_conversation_summary {
     sql_on: (${patients.id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
   }
+  join: diversions_by_care_request {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${diversions_by_care_request.care_request_id} ;;
+  }
+
+  join: channel_items {
+    relationship: many_to_one
+    sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+
+  join: athenadwh_clinical_encounters_clone {
+    relationship:  one_to_one
+    sql_on: ${care_requests.ehr_id} = ${athenadwh_clinical_encounters_clone.appointment_id}::varchar;;
+  }
+
+
+  join: athenadwh_claims_clone {
+    relationship: one_to_one
+    # type: inner
+    sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_claims_clone.claim_appointment_id} ;;
+  }
+
+  join: athenadwh_transactions_clone {
+    relationship: one_to_many
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_transactions_clone.claim_id} ;;
+  }
+
+  join: athenadwh_valid_claims {
+    relationship: one_to_one
+    sql_on: ${athenadwh_claims_clone.claim_id} = ${athenadwh_valid_claims.claim_id} ;;
+  }
+
+  join: athenadwh_patient_insurances_clone {
+    relationship: one_to_many
+    sql_on: ${patients.ehr_id} = ${athenadwh_patient_insurances_clone.patient_id}::varchar
+          AND ${athenadwh_patient_insurances_clone.cancellation_date} IS NULL
+          AND (${athenadwh_patient_insurances_clone.sequence_number}::int = 1 OR ${athenadwh_patient_insurances_clone.insurance_package_id}::int = -100)
+            /*AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int != 0 */ ;;
+  }
+  join: insurance_coalese {
+    relationship: many_to_one
+    sql_on: ${insurance_coalese.care_request_id} = ${care_requests.id} ;;
+  }
+
+
+  join: insurance_coalese_crosswalk {
+    from: primary_payer_dimensions_clone
+    relationship: many_to_one
+    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
+      AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
+  }
+
+
 }
 explore: propensity_by_zip {
   join: zipcodes {
