@@ -3641,6 +3641,18 @@ explore: fast_facts {
 
 explore: test_care_requests_dev {
 extends: [care_requests]
-from: care_request_flat
-fields: [care_requests.billable_est, insurance_coalese_crosswalk.custom_insurance_grouping, care_request_flat.care_request_id, athenadwh_transactions_clone.count_claims, care_request_flat.dynamic_care_request_complete_timeframe, care_request_flat.care_request_complete_timeframe_picker ]
+from: care_requests
+fields: [care_requests.billable_est,
+          care_requests.count_distinct,
+          insurance_coalese_crosswalk.custom_insurance_grouping,
+          insurance_coalese_crosswalk.insurance_package_id,
+          insurance_coalese_crosswalk.insurance_package_name,
+          care_request_flat.care_request_id,
+          athenadwh_transactions_clone.count_claims,
+          care_request_flat.dynamic_care_request_complete_timeframe,
+          care_request_flat.care_request_complete_timeframe_picker,
+          provider_network.name,
+          channel_items.name,
+          channel_items.sub_type,
+          markets.name_adj ]
 }
