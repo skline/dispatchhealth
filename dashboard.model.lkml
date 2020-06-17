@@ -3634,6 +3634,7 @@ explore: mailchimp_sends {
 explore: day_of_week_variation {}
 
 explore: variable_shift_tracking {
+  sql_always_where: ${variable_shift_tracking.date_date} < current_date ;;
   join: cars {
     sql_on: ${cars.name} = ${variable_shift_tracking.shift_name} ;;
   }

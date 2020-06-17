@@ -51,11 +51,219 @@ view: variable_shift_agg {
     value_format: "0.0"
     type: number
   }
+
   dimension: actual_vs_recommendation_diff {
     label: "Dashboard vs Recommendation Diff"
     value_format: "0.0"
     type: number
   }
+
+  dimension: dashboard_downstaff_length {
+    type: number
+    sql: 10.0-${sum_shift_hours} ;;
+  }
+
+  dimension: recommendation_downstaff_length {
+    type: number
+    sql: 10.0-${recommendation} ;;
+  }
+
+  dimension: zizzl_downstaff_length {
+    type: number
+    sql: 10.0-${sum_direct_hours} ;;
+  }
+
+  measure: sum_actual_vs_recommendation_diff {
+    value_format: "0.0"
+    label: "Sum Dashboard vs Recommendation Diff"
+    type: sum_distinct
+    sql: ${actual_vs_recommendation_diff} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_zizzl_vs_recommendation_diff {
+    value_format: "0.0"
+    label: "Sum Zizzl vs Recommendation Diff"
+    type: sum_distinct
+    sql: ${zizzl_vs_recommendation_diff} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_dashboard_vs_zizzl_diff_diff {
+    value_format: "0.0"
+    label: "Sum Zizzl vs Dashboard Diff"
+    type: sum_distinct
+    sql: ${dashboard_vs_zizzl_diff} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_dashboard_downstaff_length {
+    value_format: "0.0"
+    type: sum_distinct
+    sql: ${dashboard_downstaff_length} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_recommendation_downstaff_length {
+    value_format: "0.0"
+    type: sum_distinct
+    sql: ${recommendation_downstaff_length} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_recommendation_downstaff_length_w_zizzl {
+    value_format: "0.0"
+    type: sum_distinct
+    sql: ${recommendation_downstaff_length} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+  }
+
+  measure: sum_dashboard_downstaff_length_w_zizzl{
+    value_format: "0.0"
+    type: sum_distinct
+    sql: ${dashboard_downstaff_length} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+  }
+
+
+  measure: sum_zizzl_downstaff_length {
+    value_format: "0.0"
+    type: sum_distinct
+    sql: ${zizzl_downstaff_length} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: count_distinct_no_short_shifts {
+    type: count_distinct
+    sql: concat(${date_date}, ${shift_name});;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: count_distinct_w_zizzl {
+    type: count_distinct
+    sql: concat(${date_date}, ${shift_name});;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+
+  }
+
+  measure: count_distinct_dashboard_followed{
+    type: count_distinct
+    sql: concat(${date_date}, ${shift_name});;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: actual_vs_recommendation_diff_category
+      value: "Followed"
+    }
+  }
+
+  measure: count_distinct_zizzl_followed{
+    type: count_distinct
+    sql: concat(${date_date}, ${shift_name});;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: zizzl_vs_recommendation_diff_category
+      value: "Followed"
+    }
+  }
+
+
+  measure: count_distinct_zizzl_dashboard_match{
+    type: count_distinct
+    sql: concat(${date_date}, ${shift_name});;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: zizzl_vs_dashboard_diff_category
+      value: "Followed"
+    }
+  }
+
+
+  measure: percent_dashboard_followed {
+    type: number
+    value_format: "0%"
+    sql: ${count_distinct_dashboard_followed}::float/${count_distinct_no_short_shifts}::float ;;
+
+  }
+
+
+  measure: percent_zizzl_followed {
+    type: number
+    value_format: "0%"
+    sql: ${count_distinct_zizzl_followed}::float/${count_distinct_w_zizzl}::float ;;
+
+  }
+
+  measure: percent_zizzl_match_dashboard {
+    type: number
+    value_format: "0%"
+    sql: ${count_distinct_zizzl_dashboard_match}::float/${count_distinct_w_zizzl}::float ;;
+
+  }
+
   dimension: sum_direct_hours {
     label: "Zizzl Hours"
     description: "The sum of all direct hours worked"
@@ -94,6 +302,15 @@ view: variable_shift_agg {
                 else null end;;
   }
 
+  dimension: no_zizzl_data{
+    type: yesno
+    sql:  ${zizzl_vs_recommendation_diff_category} in ('No Zizzl Data','Likely Bad Data')  ;;
+  }
+
+  dimension: short_shift_dashboard{
+    type: yesno
+    sql:  ${actual_vs_recommendation_diff_category} in('Short Shift', 'Likely Bad Data') ;;
+  }
   dimension: zizzl_vs_dashboard_diff_category {
     type: string
     label: "Dashboard vs Zizzl Diff Category"
