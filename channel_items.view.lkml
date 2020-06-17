@@ -400,6 +400,10 @@ else null end;;
     sql:  CASE WHEN  lower(${name}) LIKE '%bon secours%' OR
     ${population_health_channels.name} = 'bon secours mssp' OR
     (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') THEN 'Bon Secours'
+
+    WHEN substring(lower(${name}),1,3) = 'ou ' OR
+    lower(${name}) LIKE '%stephenson cancer center%' OR
+    lower(${provider_network.name}) = 'ou physicians' THEN 'OU Physicians'
     End;;
   }
 
