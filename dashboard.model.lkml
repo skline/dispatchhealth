@@ -345,7 +345,12 @@ explore: care_requests {
   join: athenadwh_patients_clone {
     relationship: one_to_one
     sql_on: ${patients.ehr_id} = ${athenadwh_patients_clone.patient_id}::varchar ;;
-  }
+}
+
+join: covid_testing_results {
+  relationship: one_to_many
+  sql_on:  ${athenadwh_patients_clone.last_name}||'-'||${athenadwh_patients_clone.first_name}||${athenadwh_patients_clone.dob}::DATE = ${covid_testing_results.patient_name}||${covid_testing_results.date_of_birth_date}::DATE ;;
+}
 
   join: athenadwh_patientaudit {
     relationship: one_to_many
