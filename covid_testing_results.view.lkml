@@ -101,6 +101,12 @@ view: covid_testing_results {
     sql: ${TABLE}."updated_at" ;;
   }
 
+  dimension: covid19_positive_test_result {
+    description: "COVID-19 test result positive"
+    type: yesno
+    sql: ${outcome} = 'DETECTED' ;;
+  }
+
   measure: count_positive_tests {
     description: "Count number of positive tests, a given patient may have mutliple positives"
     type: count_distinct
