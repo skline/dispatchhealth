@@ -103,7 +103,7 @@ view: variable_shift_agg {
 
   measure: sum_dashboard_vs_zizzl_diff_diff {
     value_format: "0.0"
-    label: "Sum Zizzl vs Dashboard Diff"
+    label: "Sum Dashboard vs Zizzl Diff"
     type: sum_distinct
     sql: ${dashboard_vs_zizzl_diff} ;;
     sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
@@ -322,4 +322,78 @@ view: variable_shift_agg {
                 when ${dashboard_vs_zizzl_diff} >= .5 then 'Shift Left Short'
                 else null end;;
   }
+
+  measure: sum_dashboard_hours_w_zizzl{
+    value_format: "0.0"
+    label: "Sum Dashboard Hours w Zizzl"
+    type: sum_distinct
+    sql: ${sum_shift_hours} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_dashboard_hours{
+    value_format: "0.0"
+    label: "Sum Dashboard Hours"
+    type: sum_distinct
+    sql: ${sum_shift_hours} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_recommendation_hours_w_zizzl{
+    value_format: "0.0"
+    label: "Sum Recommendation Hours w Zizzl"
+    type: sum_distinct
+    sql: ${recommendation} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_recommendation_hours{
+    value_format: "0.0"
+    label: "Sum Recommendation Hours"
+    type: sum_distinct
+    sql: ${recommendation} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+  measure: sum_zizzl_hours{
+    value_format: "0.0"
+    label: "Sum Zizzl Hours"
+    type: sum_distinct
+    sql: ${sum_direct_hours} ;;
+    sql_distinct_key: concat(${date_date}, ${shift_name}) ;;
+    filters: {
+      field: no_zizzl_data
+      value: "no"
+    }
+    filters: {
+      field: short_shift_dashboard
+      value: "no"
+    }
+  }
+
+
 }
