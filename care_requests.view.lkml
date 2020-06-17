@@ -229,6 +229,12 @@ view: care_requests {
     sql: ${TABLE}.ehr_id ;;
   }
 
+  dimension: dashboard_athena_appt_id_match {
+    type: yesno
+    sql:  ${care_requests.ehr_id} = ${athenadwh_appointments_clone.appointment_id}::VARCHAR ;;
+    group_label: "Dashbaord Athena Reconciliation"
+  }
+
   dimension: ehr_name {
     type: string
     sql: ${TABLE}.ehr_name ;;
