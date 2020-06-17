@@ -349,7 +349,7 @@ explore: care_requests {
 
 join: covid_testing_results {
   relationship: one_to_many
-  sql_on:  ${athenadwh_patients_clone.last_name}||'-'||${athenadwh_patients_clone.first_name}||${athenadwh_patients_clone.dob}::DATE = ${covid_testing_results.patient_name}||${covid_testing_results.date_of_birth_date}::DATE ;;
+  sql_on:  ${athenadwh_patients_clone.last_name}||'-'||${athenadwh_patients_clone.first_name}||'_'||${athenadwh_patients_clone.dob}::DATE = ${covid_testing_results.concat_distinct_patient_id} ;;
 }
 
   join: athenadwh_patientaudit {

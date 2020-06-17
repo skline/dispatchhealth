@@ -8,6 +8,11 @@ view: covid_testing_results {
     sql: ${TABLE}."id" ;;
   }
 
+  dimension: concat_distinct_patient_id {
+    type: string
+    sql: ${covid_testing_results.patient_name}||'_'||${covid_testing_results.date_of_birth_date}::DATE ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [
@@ -44,7 +49,7 @@ view: covid_testing_results {
 
   dimension: outcome {
     type: string
-    sql: ${TABLE}."outcome" ;;
+    sql: UPPER(${TABLE}.outcome) ;;
   }
 
   dimension: patient_name {
@@ -94,6 +99,26 @@ view: covid_testing_results {
       year
     ]
     sql: ${TABLE}."updated_at" ;;
+  }
+
+  measure: count_positive_tests {
+    description: "Count number of positive tests, a given patient may have mutliple positives"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: outcome
+      value: "DETECTED"
+    }
+    }
+
+  measure: count_test_positive_patients {
+    description: "Count number of distinct patients with one or more positive test results"
+    type: count_distinct
+    sql: ${concat_distinct_patient_id} ;;
+    filters: {
+      field: outcome
+      value: "DETECTED"
+    }
   }
 
   measure: count {
