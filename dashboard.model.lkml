@@ -3285,6 +3285,10 @@ explore: ga_adwords_cost_clone{
     sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
       AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
   }
+  join: athenadwh_appointments_clone {
+    relationship: one_to_one
+    sql_on: ${athenadwh_clinical_encounters_clone.appointment_id} = ${athenadwh_appointments_clone.appointment_id} ;;
+  }
 
 
 
