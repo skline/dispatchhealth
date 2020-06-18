@@ -381,7 +381,7 @@ view: collective_medical {
     WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 28 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '28'
     WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 29 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '29'
     WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '30'
-    ELSE 'Greater then 30 Days'
+    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) > 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN 'Greater then 30 Days'
     END
     ;;
 
@@ -420,7 +420,7 @@ view: collective_medical {
           WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 28 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '28'
           WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 29 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '29'
           WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '30'
-          ELSE 'Greater then 30 Days'
+          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) > 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN 'Greater then 30 Days'
           END
           ;;
 
