@@ -404,6 +404,12 @@ join: appointment {
   sql_on: ${care_requests.ehr_id} = ${appointment.appointment_char} ;;
 }
 
+join: clinicalencounter {
+  relationship: one_to_one
+  sql_on: ${appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
+}
+
+
   # Join all cloned tables from the BI database -- DE,
   join: visit_facts_clone {
     view_label: "Visit Facts relevant ID's used for matching"

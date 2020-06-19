@@ -1,20 +1,24 @@
 view: clinicalencounter {
   sql_table_name: athena.clinicalencounter ;;
   drill_fields: [id]
+  view_label: "Athena Clinical Encounters (DEV)"
 
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,11 +33,13 @@ view: clinicalencounter {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension: appointment_char {
     type: string
+    hidden: yes
     sql: ${TABLE}."appointment_char" ;;
   }
 
