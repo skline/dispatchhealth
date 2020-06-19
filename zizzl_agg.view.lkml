@@ -86,13 +86,13 @@ view: zizzl_agg {
     type: number
   }
   measure: avg_dashboard_vs_zizzl_diff {
-    value_format: "0.0"
+    value_format: "0.00"
     type: average_distinct
     sql: ${dashboard_vs_zizzl_diff} ;;
     sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}) ;;
   }
   measure: median_dashboard_vs_zizzl_diff {
-    value_format: "0.0"
+    value_format: "0.00"
     type: median_distinct
     sql: ${dashboard_vs_zizzl_diff} ;;
     sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}) ;;
