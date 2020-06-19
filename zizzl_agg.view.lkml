@@ -34,7 +34,7 @@ view: zizzl_agg {
       }
       filters: {
         field: zizzl_detailed_shift_hours.counter_month
-        value: "2 months"
+        value: "3 months"
       }
       filters: {
         field: zizzl_detailed_shift_hours.shift_name
