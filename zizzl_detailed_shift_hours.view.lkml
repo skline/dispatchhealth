@@ -511,4 +511,11 @@ SELECT DISTINCT
     sql: ${TABLE}.time_off ;;
     }
 
+  measure: dashboard_vs_zizzl_diff {
+    type: number
+    value_format: "0.0"
+    sql: ${shift_teams.sum_shift_hours}::float  - ${zizzl_detailed_shift_hours.sum_direct_hours}::float  ;;
+
+  }
+
 }

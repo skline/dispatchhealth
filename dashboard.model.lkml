@@ -1357,6 +1357,30 @@ explore: zizzl_detailed_shift_hours {
     sql_on: ${zizzl_detailed_shift_hours.market_id} = ${markets.id} ;;
   }
 
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+
+  join: shift_team_members {
+    relationship: one_to_many
+    sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+
+
+  join: shift_teams {
+    relationship: one_to_many
+    sql_on: ${shift_team_members.shift_team_id}= ${shift_teams.id} AND
+          ${zizzl_detailed_shift_hours.counter_date} = ${shift_teams.start_date} AND
+          ${zizzl_detailed_shift_hours.counter_name} IN ('Regular','Salary Plus')
+               AND (${zizzl_detailed_shift_hours.shift_name} != 'Administration' OR ${zizzl_detailed_shift_hours.shift_name} IS NULL)
+               AND ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%' ;;
+  }
+
+  join: cars {
+    sql_on: ${cars.id}=${shift_teams.car_id} ;;
+  }
 }
 
 explore: shift_team_stops {
@@ -3675,6 +3699,7 @@ explore: variable_shift_tracking {
 }
 
 explore: variable_shift_agg {}
+explore: zizzl_agg {}
 
 
 include: "redshift.*.view.lkml"
