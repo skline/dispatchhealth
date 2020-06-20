@@ -1,6 +1,7 @@
 view: claim {
   sql_table_name: athena.claim ;;
   drill_fields: [original_claim_id]
+  view_label: "Athena Charts (DEV)"
 
   dimension: original_claim_id {
     primary_key: yes
@@ -10,11 +11,13 @@ view: claim {
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,11 +32,13 @@ view: claim {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension: claim_appointment_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."claim_appointment_id" ;;
   }
 
@@ -59,6 +64,7 @@ view: claim {
 
   dimension: claim_primary_patient_ins_id {
     type: number
+    group_label: "Ids"
     sql: ${TABLE}."claim_primary_patient_ins_id" ;;
   }
 
