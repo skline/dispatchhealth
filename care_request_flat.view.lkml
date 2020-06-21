@@ -4484,7 +4484,7 @@ end  ;;
   {
     value_format: "0%"
     type: number
-    sql: ${lwbs_minus_overflow}/${count_distinct_bottom_funnel_care_requests} ;;
+    sql: case when${count_distinct_bottom_funnel_care_requests} >0 then ${lwbs_minus_overflow}/${count_distinct_bottom_funnel_care_requests} else 0 end ;;
   }
 
   measure: lwbs_lost_raw
@@ -4504,7 +4504,10 @@ end  ;;
   {
     value_format: "0%"
     type: number
-    sql: ${count_complete_overflow}::float/(${count_resolved_overflow}::float+${count_complete_overflow}::float)
+    sql:
+    case when  (${count_resolved_overflow}::float+${count_complete_overflow}::float) > 0.0 then  ${count_complete_overflow}::float/(${count_resolved_overflow}::float+${count_complete_overflow}::float)
+    else 0.0
+    end
     ;;
   }
 
