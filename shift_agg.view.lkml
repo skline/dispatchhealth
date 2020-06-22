@@ -5,7 +5,7 @@ view: shift_agg {
   derived_table: {
     explore_source: care_requests {
       column: shift_start_date { field: care_request_flat.shift_start_date }
-      column: shift_day_of_week { field: care_request_flat.shift_day_of_week }
+      column: shift_start_day_of_week { field: care_request_flat.shift_start_day_of_week }
       column: name { field: cars.name }
       column: shift_start_time { field: care_request_flat.shift_start_time }
       column: shift_start_time_of_day { field: care_request_flat.shift_start_time_of_day }
@@ -47,7 +47,7 @@ view: shift_agg {
     type: date
   }
 
-  dimension: shift_day_of_week {
+  dimension: shift_start_day_of_week {
     type: string
   }
 
@@ -198,6 +198,7 @@ view: shift_agg {
   }
 
   measure: avg_shift_start_first_on_route_diff{
+    label: "Deadtime Start of Shift (avg)"
     type: average_distinct
     value_format: "0.00"
     sql: ${shift_start_first_on_route_diff} ;;
@@ -205,6 +206,7 @@ view: shift_agg {
   }
 
   measure: avg_shift_shift_end_last_cr_diff_positive{
+    label: "Deadtime End of Shift (avg)"
     type: average_distinct
     value_format: "0.00"
     sql: ${shift_end_last_cr_diff_positive} ;;
@@ -212,6 +214,7 @@ view: shift_agg {
   }
 
   measure: avg_dead_time_intra_shift{
+    label: "Deadtime Intra Shift (avg)"
     type: average_distinct
     value_format: "0.00"
     sql: ${dead_time_intra_shift} ;;

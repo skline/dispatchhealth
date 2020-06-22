@@ -3756,6 +3756,9 @@ explore: productivity_agg {
   join: funnel_agg {
     sql_on: ${funnel_agg.created_date} =${productivity_agg.start_date} and ${funnel_agg.name_adj} =${productivity_agg.name_adj} ;;
   }
+  join:shift_agg  {
+    sql_on:  ${shift_agg.shift_start_date}=${productivity_agg.start_date} and ${shift_agg.name_adj} =${productivity_agg.name_adj};;
+  }
 
 }
 explore: shift_agg {}
