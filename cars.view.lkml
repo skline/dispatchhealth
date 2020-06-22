@@ -52,9 +52,14 @@ view: cars {
     type: string
     sql: ${TABLE}.name ;;
   }
+
+  dimension: name_date {
+    type: string
+    sql: concat(${name}, ': ',${care_request_flat.on_scene_date}::varchar) ;;
+  }
   dimension: non_actue_car {
     type: yesno
-    sql: lower(${name}) like '%swab%' ;;
+    sql: ${service_lines.name} in('COVID-19 Facility Testing') ;;
   }
 
   dimension: smfr_wmfr_other {

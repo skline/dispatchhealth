@@ -3802,3 +3802,11 @@ fields: [care_requests.billable_est,
           channel_items.sub_type,
           markets.name_adj ]
 }
+
+explore: productivity_agg {
+  join: funnel_agg {
+    sql_on: ${funnel_agg.created_date} =${productivity_agg.start_date} and ${funnel_agg.name_adj} =${productivity_agg.name_adj} ;;
+  }
+
+}
+explore: shift_agg {}
