@@ -5,6 +5,7 @@ view: shift_agg {
   derived_table: {
     explore_source: care_requests {
       column: shift_start_date { field: care_request_flat.shift_start_date }
+      column: shift_day_of_week { field: care_request_flat.shift_day_of_week }
       column: name { field: cars.name }
       column: shift_start_time { field: care_request_flat.shift_start_time }
       column: shift_start_time_of_day { field: care_request_flat.shift_start_time_of_day }
@@ -45,6 +46,11 @@ view: shift_agg {
     description: "The local date/time of a shift start"
     type: date
   }
+
+  dimension: shift_day_of_week {
+    type: string
+  }
+
   dimension: name {
     label: "Car Name"
   }
