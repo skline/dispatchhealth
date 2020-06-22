@@ -3760,5 +3760,12 @@ explore: productivity_agg {
     sql_on:  ${shift_agg.shift_start_date}=${productivity_agg.start_date} and ${shift_agg.name_adj} =${productivity_agg.name_adj};;
   }
 
+  #join: markets {
+  #  sql_on: ${markets.name_adj} = ${productivity_agg.name_adj} ;;
+  #}
+  #join: care_request_flat {
+  #  sql_on:  ${shift_agg.shift_start_date}=${care_request_flat.on_scene_date} and ${care_request_flat.market_id} =${markets.id};;
+  #}
+
 }
 explore: shift_agg {}

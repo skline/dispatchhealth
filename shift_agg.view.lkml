@@ -221,6 +221,37 @@ view: shift_agg {
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
 
+  measure: sum_total_on_scene_time_minutes {
+    label: "Sum of All Of Scene Time"
+    type: sum_distinct
+    value_format: "0.00"
+    sql: ${total_on_scene_time_minutes} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+  measure: sum_total_drivetime_minutes {
+    label: "Sum of All Of Drive Time"
+    type: sum_distinct
+    value_format: "0.00"
+    sql: ${total_drive_time_minutes_coalesce} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+  measure: avg_on_scene_hours{
+    label: "On-Scene Time Total (avg)"
+    type: number
+    value_format: "0.00"
+    sql: ${sum_total_on_scene_time_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
+  }
+
+  measure: avg_drivetime_hours{
+    label: "Drivetime Total (avg)"
+    type: number
+    value_format: "0.00"
+    sql: ${sum_total_drivetime_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
+  }
+
+
 
 
   dimension: dead_time_intra_shift {
