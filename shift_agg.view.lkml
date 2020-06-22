@@ -238,14 +238,14 @@ view: shift_agg {
   }
 
   measure: avg_on_scene_hours{
-    label: "On-Scene Time Total (avg)"
+    label: "On-Scene Time Minutes (avg)"
     type: number
     value_format: "0.00"
     sql: ${sum_total_on_scene_time_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
   }
 
   measure: avg_drivetime_hours{
-    label: "Drivetime Total (avg)"
+    label: "Drivetime Minutes (avg)"
     type: number
     value_format: "0.00"
     sql: ${sum_total_drivetime_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
