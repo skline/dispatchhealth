@@ -11,6 +11,8 @@ view: zizzl_agg {
       column: shift_name {}
       column: name { field: cars.name }
       column: name_adj { field: markets.name_adj }
+      column: cpr_market { field: markets.cpr_market }
+
       column: count_distinct {}
       column: sum_direct_hours {}
       column: sum_shift_hours { field: shift_teams.sum_shift_hours }
@@ -34,7 +36,7 @@ view: zizzl_agg {
       }
       filters: {
         field: zizzl_detailed_shift_hours.counter_month
-        value: "3 months"
+        value: "6 months"
       }
       filters: {
         field: zizzl_detailed_shift_hours.shift_name
@@ -49,6 +51,11 @@ view: zizzl_agg {
   dimension: counter_date {
     description: "The Zizzl employee shift date"
     type: date
+  }
+
+  dimension: cpr_market {
+    description: "The Zizzl employee shift date"
+    type: yesno
   }
   dimension: counter_month {
     description: "The Zizzl employee shift date"
@@ -89,12 +96,12 @@ view: zizzl_agg {
     value_format: "0.00"
     type: average_distinct
     sql: ${dashboard_vs_zizzl_diff} ;;
-    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}) ;;
+    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name}) ;;
   }
   measure: median_dashboard_vs_zizzl_diff {
     value_format: "0.00"
     type: median_distinct
     sql: ${dashboard_vs_zizzl_diff} ;;
-    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}) ;;
+    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name}) ;;
   }
 }
