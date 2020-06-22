@@ -214,6 +214,7 @@ view: clinicalencounter {
 
   dimension: patient_status {
     type: string
+    hidden: yes
     sql: ${TABLE}."patient_status" ;;
   }
 

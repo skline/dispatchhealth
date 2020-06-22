@@ -1,4 +1,4 @@
-view: documentaction {
+view: last_documentaction {
   derived_table: {
     sql:
     SELECT

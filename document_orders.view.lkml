@@ -5,17 +5,20 @@ view: document_orders {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -30,6 +33,7 @@ view: document_orders {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
@@ -50,15 +54,17 @@ view: document_orders {
 
   dimension: alarm_days {
     type: number
+    description: "The number of days set before an inbox alarm is triggered"
     sql: ${TABLE}."alarm_days" ;;
   }
 
   dimension: approved_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."approved_by" ;;
   }
 
-  dimension_group: approved_datetime {
+  dimension_group: approved {
     type: time
     timeframes: [
       raw,
@@ -74,46 +80,59 @@ view: document_orders {
 
   dimension: assigned_to {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."assigned_to" ;;
   }
 
   dimension: chart_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."chart_id" ;;
   }
 
   dimension: clinical_encounter_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_encounter_id" ;;
   }
 
   dimension: clinical_order_genus {
     type: string
+    description: "The high-level description of the order e.g. 'URINALYSIS', 'CMP', etc."
+    group_label: "Description"
     sql: ${TABLE}."clinical_order_genus" ;;
   }
 
   dimension: clinical_order_type {
     type: string
+    description: "The detailed description of the order e.g. 'URINALYSIS DIPSTICK', etc."
+    group_label: "Description"
     sql: ${TABLE}."clinical_order_type" ;;
   }
 
   dimension: clinical_order_type_group {
     type: string
+    description: "LAB or IMAGING"
+    group_label: "Description"
     sql: ${TABLE}."clinical_order_type_group" ;;
   }
 
   dimension: clinical_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_provider_id" ;;
   }
 
   dimension: clinical_provider_order_type {
     type: string
+    description: "The order type as defined by the fulfilling provider"
+    group_label: "Description"
     sql: ${TABLE}."clinical_provider_order_type" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -128,15 +147,17 @@ view: document_orders {
 
   dimension: created_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."created_by" ;;
   }
 
   dimension: created_clinical_encounter_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."created_clinical_encounter_id" ;;
   }
 
-  dimension_group: created_datetime {
+  dimension_group: created {
     type: time
     timeframes: [
       raw,
@@ -152,15 +173,17 @@ view: document_orders {
 
   dimension: cvx {
     type: string
+    hidden: yes
     sql: ${TABLE}."cvx" ;;
   }
 
   dimension: deactivated_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deactivated_by" ;;
   }
 
-  dimension_group: deactivated_datetime {
+  dimension_group: deactivated {
     type: time
     timeframes: [
       raw,
@@ -176,10 +199,11 @@ view: document_orders {
 
   dimension: deleted_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deleted_by" ;;
   }
 
-  dimension_group: deleted_datetime {
+  dimension_group: deleted {
     type: time
     timeframes: [
       raw,
@@ -195,10 +219,11 @@ view: document_orders {
 
   dimension: denied_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."denied_by" ;;
   }
 
-  dimension_group: denied_datetime {
+  dimension_group: denied {
     type: time
     timeframes: [
       raw,
@@ -215,41 +240,49 @@ view: document_orders {
   dimension: department_id {
     type: number
     # hidden: yes
+    group_label: "IDs"
     sql: ${TABLE}."department_id" ;;
   }
 
   dimension: document_class {
     type: string
+    description: "ORDER or DME"
+    group_label: "Description"
     sql: ${TABLE}."document_class" ;;
   }
 
   dimension: document_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."document_id" ;;
   }
 
   dimension: document_results_document_id {
     type: number
+    group_label: "IDs"
+    description: "The document ID associated with the order result"
     sql: ${TABLE}."document_results_document_id" ;;
   }
 
   dimension: document_results_id {
     type: number
-    # hidden: yes
+    hidden: yes
     sql: ${TABLE}."document_results_id" ;;
   }
 
   dimension: external_note {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."external_note" ;;
   }
 
   dimension: fbd_med_id {
     type: string
+    group_label: "IDs"
     sql: ${TABLE}."fbd_med_id" ;;
   }
 
-  dimension_group: future_submit_datetime {
+  dimension_group: future_submit {
     type: time
     timeframes: [
       raw,
@@ -270,15 +303,18 @@ view: document_orders {
 
   dimension: interface_vendor_name {
     type: string
+    hidden: yes
     sql: ${TABLE}."interface_vendor_name" ;;
   }
 
   dimension: notifier {
     type: string
+    group_label: "User Actions"
+    description: "The entity creating the notification of the order e.g. 'ATHENA', 'HOU - HOME STAFF', etc."
     sql: ${TABLE}."notifier" ;;
   }
 
-  dimension_group: observation_datetime {
+  dimension_group: observation {
     type: time
     timeframes: [
       raw,
@@ -292,7 +328,7 @@ view: document_orders {
     sql: ${TABLE}."observation_datetime" ;;
   }
 
-  dimension_group: order_datetime {
+  dimension_group: order {
     type: time
     timeframes: [
       raw,
@@ -308,32 +344,38 @@ view: document_orders {
 
   dimension: order_document_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."order_document_id" ;;
   }
 
   dimension: order_text {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."order_text" ;;
   }
 
   dimension: out_of_network_ref_reason_name {
     type: string
+    hidden: yes
     sql: ${TABLE}."out_of_network_ref_reason_name" ;;
   }
 
   dimension: patient_char {
     type: string
+    hidden: yes
     sql: ${TABLE}."patient_char" ;;
   }
 
   dimension: patient_id {
     type: number
+    group_label: "IDs"
     # hidden: yes
     sql: ${TABLE}."patient_id" ;;
   }
 
   dimension: patient_note {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."patient_note" ;;
   }
 
@@ -344,6 +386,7 @@ view: document_orders {
 
   dimension: provider_note {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."provider_note" ;;
   }
 
@@ -352,7 +395,7 @@ view: document_orders {
     sql: ${TABLE}."provider_username" ;;
   }
 
-  dimension_group: received_datetime {
+  dimension_group: received {
     type: time
     timeframes: [
       raw,
@@ -368,15 +411,17 @@ view: document_orders {
 
   dimension: result_notes {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."result_notes" ;;
   }
 
   dimension: reviewed_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."reviewed_by" ;;
   }
 
-  dimension_group: reviewed_datetime {
+  dimension_group: reviewed {
     type: time
     timeframes: [
       raw,
@@ -392,6 +437,7 @@ view: document_orders {
 
   dimension: route {
     type: string
+    hidden: yes
     sql: ${TABLE}."route" ;;
   }
 
@@ -402,10 +448,11 @@ view: document_orders {
 
   dimension: specimen_collected_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."specimen_collected_by" ;;
   }
 
-  dimension_group: specimen_collected_datetime {
+  dimension_group: specimen_collected {
     type: time
     timeframes: [
       raw,
@@ -441,6 +488,7 @@ view: document_orders {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -455,6 +503,7 @@ view: document_orders {
 
   dimension: vaccine_route {
     type: string
+    hidden: yes
     sql: ${TABLE}."vaccine_route" ;;
   }
 
