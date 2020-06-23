@@ -5,16 +5,19 @@ view: documentaction {
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,6 +32,7 @@ view: documentaction {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
@@ -44,11 +48,13 @@ view: documentaction {
 
   dimension: assigned_to {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."assigned_to" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -63,10 +69,11 @@ view: documentaction {
 
   dimension: created_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."created_by" ;;
   }
 
-  dimension_group: created_datetime {
+  dimension_group: created {
     type: time
     timeframes: [
       raw,
@@ -82,10 +89,11 @@ view: documentaction {
 
   dimension: deleted_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deleted_by" ;;
   }
 
-  dimension_group: deleted_datetime {
+  dimension_group: deleted {
     type: time
     timeframes: [
       raw,
@@ -101,16 +109,20 @@ view: documentaction {
 
   dimension: document_action_id {
     type: number
+    group_label: "Ids"
     sql: ${TABLE}."document_action_id" ;;
   }
 
   dimension: document_category {
     type: string
+    hidden: yes
     sql: ${TABLE}."document_category" ;;
   }
 
   dimension: document_class {
     type: string
+    description: "High level document description e.g. 'LETTER', 'LABRESULT', etc."
+    group_label: "Descriptions"
     sql: ${TABLE}."document_class" ;;
   }
 
@@ -121,16 +133,20 @@ view: documentaction {
 
   dimension: document_id {
     type: number
+    group_label: "Ids"
     sql: ${TABLE}."document_id" ;;
   }
 
   dimension: document_pre_class {
     type: string
+    hidden: yes
     sql: ${TABLE}."document_pre_class" ;;
   }
 
   dimension: document_sub_class {
     type: string
+    description: "Second order document description e.g. 'PRESCRIPTION_NEW', etc."
+    group_label: "Descriptions"
     sql: ${TABLE}."document_sub_class" ;;
   }
 
@@ -149,7 +165,7 @@ view: documentaction {
     sql: ${TABLE}."note" ;;
   }
 
-  dimension_group: patient_notified_datetime {
+  dimension_group: patient_notified {
     type: time
     timeframes: [
       raw,
@@ -170,6 +186,7 @@ view: documentaction {
 
   dimension: send_fax_unique_id {
     type: string
+    group_label: "Ids"
     sql: ${TABLE}."send_fax_unique_id" ;;
   }
 
@@ -183,8 +200,9 @@ view: documentaction {
     sql: ${TABLE}."system_key" ;;
   }
 
-  dimension_group: updated {
+  dimension_group: updated_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

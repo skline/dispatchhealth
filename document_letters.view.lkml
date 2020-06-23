@@ -1,6 +1,7 @@
 view: document_letters {
   sql_table_name: athena.document_letters ;;
   drill_fields: [id]
+  view_label: "Athena Clinical Letters (DEV)"
 
   dimension: id {
     primary_key: yes
@@ -10,11 +11,13 @@ view: document_letters {
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,15 +32,17 @@ view: document_letters {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension: approved_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."approved_by" ;;
   }
 
-  dimension_group: approved_datetime {
+  dimension_group: approved {
     type: time
     timeframes: [
       raw,
@@ -53,26 +58,31 @@ view: document_letters {
 
   dimension: assigned_to {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."assigned_to" ;;
   }
 
   dimension: chart_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."chart_id" ;;
   }
 
   dimension: clinical_encounter_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_encounter_id" ;;
   }
 
   dimension: clinical_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_provider_id" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -87,15 +97,17 @@ view: document_letters {
 
   dimension: created_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."created_by" ;;
   }
 
   dimension: created_clinical_encounter_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."created_clinical_encounter_id" ;;
   }
 
-  dimension_group: created_datetime {
+  dimension_group: created {
     type: time
     timeframes: [
       raw,
@@ -111,10 +123,11 @@ view: document_letters {
 
   dimension: deleted_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deleted_by" ;;
   }
 
-  dimension_group: deleted_datetime {
+  dimension_group: deleted {
     type: time
     timeframes: [
       raw,
@@ -130,11 +143,13 @@ view: document_letters {
 
   dimension: denied_by {
     type: string
+    hidden: yes
     sql: ${TABLE}."denied_by" ;;
   }
 
   dimension_group: denied_datetime {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -149,36 +164,44 @@ view: document_letters {
 
   dimension: department_id {
     type: number
+    group_label: "IDs"
     # hidden: yes
     sql: ${TABLE}."department_id" ;;
   }
 
   dimension: document_class {
     type: string
+    group_label: "Description"
+    description: "LETTER"
     sql: ${TABLE}."document_class" ;;
   }
 
   dimension: document_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."document_id" ;;
   }
 
   dimension: document_subclass {
     type: string
+    group_label: "Description"
+    description: "LETTER_PATIENTCORRESPONDENCE or NULL"
     sql: ${TABLE}."document_subclass" ;;
   }
 
   dimension: image_exists_yn {
     type: string
+    hidden: yes
     sql: ${TABLE}."image_exists_yn" ;;
   }
 
   dimension: notifier {
     type: string
+    hidden: yes
     sql: ${TABLE}."notifier" ;;
   }
 
-  dimension_group: order_datetime {
+  dimension_group: order {
     type: time
     timeframes: [
       raw,
@@ -194,16 +217,19 @@ view: document_letters {
 
   dimension: order_document_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."order_document_id" ;;
   }
 
   dimension: patient_char {
     type: string
+    hidden: yes
     sql: ${TABLE}."patient_char" ;;
   }
 
   dimension: patient_id {
     type: number
+    group_label: "IDs"
     # hidden: yes
     sql: ${TABLE}."patient_id" ;;
   }
@@ -220,6 +246,7 @@ view: document_letters {
 
   dimension: provider_username {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."provider_username" ;;
   }
 
@@ -230,6 +257,7 @@ view: document_letters {
 
   dimension: source {
     type: string
+    description: "ENCOUNTER"
     sql: ${TABLE}."source" ;;
   }
 
@@ -238,8 +266,9 @@ view: document_letters {
     sql: ${TABLE}."status" ;;
   }
 
-  dimension_group: updated {
+  dimension_group: updated_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

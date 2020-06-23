@@ -4,17 +4,20 @@ view: document_prescriptions {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,6 +32,7 @@ view: document_prescriptions {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
@@ -54,10 +58,11 @@ view: document_prescriptions {
 
   dimension: approved_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."approved_by" ;;
   }
 
-  dimension_group: approved_datetime {
+  dimension_group: approved {
     type: time
     timeframes: [
       raw,
@@ -73,36 +78,44 @@ view: document_prescriptions {
 
   dimension: assigned_to {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."assigned_to" ;;
   }
 
   dimension: chart_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."chart_id" ;;
   }
 
   dimension: clinical_encounter_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_encounter_id" ;;
   }
 
   dimension: clinical_order_type {
     type: string
+    group_label: "Description"
+    description: "The detailed description of the prescription"
     sql: ${TABLE}."clinical_order_type" ;;
   }
 
   dimension: clinical_order_type_group {
     type: string
+    group_label: "Description"
     sql: ${TABLE}."clinical_order_type_group" ;;
   }
 
   dimension: clinical_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_provider_id" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -117,15 +130,17 @@ view: document_prescriptions {
 
   dimension: created_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."created_by" ;;
   }
 
   dimension: created_clinical_encounter_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."created_clinical_encounter_id" ;;
   }
 
-  dimension_group: created_datetime {
+  dimension_group: created {
     type: time
     timeframes: [
       raw,
@@ -141,10 +156,11 @@ view: document_prescriptions {
 
   dimension: deactivated_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deactivated_by" ;;
   }
 
-  dimension_group: deactivated_datetime {
+  dimension_group: deactivated {
     type: time
     timeframes: [
       raw,
@@ -160,10 +176,11 @@ view: document_prescriptions {
 
   dimension: deleted_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deleted_by" ;;
   }
 
-  dimension_group: deleted_datetime {
+  dimension_group: deleted {
     type: time
     timeframes: [
       raw,
@@ -179,10 +196,11 @@ view: document_prescriptions {
 
   dimension: denied_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."denied_by" ;;
   }
 
-  dimension_group: denied_datetime {
+  dimension_group: denied {
     type: time
     timeframes: [
       raw,
@@ -198,36 +216,42 @@ view: document_prescriptions {
 
   dimension: department_id {
     type: number
+    group_label: "IDs"
     # hidden: yes
     sql: ${TABLE}."department_id" ;;
   }
 
   dimension: document_class {
     type: string
+    group_label: "Descriptions"
     sql: ${TABLE}."document_class" ;;
   }
 
   dimension: document_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."document_id" ;;
   }
 
   dimension: document_subclass {
     type: string
+    group_label: "Descriptions"
     sql: ${TABLE}."document_subclass" ;;
   }
 
   dimension: external_note {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."external_note" ;;
   }
 
   dimension: fbd_med_id {
     type: string
+    group_label: "IDs"
     sql: ${TABLE}."fbd_med_id" ;;
   }
 
-  dimension_group: future_submit_datetime {
+  dimension_group: future_submit {
     type: time
     timeframes: [
       raw,
@@ -243,20 +267,23 @@ view: document_prescriptions {
 
   dimension: image_exists_yn {
     type: string
+    hidden: yes
     sql: ${TABLE}."image_exists_yn" ;;
   }
 
   dimension: interface_vendor_name {
     type: string
+    hidden: yes
     sql: ${TABLE}."interface_vendor_name" ;;
   }
 
   dimension: notifier {
     type: string
+    hidden: yes
     sql: ${TABLE}."notifier" ;;
   }
 
-  dimension_group: order_datetime {
+  dimension_group: order {
     type: time
     timeframes: [
       raw,
@@ -272,6 +299,7 @@ view: document_prescriptions {
 
   dimension: order_document_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."order_document_id" ;;
   }
 
@@ -282,22 +310,26 @@ view: document_prescriptions {
 
   dimension: out_of_network_ref_reason_name {
     type: string
+    hidden: yes
     sql: ${TABLE}."out_of_network_ref_reason_name" ;;
   }
 
   dimension: patient_char {
     type: string
+    hidden: yes
     sql: ${TABLE}."patient_char" ;;
   }
 
   dimension: patient_id {
     type: number
+    group_label: "IDs"
     # hidden: yes
     sql: ${TABLE}."patient_id" ;;
   }
 
   dimension: patient_note {
     type: string
+    hidden: yes
     sql: ${TABLE}."patient_note" ;;
   }
 
@@ -308,15 +340,17 @@ view: document_prescriptions {
 
   dimension: provider_note {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."provider_note" ;;
   }
 
   dimension: provider_username {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."provider_username" ;;
   }
 
-  dimension_group: received_datetime {
+  dimension_group: received {
     type: time
     timeframes: [
       raw,
@@ -332,6 +366,7 @@ view: document_prescriptions {
 
   dimension: result_notes {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."result_notes" ;;
   }
 
@@ -350,8 +385,9 @@ view: document_prescriptions {
     sql: ${TABLE}."status" ;;
   }
 
-  dimension_group: updated {
+  dimension_group: updated_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

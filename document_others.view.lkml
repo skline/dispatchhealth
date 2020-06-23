@@ -4,17 +4,20 @@ view: document_others {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,11 +32,13 @@ view: document_others {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension_group: alarm {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       date,
