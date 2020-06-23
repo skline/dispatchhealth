@@ -14,6 +14,11 @@ view: mbo_metrics {
     value_format: "0.0"
   }
 
+  dimension: clinical_safety_jira_tickets {
+    type: number
+    sql: ${TABLE}.clinical_safety_jira_tickets ;;
+  }
+
   measure: average_coding_audit_score {
     description: "Average of monthly coding audit score"
     type: average_distinct
