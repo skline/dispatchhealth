@@ -27,6 +27,13 @@ view: mbo_metrics {
     value_format: "0.0"
   }
 
+  measure: sum_clinical_safety_tickets {
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${clinical_safety_jira_tickets} ;;
+    value_format: "0"
+  }
+
   dimension: collectibility {
     type: number
     sql: ${TABLE}."collectibility" ;;
