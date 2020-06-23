@@ -178,6 +178,12 @@ view: productivity_data {
     sql: ${TABLE}.updated_ts ;;
   }
 
+  dimension: covid_tests {
+    type: number
+    description: "Count of COVID-19 Testing Facility visits"
+    sql: ${TABLE}.covid_tests ;;
+  }
+
   dimension: total_billable_visits {
     label: "Billable Visits Including SMFR/WMFR"
     type: number
