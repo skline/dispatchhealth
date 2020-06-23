@@ -2285,11 +2285,11 @@ WITH ort AS (
     group_label: "ETAs"
     description: "On-scene time relative to initial ETA window grouping (5 bins)"
     sql:  CASE
-          WHEN ${on_scene_raw} <  ${eta_range_start_raw} THEN 'Early'
-          WHEN ${initial_eta_end_to_on_scene_minutes} <= 15 THEN 'On Time'
-          WHEN ${initial_eta_end_to_on_scene_minutes} > 15 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '16-60 Minutes Late'
-          WHEN ${initial_eta_end_to_on_scene_minutes} > 60 AND ${initial_eta_end_to_on_scene_minutes} <= 240 THEN '61 Minutes to 4 Hours Late'
-          WHEN ${initial_eta_end_to_on_scene_minutes} > 240 THEN 'Greater than 4 Hours Late'
+          WHEN ${on_scene_raw} <  ${eta_range_start_raw} THEN '(1) Early'
+          WHEN ${initial_eta_end_to_on_scene_minutes} <= 15 THEN '(2) On Time'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 15 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '(3) 16-60 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 60 AND ${initial_eta_end_to_on_scene_minutes} <= 240 THEN '(4) 61 Minutes to 4 Hours Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 240 THEN '(5) Greater than 4 Hours Late'
           ELSE NULL
           END
           ;;
