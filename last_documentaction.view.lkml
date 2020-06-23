@@ -1,4 +1,5 @@
 view: last_documentaction {
+  view_label: "Athena Last Document Action (DEV)"
   derived_table: {
     sql:
     SELECT
@@ -27,6 +28,7 @@ view: last_documentaction {
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
@@ -45,7 +47,7 @@ view: last_documentaction {
     sql: ${TABLE}."assigned_to" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
     hidden: yes
     timeframes: [
@@ -60,12 +62,30 @@ view: last_documentaction {
     sql: ${TABLE}."created_at" ;;
   }
 
+  dimension: order_to_close_hours {
+    description: "Number of hours from order created to closed"
+    type: number
+    hidden: yes
+    value_format: "0.0"
+    sql: (EXTRACT(EPOCH FROM ${created_raw}) - EXTRACT(EPOCH FROM ${document_orders.created_raw})) / 3600 ;;
+  }
+
+  measure: average_hours_to_close {
+    description: "The average number of hours to close the order"
+    type: average_distinct
+    value_format: "0.0"
+    sql: ${order_to_close_hours} ;;
+    filters: [
+      status: "CLOSED"
+    ]
+  }
+
   dimension: created_by {
     type: string
     sql: ${TABLE}."created_by" ;;
   }
 
-  dimension_group: created_datetime {
+  dimension_group: created {
     type: time
     timeframes: [
       raw,
@@ -84,7 +104,7 @@ view: last_documentaction {
     sql: ${TABLE}."deleted_by" ;;
   }
 
-  dimension_group: deleted_datetime {
+  dimension_group: deleted {
     type: time
     timeframes: [
       raw,
@@ -106,6 +126,7 @@ view: last_documentaction {
 
   dimension: document_category {
     type: string
+    hidden: yes
     sql: ${TABLE}."document_category" ;;
   }
 
@@ -126,6 +147,7 @@ view: last_documentaction {
 
   dimension: document_pre_class {
     type: string
+    hidden: yes
     sql: ${TABLE}."document_pre_class" ;;
   }
 
@@ -141,6 +163,7 @@ view: last_documentaction {
 
   dimension: mobile {
     type: string
+    hidden: yes
     sql: ${TABLE}."mobile" ;;
   }
 
