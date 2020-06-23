@@ -1,5 +1,6 @@
 view: documentaction {
   sql_table_name: athena.documentaction ;;
+  view_label: "Athena Document Actions (DEV)"
   drill_fields: [id]
 
   dimension: id {

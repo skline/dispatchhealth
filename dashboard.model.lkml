@@ -425,11 +425,30 @@ join: document_orders {
   sql_on: ${clinicalencounter.chart_id} = ${document_orders.chart_id} ;;
 }
 
+join: document_order_provider {
+  from: clinicalprovider
+  view_label: "Athena Document Order Provider (DEV)"
+  relationship: many_to_one
+  sql_on: ${document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
+}
+
+join: documentaction {
+  relationship: one_to_many
+  sql_on: ${document_orders.document_id} = ${documentaction.document_id} ;;
+}
+
 join: document_order_results {
   from: document_results
   view_label: "Athena Order Results (DEV)"
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${document_order_results.order_document_id} ;;
+}
+
+join: document_result_last_action {
+  from: last_documentaction
+  view_label: "Athena Document Result Last Action (DEV)"
+  relationship: one_to_one
+  sql_on: ${document_order_results.document_id} = ${document_result_last_action.document_id} ;;
 }
 
 join: clinicalresult {
