@@ -23,10 +23,6 @@ view: zizzl_agg {
         value: "advanced practice provider"
       }
       filters: {
-        field: markets.cpr_market
-        value: "No"
-      }
-      filters: {
         field: zizzl_detailed_shift_hours.dashboard_vs_zizzl_diff
         value: "[-2, 2]"
       }

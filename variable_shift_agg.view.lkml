@@ -294,7 +294,7 @@ view: variable_shift_agg {
     type: string
     label: "Zizzl vs Recommendation Diff Category"
     sql: case when ${zizzl_vs_recommendation_diff} < -2.5 then 'Likely Bad Data'
-                when ${zizzl_vs_recommendation_diff} > 7 then 'No Zizzl Data'
+                when ${zizzl_vs_recommendation_diff} > 4 then 'No Zizzl Data'
                 when ${zizzl_vs_recommendation_diff} > 2.5 then 'Short Shift'
                 when ${zizzl_vs_recommendation_diff} between -.5 and .5 then 'Followed'
                 when ${zizzl_vs_recommendation_diff} <= -.5 then 'Shift Left Long'
@@ -315,7 +315,7 @@ view: variable_shift_agg {
     type: string
     label: "Dashboard vs Zizzl Diff Category"
     sql: case when ${dashboard_vs_zizzl_diff} < -2.5 then 'Likely Bad Data'
-                when ${dashboard_vs_zizzl_diff} > 7 then 'No Zizzl Data'
+                when ${dashboard_vs_zizzl_diff} > 4 then 'No Zizzl Data'
                 when ${dashboard_vs_zizzl_diff} > 2.5 then 'Short Shift'
                 when ${dashboard_vs_zizzl_diff} between -.5 and .5 then 'Followed'
                 when ${dashboard_vs_zizzl_diff} <= -.5 then 'Shift Left Long'
