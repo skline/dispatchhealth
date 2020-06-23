@@ -398,6 +398,7 @@ join: covid_testing_results {
 
 # End Athena data warehouse tables
 
+###################################################
 # New Athena Feed - 06/12/2020 - DE
 join: appointment {
   relationship: one_to_one
@@ -408,6 +409,56 @@ join: clinicalencounter {
   relationship: one_to_one
   sql_on: ${appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
 }
+
+join: claim {
+  relationship: one_to_one
+  sql_on: ${clinicalencounter.appointment_id} = ${claim.claim_appointment_id} ;;
+}
+
+join: patient {
+  relationship: many_to_one
+  sql_on: ${appointment.patient_id} = ${patient.patient_id} ;;
+}
+
+join: document_orders {
+  relationship: one_to_many
+  sql_on: ${clinicalencounter.chart_id} = ${document_orders.chart_id} ;;
+}
+
+join: document_order_results {
+  from: document_results
+  view_label: "Athena Order Results (DEV)"
+  relationship: one_to_one
+  sql_on: ${document_orders.document_id} = ${document_order_results.order_document_id} ;;
+}
+
+join: clinicalresult {
+  relationship: one_to_one
+  sql_on: ${document_order_results.document_id} = ${clinicalresult.document_id} ;;
+}
+
+join: clinicalresultobservation {
+  relationship: one_to_many
+  sql_on: ${clinicalresult.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
+}
+
+join: clinicalprovider_order {
+  from: clinicalprovider
+  view_label: "Athena Order Fulfilling Provider (DEV)"
+  relationship: many_to_one
+  sql_on: ${document_orders.clinical_provider_id} = ${clinicalprovider_order.clinical_provider_id} ;;
+}
+
+join: department_order {
+  from: department
+  view_label: "Athena Order Department (DEV)"
+  relationship: many_to_one
+  sql_on: ${document_orders.department_id}   = ${department_order.department_id} ;;
+}
+
+
+###################################################
+# End New Athena Feed - DE
 
 
   # Join all cloned tables from the BI database -- DE,

@@ -1,20 +1,31 @@
 view: claim {
   sql_table_name: athena.claim ;;
   drill_fields: [original_claim_id]
+  view_label: "Athena Claims (DEV)"
+
+  dimension: id {
+    type: number
+    hidden: yes
+    primary_key: yes
+    sql: ${TABLE}."id" ;;
+  }
 
   dimension: original_claim_id {
-    primary_key: yes
+    primary_key: no
+    hidden: yes
     type: number
     sql: ${TABLE}."original_claim_id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,15 +40,17 @@ view: claim {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension: claim_appointment_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."claim_appointment_id" ;;
   }
 
-  dimension_group: claim_created_datetime {
+  dimension_group: claim_created {
     type: time
     timeframes: [
       raw,
@@ -54,31 +67,38 @@ view: claim {
   dimension: claim_id {
     type: number
     # hidden: yes
+    group_label: "IDs"
     sql: ${TABLE}."claim_id" ;;
   }
 
   dimension: claim_primary_patient_ins_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."claim_primary_patient_ins_id" ;;
   }
 
   dimension: claim_referral_auth_id {
     type: number
+    group_label: "IDs"
+    hidden: yes
     sql: ${TABLE}."claim_referral_auth_id" ;;
   }
 
   dimension: claim_referring_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."claim_referring_provider_id" ;;
   }
 
   dimension: claim_scheduling_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."claim_scheduling_provider_id" ;;
   }
 
   dimension: claim_secondary_patient_ins_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."claim_secondary_patient_ins_id" ;;
   }
 
@@ -99,6 +119,7 @@ view: claim {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -118,6 +139,7 @@ view: claim {
 
   dimension_group: hospitalization_from {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       date,
@@ -133,6 +155,7 @@ view: claim {
 
   dimension_group: hospitalization_to {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       date,
@@ -146,13 +169,9 @@ view: claim {
     sql: ${TABLE}."hospitalization_to_date" ;;
   }
 
-  dimension: id {
-    type: number
-    sql: ${TABLE}."id" ;;
-  }
-
   dimension: patient_char {
     type: string
+    hidden: yes
     sql: ${TABLE}."patient_char" ;;
   }
 
@@ -163,51 +182,61 @@ view: claim {
 
   dimension: patient_department_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."patient_department_id" ;;
   }
 
   dimension: patient_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."patient_id" ;;
   }
 
   dimension: patient_rounding_list_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."patient_rounding_list_id" ;;
   }
 
   dimension: primary_claim_status {
     type: string
+    group_label: "Claim Status"
     sql: ${TABLE}."primary_claim_status" ;;
   }
 
   dimension: rendering_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."rendering_provider_id" ;;
   }
 
   dimension: reserved19 {
     type: string
+    label: "Claim Note"
     sql: ${TABLE}."reserved19" ;;
   }
 
   dimension: secondary_claim_status {
     type: string
+    group_label: "Claim Status"
     sql: ${TABLE}."secondary_claim_status" ;;
   }
 
   dimension: service_department_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."service_department_id" ;;
   }
 
   dimension: supervising_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."supervising_provider_id" ;;
   }
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

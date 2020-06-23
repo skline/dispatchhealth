@@ -1104,6 +1104,13 @@ WITH ort AS (
     sql: ${TABLE}.initial_eta_end ;;
   }
 
+  dimension: eta_window {
+    description: "The ETA range given to the patient for care"
+    sql: (EXTRACT(EPOCH FROM ${eta_range_end_raw}) - EXTRACT(EPOCH FROM ${eta_range_start_raw}))/3600 ;;
+    value_format: "0.0"
+    group_label: "ETAs"
+  }
+
   dimension_group: initial_eta {
     type: time
     description: "The initial ETA that was calculated for the patient"
@@ -2249,17 +2256,21 @@ WITH ort AS (
 
   dimension: eta_to_on_scene_resolved_minutes  {
     type: number
+    group_label: "ETAs"
     description: "The number of minutes between the initial ETA and either the on-scene or resolved time"
     sql: EXTRACT(EPOCH FROM COALESCE(${on_scene_raw},${archive_raw}) - ${eta_raw})/60 ;;
   }
 
   dimension: initial_eta_end_to_on_scene_minutes  {
     type: number
+    group_label: "ETAs"
     description: "The number of minutes between the initial ETA end time and the on-scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw} - ${eta_range_end_raw})/60;;
   }
 
   dimension: initial_eta_window_to_on_scene_2_groups {
+    type: string
+    group_label: "ETAs"
     description: "On-scene time relative to initial ETA window grouping (2 bins)"
     sql: CASE
           WHEN ${initial_eta_end_to_on_scene_minutes} <= 15 THEN 'Arrived as Expected'
@@ -2270,6 +2281,8 @@ WITH ort AS (
   }
 
   dimension: initial_eta_window_to_on_scene_expanded_groups {
+    type: string
+    group_label: "ETAs"
     description: "On-scene time relative to initial ETA window grouping (5 bins)"
     sql:  CASE
           WHEN ${on_scene_raw} <  ${eta_range_start_raw} THEN 'Early'
@@ -2284,6 +2297,7 @@ WITH ort AS (
 
   dimension: accepted_to_initial_eta_minutes  {
     type: number
+    group_label: "ETAs"
     description: "The number of minutes between when the care request was created and the initial ETA"
     sql: ROUND(CAST(EXTRACT(EPOCH FROM ${eta_raw} - ${accept_raw})/60 AS integer), 0) ;;
     value_format: "0"
@@ -2291,6 +2305,7 @@ WITH ort AS (
 
   dimension: mins_early_late_tier {
     type: tier
+    group_label: "ETAs"
     tiers: [-60, -45, -30, -15, 0, 10, 15, 30, 45, 60]
     style: integer
     sql: ${eta_to_on_scene_resolved_minutes} ;;
@@ -2298,6 +2313,7 @@ WITH ort AS (
 
   dimension: mins_to_eta_tier {
     type: tier
+    group_label: "ETAs"
     description: "The grouped number of minutes between accepted and ETA"
     tiers: [30, 60, 90, 120, 150, 180, 210, 240]
     style: integer
@@ -2306,6 +2322,7 @@ WITH ort AS (
 
   dimension: mins_to_eta_tier_wide {
     type: tier
+    group_label: "ETAs"
     description: "The grouped number of minutes between accepted and ETA"
     tiers: [60, 120, 180, 240]
     style: integer
