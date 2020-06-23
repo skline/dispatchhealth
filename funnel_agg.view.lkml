@@ -6,6 +6,7 @@ view: funnel_agg {
     explore_source: care_requests {
       column: name_adj { field: markets.name_adj }
       column: created_date { field: care_request_flat.created_date }
+      column: created_day_of_week { field: care_request_flat.created_day_of_week }
       column: cpr_market { field: markets.cpr_market }
       column: care_request_count { field: care_request_flat.care_request_count }
       column: count_distinct_bottom_funnel_care_requests { field: care_request_flat.count_distinct_bottom_funnel_care_requests }
@@ -52,6 +53,10 @@ view: funnel_agg {
   dimension: created_date {
     description: "The local date/time that the care request was created."
     type: date
+  }
+
+  dimension: created_day_of_week {
+    type: string
   }
   dimension: cpr_market {
     label: "Markets Cpr Market (Yes / No)"

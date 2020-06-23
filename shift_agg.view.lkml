@@ -5,6 +5,7 @@ view: shift_agg {
   derived_table: {
     explore_source: care_requests {
       column: shift_start_date { field: care_request_flat.shift_start_date }
+      column: shift_start_day_of_week { field: care_request_flat.shift_start_day_of_week }
       column: name { field: cars.name }
       column: shift_start_time { field: care_request_flat.shift_start_time }
       column: shift_start_time_of_day { field: care_request_flat.shift_start_time_of_day }
@@ -45,6 +46,11 @@ view: shift_agg {
     description: "The local date/time of a shift start"
     type: date
   }
+
+  dimension: shift_start_day_of_week {
+    type: string
+  }
+
   dimension: name {
     label: "Car Name"
   }
@@ -192,31 +198,65 @@ view: shift_agg {
   }
 
   measure: avg_shift_start_first_on_route_diff{
+    label: "Deadtime Start of Shift (avg)"
     type: average_distinct
-    value_format: "0.00"
-    sql: ${shift_start_first_on_route_diff} ;;
+    value_format: "0"
+    sql: ${shift_start_first_on_route_diff}*60 ;;
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
 
   measure: avg_shift_shift_end_last_cr_diff_positive{
+    label: "Deadtime End of Shift (avg)"
     type: average_distinct
-    value_format: "0.00"
-    sql: ${shift_end_last_cr_diff_positive} ;;
+    value_format: "0"
+    sql: ${shift_end_last_cr_diff_positive}::float*60 ;;
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
 
   measure: avg_dead_time_intra_shift{
+    label: "Deadtime Intra Shift (avg)"
     type: average_distinct
-    value_format: "0.00"
+    value_format: "0"
     sql: ${dead_time_intra_shift} ;;
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
+
+  measure: sum_total_on_scene_time_minutes {
+    label: "Sum of All Of Scene Time"
+    type: sum_distinct
+    value_format: "0.00"
+    sql: ${total_on_scene_time_minutes} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+  measure: sum_total_drivetime_minutes {
+    label: "Sum of All Of Drive Time"
+    type: sum_distinct
+    value_format: "0.00"
+    sql: ${total_drive_time_minutes_coalesce} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+  measure: avg_on_scene_hours{
+    label: "On-Scene Time Minutes (avg)"
+    type: number
+    value_format: "0"
+    sql: ${sum_total_on_scene_time_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
+  }
+
+  measure: avg_drivetime_hours{
+    label: "Drivetime Minutes (avg)"
+    type: number
+    value_format: "0"
+    sql: ${sum_total_drivetime_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
+  }
+
 
 
 
   dimension: dead_time_intra_shift {
     type: number
-    sql: (${shift_hours}*60 - ${total_drive_time_minutes_coalesce} -${total_on_scene_time_minutes} + ${shift_end_last_cr_diff_adj}*60 - ${shift_start_first_on_route_diff}*60)/60 ;;
+    sql: (${shift_hours}*60 - ${total_drive_time_minutes_coalesce} -${total_on_scene_time_minutes} + ${shift_end_last_cr_diff_adj}*60 - ${shift_start_first_on_route_diff}*60) ;;
   }
 
 

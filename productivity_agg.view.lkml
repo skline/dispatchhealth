@@ -5,6 +5,7 @@ view: productivity_agg {
   derived_table: {
     explore_source: shift_teams {
       column: start_date {}
+      column: start_day_of_week {}
       column: sum_shift_hours_no_arm_advanced {}
       column: complete_count { field: care_request_flat.complete_count }
       column: complete_count_no_arm_advanced { field: care_request_flat.complete_count_no_arm_advanced }
@@ -29,6 +30,10 @@ view: productivity_agg {
   }
   dimension: start_date {
     type: date
+  }
+
+  dimension: start_day_of_week {
+    type: string
   }
   dimension: sum_shift_hours_no_arm_advanced {
     label: "Shift Teams Sum Shift Hours (no arm, advanced or tele)"
