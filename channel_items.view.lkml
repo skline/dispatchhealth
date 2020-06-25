@@ -403,7 +403,7 @@ else null end;;
 
     WHEN substring(lower(${name}),1,3) = 'ou ' OR
     lower(${name}) LIKE '%stephenson cancer center%' OR
-    lower(${provider_network.name}) = 'ou physicians' THEN 'OU Physicians'
+    lower(${provider_network.name}) = 'ou physicians' THEN 'OUMI & OU Physicians'
 
     ELSE NULL END ;;
   }
