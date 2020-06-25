@@ -13,17 +13,21 @@ view: patient {
 
   dimension: new_patient_id {
     primary_key: no
+    description: "When patients are merged, this field will indicate the surviving patient record"
+    group_label: "IDs"
     type: string
     sql: ${TABLE}."new_patient_id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -38,21 +42,25 @@ view: patient {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension: address {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."address" ;;
   }
 
   dimension: address_2 {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."address_2" ;;
   }
 
   dimension: city {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."city" ;;
   }
 
@@ -76,8 +84,9 @@ view: patient {
     sql: ${TABLE}."consent_to_call_flag" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -92,6 +101,7 @@ view: patient {
 
   dimension: current_department_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."current_department_id" ;;
   }
 
@@ -112,6 +122,7 @@ view: patient {
 
   dimension: default_prescription_prov_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."default_prescription_prov_id" ;;
   }
 
@@ -132,51 +143,67 @@ view: patient {
 
   dimension: email {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."email" ;;
   }
 
   dimension: emergency_contact_name {
     type: string
+    group_label: "Emergency Contact Information"
     sql: ${TABLE}."emergency_contact_name" ;;
   }
 
   dimension: emergency_contact_phone {
     type: string
+    group_label: "Emergency Contact Information"
     sql: ${TABLE}."emergency_contact_phone" ;;
   }
 
   dimension: emergency_contact_relationship {
     type: string
+    group_label: "Emergency Contact Information"
     sql: ${TABLE}."emergency_contact_relationship" ;;
   }
 
   dimension: enterprise_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."enterprise_id" ;;
   }
 
   dimension: first_name {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."first_name" ;;
+  }
+
+  dimension: full_name {
+    type: string
+    group_label: "Contact Information"
+    sql: CONCAT(${first_name}, ' ', ${last_name}) ;;
   }
 
   dimension: guarantor_address {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_address" ;;
   }
 
   dimension: guarantor_address_2 {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_address_2" ;;
   }
 
   dimension: guarantor_city {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_city" ;;
   }
 
   dimension_group: guarantor_dob {
     type: time
+    group_label: "Guarantor Contact Information"
     timeframes: [
       raw,
       date,
@@ -192,46 +219,55 @@ view: patient {
 
   dimension: guarantor_first_name {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_first_name" ;;
   }
 
   dimension: guarantor_last_name {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_last_name" ;;
   }
 
   dimension: guarantor_middle_initial {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_middle_initial" ;;
   }
 
   dimension: guarantor_name_suffix {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_name_suffix" ;;
   }
 
   dimension: guarantor_phone {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_phone" ;;
   }
 
   dimension: guarantor_relationship {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_relationship" ;;
   }
 
   dimension: guarantor_ssn {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_ssn" ;;
   }
 
   dimension: guarantor_state {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_state" ;;
   }
 
   dimension: guarantor_zip {
     type: string
+    group_label: "Guarantor Contact Information"
     sql: ${TABLE}."guarantor_zip" ;;
   }
 
@@ -262,26 +298,31 @@ view: patient {
 
   dimension: last_name {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."last_name" ;;
   }
 
   dimension: middle_initial {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."middle_initial" ;;
   }
 
   dimension: name_suffix {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."name_suffix" ;;
   }
 
   dimension: patient_char {
     type: string
+    hidden: yes
     sql: ${TABLE}."patient_char" ;;
   }
 
   dimension: patient_home_phone {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."patient_home_phone" ;;
   }
 
@@ -307,31 +348,39 @@ view: patient {
 
   dimension: patient_ssn {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."patient_ssn" ;;
   }
 
   dimension: patient_status {
     type: string
+    description: "a for active, d for deceased"
+    group_label: "Contact Information"
     sql: ${TABLE}."patient_status" ;;
   }
 
   dimension: preferred_lab_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."preferred_lab_id" ;;
   }
 
   dimension: primary_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."primary_provider_id" ;;
   }
 
   dimension: privacy_notice_given_by {
     type: string
+    group_label: "Privacy Notice Given"
+    group_item_label: "By"
     sql: ${TABLE}."privacy_notice_given_by" ;;
   }
 
   dimension_group: privacy_notice_given {
     type: time
+    group_label: "Privacy Notice Given"
     timeframes: [
       raw,
       date,
@@ -347,16 +396,20 @@ view: patient {
 
   dimension: privacy_notice_given_dept_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."privacy_notice_given_dept_id" ;;
   }
 
   dimension: privacy_notice_given_flag {
     type: string
+    group_label: "Privacy Notice Given"
+    group_item_label: "Flag"
     sql: ${TABLE}."privacy_notice_given_flag" ;;
   }
 
   dimension: provider_group_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."provider_group_id" ;;
   }
 
@@ -377,16 +430,19 @@ view: patient {
 
   dimension: registration_department_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."registration_department_id" ;;
   }
 
   dimension: sex {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."sex" ;;
   }
 
   dimension: state {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."state" ;;
   }
 
@@ -395,8 +451,9 @@ view: patient {
     sql: ${TABLE}."test_patient_yn" ;;
   }
 
-  dimension_group: updated {
+  dimension_group: updated_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -411,6 +468,7 @@ view: patient {
 
   dimension: zip {
     type: zipcode
+    group_label: "Contact Information"
     sql: ${TABLE}."zip" ;;
   }
 
