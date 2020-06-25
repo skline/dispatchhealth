@@ -22,6 +22,19 @@ view: risk_assessments {
     END;;
   }
 
+  dimension: communicable_protocol{
+    type: yesno
+    sql: lower(${protocol_name}) in('cough/upper respiratory infection', 'cough/upper respiratory symptoms', 'nausea/vomiting', 'fever', 'flu-like symptoms', 'sore throat', 'cough/uri', 'diarrhea', 'nausea/vomiting (non covid-19)', 'cough/upper respiratory symptoms  (non covid-19)') ;;
+  }
+
+  dimension: asymptomatic_covid_testing {
+    type: yesno
+    sql: lower(${protocol_name}) in('covid-19 testing request (for patients without symptoms)');;
+  }
+
+
+
+
   measure: protocol_count {
     type: count_distinct
     sql: ${protocol_name} ;;
