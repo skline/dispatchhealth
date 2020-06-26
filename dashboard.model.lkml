@@ -415,6 +415,16 @@ join: claim {
   sql_on: ${clinicalencounter.appointment_id} = ${claim.claim_appointment_id} ;;
 }
 
+  join: transaction {
+    relationship: one_to_many
+    sql_on: ${claim.claim_id} = ${transaction.claim_id} ;;
+  }
+
+join: department {
+  relationship: many_to_one
+  sql_on: ${clinicalencounter.department_id} = ${department.department_id} ;;
+}
+
 join: patient {
   relationship: many_to_one
   sql_on: ${appointment.patient_id} = ${patient.patient_id} ;;
@@ -422,7 +432,7 @@ join: patient {
 
 join: document_orders {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.chart_id} = ${document_orders.chart_id} ;;
+  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_orders.clinical_encounter_id} ;;
 }
 
 join: document_order_provider {
@@ -449,6 +459,21 @@ join: document_result_last_action {
   view_label: "Athena Document Result Last Action (DEV)"
   relationship: one_to_one
   sql_on: ${document_order_results.document_id} = ${document_result_last_action.document_id} ;;
+}
+
+join: document_letters {
+  relationship: one_to_many
+  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_letters.clinical_encounter_id} ;;
+}
+
+join: document_prescriptions {
+  relationship: one_to_many
+  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
+}
+
+join: document_others {
+  relationship: one_to_many
+  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_others.clinical_encounter_id} ;;
 }
 
 join: clinicalresult {

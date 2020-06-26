@@ -3688,12 +3688,53 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: complete_count_communicable_protocol {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: risk_assessments.communicable_protocol
+      value: "yes"
+    }
+  }
+
+  measure: complete_count_asymptomatic_covid_testing {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: risk_assessments.asymptomatic_covid_testing
+      value: "yes"
+    }
+  }
+
+
 
   measure: flu_percent {
     type: number
     value_format: "0.0%"
     sql: ${complete_count_flu}::float/nullif(${complete_count}::float,0);;
   }
+
+
+  measure: asymptomatic_covid_testing_percent {
+    type: number
+    value_format: "0.0%"
+    sql: ${complete_count_asymptomatic_covid_testing}::float/nullif(${complete_count}::float,0);;
+  }
+
+  measure: communicable_protocol_percent{
+    type: number
+    value_format: "0.0%"
+    sql: ${complete_count_communicable_protocol}::float/nullif(${complete_count}::float,0);;
+  }
+
 
   measure: flu_percent_chief_complaint {
     type: number

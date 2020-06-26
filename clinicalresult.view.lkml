@@ -1,6 +1,7 @@
 view: clinicalresult {
   sql_table_name: athena.clinicalresult ;;
   drill_fields: [id]
+  view_label: "Athena Clinical Result (DEV - NEEDS NEW UNIQUE KEY)"
 
   dimension: id {
     primary_key: yes

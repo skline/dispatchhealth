@@ -71,6 +71,12 @@ view: claim {
     sql: ${TABLE}."claim_id" ;;
   }
 
+#   measure: count_distinct_claims {
+#     description: "Count of distinct claims"
+#     type: count_distinct
+#     sql: ${claim_id} ;;
+#   }
+
   dimension: claim_primary_patient_ins_id {
     type: number
     group_label: "IDs"
