@@ -83,7 +83,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}."created_at" ;;
+    sql: ${TABLE}."created_at" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: diagnoses {
@@ -107,7 +107,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}.discharge_date ;;
+    sql: ${TABLE}.discharge_date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: encounter_account_number {
@@ -147,7 +147,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}."updated_at" ;;
+    sql: ${TABLE}."updated_at" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: visit_facility {
