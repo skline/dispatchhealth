@@ -310,6 +310,11 @@ explore: care_requests {
     sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
   }
 
+  join: first_major_admittance {
+    relationship: many_to_one
+    sql_on: ${care_requests.id} = ${first_major_admittance.care_request_id};;
+  }
+
   join: provider_roster {
     relationship: one_to_one
     sql_on: ${athenadwh_letter_recipient_provider.npi} = ${provider_roster.npi}::varchar ;;
