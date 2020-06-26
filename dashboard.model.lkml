@@ -307,7 +307,7 @@ explore: care_requests {
 
   join: collective_medical {
     relationship: one_to_many
-    sql_on: ${care_requests.id} = ${collective_medical.care_request_id} ;;
+    sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
   }
 
   join: provider_roster {
