@@ -58,7 +58,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}.admit_date ;;
+    sql: ${TABLE}.admit_date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: admitted_ip {
@@ -67,9 +67,9 @@ view: collective_medical {
     sql: ${TABLE}."admitted_ip" ;;
   }
 
-  dimension: care_request_id {
+  dimension: patient_id {
     type: number
-    sql: ${TABLE}."care_request_id" ;;
+    sql: ${TABLE}."patient_id" ;;
   }
 
   dimension_group: created {
@@ -83,7 +83,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}."created_at" ;;
+    sql: ${TABLE}."created_at" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: diagnoses {
@@ -107,7 +107,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}.discharge_date ;;
+    sql: ${TABLE}.discharge_date AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: encounter_account_number {
@@ -147,7 +147,7 @@ view: collective_medical {
       quarter,
       year
     ]
-    sql: ${TABLE}."updated_at" ;;
+    sql: ${TABLE}."updated_at" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: visit_facility {
@@ -236,7 +236,7 @@ view: collective_medical {
   measure: count_12_hour_cm_admit_inpatient {
     description: "Count Inpatient admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id} ;;
+    sql: ${care_request_flat.care_request_id} ;;
     filters: {
       field: 12_hour_cm_admit_inpatient
       value: "yes"
@@ -246,7 +246,7 @@ view: collective_medical {
   measure: count_12_hour_cm_admit_emergency {
     description: "Count Emergency admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 12_hour_cm_admit_emergency
       value: "yes"
@@ -256,7 +256,7 @@ view: collective_medical {
  measure: count_3_day_cm_admit_inpatient {
     description: "Count Inpatient admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id} ;;
+    sql: ${care_request_flat.care_request_id} ;;
     filters: {
       field: 3_day_cm_admit_inpatient
       value: "yes"
@@ -266,7 +266,7 @@ view: collective_medical {
   measure: count_3_day_cm_admit_observation {
     description: "Count Observation admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 3_day_cm_admit_observation
       value: "yes"
@@ -276,7 +276,7 @@ view: collective_medical {
     measure: count_3_day_cm_admit_emergency {
       description: "Count Emergency admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
       type: count_distinct
-      sql: ${care_request_id}  ;;
+      sql: ${care_request_flat.care_request_id}  ;;
       filters: {
         field: 3_day_cm_admit_emergency
         value: "yes"
@@ -286,7 +286,7 @@ view: collective_medical {
   measure: count_14_day_cm_admit_inpatient {
     description: "Count Inpatient admittances recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 14_day_cm_admit_inpatient
       value: "yes"
@@ -296,7 +296,7 @@ view: collective_medical {
   measure: count_14_day_cm_admit_observation {
     description: "Count Observation admittances recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 14_day_cm_admit_observation
       value: "yes"
@@ -306,7 +306,7 @@ view: collective_medical {
   measure: count_14_day_cm_admit_emergency {
     description: "Count Emergency admittances recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 14_day_cm_admit_emergency
       value: "yes"
@@ -316,7 +316,7 @@ view: collective_medical {
   measure: count_30_day_cm_admit_inpatient {
     description: "Count Inpatient admittances recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 30_day_cm_admit_inpatient
       value: "yes"
@@ -326,7 +326,7 @@ view: collective_medical {
   measure: count_30_day_cm_admit_observation {
     description: "Count Observation admittances recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 30_day_cm_admit_observation
       value: "yes"
@@ -336,17 +336,18 @@ view: collective_medical {
   measure: count_30_day_cm_admit_emergency {
     description: "Count Emergency admittances recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: count_distinct
-    sql: ${care_request_id}  ;;
+    sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 30_day_cm_admit_emergency
       value: "yes"
     }
   }
 
-  measure: count_er_admits {
-    type: count_distinct
 
-  }
+#   measure: count_er_admits {
+#     type: count_distinct
+#
+#   }
 
   dimension: 30day_ed_admittance_framework {
     description: "Categorizes the first recorded ED admittance by day wihtin the first 30 days from the DH on-scene date"
