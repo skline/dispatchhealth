@@ -157,7 +157,14 @@ view: shift_agg {
 
   dimension: care_request_assigned_at_shift_start {
     type: yesno
-    sql: if(${first_accepted_decimal} < extract_hours(${shift_start_time}) + extract_minutes(${shift_start_time}), 1, 0);;
+    sql: ${first_accepted_decimal} < ${shift_start_time_decimal} ;;
+  }
+
+  dimension: shift_start_time_decimal{
+    type: number
+    value_format: "0.00"
+    sql: (CAST(EXTRACT(HOUR FROM ${shift_start_time}::timestamp) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${shift_start_time}::timestamp ) AS FLOAT)) / 60) ;;
   }
 
   dimension: minutes_early_or_late {
@@ -234,6 +241,13 @@ view: shift_agg {
     type: sum_distinct
     value_format: "0.00"
     sql: ${total_drive_time_minutes_coalesce} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+  measure: count_distinct_shifts {
+    type: count_distinct
+    value_format: "0"
+    sql: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
 
