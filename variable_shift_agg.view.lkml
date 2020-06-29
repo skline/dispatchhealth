@@ -253,7 +253,9 @@ view: variable_shift_agg {
   measure: percent_zizzl_followed {
     type: number
     value_format: "0%"
-    sql: ${count_distinct_zizzl_followed}::float/${count_distinct_w_zizzl}::float ;;
+    sql:
+    case when ${count_distinct_w_zizzl}::float>0 then
+    ${count_distinct_zizzl_followed}::float/${count_distinct_w_zizzl}::float  else 0 end;;
 
   }
 
