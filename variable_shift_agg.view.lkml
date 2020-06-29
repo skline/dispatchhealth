@@ -245,7 +245,7 @@ view: variable_shift_agg {
   measure: percent_dashboard_followed {
     type: number
     value_format: "0%"
-    sql: case when ${count_distinct_no_short_shifts}>0
+    sql: case when ${count_distinct_no_short_shifts}>0 then
     ${count_distinct_dashboard_followed}::float/${count_distinct_no_short_shifts}::float else 0 end ;;
 
   }
