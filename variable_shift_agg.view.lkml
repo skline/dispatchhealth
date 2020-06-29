@@ -245,7 +245,8 @@ view: variable_shift_agg {
   measure: percent_dashboard_followed {
     type: number
     value_format: "0%"
-    sql: ${count_distinct_dashboard_followed}::float/${count_distinct_no_short_shifts}::float ;;
+    sql: case when ${count_distinct_no_short_shifts}>0
+    ${count_distinct_dashboard_followed}::float/${count_distinct_no_short_shifts}::float else 0 end ;;
 
   }
 
@@ -262,7 +263,8 @@ view: variable_shift_agg {
   measure: percent_zizzl_match_dashboard {
     type: number
     value_format: "0%"
-    sql: ${count_distinct_zizzl_dashboard_match}::float/${count_distinct_w_zizzl}::float ;;
+    sql: case when ${count_distinct_w_zizzl} >0 then
+    ${count_distinct_zizzl_dashboard_match}::float/${count_distinct_w_zizzl}::float else 0 end ;;
 
   }
 
