@@ -3083,6 +3083,10 @@ explore: genesys_conversation_summary {
     sql_on: ${care_request_flat.care_request_id} = ${risk_assessments.care_request_id} ;;
   }
 
+  join: service_lines {
+    sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+
   join: patients {
     sql_on:   (
                 ${patients.mobile_number} = ${genesys_conversation_summary.ani}
@@ -3871,3 +3875,4 @@ explore: productivity_agg {
 
 }
 explore: shift_agg {}
+explore: genesys_queue_conversion {}
