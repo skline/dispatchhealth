@@ -3705,16 +3705,18 @@ explore: non_phone_cr {
     sql_on: ${care_request_flat.first_accepted_date} = ${non_phone_cr.created_date};;
   }
 
-  join: number_to_market {
-    relationship: one_to_one
-    sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
-  }
+}
 
+explore: genesys_agg {
+  join: non_phone_cr{
+    sql_on: ${genesys_agg.conversationstarttime_date} = ${non_phone_cr.created_date} and ${genesys_agg.market_id} = ${non_phone_cr.market_id};;
+  }
+  join: accepted_agg {
+    sql_on: ${accepted_agg.market_id} =${genesys_agg.market_id} and ${accepted_agg.first_accepted_date} = ${genesys_agg.conversationstarttime_date}  ;;
+  }
   join: markets {
-    relationship: one_to_one
-    sql_on: ${markets.id}=${number_to_market.market_id} ;;
+    sql_on: ${markets.id}=${genesys_agg.market_id} ;;
   }
-
 }
 
 explore: mailchimp_sends {
