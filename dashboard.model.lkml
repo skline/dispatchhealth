@@ -3053,12 +3053,6 @@ explore: genesys_conversation_summary {
     sql_on: ${genesys_conversation_summary.conversationid}=${genesys_conversation_wrapup.conversationid} ;;
   }
 
-  join: invoca_clone {
-    sql_on: abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${invoca_clone.start_time_raw}))) <5000
-    and ${invoca_clone.caller_id} = ${genesys_conversation_summary.ani}
-    ;;
-  }
-
   join: markets {
     relationship: one_to_one
     sql_on: ${markets.id}=${number_to_market.market_id} ;;
@@ -3087,16 +3081,20 @@ explore: genesys_conversation_summary {
     sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
   }
 
-  join: patients {
+  join: patients_mobile {
     sql_on:   (
-                ${patients.mobile_number} = ${genesys_conversation_summary.ani}
+                ${patients_mobile.mobile_number} = ${genesys_conversation_summary.ani}
               )
-             and ${patients.mobile_number} is not null   ;;
+               ;;
+  }
+
+  join: patients {
+    sql_on:${patients_mobile.patient_id} =${patients.id} ;;
   }
 
   join: care_request_flat_number{
     from: care_request_flat
-    sql_on: (${patients.id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
+    sql_on: (${patients_mobile.patient_id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
   }
   join: diversions_by_care_request {
@@ -3882,3 +3880,4 @@ explore: productivity_agg {
 }
 explore: shift_agg {}
 explore: genesys_queue_conversion {}
+explore: patients {}
