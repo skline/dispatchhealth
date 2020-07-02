@@ -237,7 +237,7 @@ WITH ort AS (
 
     # Run trigger every 2 hours
     sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
-    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date"]
+    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date", "first_accepted_date"]
   }
 
   dimension: care_request_id {
