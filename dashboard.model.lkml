@@ -3204,6 +3204,11 @@ explore: shift_teams
     sql_on: ${care_requests.id} = ${care_request_flat.care_request_id} ;;
   }
 
+  join: survey_responses_flat_clone {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${survey_responses_flat_clone.care_request_id};;
+  }
+
   join: shift_team_members {
     relationship: one_to_many
     sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
