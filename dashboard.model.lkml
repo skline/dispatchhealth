@@ -3879,5 +3879,9 @@ explore: productivity_agg {
 
 }
 explore: shift_agg {}
-explore: genesys_queue_conversion {}
+explore: genesys_queue_conversion {
+  join: markets {
+    sql: ${markets.id} =${genesys_queue_conversion.market_id} ;;
+  }
+}
 explore: patients {}
