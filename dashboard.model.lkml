@@ -3064,12 +3064,6 @@ explore: genesys_conversation_summary {
     sql_on: ${genesys_conversation_summary.conversationid}=${genesys_conversation_wrapup.conversationid} ;;
   }
 
-  join: invoca_clone {
-    sql_on: abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${invoca_clone.start_time_raw}))) <5000
-    and ${invoca_clone.caller_id} = ${genesys_conversation_summary.ani}
-    ;;
-  }
-
   join: markets {
     relationship: one_to_one
     sql_on: ${markets.id}=${number_to_market.market_id} ;;
@@ -3094,16 +3088,24 @@ explore: genesys_conversation_summary {
     sql_on: ${care_request_flat.care_request_id} = ${risk_assessments.care_request_id} ;;
   }
 
-  join: patients {
+  join: service_lines {
+    sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+
+  join: patients_mobile {
     sql_on:   (
-                ${patients.mobile_number} = ${genesys_conversation_summary.ani}
+                ${patients_mobile.mobile_number} = ${genesys_conversation_summary.ani}
               )
-             and ${patients.mobile_number} is not null   ;;
+               ;;
+  }
+
+  join: patients {
+    sql_on:${patients_mobile.patient_id} =${patients.id} ;;
   }
 
   join: care_request_flat_number{
     from: care_request_flat
-    sql_on: (${patients.id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
+    sql_on: (${patients_mobile.patient_id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
   }
   join: diversions_by_care_request {
@@ -3708,24 +3710,32 @@ explore: bi_events {
 }
 
 explore: non_phone_cr {
+  join: markets {
+    sql_on: ${markets.id} = ${non_phone_cr.market_id} ;;
+  }
+  join: number_to_market {
+    sql_on: ${markets.id}=${number_to_market.market_id} ;;
+  }
   join: genesys_conversation_summary{
-    sql_on: ${genesys_conversation_summary.conversationstarttime_date} = ${non_phone_cr.created_date};;
+    sql_on: ${genesys_conversation_summary.conversationstarttime_date} = ${non_phone_cr.created_date} and  ${number_to_market.number} = ${genesys_conversation_summary.dnis} ;;
   }
 
   join: care_request_flat{
-    sql_on: ${care_request_flat.first_accepted_date} = ${non_phone_cr.created_date};;
+    sql_on: ${care_request_flat.first_accepted_date} = ${non_phone_cr.created_date} and ${markets.id}=${care_request_flat.market_id};;
   }
 
-  join: number_to_market {
-    relationship: one_to_one
-    sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
-  }
+}
 
+explore: genesys_agg {
+  join: non_phone_cr{
+    sql_on: ${genesys_agg.conversationstarttime_date} = ${non_phone_cr.created_date} and ${genesys_agg.market_id} = ${non_phone_cr.market_id};;
+  }
+  join: accepted_agg {
+    sql_on: ${accepted_agg.market_id} =${genesys_agg.market_id} and ${accepted_agg.first_accepted_date} = ${genesys_agg.conversationstarttime_date}  ;;
+  }
   join: markets {
-    relationship: one_to_one
-    sql_on: ${markets.id}=${number_to_market.market_id} ;;
+    sql_on: ${markets.id}=${genesys_agg.market_id} ;;
   }
-
 }
 
 explore: mailchimp_sends {
@@ -3880,3 +3890,5 @@ explore: productivity_agg {
 
 }
 explore: shift_agg {}
+explore: genesys_queue_conversion {}
+explore: patients {}

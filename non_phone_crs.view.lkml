@@ -11,9 +11,7 @@ view: non_phone_cr {
       column: this_week_created { field: care_request_flat.this_week_created }
       column: same_day_of_week_created { field: care_request_flat.same_day_of_week_created}
       column: last_week_created { field: care_request_flat.last_week_created}
-
-
-
+      column: market_id { field: care_request_flat.market_id}
 
       filters: {
         field: care_requests.request_type
@@ -21,22 +19,34 @@ view: non_phone_cr {
       }
       filters: {
         field: care_request_flat.created_month
-        value: "7 weeks"
+        value: "365 days ago for 365 days"
       }
       filters: {
         field: care_request_flat.care_request_count
         value: "NOT NULL"
       }
+      filters: {
+        field: risk_assessments.protocol_name
+        value: "-Covid-19 Facility Testing"
+      }
+      filters: {
+        field: care_request_flat.pafu_or_follow_up
+        value: "No"
+      }
     }
-    sql_trigger_value: SELECT count(*) FROM public.care_requests ;;
-    indexes: ["created_date"]
+    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
+    indexes: ["created_date", "market_id"]
   }
   dimension: care_request_count {
     type: number
   }
+
+  dimension: market_id {
+    type: number
+  }
   measure: sum_care_request_count{
     type: sum_distinct
-    sql_distinct_key: ${created_date} ;;
+    sql_distinct_key: concat(${created_date}, ${market_id}) ;;
     sql: ${care_request_count} ;;
   }
 
@@ -44,6 +54,7 @@ view: non_phone_cr {
     type: number
     sql: ${genesys_conversation_summary.count_answered} +${sum_care_request_count};;
   }
+
 
   dimension: created_date {
     description: "The local date/time that the care request was created."

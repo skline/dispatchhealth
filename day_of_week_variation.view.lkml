@@ -1,6 +1,6 @@
 view: day_of_week_variation {
     derived_table: {
-      sql_trigger_value: SELECT MAX(created_at) FROM public.care_request_statuses ;;
+      sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
       explore_source: care_requests {
         column: name_adj { field: markets.name_adj }
         column: scheduled_care_created_coalese_day_of_week { field: care_request_flat.scheduled_care_created_coalese_day_of_week }

@@ -405,6 +405,10 @@ else null end;;
     lower(${name}) LIKE '%stephenson cancer center%' OR
     lower(${provider_network.name}) = 'ou physicians' THEN 'OUMI & OU Physicians'
 
+    WHEN  lower(${name}) LIKE '%vcu%' OR
+    lower(${provider_network.name}) = 'virginia commonwealth university health system' THEN 'VCU Health'
+
+
     ELSE NULL END ;;
   }
 
