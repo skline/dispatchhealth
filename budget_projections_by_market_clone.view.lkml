@@ -32,6 +32,13 @@ view: budget_projections_by_market_clone {
     sql: ${projected_visits} ;;
   }
 
+  measure: percent_of_goal{
+    value_format: "0.0%"
+    type: number
+    sql: case when ${sum_projected_visits}> 0 then ${care_request_flat.monthly_visits_run_rate}::float/${sum_projected_visits}::float else 0 end;;
+  }
+
+
   measure: sum_projected_visits_weekly {
     label:"Budgeted Visits Weekly"
     type: sum_distinct
