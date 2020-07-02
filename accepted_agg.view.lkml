@@ -18,7 +18,7 @@ view: accepted_agg {
         value: "No"
       }
     }
-    sql_trigger_value: SELECT count(*) FROM public.care_requests ;;
+    sql_trigger_value: SELECT MAX(created_at) FROM public.care_request_statuses ;;
     indexes: ["first_accepted_date", "market_id"]
   }
   dimension: first_accepted_date {
