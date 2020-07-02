@@ -3701,12 +3701,18 @@ explore: bi_events {
 }
 
 explore: non_phone_cr {
+  join: markets {
+    sql_on: ${markets.id} = ${non_phone_cr.market_id} ;;
+  }
+  join: number_to_market {
+    sql_on: ${markets.id}=${number_to_market.market_id} ;;
+  }
   join: genesys_conversation_summary{
-    sql_on: ${genesys_conversation_summary.conversationstarttime_date} = ${non_phone_cr.created_date};;
+    sql_on: ${genesys_conversation_summary.conversationstarttime_date} = ${non_phone_cr.created_date} and  ${number_to_market.number} = ${genesys_conversation_summary.dnis} ;;
   }
 
   join: care_request_flat{
-    sql_on: ${care_request_flat.first_accepted_date} = ${non_phone_cr.created_date};;
+    sql_on: ${care_request_flat.first_accepted_date} = ${non_phone_cr.created_date} and ${markets.id}=${care_request_flat.market_id};;
   }
 
 }
