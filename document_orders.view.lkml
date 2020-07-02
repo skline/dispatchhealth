@@ -1,7 +1,7 @@
 view: document_orders {
   sql_table_name: athena.document_orders ;;
   drill_fields: [id]
-  view_label: "Athena Document Orders (DEV)"
+  view_label: "Athena Document Orders"
 
   dimension: id {
     primary_key: yes
