@@ -1,20 +1,24 @@
 view: claimdiagnosis {
   sql_table_name: athena.claimdiagnosis ;;
+  view_label: "Athena Claim Diagnoses (DEV)"
   drill_fields: [id]
 
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,21 +33,25 @@ view: claimdiagnosis {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension: claim_diagnosis_id {
     type: number
+    hidden: yes
     sql: ${TABLE}."claim_diagnosis_id" ;;
   }
 
   dimension: claim_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."claim_id" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -61,7 +69,7 @@ view: claimdiagnosis {
     sql: ${TABLE}."created_by" ;;
   }
 
-  dimension_group: created_datetime {
+  dimension_group: created {
     type: time
     timeframes: [
       raw,
@@ -80,7 +88,7 @@ view: claimdiagnosis {
     sql: ${TABLE}."deleted_by" ;;
   }
 
-  dimension_group: deleted_datetime {
+  dimension_group: deleted {
     type: time
     timeframes: [
       raw,
@@ -101,21 +109,25 @@ view: claimdiagnosis {
 
   dimension: diagnosis_codeset_name {
     type: string
+    hidden: yes
     sql: ${TABLE}."diagnosis_codeset_name" ;;
   }
 
   dimension: icd_code_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."icd_code_id" ;;
   }
 
   dimension: sequence_number {
     type: number
+    description: "The priority of the ICD-10 code e.g. 1 is first"
     sql: ${TABLE}."sequence_number" ;;
   }
 
-  dimension_group: updated {
+  dimension_group: updated_at {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
