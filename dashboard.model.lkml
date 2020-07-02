@@ -415,9 +415,20 @@ join: clinicalencounter {
   sql_on: ${appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
 }
 
+join: clinicalencounterdiagnosis {
+  relationship: one_to_many
+  sql_on: ${clinicalencounter.clinical_encounter_id} = ${clinicalencounterdiagnosis.clinical_encounter_id} AND
+          ${clinicalencounterdiagnosis.deleted_raw} IS NULL;;
+}
+
 join: claim {
   relationship: one_to_one
   sql_on: ${clinicalencounter.appointment_id} = ${claim.claim_appointment_id} ;;
+}
+
+join: claimdiagnosis {
+  relationship: one_to_many
+  sql_on: ${claim.claim_id} = ${claimdiagnosis.claim_id} AND ${claimdiagnosis.deleted_raw} IS NULL ;;
 }
 
   join: transaction {
