@@ -34,7 +34,7 @@ view: non_phone_cr {
         value: "No"
       }
     }
-    sql_trigger_value: SELECT MAX(created_at) FROM public.care_request_statuses ;;
+    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
     indexes: ["created_date", "market_id"]
   }
   dimension: care_request_count {

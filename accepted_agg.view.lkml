@@ -18,7 +18,7 @@ view: accepted_agg {
         value: "No"
       }
     }
-    sql_trigger_value: SELECT MAX(created_at) FROM public.care_request_statuses ;;
+    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
     indexes: ["first_accepted_date", "market_id"]
   }
   dimension: first_accepted_date {
