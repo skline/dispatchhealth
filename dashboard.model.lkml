@@ -3342,11 +3342,18 @@ explore: ga_adwords_cost_clone{
             AND ${genesys_conversation_summary.queuename} = 'DTC Pilot'
             ;;
   }
+
+  join: patients_mobile {
+    sql_on:
+                ${patients_mobile.mobile_number} = ${genesys_conversation_summary.ani}
+
+               ;;
+  }
+
   join: patients {
-    sql_on:   (
-                ${patients.mobile_number} = ${genesys_conversation_summary.ani}
-              )
-             and ${patients.mobile_number} is not null   ;;
+    sql_on:
+                ${patients.id} = ${patients_mobile.patient_id};;
+
   }
 
   join: care_request_flat{
