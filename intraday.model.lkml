@@ -1,6 +1,19 @@
 connection: "intraday"
 
-include: "*.view.lkml"                       # include all views in this project
+include: "target_staffing_intra.view.lkml"
+include: "channel_items_intra.view.lkml"
+include: "insurance_classifications_intra.view.lkml"
+include: "cars_intra.view.lkml"
+include: "intraday_shift_teams.view.lkml"
+include: "intraday_potential_care_requests.view.lkml"
+include: "last_care_request_etc_intra.view.lkml"
+include: "intraday_care_requests.view.lkml"
+include: "service_lines_intra.view.lkml"
+include: "primary_payer_dimensions_intra.view.lkml"
+include: "insurance_plans_intra.view.lkml"
+include: "markets_intra.view.lkml"
+include: "timezones_intra.view.lkml"
+
 explore:  intraday_shift_teams {
 
   join: intraday_care_requests {
