@@ -20,8 +20,7 @@ from looker_scratch.incontact_clone
 group by 1,2,3,4,5,6,7,8,9)lq
 
 ;;
-    sql_trigger_value: SELECT MAX(contact_id) FROM incontact_clone ;;
-    indexes: ["start_time", "campaign", "skll_name", "contact_id", "master_contact_id"]
+    #indexes: ["start_time", "campaign", "skll_name", "contact_id", "master_contact_id"]
   }
 
   dimension: contact_id {

@@ -18,7 +18,7 @@ view: accepted_agg {
         value: "No"
       }
     }
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
+    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
     indexes: ["first_accepted_date", "market_id"]
   }
   dimension: first_accepted_date {

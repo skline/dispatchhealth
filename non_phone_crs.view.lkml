@@ -34,7 +34,7 @@ view: non_phone_cr {
         value: "No"
       }
     }
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
+    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
     indexes: ["created_date", "market_id"]
   }
   dimension: care_request_count {
