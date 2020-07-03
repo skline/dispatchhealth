@@ -1,7 +1,7 @@
 view: document_letters {
   sql_table_name: athena.document_letters ;;
   drill_fields: [id]
-  view_label: "Athena Clinical Letters (DEV)"
+  view_label: "Athena Clinical Letters"
 
   dimension: id {
     primary_key: yes

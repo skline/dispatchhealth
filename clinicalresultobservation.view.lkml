@@ -1,6 +1,6 @@
 view: clinicalresultobservation {
   sql_table_name: athena.clinicalresultobservation ;;
-  view_label: "Athena Clinical Result Observations (DEV)"
+  view_label: "Athena Clinical Result Observations"
 
   dimension: __batch_id {
     type: string
