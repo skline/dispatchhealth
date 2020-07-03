@@ -11,8 +11,7 @@ where row_number=1
 
 
       ;;
-    sql_trigger_value: SELECT count(*) FROM looker_scratch.sf_accounts_health_score_historical ;;
-    indexes: ["account_id"]
+   # indexes: ["account_id"]
   }
   dimension: account_id {
     type: string
