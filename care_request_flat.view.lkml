@@ -4609,6 +4609,11 @@ end  ;;
       ;;
   }
 
+  measure: complete_plus_total_lost {
+    type: number
+    sql:  ${total_lost}+${complete_count};;
+  }
+
   measure: total_lost_above_baseline
   {
     type: number
