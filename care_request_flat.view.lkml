@@ -3926,6 +3926,18 @@ measure: avg_first_on_route_mins {
     ) end ;;
   }
 
+  dimension: days_in_month_created {
+    type: number
+    sql:
+     case when to_char(${created_date} , 'YYYY-MM') = ${yesterday_mountain_month} then ${yesterday_mountain_day_of_month}
+    else
+      DATE_PART('days',
+        DATE_TRUNC('month', ${created_date})
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ) end ;;
+  }
+
   dimension: first_half_month {
     type: yesno
     sql: ${complete_day_of_month} <= 15 ;;
@@ -4610,6 +4622,7 @@ end  ;;
   }
 
   measure: complete_plus_total_lost {
+    value_format: "0"
     type: number
     sql:  ${total_lost}+${complete_count};;
   }
