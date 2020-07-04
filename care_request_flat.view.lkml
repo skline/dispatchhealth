@@ -4627,6 +4627,12 @@ end  ;;
     sql:  ${total_lost}+${complete_count};;
   }
 
+  measure: total_lost_percent{
+    value_format: "0%"
+    type: number
+    sql:  case when ${complete_plus_total_lost}>0 then ${complete_count}::float/${complete_plus_total_lost}::float else 0 end;;
+  }
+
   measure: total_lost_above_baseline
   {
     type: number
