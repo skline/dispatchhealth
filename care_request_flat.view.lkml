@@ -3926,7 +3926,7 @@ measure: avg_first_on_route_mins {
     ) end ;;
   }
 
-  dimension: days_in_month_on_complete {
+  dimension: days_in_month_complete {
     type: number
     sql:
      case when to_char(${complete_date} , 'YYYY-MM') = ${yesterday_mountain_month} then ${yesterday_mountain_day_of_month}
