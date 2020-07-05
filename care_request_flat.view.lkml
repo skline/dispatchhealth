@@ -3652,14 +3652,23 @@ measure: avg_first_on_route_mins {
   dimension: flu_chief_complaint {
     type: yesno
     sql:
-    lower(${care_requests.chief_complaint}) SIMILAR TO '%(flu|cough)%'
+    lower(${care_requests.chief_complaint}) like '%cough%'
     OR
     lower(${care_requests.chief_complaint}) like '%uri'
     OR
     lower(${care_requests.chief_complaint}) like '%uri %'
     OR
     lower(${care_requests.chief_complaint}) like '%uri/%'
-    or trim(lower(${care_requests.chief_complaint})) = 'uri';;
+    OR
+    trim(lower(${care_requests.chief_complaint})) = 'uri'
+    OR
+    lower(${care_requests.chief_complaint}) like '%flu'
+    OR
+    lower(${care_requests.chief_complaint}) like '%flu %'
+    OR
+    lower(${care_requests.chief_complaint}) like '%flu/%'
+    OR
+    trim(lower(${care_requests.chief_complaint})) = 'flu';;
   }
 
   measure: complete_count_flu {

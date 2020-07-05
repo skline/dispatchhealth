@@ -24,7 +24,7 @@ view: risk_assessments {
 
   dimension: communicable_protocol{
     type: yesno
-    sql: lower(${protocol_name}) in('cough/upper respiratory infection', 'cough/upper respiratory symptoms', 'nausea/vomiting', 'fever', 'flu-like symptoms', 'sore throat', 'cough/uri', 'diarrhea', 'nausea/vomiting (non covid-19)', 'cough/upper respiratory symptoms  (non covid-19)') ;;
+    sql: trim(lower(${protocol_name})) in('cough/upper respiratory infection', 'cough/upper respiratory symptoms', 'nausea/vomiting', 'fever', 'flu-like symptoms', 'sore throat', 'cough/uri', 'diarrhea', 'nausea/vomiting (non covid-19)', 'cough/upper respiratory symptoms  (non covid-19)') ;;
   }
 
   dimension: asymptomatic_covid_testing {
