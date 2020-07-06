@@ -3652,7 +3652,7 @@ measure: avg_first_on_route_mins {
   dimension: flu_chief_complaint {
     type: yesno
     sql:
-    lower(${care_requests.chief_complaint}) like '%cough%'
+    (lower(${care_requests.chief_complaint}) like '%cough%'
     OR
     lower(${care_requests.chief_complaint}) like '%fever%'
     OR
@@ -3676,7 +3676,8 @@ measure: avg_first_on_route_mins {
     OR
     lower(${care_requests.chief_complaint}) like '%flu/%'
     OR
-    trim(lower(${care_requests.chief_complaint})) = 'flu';;
+    trim(lower(${care_requests.chief_complaint})) = 'flu')
+    and not ${risk_assessments.asymptomatic_covid_testing};;
   }
 
   measure: complete_count_flu {
