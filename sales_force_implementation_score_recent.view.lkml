@@ -19,7 +19,6 @@ left join public.care_request_statuses cs
 on cs.care_request_id=cr.id and cs.name='complete' and cs.deleted_at is  null
 group by 1,2,3,4,5,6,7,8,9,10,11) sales_force_implementation_score_clone
                      ;;
-      sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     }
 
   dimension_group: created {

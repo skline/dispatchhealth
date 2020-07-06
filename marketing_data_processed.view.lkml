@@ -45,21 +45,21 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     and lower((lower(coalesce(ad_groups_clone.ad_group_name, (coalesce(invoca_clone.utm_content, (split_part(substring(ga_pageviews_full_clone.full_url from 'utm_content=\w+'), '=', 2)))))))) = lower((lower(marketing_cost_clone.ad_group_name)))
     and lower((lower(coalesce(adwords_campaigns_clone.campaign_name, invoca_clone.utm_campaign, ga_pageviews_full_clone.campaign)))) = lower(marketing_cost_clone.campaign_name)
     ;;
-    sql_trigger_value: select sum(timevalue)
-      from
-      (select count(*) as timevalue
-      from looker_scratch.ga_pageviews_clone
-      union all
-      select count(*)  as timevalue
-      from looker_scratch.invoca_clone
-      union all
-      select count(*) as timevalue
-      from looker_scratch.marketing_cost_clone
-      union all
-      select extract(epoch from max(timestamp_mst))::float/10000.0
-      from looker_scratch.ga_pageviews_clone
-      )lq;;
-    indexes: ["marketing_time"]
+    #sql_trigger_value: select sum(timevalue)
+    #  from
+    #  (select count(*) as timevalue
+    #  from looker_scratch.ga_pageviews_clone
+    #  union all
+    #  select count(*)  as timevalue
+    #  from looker_scratch.invoca_clone
+    #  union all
+    #  select count(*) as timevalue
+    #  from looker_scratch.marketing_cost_clone
+    #  union all
+     # select extract(epoch from max(timestamp_mst))::float/10000.0
+    #  from looker_scratch.ga_pageviews_clone
+    #  )lq;;
+    #indexes: ["marketing_time"]
   }
 
   dimension: source_final {

@@ -3,7 +3,6 @@
 
 view: idle_time_summary {
   derived_table: {
-    sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["name_smfr", "start_date"]
     explore_source: care_requests {
       column: id { field: shift_teams.id }

@@ -10,7 +10,6 @@ on cd.id=vf.channel_dim_id
 group by 1,2) ed_diversion_survey_response_rate
              ;;
 
-      sql_trigger_value: SELECT CURDATE() ;;
       indexes: ["market_dim_id", "channel_dim_id"]
     }
 

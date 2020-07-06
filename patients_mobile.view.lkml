@@ -8,7 +8,7 @@ view: patients_mobile {
           value: "-NULL"
         }
       }
-      sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
+      sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
       indexes: ["patient_id", "mobile_number"]
     }
     dimension: patient_id {

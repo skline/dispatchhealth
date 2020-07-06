@@ -3,7 +3,6 @@
 
 view: overflow_by_day_market {
   derived_table: {
-    sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
     indexes: ["name", "created_date"]
     explore_source: care_requests {
       column: name { field: markets.name }

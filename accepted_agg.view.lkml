@@ -18,7 +18,7 @@ view: accepted_agg {
         value: "No"
       }
     }
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (3.5*60*60));;
+    sql_trigger_value:  select count(*) from public.care_requests where care_requests.created_at > current_date - interval '2 day';;
     indexes: ["first_accepted_date", "market_id"]
   }
   dimension: first_accepted_date {
