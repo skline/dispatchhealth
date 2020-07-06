@@ -3654,6 +3654,12 @@ measure: avg_first_on_route_mins {
     sql:
     lower(${care_requests.chief_complaint}) like '%cough%'
     OR
+    lower(${care_requests.chief_complaint}) like '%fever%'
+    OR
+    lower(${care_requests.chief_complaint}) like '%diarrhea%'
+    OR
+    lower(${care_requests.chief_complaint}) like '%sore throat%'
+    OR
     lower(${care_requests.chief_complaint}) like '%uri'
     OR
     lower(${care_requests.chief_complaint}) like '%uri %'
