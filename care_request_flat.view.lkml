@@ -3658,6 +3658,8 @@ measure: avg_first_on_route_mins {
     OR
     lower(${care_requests.chief_complaint}) like '%diarrhea%'
     OR
+    lower(${care_requests.chief_complaint}) like '%upper respiratory infection%'
+    OR
     lower(${care_requests.chief_complaint}) like '%sore throat%'
     OR
     lower(${care_requests.chief_complaint}) like '%uri'
