@@ -1,6 +1,6 @@
 view: documentaction {
   sql_table_name: athena.documentaction ;;
-  view_label: "Athena Document Actions (DEV)"
+  view_label: "Athena Document Actions"
   drill_fields: [id]
 
   dimension: id {
@@ -51,6 +51,12 @@ view: documentaction {
     type: string
     group_label: "User Actions"
     sql: ${TABLE}."assigned_to" ;;
+  }
+
+  measure: assigned_to_users {
+    description: "Concatenated list of users assigned to document action"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${assigned_to}), ' | ') ;;
   }
 
   dimension_group: created_at {
@@ -216,8 +222,11 @@ view: documentaction {
     sql: ${TABLE}."updated_at" ;;
   }
 
-  measure: count {
+  measure: count_review_touches {
+    description: "Count times document was touched"
     type: count
+    sql: ${document_id} ;;
+    filters: [status: "REVIEW"]
     drill_fields: [id]
   }
 }
