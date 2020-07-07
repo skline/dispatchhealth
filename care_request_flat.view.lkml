@@ -729,10 +729,6 @@ WITH ort AS (
     value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_minutes_coalesce} ;;
-    filters: {
-      field: is_reasonable_drive_time
-      value: "yes"
-    }
   }
 
   measure:  median_drive_time_minutes{
