@@ -1,6 +1,5 @@
-view: first_major_admittance {
-  label: "Collective Medical First Major Admittance"
-  sql_table_name: collective_medical.first_major_admittance ;;
+view: first_major_class_admit_date_post_visit {
+  sql_table_name: collective_medical.first_major_class_admit_date_post_visit ;;
   drill_fields: [id]
 
   dimension: id {
@@ -12,20 +11,6 @@ view: first_major_admittance {
   dimension: care_request_id {
     type: number
     sql: ${TABLE}."care_request_id" ;;
-  }
-
-  dimension_group: care_request_on_scene {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}."care_request_on_scene_date" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension_group: created {
@@ -47,12 +32,7 @@ view: first_major_admittance {
     sql: ${TABLE}."dh_patient_id" ;;
   }
 
-  dimension: major_class {
-    type: string
-    sql: ${TABLE}."major_class" ;;
-  }
-
-  dimension_group: min_admit_date_post_on_scene {
+  dimension_group: first_admit_post_visit {
     type: time
     timeframes: [
       raw,
@@ -63,7 +43,26 @@ view: first_major_admittance {
       quarter,
       year
     ]
-    sql: ${TABLE}."min_admit_date_post_on_scene" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
+    sql: ${TABLE}."first_admit_post_visit" ;;
+  }
+
+  dimension: major_class {
+    type: string
+    sql: ${TABLE}."major_class" ;;
+  }
+
+  dimension_group: on_scene {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."on_scene_date" ;;
   }
 
   dimension_group: updated {
@@ -78,11 +77,6 @@ view: first_major_admittance {
       year
     ]
     sql: ${TABLE}."updated_at" ;;
-  }
-
-  dimension: visit_facility {
-    type: string
-    sql: ${TABLE}."visit_facility" ;;
   }
 
   measure: count {
