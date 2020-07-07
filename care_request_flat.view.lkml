@@ -508,6 +508,21 @@ WITH ort AS (
     value_format: "0.0"
   }
 
+  measure: average_drive_time_minutes_coalesce_complete {
+    type: number
+    description: "google drive time if available, otherwise regular drive time divided by complete visits"
+    sql: case when ${care_request_flat.complete_count_no_arm_advanced}>0 then ${total_drive_time_minutes_coalesce}::float/${care_request_flat.complete_count_no_arm_advanced}::float else null end;;
+    value_format: "0.0"
+  }
+
+  measure: average_on_scene_minutes_complete {
+    type: number
+    description: "On scene time divided by complete visits"
+    sql: case when ${care_request_flat.complete_count_no_arm_advanced}>0 then ${total_on_scene_time_minutes}::float/${care_request_flat.complete_count_no_arm_advanced}::float else null end;;
+    value_format: "0.0"
+  }
+
+
   dimension: drive_time_seconds_google {
     type: number
     sql: ${TABLE}.drive_time_seconds ;;
