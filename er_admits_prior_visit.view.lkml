@@ -55,4 +55,10 @@ view: er_admits_prior_visit {
     type: count
     drill_fields: [id]
   }
+
+  measure: average_prior_er_admits {
+    type: average_distinct
+    sql: ${count_prior_er_admits} ;;
+    sql_distinct_key: ${care_request_id} ;;
+  }
 }

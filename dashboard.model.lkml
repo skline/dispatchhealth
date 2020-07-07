@@ -597,7 +597,7 @@ explore: care_requests {
   }
 
   join: er_admits_prior_visit {
-    relationship: many_to_one
+    relationship: one_to_one
     sql_on: ${care_requests.id} = ${er_admits_prior_visit.care_request_id};;
   }
 
