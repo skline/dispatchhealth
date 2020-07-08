@@ -169,68 +169,68 @@ view: collective_medical {
   dimension: 12_hour_cm_admit_inpatient {
     description: "Inpatient admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
   }
 
   dimension: 12_hour_cm_admit_emergency {
     description: "Emergency admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
   }
 
 
    dimension: 3_day_cm_admit_inpatient {
     description: "Inpatient admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 3 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
   }
 
   dimension: 3_day_cm_admit_observation {
     description: "Observation admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 3 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'observation';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'observation';;
   }
 
   dimension: 3_day_cm_admit_emergency {
     description: "Emergency admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 3 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
   }
 
   dimension: 14_day_cm_admit_inpatient {
     description: "Inpatient admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 14 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
   }
 
   dimension: 14_day_cm_admit_observation {
     description: "Observation admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 14 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
   }
 
   dimension: 14_day_cm_admit_emergency {
     description: "Emergency admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 14 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
   }
 
   dimension: 30_day_cm_admit_inpatient {
     description: "Inpatient admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
   }
 
   dimension: 30_day_cm_admit_observation {
     description: "Observation admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
   }
 
   dimension: 30_day_cm_admit_emergency {
     description: "Emergency admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
-    sql: ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'emergency';;
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'emergency';;
   }
 
   measure: count_12_hour_cm_admit_inpatient {
