@@ -13,7 +13,7 @@ view: genesys_agg {
           value: "365 days ago for 365 days"
         }
       }
-        sql_trigger_value: SELECT count(*) FROM looker_scratch.genesys_conversation_summary ;;
+        sql_trigger_value: SELECT count(*) FROM looker_scratch.genesys_conversation_summary  where genesys_conversation_summary.conversationstarttime > current_date - interval '2 day';;
         indexes: ["conversationstarttime", "market_id"]
     }
 

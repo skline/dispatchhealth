@@ -3,6 +3,8 @@
 
 view: shift_agg {
   derived_table: {
+    sql_trigger_value:  select count(*) from public.care_requests where care_requests.created_at > current_date - interval '2 day';;
+    indexes: ["shift_start_date", "name_adj"]
     explore_source: care_requests {
       column: shift_start_date { field: care_request_flat.shift_start_date }
       column: shift_start_day_of_week { field: care_request_flat.shift_start_day_of_week }
@@ -30,7 +32,7 @@ view: shift_agg {
       }
       filters: {
         field: care_request_flat.shift_start_date
-        value: "30 days ago for 30 days"
+        value: "365 days ago for 365 days"
       }
       filters: {
         field: service_lines.name

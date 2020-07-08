@@ -34,7 +34,7 @@ view: non_phone_cr {
         value: "No"
       }
     }
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    sql_trigger_value:  select count(*) from public.care_requests where care_requests.created_at > current_date - interval '2 day';;
     indexes: ["created_date", "market_id"]
   }
   dimension: care_request_count {

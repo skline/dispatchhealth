@@ -2,7 +2,11 @@
 # include: "dashboard.model.lkml"
 
 view: productivity_agg {
+
   derived_table: {
+    sql_trigger_value:  select count(*) from public.care_requests where care_requests.created_at > current_date - interval '2 day';;
+    indexes: ["start_date", "name_adj"]
+
     explore_source: shift_teams {
       column: start_date {}
       column: start_day_of_week {}
@@ -20,7 +24,7 @@ view: productivity_agg {
       column: escalated_on_scene_count { field: care_request_flat.escalated_on_scene_count }
       filters: {
         field: shift_teams.start_date
-        value: "30 days ago for 30 days"
+        value: "365 days ago for 365 days"
       }
       filters: {
         field: service_lines.name

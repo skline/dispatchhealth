@@ -3,6 +3,8 @@
 
 view: funnel_agg {
   derived_table: {
+    sql_trigger_value:  select count(*) from public.care_requests where care_requests.created_at > current_date - interval '2 day';;
+    indexes: ["created_date", "name_adj"]
     explore_source: care_requests {
       column: name_adj { field: markets.name_adj }
       column: created_date { field: care_request_flat.created_date }
@@ -39,7 +41,7 @@ view: funnel_agg {
       column: non_screened_escalated_phone_count_ed { field: care_request_flat.non_screened_escalated_phone_count_ed }
       filters: {
         field: care_request_flat.created_date
-        value: "30 days ago for 30 days"
+        value: "365 days ago for 365 days"
       }
       filters: {
         field: service_lines.name
