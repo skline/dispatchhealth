@@ -297,10 +297,10 @@ explore: care_requests {
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL)
   AND (${patients.last_name} NOT LIKE '%Test%' OR ${patients.last_name} IS NULL) ;;
 
-  access_filter: {
-    field: markets.name
-    user_attribute: "market_name"
-  }
+  #access_filter: {
+  #  field: markets.name
+  #  user_attribute: "market_name"
+  #}
 
 # Join all Athena data warehouse feed tables -- DE
   join: athenadwh_patient_insurances_clone {
