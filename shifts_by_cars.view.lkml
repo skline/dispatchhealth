@@ -11,7 +11,8 @@ view: shifts_by_cars {
     group by car_id, car_id_start_date_id order by count_shifts desc
     ;;
 
-    sql_trigger_value: SELECT MAX(start) FROM shift_teams ;;
+#     sql_trigger_value: SELECT MAX(start) FROM shift_teams ;;
+    sql_trigger_value: SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
     indexes: ["car_id"]
 
 
