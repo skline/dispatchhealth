@@ -63,6 +63,13 @@ view: productivity_agg {
     sql: ${complete_count_no_arm_advanced} ;;
     sql_distinct_key: concat(${start_date}, ${name_adj}) ;;
   }
+
+  measure: count_distinct_days {
+    type: count_distinct
+    sql:  ${start_date} ;;
+    sql_distinct_key: ${start_date} ;;
+  }
+
   measure: total_productivity {
     type: number
     value_format: "0.00"

@@ -224,6 +224,12 @@ view: funnel_agg {
     sql: ${limbo_overflow}+${count_resolved_overflow}+${count_complete_overflow} ;;
   }
 
+  dimension: daily_overflow_percent {
+    type: number
+    sql: case when ${productivity_agg.complete_count_no_arm_advanced} >0 then ${all_overflow}::float/${productivity_agg.complete_count_no_arm_advanced} else 0 end;;
+
+  }
+
   measure: total_all_overflow {
     type: sum_distinct
     sql: ${all_overflow} ;;
@@ -233,7 +239,7 @@ view: funnel_agg {
   measure: overflow_percent {
     type: number
     value_format: "0%"
-    sql:  ${total_all_overflow}::float/${productivity_agg.total_complete_count_no_arm_advanced};;
+    sql: case when ${productivity_agg.total_complete_count_no_arm_advanced} >0 then ${total_all_overflow}::float/${productivity_agg.total_complete_count_no_arm_advanced} else 0 end;;
   }
 
   measure: booked_shaping_percent {
