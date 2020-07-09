@@ -49,6 +49,7 @@ view: patientmedication_prescriptions {
 
   dimension: administered_yn {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."administered_yn" ;;
   }
 
@@ -68,6 +69,7 @@ view: patientmedication_prescriptions {
 
   dimension: created_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."created_by" ;;
   }
 
@@ -106,11 +108,13 @@ view: patientmedication_prescriptions {
 
   dimension: dispensed_yn {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."dispensed_yn" ;;
   }
 
   dimension: display_dosage_units {
     type: string
+    group_label: "Prescription Details"
     sql: ${TABLE}."display_dosage_units" ;;
   }
 
@@ -121,26 +125,31 @@ view: patientmedication_prescriptions {
 
   dimension: dosage_action {
     type: string
+    group_label: "Prescription Details"
     sql: ${TABLE}."dosage_action" ;;
   }
 
   dimension: dosage_form {
     type: string
+    group_label: "Prescription Details"
     sql: ${TABLE}."dosage_form" ;;
   }
 
   dimension: dosage_quantity {
     type: number
+    group_label: "Prescription Details"
     sql: ${TABLE}."dosage_quantity" ;;
   }
 
   dimension: dosage_route {
     type: string
+    group_label: "Prescription Details"
     sql: ${TABLE}."dosage_route" ;;
   }
 
   dimension: frequency {
     type: string
+    group_label: "Prescription Details"
     sql: ${TABLE}."frequency" ;;
   }
 
@@ -160,6 +169,7 @@ view: patientmedication_prescriptions {
 
   dimension: medication_type {
     type: string
+    group_label: "Prescription Details"
     sql: ${TABLE}."medication_type" ;;
   }
 
@@ -170,16 +180,19 @@ view: patientmedication_prescriptions {
 
   dimension: prescribed_yn {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."prescribed_yn" ;;
   }
 
   dimension: prescription_fill_quantity {
     type: number
+    group_label: "Prescription Details"
     sql: ${TABLE}."prescription_fill_quantity" ;;
   }
 
   dimension: sig {
     type: string
+    group_label: "Prescription Details"
     sql: ${TABLE}."sig" ;;
   }
 
