@@ -519,6 +519,7 @@ view: document_orders {
     description: "Average time between order created and submitted (Hrs)"
     group_label: "Time Cycle Management"
     type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, order_created_to_submitted]
     filters: [clinical_order_type_group: "LAB, IMAGING"]
     sql: ${order_created_to_submitted} ;;
     value_format: "0.00"
@@ -536,6 +537,7 @@ view: document_orders {
     description: "Average time between order submitted and result received (Hrs)"
     group_label: "Time Cycle Management"
     type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, order_submitted_to_result_rcvd]
     filters: [clinical_order_type_group: "LAB, IMAGING", status: "-DELETED"]
     sql: ${order_submitted_to_result_rcvd} ;;
     value_format: "0.00"
@@ -553,12 +555,11 @@ view: document_orders {
     description: "Average time between order result received and closed (Hrs)"
     group_label: "Time Cycle Management"
     type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, result_rcvd_to_closed]
     filters: [clinical_order_type_group: "LAB, IMAGING"]
     sql: ${result_rcvd_to_closed} ;;
     value_format: "0.00"
   }
-
-
 
   measure: count {
     type: count
