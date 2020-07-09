@@ -1,4 +1,4 @@
-view: sbm {
+view: athena_order_submitted {
   sql_table_name: athena_test.sbm ;;
   view_label: "Athena Order Submitted (DO NOT USE)"
 

@@ -1,4 +1,4 @@
-view: res_crt {
+view: athena_result_created {
   sql_table_name: athena_test.res_crt ;;
   view_label: "Athena Result Created (DO NOT USE)"
 

@@ -1,4 +1,4 @@
-view: res_close {
+view: athena_result_closed {
   sql_table_name: athena_test.res_close ;;
   view_label: "Athena Result Closed (DO NOT USE)"
 

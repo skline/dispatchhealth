@@ -19,7 +19,7 @@ view: athena_order_created {
 
   dimension: document_id {
     type: number
-    hidden: yes
+    hidden: no
     sql: ${TABLE}."document_id" ;;
   }
 

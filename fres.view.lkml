@@ -1,4 +1,4 @@
-view: fres {
+view: athena_first_result {
   sql_table_name: athena_test.fres ;;
   view_label: "Athena First Result (DO NOT USE)"
 
