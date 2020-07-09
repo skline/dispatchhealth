@@ -283,6 +283,7 @@ include: "fres.view.lkml"
 include: "sbm.view.lkml"
 include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
+include: "patientmedication_prescriptions.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -800,6 +801,11 @@ join: document_prescriptions {
   relationship: one_to_many
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
 }
+
+  join: patientmedication_prescriptions {
+    relationship: one_to_one
+    sql_on: ${document_prescriptions.document_id} = ${patientmedication_prescriptions.document_id} ;;
+  }
 
 join: document_others {
   relationship: one_to_many
