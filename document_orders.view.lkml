@@ -507,6 +507,60 @@ view: document_orders {
     sql: ${TABLE}."vaccine_route" ;;
   }
 
+  dimension: order_created_to_submitted  {
+    type: number
+    hidden: yes
+    value_format: "0.00"
+    sql: (EXTRACT(EPOCH FROM ${athena_order_submitted.order_submitted_raw}) -
+          EXTRACT(EPOCH FROM ${athena_order_created.order_created_raw})) / 3600 ;;
+  }
+
+  measure: average_created_to_submitted {
+    description: "Average time between order created and submitted (Hrs)"
+    group_label: "Time Cycle Management"
+    type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, order_created_to_submitted]
+    filters: [clinical_order_type_group: "LAB, IMAGING"]
+    sql: ${order_created_to_submitted} ;;
+    value_format: "0.00"
+  }
+
+  dimension: order_submitted_to_result_rcvd  {
+    type: number
+    hidden: yes
+    value_format: "0.00"
+    sql: (EXTRACT(EPOCH FROM ${athena_result_created.result_created_raw}) -
+      EXTRACT(EPOCH FROM ${athena_order_submitted.order_submitted_raw})) / 3600 ;;
+  }
+
+  measure: average_submitted_to_result_rcvd {
+    description: "Average time between order submitted and result received (Hrs)"
+    group_label: "Time Cycle Management"
+    type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, order_submitted_to_result_rcvd]
+    filters: [clinical_order_type_group: "LAB, IMAGING", status: "-DELETED"]
+    sql: ${order_submitted_to_result_rcvd} ;;
+    value_format: "0.00"
+  }
+
+  dimension: result_rcvd_to_closed  {
+    type: number
+    hidden: yes
+    value_format: "0.00"
+    sql: (EXTRACT(EPOCH FROM ${athena_result_closed.result_closed_raw}) -
+      EXTRACT(EPOCH FROM ${athena_result_created.result_created_raw})) / 3600 ;;
+  }
+
+  measure: average_result_rcvd_to_closed {
+    description: "Average time between order result received and closed (Hrs)"
+    group_label: "Time Cycle Management"
+    type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, result_rcvd_to_closed]
+    filters: [clinical_order_type_group: "LAB, IMAGING"]
+    sql: ${result_rcvd_to_closed} ;;
+    value_format: "0.00"
+  }
+
   measure: count {
     type: count
     drill_fields: [detail*]

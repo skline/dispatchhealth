@@ -278,8 +278,12 @@ include: "multicare_providers.view.lkml"
 include: "patient_details_flat.view.lkml"
 include: "houston_zipcodes_processed.view.lkml"
 include: "intraday_monitoring.view.lkml"
-
-
+include: "crt.view.lkml"
+include: "fres.view.lkml"
+include: "sbm.view.lkml"
+include: "res_crt.view.lkml"
+include: "res_close.view.lkml"
+include: "patientmedication_prescriptions.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -737,6 +741,31 @@ join: document_orders {
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_orders.clinical_encounter_id} ;;
 }
 
+join: athena_order_created {
+  relationship: one_to_one
+  sql_on: ${document_orders.document_id} = ${athena_order_created.document_id} ;;
+}
+
+join: athena_order_submitted {
+  relationship: one_to_one
+  sql_on: ${document_orders.document_id} = ${athena_order_submitted.document_id} ;;
+}
+
+join: athena_first_result {
+  relationship: one_to_one
+  sql_on: ${document_orders.document_id} = ${athena_first_result.document_id} ;;
+}
+
+join: athena_result_created {
+  relationship: one_to_one
+  sql_on:  ${document_order_results.document_id} = ${athena_result_created.document_id};;
+}
+
+join: athena_result_closed {
+  relationship: one_to_one
+  sql_on: ${document_order_results.document_id} = ${athena_result_closed.document_id} ;;
+}
+
 join: document_order_provider {
   from: clinicalprovider
   view_label: "Athena Document Order Provider"
@@ -772,6 +801,11 @@ join: document_prescriptions {
   relationship: one_to_many
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
 }
+
+  join: patientmedication_prescriptions {
+    relationship: one_to_one
+    sql_on: ${document_prescriptions.document_id} = ${patientmedication_prescriptions.document_id} ;;
+  }
 
 join: document_others {
   relationship: one_to_many

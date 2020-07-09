@@ -411,6 +411,33 @@ view: document_prescriptions {
     drill_fields: [detail*]
   }
 
+  dimension: new_on_scene_prescriptions {
+    description: "Identifies new first-time prescription/s written on-scene"
+    type: yesno
+    sql:  upper(document_subclass) = 'PRESCRIPTION_NEW' AND patientmedication_prescriptions.prescribed_yn = 'Y' AND upper(status) != 'DELETED';;
+  }
+
+  measure: new_on_scene_prescriptions_flag {
+    description: "Flags/identifies one or more new first-time prescriptions written on-scene"
+    type: count_distinct
+    sql: ${clinical_encounter_id};;
+    filters: {
+      field: new_on_scene_prescriptions
+      value: "yes"
+    }
+  }
+
+  measure: count_new_on_scene_prescriptions {
+    description: "Counts new first-time prescription written on-scene"
+    type: count_distinct
+    sql: ${document_id};;
+    filters: {
+      field: new_on_scene_prescriptions
+      value: "yes"
+    }
+
+  }
+
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
