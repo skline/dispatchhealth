@@ -284,6 +284,7 @@ include: "sbm.view.lkml"
 include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
 include: "patientmedication_prescriptions.view.lkml"
+include: "clinicalletter.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -795,6 +796,11 @@ join: document_result_last_action {
 join: document_letters {
   relationship: one_to_many
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_letters.clinical_encounter_id} ;;
+}
+
+join: clinicalletter {
+  relationship: many_to_one
+  sql_on:  ${document_letters.document_id} = ${clinicalletter.document_id};;
 }
 
 join: document_prescriptions {

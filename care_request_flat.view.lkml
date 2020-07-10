@@ -2814,7 +2814,7 @@ measure: avg_first_on_route_mins {
   dimension: resolved_to_advanced_care {
     description: "Resolved to Advanced Care (resolved reason contains 'Advanced Care)"
     type: yesno
-    sql: lower(${resolved_reason_full}) LIKE '%advanced care%' or lower(${resolved_reason_full}) LIKE '%advancedcare%';;
+    sql: lower(${resolved_reason_full}) LIKE '%advanced care%' or lower(${resolved_reason_full}) LIKE '%advancedcare%' or lower(${resolved_reason_full}) LIKE '%escalated to advanced%';;
   }
 
   measure: resolved_to_advanced_care_count {
