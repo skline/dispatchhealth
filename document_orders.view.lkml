@@ -566,36 +566,40 @@ view: document_orders {
     drill_fields: [detail*]
   }
 
-  dimension: labs_ordered_during_appointment {
-    description: "Identifies care requests where one or more labs were ordered"
+  dimension: labs_ordered {
+    description: "Care requests where one or more labs were ordered"
     type: yesno
+    hidden: yes
     sql: upper(${clinical_order_type_group}) = 'LAB' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
   }
 
-  measure: labs_ordered_during_appointment_flag {
-    description: "Identifies care_requests where one or more labs were ordered"
+  measure: count_appointments_with_labs {
+    description: "Count of care requests where one or more labs were ordered"
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
     filters: {
-      field: labs_ordered_during_appointment
+      field: labs_ordered
       value: "yes"
     }
+    group_label: "Labs & Imaging"
   }
 
-  dimension: imaging_ordered_during_appointment {
+  dimension: imaging_ordered {
     description: "Identifies care requests where one or more imaging orders were placed"
     type: yesno
+    hidden: yes
     sql: upper(${clinical_order_type_group}) = 'IMAGING' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
   }
 
-  measure: imaging_ordered_during_appointment_flag {
-    description: "Identifies care requests where one or more imaging orders were placed"
+  measure: count_appointments_with_imaging {
+    description: "Count of care requests where one or more imaging orders were placed"
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
     filters: {
-      field: imaging_ordered_during_appointment
+      field: imaging_ordered
       value: "yes"
     }
+    group_label: "Labs & Imaging"
   }
 
   # ----- Sets of fields for drilling ------
