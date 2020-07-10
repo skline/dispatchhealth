@@ -820,6 +820,7 @@ join: document_letters {
 join: clinicalletter {
   relationship:many_to_one
   sql_on:  ${document_letters.document_id} = ${clinicalletter.document_id};;
+  fields: []
 }
 
 join: document_prescriptions {
