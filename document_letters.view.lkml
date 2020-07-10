@@ -293,8 +293,8 @@ view: document_letters {
     sql: (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' ;;
   }
 
-  measure: count_appointments_clinical_letters_sent_all {
-    description: "Count appointments where the clinical letter was sent to any recipient"
+  measure: count_notes_sent_any {
+    description: "Count appointments where the clinical letter was sent to any recipient (not patient correspondence)"
     type: count_distinct
 
     sql: ${clinical_encounter_id} ;;
@@ -312,7 +312,7 @@ view: document_letters {
     sql:  (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' AND upper(${clinicalletter.role}) = 'PRIMARY CARE PROVIDER' ;;
   }
 
-  measure: count_appointments_clinical_letters_sent_pcp {
+  measure: count_notes_sent_pcp {
     description: "Count appointments where the clinical letter was sent to the patient's primary care provider"
     type: count_distinct
 
