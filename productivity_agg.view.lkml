@@ -73,7 +73,7 @@ view: productivity_agg {
   measure: total_productivity {
     type: number
     value_format: "0.00"
-    sql: ${total_complete_count_no_arm_advanced}::float/${total_shift_hours_no_arm_advanced}::float ;;
+    sql: case when ${total_shift_hours_no_arm_advanced}>0 then ${total_complete_count_no_arm_advanced}::float/${total_shift_hours_no_arm_advanced}::float else 0 end ;;
   }
   dimension: count_wmfr_billable {
     type: number

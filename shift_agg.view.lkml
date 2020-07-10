@@ -143,7 +143,8 @@ view: shift_agg {
 
   dimension: shift_productivity {
     type: number
-    sql: ${count_billable_est}::float / ${shift_hours}::float;;
+    sql:case when ${shift_hours} >0 then
+    ${count_billable_est}::float / ${shift_hours}::float else 0 end;;
   }
 
   dimension: productive_shift_hours {
@@ -153,7 +154,9 @@ view: shift_agg {
 
   dimension: shift_productivity_no_dead_time {
     type: number
-    sql: ${count_billable_est} / (${shift_hours} + ${shift_end_last_cr_diff_adj} - ${shift_start_first_on_route_diff});;
+    sql:
+    case when (${shift_hours} + ${shift_end_last_cr_diff_adj} - ${shift_start_first_on_route_diff}) >0
+    ${count_billable_est} / (${shift_hours} + ${shift_end_last_cr_diff_adj} - ${shift_start_first_on_route_diff}) else 0 end;;
   }
 
 
@@ -188,7 +191,8 @@ view: shift_agg {
   dimension: dead_time_percent {
     type: number
     value_format: "0%"
-    sql: ${dead_time}::float/(${shift_hours}*60)::float ;;
+    sql: case when ${shift_hours} >0 then
+    ${dead_time}::float/(${shift_hours}*60)::float else 0 end ;;
     }
 
 
@@ -257,14 +261,15 @@ view: shift_agg {
     label: "On-Scene Time Minutes (avg)"
     type: number
     value_format: "0"
-    sql: ${sum_total_on_scene_time_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
+    sql: case when ${productivity_agg.total_complete_count_no_arm_advanced} >0 then
+    ${sum_total_on_scene_time_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced}::float else 0 end ;;
   }
 
   measure: avg_drivetime_hours{
     label: "Drivetime Minutes (avg)"
     type: number
     value_format: "0"
-    sql: ${sum_total_drivetime_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced} ;;
+    sql: case when ${productivity_agg.total_complete_count_no_arm_advanced} >0  then ${sum_total_drivetime_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced}::float else 0 end;;
   }
 
 
