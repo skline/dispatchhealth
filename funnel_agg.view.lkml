@@ -245,7 +245,9 @@ view: funnel_agg {
   measure: booked_shaping_percent {
     type: number
     value_format: "0%"
-    sql:  ${total_booked_shaping_placeholder_resolved_count_minus_overflow}::float/${productivity_agg.total_complete_count_no_arm_advanced};;
+    sql: case when ${productivity_agg.total_complete_count_no_arm_advanced} > 0 then
+
+    ${total_booked_shaping_placeholder_resolved_count_minus_overflow}::float/${productivity_agg.total_complete_count_no_arm_advanced} else 0 end;;
   }
 
   measure: same_day_lwbs_percent {
