@@ -302,18 +302,18 @@ view: document_letters {
       field: clinical_letters_sent_all
       value: "yes"
     }
-    group_label: "Clinical Letters"
+    group_label: "Clinical Letters Sent"
   }
 
   dimension: clinical_letters_sent_pcp {
-    description: "Identifies clinical letters sent to any recipient"
+    description: "Identifies clinical letters sent to the patient's primary care provider"
     hidden: yes
     type: yesno
     sql:  (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' AND upper(${clinicalletter.role}) = 'PRIMARY CARE PROVIDER' ;;
   }
 
   measure: count_appointments_clinical_letters_sent_pcp {
-    description: "Count appointments where the clinical letter was sent to the primary care provider"
+    description: "Count appointments where the clinical letter was sent to the patient's primary care provider"
     type: count_distinct
 
     sql: ${clinical_encounter_id} ;;
@@ -321,7 +321,7 @@ view: document_letters {
       field: clinical_letters_sent_pcp
       value: "yes"
     }
-    group_label: "Clinical Letters"
+    group_label: "Clinical Letters Sent"
   }
 
   # ----- Sets of fields for drilling ------
