@@ -251,7 +251,8 @@ view: funnel_agg {
   measure: same_day_lwbs_percent {
     type: number
     value_format: "0%"
-    sql:  ${total_lwbs_minus_overflow}::float/${productivity_agg.total_complete_count_no_arm_advanced};;
+    sql: case when ${productivity_agg.total_complete_count_no_arm_advanced} >0 then
+    ${total_lwbs_minus_overflow}::float/${productivity_agg.total_complete_count_no_arm_advanced} else 0 end;;
   }
 
 
