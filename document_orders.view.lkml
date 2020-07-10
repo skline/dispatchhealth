@@ -581,7 +581,7 @@ view: document_orders {
       field: labs_ordered
       value: "yes"
     }
-    group_label: "Labs & Imaging"
+    group_label: "Labs, Imaging & Procedures"
   }
 
   dimension: imaging_ordered {
@@ -599,8 +599,27 @@ view: document_orders {
       field: imaging_ordered
       value: "yes"
     }
-    group_label: "Labs & Imaging"
+    group_label: "Labs, Imaging & Procedures"
   }
+
+  dimension: procedures_performed {
+    description: "Identifies care requests where one or more procedures were performed"
+    type: yesno
+    hidden: yes
+    sql: upper(${clinical_order_type_group}) = 'PROCEDURE' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
+  }
+
+  measure: count_appointments_with_procedures {
+    description: "Count of care requests where one or more imaging orders were placed"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: procedures_performed
+      value: "yes"
+    }
+    group_label: "Labs, Imaging & Procedures"
+  }
+
 
   # ----- Sets of fields for drilling ------
   set: detail {
