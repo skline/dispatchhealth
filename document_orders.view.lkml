@@ -610,7 +610,7 @@ view: document_orders {
   }
 
   measure: count_appointments_with_procedures {
-    description: "Count of care requests where one or more imaging orders were placed"
+    description: "Count of care requests where one or more procedures were performed"
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
     filters: {
