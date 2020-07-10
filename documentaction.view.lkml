@@ -223,10 +223,19 @@ view: documentaction {
   }
 
   measure: count_review_touches {
-    description: "Count times document was touched"
+    description: "Count times lab or imaging result were in REVIEW status"
     type: count
     sql: ${document_id} ;;
-    filters: [status: "REVIEW"]
+    group_label: "Document Review Metrics"
+    filters: [status: "REVIEW", document_class: "LABRESULT, IMAGINGRESULT", created_by: "-ATHENA,-INTERFACE"]
+    drill_fields: [id]
+  }
+
+  measure: result_review_users {
+    description: "List of users and dates who performed action on results"
+    type: string
+    sql: array_to_string(array_agg(CONCAT(${created_by},' - ', to_char(${created_date}, 'MM/DD')::varchar)), ', ') ;;
+    group_label: "Document Review Metrics"
     drill_fields: [id]
   }
 }
