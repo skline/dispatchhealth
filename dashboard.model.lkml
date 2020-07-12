@@ -742,29 +742,39 @@ join: document_orders {
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_orders.clinical_encounter_id} ;;
 }
 
+join: document_results {
+  relationship: one_to_one
+  sql_on: ${document_orders.document_id} = ${document_results.order_document_id} ;;
+}
+
 join: athena_order_created {
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${athena_order_created.document_id} ;;
+  fields: []
 }
 
 join: athena_order_submitted {
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${athena_order_submitted.document_id} ;;
+  fields: []
 }
 
 join: athena_first_result {
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${athena_first_result.document_id} ;;
+  fields: []
 }
 
 join: athena_result_created {
   relationship: one_to_one
   sql_on:  ${document_order_results.document_id} = ${athena_result_created.document_id};;
+  fields: []
 }
 
 join: athena_result_closed {
   relationship: one_to_one
   sql_on: ${document_order_results.document_id} = ${athena_result_closed.document_id} ;;
+  fields: []
 }
 
 join: document_order_provider {
@@ -774,9 +784,18 @@ join: document_order_provider {
   sql_on: ${document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
 }
 
-join: documentaction {
+join: athena_order_documentaction {
+  from: documentaction
+  view_label: "Athena Order Documentaction"
   relationship: one_to_many
-  sql_on: ${document_orders.document_id} = ${documentaction.document_id} ;;
+  sql_on: ${document_orders.document_id} = ${athena_order_documentaction.document_id} ;;
+}
+
+join: athena_result_documentaction {
+  from: documentaction
+  view_label: "Athena Result Documentaction"
+  relationship: one_to_many
+  sql_on: ${document_results.document_id} = ${athena_result_documentaction.document_id} ;;
 }
 
 join: document_order_results {
@@ -799,13 +818,15 @@ join: document_letters {
 }
 
 join: clinicalletter {
-  relationship: many_to_one
+  relationship:many_to_one
   sql_on:  ${document_letters.document_id} = ${clinicalletter.document_id};;
+  fields: []
 }
 
 join: document_prescriptions {
   relationship: one_to_many
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
+  fields: []
 }
 
   join: patientmedication_prescriptions {

@@ -1,20 +1,24 @@
 view: patientmedication_prescriptions {
   sql_table_name: athena.patientmedication_prescriptions ;;
+  view_label: "Athena New Prescriptions"
   drill_fields: [id]
 
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
+    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -29,11 +33,13 @@ view: patientmedication_prescriptions {
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension_group: administered_expiration {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       date,
@@ -55,6 +61,7 @@ view: patientmedication_prescriptions {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -89,11 +96,13 @@ view: patientmedication_prescriptions {
 
   dimension: deactivation_reason {
     type: string
+    hidden: yes
     sql: ${TABLE}."deactivation_reason" ;;
   }
 
   dimension_group: deleted_datetime {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -114,6 +123,7 @@ view: patientmedication_prescriptions {
 
   dimension: display_dosage_units {
     type: string
+    hidden: yes
     group_label: "Prescription Details"
     sql: ${TABLE}."display_dosage_units" ;;
   }
@@ -137,18 +147,21 @@ view: patientmedication_prescriptions {
 
   dimension: dosage_quantity {
     type: number
+    hidden: yes
     group_label: "Prescription Details"
     sql: ${TABLE}."dosage_quantity" ;;
   }
 
   dimension: dosage_route {
     type: string
+    hidden: yes
     group_label: "Prescription Details"
     sql: ${TABLE}."dosage_route" ;;
   }
 
   dimension: frequency {
     type: string
+    hidden: yes
     group_label: "Prescription Details"
     sql: ${TABLE}."frequency" ;;
   }
@@ -169,6 +182,7 @@ view: patientmedication_prescriptions {
 
   dimension: medication_type {
     type: string
+    hidden: yes
     group_label: "Prescription Details"
     sql: ${TABLE}."medication_type" ;;
   }
@@ -186,12 +200,14 @@ view: patientmedication_prescriptions {
 
   dimension: prescription_fill_quantity {
     type: number
+    hidden: yes
     group_label: "Prescription Details"
     sql: ${TABLE}."prescription_fill_quantity" ;;
   }
 
   dimension: sig {
     type: string
+    hidden: yes
     group_label: "Prescription Details"
     sql: ${TABLE}."sig" ;;
   }
@@ -228,6 +244,7 @@ view: patientmedication_prescriptions {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -238,6 +255,36 @@ view: patientmedication_prescriptions {
       year
     ]
     sql: ${TABLE}."updated_at" ;;
+  }
+
+  dimension: prescriptions_written_on_scene {
+    description: "Identifies new first-time prescription/s written on-scene"
+    type: yesno
+    hidden: yes
+    sql:  upper(${document_prescriptions.document_subclass}) = 'PRESCRIPTION_NEW'
+          AND ${prescribed_yn} = 'Y' AND upper(${document_prescriptions.status}) != 'DELETED';;
+  }
+
+  measure: count_appointments_with_prescriptions {
+    description: "Count of appointments with prescriptions written on-scene"
+    type: count_distinct
+    sql: ${clinicalencounter.clinical_encounter_id};;
+    filters: {
+      field: prescriptions_written_on_scene
+      value: "yes"
+    }
+    group_label: "Prescription Counts"
+  }
+
+  measure: count_medications_prescribed {
+    description: "Count of unique prescription written on-scene"
+    type: count_distinct
+    sql: ${document_id};;
+    filters: {
+      field: prescriptions_written_on_scene
+      value: "yes"
+    }
+    group_label: "Prescription Counts"
   }
 
   measure: count {
