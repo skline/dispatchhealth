@@ -8,7 +8,7 @@ view: patients_mobile {
           value: "-NULL"
         }
       }
-      sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+      sql_trigger_value:  SELECT MAX(care_request_id) FROM ${care_request_flat.SQL_TABLE_NAME} where created_date > current_date - interval '2 days';;
       indexes: ["patient_id", "mobile_number"]
     }
     dimension: patient_id {

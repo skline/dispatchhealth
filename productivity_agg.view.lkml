@@ -4,7 +4,7 @@
 view: productivity_agg {
 
   derived_table: {
-    sql_trigger_value:  select count(*) from public.care_requests where care_requests.created_at > current_date - interval '2 day';;
+    sql_trigger_value:  SELECT MAX(care_request_id) FROM ${care_request_flat.SQL_TABLE_NAME} where created_date > current_date - interval '2 days';;
     indexes: ["start_date", "name_adj"]
 
     explore_source: shift_teams {
