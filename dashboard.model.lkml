@@ -655,7 +655,7 @@ join: covid_testing_results {
 
   join: athenadwh_procedure_codes_clone {
     relationship: one_to_one
-    sql_on: ${cpt_code_dimensions_clone.cpt_code} = ${athenadwh_procedure_codes_clone.procedure_code} AND
+    sql_on: ${cpt_code_dimensions_clone.cpt_code} = split_part(${athenadwh_procedure_codes_clone.procedure_code},' ',1) AND
       ${athenadwh_procedure_codes_clone.deleted_datetime_raw} IS NULL ;;
   }
 
