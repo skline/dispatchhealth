@@ -75,6 +75,12 @@ view: patients {
     sql: CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT) ;;
   }
 
+  dimension: age_in_months {
+    hidden: yes
+    type: number
+    sql: extract(year from age(${care_request_flat.created_date}, ${dob})) * 12 + extract(month from age(${care_request_flat.created_date}, ${dob})) ;;
+  }
+
   dimension: bad_age_filter {
     type: yesno
     hidden: yes
@@ -132,6 +138,19 @@ view: patients {
           WHEN ${age} >= 90 AND ${age} <= 110 THEN 'age_90_plus'
           ELSE NULL
          END ;;
+  }
+
+  dimension: age_band_life_stage {
+    type: string
+    order_by_field: age_band_sort
+    sql:  CASE
+      WHEN ${age_in_months} >= 0 AND ${age_in_months} <= 3 THEN 'age_0_to_3_months'
+      WHEN ${age_in_months} >= 4 AND ${age_in_months} <= 227 THEN 'age_3_months_to_18_years'
+      WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'age_19_to_64_years'
+      WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'age_65_to_plus_years'
+      ELSE NULL
+      END
+      ;;
   }
 
   dimension: age_band_wide {
