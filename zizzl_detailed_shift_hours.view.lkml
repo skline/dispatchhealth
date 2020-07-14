@@ -311,6 +311,18 @@ SELECT DISTINCT
       }
     }
 
+  measure: sum_admin_hours {
+    type: sum_distinct
+    description: "The sum of all admin hours worked"
+    sql: ${counter_hours} ;;
+    sql_distinct_key: ${primary_key} ;;
+    value_format: "#,##0.00"
+    filters: {
+      field: admin_shift_hours
+      value: "yes"
+    }
+  }
+
   measure: sum_direct_care_team_hours {
     type: sum_distinct
     description: "The sum of all direct CARE Team hours worked"
@@ -442,6 +454,14 @@ SELECT DISTINCT
     sql: ${counter_name} IN ('Regular','Salary Plus')
          AND (${shift_name} != 'Administration' OR ${shift_name} IS NULL)
          AND (${shift_name} LIKE 'DHMT/%' OR ${shift_name} LIKE 'NP/PA/%') ;;
+  }
+
+  dimension: admin_shift_hours {
+    type: yesno
+    description: "A flag indicating hours worked for Administration costs."
+    sql: ${counter_name} IN ('Regular','Salary Plus')
+         AND (lower(${shift_name}) = 'administration')
+          ;;
   }
 
   dimension: direct_care_team_hours {
