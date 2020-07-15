@@ -285,6 +285,8 @@ include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
 include: "patientmedication_prescriptions.view.lkml"
 include: "clinicalletter.view.lkml"
+include: "provider.view.lkml"
+include: "providergroup.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -710,6 +712,17 @@ join: clinicalencounterdiagnosis {
   relationship: one_to_many
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${clinicalencounterdiagnosis.clinical_encounter_id} AND
           ${clinicalencounterdiagnosis.deleted_raw} IS NULL;;
+}
+
+join: athena_provider {
+  relationship: many_to_one
+  sql_on: ${appointment.provider_id} = ${athena_provider.provider_id} ;;
+}
+
+join: athena_providergroup {
+  relationship: one_to_one
+  sql_on: ${athena_provider.provider_group_id} = ${athena_providergroup.provider_group_id} ;;
+  fields: [athena_providergroup.provider_group_name]
 }
 
 join: claim {
