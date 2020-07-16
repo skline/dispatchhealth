@@ -73,12 +73,21 @@ view: patients {
   dimension: age {
     type: number
     sql: CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT) ;;
+    group_label: "Age of Patient"
+  }
+
+  dimension: age_in_months {
+    hidden: yes
+    type: number
+    sql: extract(year from age(${care_request_flat.created_date}, ${dob})) * 12 + extract(month from age(${care_request_flat.created_date}, ${dob})) ;;
+    group_label: "Age of Patient"
   }
 
   dimension: bad_age_filter {
     type: yesno
     hidden: yes
     sql: ${age} >= 110 or ${age}<0;;
+    group_label: "Age of Patient"
   }
 
   dimension: pediatric_patient {
@@ -92,6 +101,7 @@ view: patients {
     description: "A flag indicating patients age > 65"
     type: yesno
     sql: ${age} > 65 AND NOT ${bad_age_filter} ;;
+    group_label: "Age of Patient"
   }
 
 
@@ -113,6 +123,7 @@ view: patients {
           WHEN ${age} >= 90 AND ${age} <= 110 THEN 'k'
           ELSE 'z'
          END ;;
+   group_label: "Age of Patient"
   }
 
   dimension: age_band {
@@ -132,6 +143,34 @@ view: patients {
           WHEN ${age} >= 90 AND ${age} <= 110 THEN 'age_90_plus'
           ELSE NULL
          END ;;
+    group_label: "Age of Patient"
+  }
+
+  dimension: age_band_life_stage_sort {
+    type: string
+    hidden: yes
+    alpha_sort: yes
+    sql: CASE
+          WHEN ${age_in_months} >= 0 AND ${age_in_months} < 3  THEN 'a'
+          WHEN ${age_in_months} >= 3 AND ${age_in_months} <= 227 THEN 'b'
+          WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'c'
+          WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'd'
+          ELSE 'z'
+         END ;;
+  }
+
+  dimension: age_band_life_stage {
+    type: string
+    order_by_field:  age_band_life_stage_sort
+    sql:  CASE
+          WHEN ${age_in_months} >= 0 AND ${age_in_months} < 3 THEN 'age_less_than_3_months'
+          WHEN ${age_in_months} >= 3 AND ${age_in_months} <= 227 THEN 'age_3_months_to_18_years'
+          WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'age_19_to_64_years'
+          WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'age_65_plus_years'
+          ELSE NULL
+          END
+          ;;
+    group_label: "Age of Patient"
   }
 
   dimension: age_band_wide {
@@ -148,6 +187,7 @@ view: patients {
           WHEN ${age} >= 95 AND ${age} <= 110 THEN 'age_95_plus'
           ELSE NULL
          END ;;
+    group_label: "Age of Patient"
   }
 
 
@@ -160,6 +200,7 @@ view: patients {
       field: bad_age_filter
       value: "no"
     }
+    group_label: "Age of Patient"
 
   }
 
@@ -172,6 +213,7 @@ view: patients {
       field: bad_age_filter
       value: "no"
     }
+    group_label: "Age of Patient"
   }
 
   dimension_group: created {

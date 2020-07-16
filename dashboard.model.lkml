@@ -286,6 +286,9 @@ include: "res_close.view.lkml"
 include: "patientmedication_prescriptions.view.lkml"
 include: "clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
+include: "provider.view.lkml"
+include: "providergroup.view.lkml"
+include: "document_close_tmp.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -656,7 +659,7 @@ join: covid_testing_results {
 
   join: athenadwh_procedure_codes_clone {
     relationship: one_to_one
-    sql_on: ${cpt_code_dimensions_clone.cpt_code} = ${athenadwh_procedure_codes_clone.procedure_code} AND
+    sql_on: ${cpt_code_dimensions_clone.cpt_code} = split_part(${athenadwh_procedure_codes_clone.procedure_code},' ',1) AND
       ${athenadwh_procedure_codes_clone.deleted_datetime_raw} IS NULL ;;
   }
 
@@ -713,6 +716,17 @@ join: clinicalencounterdiagnosis {
           ${clinicalencounterdiagnosis.deleted_raw} IS NULL;;
 }
 
+join: athena_provider {
+  relationship: many_to_one
+  sql_on: ${appointment.provider_id} = ${athena_provider.provider_id} ;;
+}
+
+join: athena_providergroup {
+  relationship: one_to_one
+  sql_on: ${athena_provider.provider_group_id} = ${athena_providergroup.provider_group_id} ;;
+  fields: [athena_providergroup.provider_group_name]
+}
+
 join: claim {
   relationship: one_to_one
   sql_on: ${clinicalencounter.appointment_id} = ${claim.claim_appointment_id} ;;
@@ -746,6 +760,17 @@ join: document_orders {
 join: document_results {
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${document_results.order_document_id} ;;
+}
+
+join: document_close_tmp {
+  relationship: one_to_one
+  sql_on: ${document_results.document_id} = ${document_close_tmp.document_id} ;;
+}
+
+join: result_closing_provider {
+  from: athena_provider
+  relationship: one_to_one
+  sql_on: ${document_close_tmp.created_by} = ${result_closing_provider.scheduling_name} ;;
 }
 
 join: athena_order_created {
