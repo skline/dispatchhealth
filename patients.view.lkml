@@ -151,8 +151,8 @@ view: patients {
     hidden: yes
     alpha_sort: yes
     sql: CASE
-          WHEN ${age_in_months} >= 0 AND ${age_in_months} <= 3  THEN 'a'
-          WHEN ${age_in_months} >= 4 AND ${age_in_months} <= 227 THEN 'b'
+          WHEN ${age_in_months} >= 0 AND ${age_in_months} < 3  THEN 'a'
+          WHEN ${age_in_months} >= 3 AND ${age_in_months} <= 227 THEN 'b'
           WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'c'
           WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'd'
           ELSE 'z'
@@ -163,13 +163,13 @@ view: patients {
     type: string
     order_by_field:  age_band_life_stage_sort
     sql:  CASE
-      WHEN ${age_in_months} >= 0 AND ${age_in_months} <= 3 THEN 'age_0_to_3_months'
-      WHEN ${age_in_months} >= 4 AND ${age_in_months} <= 227 THEN 'age_3_months_to_18_years'
-      WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'age_19_to_64_years'
-      WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'age_65_plus_years'
-      ELSE NULL
-      END
-      ;;
+          WHEN ${age_in_months} >= 0 AND ${age_in_months} < 3 THEN 'age_less_than_3_months'
+          WHEN ${age_in_months} >= 3 AND ${age_in_months} <= 227 THEN 'age_3_months_to_18_years'
+          WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'age_19_to_64_years'
+          WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'age_65_plus_years'
+          ELSE NULL
+          END
+          ;;
     group_label: "Age of Patient"
   }
 
