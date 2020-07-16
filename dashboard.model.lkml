@@ -287,6 +287,7 @@ include: "patientmedication_prescriptions.view.lkml"
 include: "clinicalletter.view.lkml"
 include: "provider.view.lkml"
 include: "providergroup.view.lkml"
+include: "athena_chart_closing.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -707,6 +708,12 @@ join: clinicalencounter {
   relationship: one_to_one
   sql_on: ${appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
 }
+
+  join: athena_chart_closing {
+    relationship: one_to_one
+    sql_on: ${clinicalencounter.clinical_encounter_id} = ${athena_chart_closing.clinical_encounter_id} ;;
+    #AND ${athenadwh_clinical_encounters_clone.encounter_date}::date = ${athenadwh_chart_closing.encounter_date}::date ;;
+  }
 
 join: clinicalencounterdiagnosis {
   relationship: one_to_many
