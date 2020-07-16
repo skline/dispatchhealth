@@ -287,6 +287,7 @@ include: "patientmedication_prescriptions.view.lkml"
 include: "clinicalletter.view.lkml"
 include: "provider.view.lkml"
 include: "providergroup.view.lkml"
+include: "document_close_tmp.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -758,6 +759,17 @@ join: document_orders {
 join: document_results {
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${document_results.order_document_id} ;;
+}
+
+join: document_close_tmp {
+  relationship: one_to_one
+  sql_on: ${document_results.document_id} = ${document_close_tmp.document_id} ;;
+}
+
+join: result_closing_provider {
+  from: athena_provider
+  relationship: one_to_one
+  sql_on: ${document_close_tmp.created_by} = ${result_closing_provider.scheduling_name} ;;
 }
 
 join: athena_order_created {
