@@ -285,6 +285,7 @@ include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
 include: "patientmedication_prescriptions.view.lkml"
 include: "clinicalletter.view.lkml"
+include: "notes_aggregated.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -909,6 +910,10 @@ join: department_order {
   join: icd_code_dimensions_clone {
     relationship: many_to_one
     sql_on: ${icd_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) ;;
+  }
+
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
   }
 
   join: icd_primary_code_dimensions_clone {
@@ -3446,6 +3451,11 @@ explore: genesys_conversation_summary {
                ;;
   }
 
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
+  }
+
+
   join: patients {
     sql_on:${patients_mobile.patient_id} =${patients.id} ;;
   }
@@ -3652,6 +3662,10 @@ explore: shift_teams
     relationship: many_to_one
     sql_on:  ${care_requests.patient_id} = ${patients.id} ;;
   }
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
+  }
+
 
 }
 

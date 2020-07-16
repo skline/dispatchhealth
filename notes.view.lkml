@@ -80,7 +80,7 @@ ${note} like '%centura%';;
 
   measure: notes_aggregated {
     type: string
-    sql: array_to_string(array_agg(DISTINCT ${note}), ' |') ;;
+    sql: lower(array_to_string(array_agg(DISTINCT ${note}), ' |')) ;;
   }
 
   dimension: note_type {
