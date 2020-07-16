@@ -3764,6 +3764,12 @@ measure: avg_first_on_route_mins {
     sql: ${complete_count_communicable_protocol}::float/nullif(${complete_count}::float,0);;
   }
 
+  measure: communicable_and_asymptomatic_covid_testing_percent{
+    type: number
+    value_format: "0.0%"
+    sql: ${communicable_protocol_percent}::float+${asymptomatic_covid_testing_percent}::float;;
+  }
+
 
   measure: flu_percent_chief_complaint {
     type: number
@@ -4225,6 +4231,8 @@ end  ;;
         )
         AND
         ${created_date} != ${scheduled_care_date}
+        AND
+        ${notes_aggregated.notes_aggregated} not like '%pushed pt: pt availability%'
         ;;
   }
 

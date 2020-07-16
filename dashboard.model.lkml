@@ -285,9 +285,12 @@ include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
 include: "patientmedication_prescriptions.view.lkml"
 include: "clinicalletter.view.lkml"
+include: "notes_aggregated.view.lkml"
 include: "provider.view.lkml"
 include: "providergroup.view.lkml"
 include: "athena_chart_closing.view.lkml"
+include: "document_close_tmp.view.lkml"
+
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -767,6 +770,17 @@ join: document_results {
   sql_on: ${document_orders.document_id} = ${document_results.order_document_id} ;;
 }
 
+join: document_close_tmp {
+  relationship: one_to_one
+  sql_on: ${document_results.document_id} = ${document_close_tmp.document_id} ;;
+}
+
+join: result_closing_provider {
+  from: athena_provider
+  relationship: one_to_one
+  sql_on: ${document_close_tmp.created_by} = ${result_closing_provider.scheduling_name} ;;
+}
+
 join: athena_order_created {
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${athena_order_created.document_id} ;;
@@ -929,6 +943,10 @@ join: department_order {
   join: icd_code_dimensions_clone {
     relationship: many_to_one
     sql_on: ${icd_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) ;;
+  }
+
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
   }
 
   join: icd_primary_code_dimensions_clone {
@@ -3466,6 +3484,11 @@ explore: genesys_conversation_summary {
                ;;
   }
 
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
+  }
+
+
   join: patients {
     sql_on:${patients_mobile.patient_id} =${patients.id} ;;
   }
@@ -3672,6 +3695,10 @@ explore: shift_teams
     relationship: many_to_one
     sql_on:  ${care_requests.patient_id} = ${patients.id} ;;
   }
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
+  }
+
 
 }
 
