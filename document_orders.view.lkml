@@ -110,6 +110,13 @@ view: document_orders {
     sql: ${TABLE}."clinical_order_type" ;;
   }
 
+  measure: aggregated_orders {
+    type: string
+    description: "Aggregation of all document orders"
+    group_label: "Description"
+    sql: array_to_string(array_agg(DISTINCT ${clinical_order_type}), ' | ') ;;
+  }
+
   dimension: clinical_order_type_group {
     type: string
     description: "LAB or IMAGING"
