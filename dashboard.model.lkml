@@ -70,7 +70,7 @@ include: "zizzl_detailed_shift_hours.view.lkml"
 include: "humanity_dashboard_provider_id_crosswalk.view.lkml"
 include: "athenadwh_clinical_results_clone.view.lkml"
 include: "athenadwh_clinical_providers_fax_clone.view.lkml"
-include: "clinicalencounter.view.lkml"
+include: "athena_clinicalencounter.view.lkml"
 include: "marketing_data_processed.view.lkml"
 include: "diagnosis_rank_clone.view.lkml"
 include: "budget_projections_by_market_clone.view.lkml"
@@ -712,14 +712,14 @@ join: athena_appointment {
   sql_on: ${care_requests.ehr_id} = ${athena_appointment.appointment_char} ;;
 }
 
-join: clinicalencounter {
+join: athena_clinicalencounter {
   relationship: one_to_one
-  sql_on: ${athena_appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
+  sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
 }
 
 join: clinicalencounterdiagnosis {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${clinicalencounterdiagnosis.clinical_encounter_id} AND
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${clinicalencounterdiagnosis.clinical_encounter_id} AND
           ${clinicalencounterdiagnosis.deleted_raw} IS NULL;;
 }
 
@@ -736,7 +736,7 @@ join: athena_providergroup {
 
 join: athena_claim {
   relationship: one_to_one
-  sql_on: ${clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
+  sql_on: ${athena_clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
 }
 
 join: athena_claimdiagnosis {
@@ -751,7 +751,7 @@ join: athena_claimdiagnosis {
 
 join: department {
   relationship: many_to_one
-  sql_on: ${clinicalencounter.department_id} = ${department.department_id} ;;
+  sql_on: ${athena_clinicalencounter.department_id} = ${department.department_id} ;;
 }
 
 join: patient {
@@ -761,7 +761,7 @@ join: patient {
 
 join: document_orders {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_orders.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_orders.clinical_encounter_id} ;;
 }
 
 join: document_results {
@@ -847,7 +847,7 @@ join: document_result_last_action {
 
 join: document_letters {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_letters.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_letters.clinical_encounter_id} ;;
 }
 
 join: clinicalletter {
@@ -858,7 +858,7 @@ join: clinicalletter {
 
 join: document_prescriptions {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
   fields: []
 }
 
@@ -869,7 +869,7 @@ join: document_prescriptions {
 
 join: document_others {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_others.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_others.clinical_encounter_id} ;;
 }
 
 join: clinicalresult {
