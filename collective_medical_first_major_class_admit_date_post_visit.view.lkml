@@ -105,7 +105,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
     description: "First Emergency admittance recorded by Collective Medical within 12 hours of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${first_admit_post_visit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
   dimension: 3_day_first_admit_inpatient {
@@ -119,14 +119,14 @@ view: collective_medical_first_major_class_admit_date_post_visit {
     description: "First Observation admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${first_admit_post_visit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'observation';;
-    group_label: "Inpatient First Observation Intervals"
+    group_label: "Observation First Admittance Intervals"
   }
 
   dimension: 3_day_first_admit_emergency {
     description: "First Emergency admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${first_admit_post_visit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
   dimension: 14_day_first_admit_inpatient {
@@ -140,14 +140,14 @@ view: collective_medical_first_major_class_admit_date_post_visit {
     description: "First Observation admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${first_admit_post_visit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
-    group_label: "Inpatient First Observation Intervals"
+    group_label: "Observation First Admittance Intervals"
   }
 
   dimension: 14_day_first_admit_emergency {
     description: "First Emergency admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${first_admit_post_visit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
   dimension: 30_day_first_admit_inpatient {
@@ -161,14 +161,14 @@ view: collective_medical_first_major_class_admit_date_post_visit {
     description: "First Observation admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${first_admit_post_visit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
-    group_label: "Inpatient First Observation Intervals"
+    group_label: "Observation First Admittance Intervals"
   }
 
   dimension: 30_day_first_admit_emergency {
     description: "First Emergency admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${first_admit_post_visit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'emergency';;
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
   measure: count_12_hour_first_admit_inpatient {
@@ -190,7 +190,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
       field: 12_hour_first_admit_emergency
       value: "yes"
     }
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
   measure: count_24_hour_first_admit_inpatient {
@@ -223,7 +223,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
       field: 3_day_first_admit_observation
       value: "yes"
     }
-    group_label: "Inpatient First Observation Intervals"
+    group_label: "Observation First Admittance Intervals"
   }
 
   measure: count_3_day_first_admit_emergency {
@@ -234,7 +234,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
       field: 3_day_first_admit_emergency
       value: "yes"
     }
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
   measure: count_14_day_first_admit_inpatient {
@@ -256,7 +256,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
       field: 14_day_first_admit_observation
       value: "yes"
     }
-    group_label: "Inpatient First Observation Intervals"
+    group_label: "Observation First Admittance Intervals"
   }
 
   measure: count_14_day_first_admit_emergency {
@@ -267,7 +267,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
       field: 14_day_first_admit_emergency
       value: "yes"
     }
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
   measure: count_30_day_first_admit_inpatient {
@@ -289,7 +289,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
       field: 30_day_first_admit_observation
       value: "yes"
     }
-    group_label: "Inpatient First Observation Intervals"
+    group_label: "Observation First Admittance Intervals"
   }
 
   measure: count_30_day_first_admit_emergency {
@@ -300,7 +300,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
       field: 30_day_first_admit_emergency
       value: "yes"
     }
-    group_label: "Inpatient First Emergency Intervals"
+    group_label: "Emergency First Admittance Intervals"
   }
 
 
