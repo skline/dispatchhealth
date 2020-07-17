@@ -304,7 +304,7 @@ view: collective_medical_first_major_class_admit_date_post_visit {
   }
 
 
-  dimension: 30day_ed_admittance_framework {
+  dimension: 30day_emergency_admittance_framework {
     description: "Categorizes the first recorded Emergency admittance by day wihtin the first 30 days from the DH on-scene date"
     type: string
     sql: CASE WHEN ((EXTRACT(EPOCH FROM ${first_admit_post_visit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 24 and lower(${major_class}) = 'emergency' THEN '01'
