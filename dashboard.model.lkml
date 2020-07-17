@@ -205,7 +205,7 @@ include: "thpg_providers.view.lkml"
 include: "income_pop_by_zipcode_small.view.lkml"
 include: "icd_code_risk_assessment_crosswalk.view.lkml"
 include: "markets.view.lkml"
-include: "clinicalencounterdiagnosis.view.lkml"
+include: "athena_clinicalencounterdiagnosis.view.lkml"
 include: "shift_teams.view.lkml"
 include: "market_start_date.view.lkml"
 include: "ad_groups_clone.view.lkml"
@@ -717,10 +717,10 @@ join: athena_clinicalencounter {
   sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
 }
 
-join: clinicalencounterdiagnosis {
+join: athena_clinicalencounterdiagnosis {
   relationship: one_to_many
-  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${clinicalencounterdiagnosis.clinical_encounter_id} AND
-          ${clinicalencounterdiagnosis.deleted_raw} IS NULL;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_clinicalencounterdiagnosis.clinical_encounter_id} AND
+          ${athena_clinicalencounterdiagnosis.deleted_raw} IS NULL;;
 }
 
 join: athena_provider {

@@ -1,4 +1,4 @@
-view: clinicalencounterdiagnosis {
+view: athena_clinicalencounterdiagnosis {
   sql_table_name: athena.clinicalencounterdiagnosis ;;
   view_label: "Athena Clinical Encounter Diagnoses (DEV)"
 
