@@ -55,7 +55,7 @@ include: "appointment.view.lkml"
 include: "tch_low_acuity_zips.view.lkml"
 include: "ga_adwords_stats_clone.view.lkml"
 include: "athenadwh_appointments_clone.view.lkml"
-include: "first_major_class_admit_date_post_visit.view.lkml"
+include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -285,10 +285,13 @@ include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
 include: "patientmedication_prescriptions.view.lkml"
 include: "clinicalletter.view.lkml"
+include: "notes_aggregated.view.lkml"
 include: "provider.view.lkml"
 include: "providergroup.view.lkml"
+include: "athena_chart_closing.view.lkml"
 include: "document_close_tmp.view.lkml"
 include: "predictions.view.lkml"
+
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -605,9 +608,9 @@ explore: care_requests {
     sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
   }
 
-  join: first_major_class_admit_date_post_visit {
+  join: collective_medical_first_major_class_admit_date_post_visit {
     relationship: many_to_one
-    sql_on: ${care_requests.id} = ${first_major_class_admit_date_post_visit.care_request_id};;
+    sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
   }
 
   join: er_admits_prior_visit {
@@ -714,6 +717,12 @@ join: clinicalencounter {
   relationship: one_to_one
   sql_on: ${appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
 }
+
+  join: athena_chart_closing {
+    relationship: one_to_one
+    sql_on: ${clinicalencounter.clinical_encounter_id} = ${athena_chart_closing.clinical_encounter_id} ;;
+    #AND ${athenadwh_clinical_encounters_clone.encounter_date}::date = ${athenadwh_chart_closing.encounter_date}::date ;;
+  }
 
 join: clinicalencounterdiagnosis {
   relationship: one_to_many
@@ -940,6 +949,10 @@ join: department_order {
   join: icd_code_dimensions_clone {
     relationship: many_to_one
     sql_on: ${icd_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) ;;
+  }
+
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
   }
 
   join: icd_primary_code_dimensions_clone {
@@ -3477,6 +3490,11 @@ explore: genesys_conversation_summary {
                ;;
   }
 
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
+  }
+
+
   join: patients {
     sql_on:${patients_mobile.patient_id} =${patients.id} ;;
   }
@@ -3683,6 +3701,10 @@ explore: shift_teams
     relationship: many_to_one
     sql_on:  ${care_requests.patient_id} = ${patients.id} ;;
   }
+  join: notes_aggregated {
+    sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
+  }
+
 
 }
 
