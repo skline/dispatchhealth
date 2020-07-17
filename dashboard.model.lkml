@@ -51,7 +51,7 @@ include: "claim.view.lkml"
 include: "toc_predictions.view.lkml"
 include: "icd_visit_joins_clone.view.lkml"
 include: "day_of_week_variation.view.lkml"
-include: "appointment.view.lkml"
+include: "athena_appointment.view.lkml"
 include: "tch_low_acuity_zips.view.lkml"
 include: "ga_adwords_stats_clone.view.lkml"
 include: "athenadwh_appointments_clone.view.lkml"
@@ -707,14 +707,14 @@ join: covid_testing_results {
 
 ###################################################
 # New Athena Feed - 06/12/2020 - DE
-join: appointment {
+join: athena_appointment {
   relationship: one_to_one
-  sql_on: ${care_requests.ehr_id} = ${appointment.appointment_char} ;;
+  sql_on: ${care_requests.ehr_id} = ${athena_appointment.appointment_char} ;;
 }
 
 join: clinicalencounter {
   relationship: one_to_one
-  sql_on: ${appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
+  sql_on: ${athena_appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
 }
 
 join: clinicalencounterdiagnosis {
@@ -725,7 +725,7 @@ join: clinicalencounterdiagnosis {
 
 join: athena_provider {
   relationship: many_to_one
-  sql_on: ${appointment.provider_id} = ${athena_provider.provider_id} ;;
+  sql_on: ${athena_appointment.provider_id} = ${athena_provider.provider_id} ;;
 }
 
 join: athena_providergroup {
@@ -756,7 +756,7 @@ join: department {
 
 join: patient {
   relationship: many_to_one
-  sql_on: ${appointment.patient_id} = ${patient.patient_id} ;;
+  sql_on: ${athena_appointment.patient_id} = ${patient.patient_id} ;;
 }
 
 join: document_orders {
