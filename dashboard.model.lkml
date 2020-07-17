@@ -47,7 +47,7 @@ include: "covid_testing_results.view.lkml"
 include: "shift_team_stops.view.lkml"
 include: "last_documentaction.view.lkml"
 include: "document_results.view.lkml"
-include: "claim.view.lkml"
+include: "athena_claim.view.lkml"
 include: "toc_predictions.view.lkml"
 include: "icd_visit_joins_clone.view.lkml"
 include: "day_of_week_variation.view.lkml"
@@ -734,19 +734,19 @@ join: athena_providergroup {
   fields: [athena_providergroup.provider_group_name]
 }
 
-join: claim {
+join: athena_claim {
   relationship: one_to_one
-  sql_on: ${clinicalencounter.appointment_id} = ${claim.claim_appointment_id} ;;
+  sql_on: ${clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
 }
 
 join: claimdiagnosis {
   relationship: one_to_many
-  sql_on: ${claim.claim_id} = ${claimdiagnosis.claim_id} AND ${claimdiagnosis.deleted_raw} IS NULL ;;
+  sql_on: ${athena_claim.claim_id} = ${claimdiagnosis.claim_id} AND ${claimdiagnosis.deleted_raw} IS NULL ;;
 }
 
   join: transaction {
     relationship: one_to_many
-    sql_on: ${claim.claim_id} = ${transaction.claim_id} ;;
+    sql_on: ${athena_claim.claim_id} = ${transaction.claim_id} ;;
   }
 
 join: department {
