@@ -55,7 +55,7 @@ include: "appointment.view.lkml"
 include: "tch_low_acuity_zips.view.lkml"
 include: "ga_adwords_stats_clone.view.lkml"
 include: "athenadwh_appointments_clone.view.lkml"
-include: "first_major_class_admit_date_post_visit.view.lkml"
+include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -602,9 +602,9 @@ explore: care_requests {
     sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
   }
 
-  join: first_major_class_admit_date_post_visit {
+  join: collective_medical_first_major_class_admit_date_post_visit {
     relationship: many_to_one
-    sql_on: ${care_requests.id} = ${first_major_class_admit_date_post_visit.care_request_id};;
+    sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
   }
 
   join: er_admits_prior_visit {
