@@ -288,6 +288,7 @@ include: "clinicalletter.view.lkml"
 include: "provider.view.lkml"
 include: "providergroup.view.lkml"
 include: "document_close_tmp.view.lkml"
+include: "predictions.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -309,6 +310,11 @@ explore: care_requests {
   #  field: markets.name
   #  user_attribute: "market_name"
   #}
+
+  join: predictions {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${predictions.care_request_id} ;;
+  }
 
 # Join all Athena data warehouse feed tables -- DE
   join: athenadwh_patient_insurances_clone {
