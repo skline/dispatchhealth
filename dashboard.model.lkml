@@ -21,7 +21,7 @@ include: "visit_dimensions_clone.view.lkml"
 include: "care_request_consents.view.lkml"
 include: "genesys_conversation_wrapup.view.lkml"
 include: "sf_accounts.view.lkml"
-include: "claimdiagnosis.view.lkml"
+include: "athena_claimdiagnosis.view.lkml"
 include: "mailchimp_activities.view.lkml"
 include: "adwords_ad_clone.view.lkml"
 include: "variable_shift_agg.view.lkml"
@@ -739,9 +739,9 @@ join: athena_claim {
   sql_on: ${clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
 }
 
-join: claimdiagnosis {
+join: athena_claimdiagnosis {
   relationship: one_to_many
-  sql_on: ${athena_claim.claim_id} = ${claimdiagnosis.claim_id} AND ${claimdiagnosis.deleted_raw} IS NULL ;;
+  sql_on: ${athena_claim.claim_id} = ${athena_claimdiagnosis.claim_id} AND ${athena_claimdiagnosis.deleted_raw} IS NULL ;;
 }
 
   join: transaction {

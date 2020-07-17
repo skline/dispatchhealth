@@ -1,4 +1,4 @@
-view: claimdiagnosis {
+view: athena_claimdiagnosis {
   sql_table_name: athena.claimdiagnosis ;;
   view_label: "Athena Claim Diagnoses (DEV)"
   drill_fields: [id]
