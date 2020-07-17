@@ -284,7 +284,7 @@ include: "sbm.view.lkml"
 include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
 include: "patientmedication_prescriptions.view.lkml"
-include: "clinicalletter.view.lkml"
+include: "athena_clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
 include: "provider.view.lkml"
 include: "providergroup.view.lkml"
@@ -850,9 +850,9 @@ join: document_letters {
   sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_letters.clinical_encounter_id} ;;
 }
 
-join: clinicalletter {
+join: athena_clinicalletter {
   relationship:many_to_one
-  sql_on:  ${document_letters.document_id} = ${clinicalletter.document_id};;
+  sql_on:  ${document_letters.document_id} = ${athena_clinicalletter.document_id};;
   fields: []
 }
 

@@ -1,4 +1,4 @@
-view: clinicalletter {
+view: athena_clinicalletter {
   sql_table_name: athena.clinicalletter ;;
   drill_fields: [id]
 
