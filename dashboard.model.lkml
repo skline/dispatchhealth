@@ -287,7 +287,7 @@ include: "athena_patientmedication_prescriptions.view.lkml"
 include: "athena_clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
 include: "athena_provider.view.lkml"
-include: "providergroup.view.lkml"
+include: "athena_providergroup.view.lkml"
 include: "document_close_tmp.view.lkml"
 include: "predictions.view.lkml"
 
