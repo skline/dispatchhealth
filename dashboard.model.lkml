@@ -11,7 +11,7 @@ include: "provider_fit_testing.view.lkml"
 include: "funnel_agg.view.lkml"
 include: "users.view.lkml"
 include: "sf_last_quarter_accounts_health_score.view.lkml"
-include: "clinicalprovider.view.lkml"
+include: "athena_clinicalprovider.view.lkml"
 include: "addressable_items.view.lkml"
 include: "diversion_type.view.lkml"
 include: "insurance_network_insurance_plans.view.lkml"
@@ -811,7 +811,7 @@ join: athena_result_closed {
 }
 
 join: document_order_provider {
-  from: clinicalprovider
+  from: athena_clinicalprovider
   view_label: "Athena Document Order Provider"
   relationship: many_to_one
   sql_on: ${document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
@@ -883,7 +883,7 @@ join: clinicalresultobservation {
 }
 
 join: clinicalprovider_order {
-  from: clinicalprovider
+  from: athena_clinicalprovider
   view_label: "Athena Order Fulfilling Provider (DEV)"
   relationship: many_to_one
   sql_on: ${document_orders.clinical_provider_id} = ${clinicalprovider_order.clinical_provider_id} ;;
