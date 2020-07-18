@@ -1,4 +1,4 @@
-view: department {
+view: athena_department {
   sql_table_name: athena.department ;;
   drill_fields: [department_id]
   view_label: "Athena Department (DEV)"

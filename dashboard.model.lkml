@@ -30,7 +30,7 @@ include: "insurance_networks.view.lkml"
 include: "sf_priority_accounts.view.lkml"
 include: "ga_pageviews_clone.view.lkml"
 include: "intraday_monitoring_agg.view.lkml"
-include: "department.view.lkml"
+include: "athena_department.view.lkml"
 include: "bidtellect_cost_clone.view.lkml"
 include: "diversion.view.lkml"
 include: "market_geo_locations.view.lkml"
@@ -749,9 +749,9 @@ join: athena_claimdiagnosis {
     sql_on: ${athena_claim.claim_id} = ${transaction.claim_id} ;;
   }
 
-join: department {
+join: athena_department {
   relationship: many_to_one
-  sql_on: ${athena_clinicalencounter.department_id} = ${department.department_id} ;;
+  sql_on: ${athena_clinicalencounter.department_id} = ${athena_department.department_id} ;;
 }
 
 join: patient {
@@ -890,7 +890,7 @@ join: clinicalprovider_order {
 }
 
 join: department_order {
-  from: department
+  from: athena_department
   view_label: "Athena Order Department (DEV)"
   relationship: many_to_one
   sql_on: ${document_orders.department_id}   = ${department_order.department_id} ;;
