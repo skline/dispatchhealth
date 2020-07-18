@@ -178,7 +178,7 @@ include: "sf_activities.view.lkml"
 include: "athena_inbox_tracking.view.lkml"
 include: "user_roles.view.lkml"
 include: "diversion_categories_flat.view.lkml"
-include: "document_orders.view.lkml"
+include: "athena_document_orders.view.lkml"
 include: "mailchimp_audiences_clone.view.lkml"
 include: "insurance_plans.view.lkml"
 include: "roles.view.lkml"
@@ -759,14 +759,14 @@ join: patient {
   sql_on: ${athena_appointment.patient_id} = ${patient.patient_id} ;;
 }
 
-join: document_orders {
+join: athena_document_orders {
   relationship: one_to_many
-  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_orders.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_orders.clinical_encounter_id} ;;
 }
 
 join: document_results {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${document_results.order_document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${document_results.order_document_id} ;;
 }
 
 join: document_close_tmp {
@@ -782,19 +782,19 @@ join: result_closing_provider {
 
 join: athena_order_created {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${athena_order_created.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_order_created.document_id} ;;
   fields: []
 }
 
 join: athena_order_submitted {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${athena_order_submitted.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_order_submitted.document_id} ;;
   fields: []
 }
 
 join: athena_first_result {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${athena_first_result.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_first_result.document_id} ;;
   fields: []
 }
 
@@ -814,14 +814,14 @@ join: document_order_provider {
   from: athena_clinicalprovider
   view_label: "Athena Document Order Provider"
   relationship: many_to_one
-  sql_on: ${document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
+  sql_on: ${athena_document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
 }
 
 join: athena_order_documentaction {
   from: documentaction
   view_label: "Athena Order Documentaction"
   relationship: one_to_many
-  sql_on: ${document_orders.document_id} = ${athena_order_documentaction.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_order_documentaction.document_id} ;;
 }
 
 join: athena_result_documentaction {
@@ -835,7 +835,7 @@ join: document_order_results {
   from: document_results
   view_label: "Athena Order Results"
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${document_order_results.order_document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${document_order_results.order_document_id} ;;
 }
 
 join: document_result_last_action {
@@ -886,14 +886,14 @@ join: clinicalprovider_order {
   from: athena_clinicalprovider
   view_label: "Athena Order Fulfilling Provider (DEV)"
   relationship: many_to_one
-  sql_on: ${document_orders.clinical_provider_id} = ${clinicalprovider_order.clinical_provider_id} ;;
+  sql_on: ${athena_document_orders.clinical_provider_id} = ${clinicalprovider_order.clinical_provider_id} ;;
 }
 
 join: department_order {
   from: athena_department
   view_label: "Athena Order Department (DEV)"
   relationship: many_to_one
-  sql_on: ${document_orders.department_id}   = ${department_order.department_id} ;;
+  sql_on: ${athena_document_orders.department_id}   = ${department_order.department_id} ;;
 }
 
 
