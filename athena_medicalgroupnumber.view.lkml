@@ -1,4 +1,4 @@
-view: medicalgroupnumber {
+view: athena_medicalgroupnumber {
   sql_table_name: athena.medicalgroupnumber ;;
   view_label: "Athena Medical Group Number (IN DEV)"
 
