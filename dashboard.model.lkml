@@ -153,7 +153,7 @@ include: "csc_survey_clone.view.lkml"
 include: "psu_count_data.view.lkml"
 include: "athenadwh_chart_closing.view.lkml"
 include: "census_zipcode.view.lkml"
-include: "clinicalresult.view.lkml"
+include: "athena_clinicalresult.view.lkml"
 include: "marketing_cost_clone.view.lkml"
 include: "athenadwh_medical_history_flat.view.lkml"
 include: "athenadwh_documentaction.view.lkml"
@@ -872,14 +872,14 @@ join: document_others {
   sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_others.clinical_encounter_id} ;;
 }
 
-join: clinicalresult {
+join: athena_clinicalresult {
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${clinicalresult.document_id} ;;
+  sql_on: ${document_order_results.document_id} = ${athena_clinicalresult.document_id} ;;
 }
 
 join: clinicalresultobservation {
   relationship: one_to_many
-  sql_on: ${clinicalresult.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
+  sql_on: ${athena_clinicalresult.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
 }
 
 join: clinicalprovider_order {
