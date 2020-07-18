@@ -170,7 +170,7 @@ include: "postal_codes.view.lkml"
 include: "market_projections_by_month.view.lkml"
 include: "ga_zips_clone.view.lkml"
 include: "operational_excellence_metrics.view.lkml"
-include: "document_prescriptions.view.lkml"
+include: "athena_document_prescriptions.view.lkml"
 include: "survey_responses_flat_clone.view.lkml"
 include: "stop_times_by_care_request.view.lkml"
 include: "drg_to_icd10_crosswalk.view.lkml"
@@ -856,15 +856,15 @@ join: athena_clinicalletter {
   fields: []
 }
 
-join: document_prescriptions {
+join: athena_document_prescriptions {
   relationship: one_to_many
-  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_prescriptions.clinical_encounter_id} ;;
   fields: []
 }
 
   join: patientmedication_prescriptions {
     relationship: one_to_one
-    sql_on: ${document_prescriptions.document_id} = ${patientmedication_prescriptions.document_id} ;;
+    sql_on: ${athena_document_prescriptions.document_id} = ${patientmedication_prescriptions.document_id} ;;
   }
 
 join: athena_document_others {

@@ -1,4 +1,4 @@
-view: document_prescriptions {
+view: athena_document_prescriptions {
   sql_table_name: athena.document_prescriptions ;;
   view_label: "Athena Prescriptions"
   drill_fields: [id]
