@@ -1,4 +1,4 @@
-view: transaction {
+view: athena_transaction {
   sql_table_name: athena.transaction ;;
   drill_fields: [transaction_id]
   view_label: "Athena Transactions (DEV)"

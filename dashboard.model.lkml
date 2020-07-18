@@ -146,7 +146,7 @@ include: "insurance_network_network_referrals.view.lkml"
 include: "care_request_network_referrals.view.lkml"
 include: "collective_medical.view.lkml"
 include: "thpg_texashealth_backcare.view.lkml"
-include: "transaction.view.lkml"
+include: "athena_transaction.view.lkml"
 include: "zizzl_employee_roster.view.lkml"
 include: "csc_agent_location.view.lkml"
 include: "csc_survey_clone.view.lkml"
@@ -744,9 +744,9 @@ join: athena_claimdiagnosis {
   sql_on: ${athena_claim.claim_id} = ${athena_claimdiagnosis.claim_id} AND ${athena_claimdiagnosis.deleted_raw} IS NULL ;;
 }
 
-  join: transaction {
+  join: athena_transaction {
     relationship: one_to_many
-    sql_on: ${athena_claim.claim_id} = ${transaction.claim_id} ;;
+    sql_on: ${athena_claim.claim_id} = ${athena_transaction.claim_id} ;;
   }
 
 join: athena_department {
