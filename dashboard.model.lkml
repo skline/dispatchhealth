@@ -81,7 +81,7 @@ include: "sem_run_rate.view.lkml"
 include: "care_requests.view.lkml"
 include: "email_unsubscribes_clone.view.lkml"
 include: "thr_zips.view.lkml"
-include: "documentaction.view.lkml"
+include: "athena_documentaction.view.lkml"
 include: "bi_events.view.lkml"
 include: "primary_payer_dimensions_clone.view.lkml"
 include: "athenadwh_procedure_codes_clone.view.lkml"
@@ -818,14 +818,14 @@ join: document_order_provider {
 }
 
 join: athena_order_documentaction {
-  from: documentaction
+  from: athena_documentaction
   view_label: "Athena Order Documentaction"
   relationship: one_to_many
   sql_on: ${athena_document_orders.document_id} = ${athena_order_documentaction.document_id} ;;
 }
 
 join: athena_result_documentaction {
-  from: documentaction
+  from: athena_documentaction
   view_label: "Athena Result Documentaction"
   relationship: one_to_many
   sql_on: ${athena_document_results.document_id} = ${athena_result_documentaction.document_id} ;;

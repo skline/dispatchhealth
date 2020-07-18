@@ -1,4 +1,4 @@
-view: documentaction {
+view: athena_documentaction {
   sql_table_name: athena.documentaction ;;
   view_label: "Athena Document Actions"
   drill_fields: [id]
