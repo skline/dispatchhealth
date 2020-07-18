@@ -270,7 +270,7 @@ include: "census_tract_clone.view.lkml"
 include: "mailchimp_sends.view.lkml"
 include: "faxes_sent.view.lkml"
 include: "subtotals_clone.view.lkml"
-include: "patient.view.lkml"
+include: "athena_patient.view.lkml"
 include: "productivity_data_clone.view.lkml"
 include: "transaction_facts_clone.view.lkml"
 include: "athenadwh_patient_insurances_clone.view.lkml"
@@ -754,9 +754,9 @@ join: athena_department {
   sql_on: ${athena_clinicalencounter.department_id} = ${athena_department.department_id} ;;
 }
 
-join: patient {
+join: athena_patient {
   relationship: many_to_one
-  sql_on: ${athena_appointment.patient_id} = ${patient.patient_id} ;;
+  sql_on: ${athena_appointment.patient_id} = ${athena_patient.patient_id} ;;
 }
 
 join: athena_document_orders {
