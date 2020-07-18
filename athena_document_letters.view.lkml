@@ -1,4 +1,4 @@
-view: document_letters {
+view: athena_document_letters {
   sql_table_name: athena.document_letters ;;
   drill_fields: [id]
   view_label: "Athena Clinical Letters"

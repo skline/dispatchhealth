@@ -164,7 +164,7 @@ include: "driver_licenses.view.lkml"
 include: "idle_time_summary.view.lkml"
 include: "provider_network.view.lkml"
 include: "ga_experiments.view.lkml"
-include: "document_letters.view.lkml"
+include: "athena_document_letters.view.lkml"
 include: "document_others.view.lkml"
 include: "postal_codes.view.lkml"
 include: "market_projections_by_month.view.lkml"
@@ -845,14 +845,14 @@ join: document_result_last_action {
   sql_on: ${document_order_results.document_id} = ${document_result_last_action.document_id} ;;
 }
 
-join: document_letters {
+join: athena_document_letters {
   relationship: one_to_many
-  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_letters.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_letters.clinical_encounter_id} ;;
 }
 
 join: athena_clinicalletter {
   relationship:many_to_one
-  sql_on:  ${document_letters.document_id} = ${athena_clinicalletter.document_id};;
+  sql_on:  ${athena_document_letters.document_id} = ${athena_clinicalletter.document_id};;
   fields: []
 }
 
