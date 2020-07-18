@@ -46,7 +46,7 @@ include: "non_phone_crs.view.lkml"
 include: "covid_testing_results.view.lkml"
 include: "shift_team_stops.view.lkml"
 include: "last_documentaction.view.lkml"
-include: "document_results.view.lkml"
+include: "athena_document_results.view.lkml"
 include: "athena_claim.view.lkml"
 include: "toc_predictions.view.lkml"
 include: "icd_visit_joins_clone.view.lkml"
@@ -764,14 +764,14 @@ join: athena_document_orders {
   sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_orders.clinical_encounter_id} ;;
 }
 
-join: document_results {
+join: athena_document_results {
   relationship: one_to_one
-  sql_on: ${athena_document_orders.document_id} = ${document_results.order_document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_document_results.order_document_id} ;;
 }
 
 join: document_close_tmp {
   relationship: one_to_one
-  sql_on: ${document_results.document_id} = ${document_close_tmp.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${document_close_tmp.document_id} ;;
 }
 
 join: result_closing_provider {
@@ -828,11 +828,11 @@ join: athena_result_documentaction {
   from: documentaction
   view_label: "Athena Result Documentaction"
   relationship: one_to_many
-  sql_on: ${document_results.document_id} = ${athena_result_documentaction.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${athena_result_documentaction.document_id} ;;
 }
 
 join: document_order_results {
-  from: document_results
+  from: athena_document_results
   view_label: "Athena Order Results"
   relationship: one_to_one
   sql_on: ${athena_document_orders.document_id} = ${document_order_results.order_document_id} ;;
