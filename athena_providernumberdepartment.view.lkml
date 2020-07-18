@@ -1,4 +1,4 @@
-view: providernumberdepartment {
+view: athena_providernumberdepartment {
   sql_table_name: athena.providernumberdepartment ;;
 
   dimension: __batch_id {
