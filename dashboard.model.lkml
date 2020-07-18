@@ -283,7 +283,7 @@ include: "fres.view.lkml"
 include: "sbm.view.lkml"
 include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
-include: "patientmedication_prescriptions.view.lkml"
+include: "athena_patientmedication_prescriptions.view.lkml"
 include: "athena_clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
 include: "provider.view.lkml"
@@ -862,9 +862,9 @@ join: athena_document_prescriptions {
   fields: []
 }
 
-  join: patientmedication_prescriptions {
+  join: athena_patientmedication_prescriptions {
     relationship: one_to_one
-    sql_on: ${athena_document_prescriptions.document_id} = ${patientmedication_prescriptions.document_id} ;;
+    sql_on: ${athena_document_prescriptions.document_id} = ${athena_patientmedication_prescriptions.document_id} ;;
   }
 
 join: athena_document_others {
