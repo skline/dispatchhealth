@@ -1,4 +1,4 @@
-view: clinicalresultobservation {
+view: athena_clinicalresultobservation {
   sql_table_name: athena.clinicalresultobservation ;;
   view_label: "Athena Clinical Result Observations"
 

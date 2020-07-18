@@ -245,7 +245,7 @@ include: "number_to_market.view.lkml"
 include: "patient_safety_flags.view.lkml"
 include: "ga_adwords_cost_clone.view.lkml"
 include: "accepted_agg.view.lkml"
-include: "clinicalresultobservation.view.lkml"
+include: "athena_clinicalresultobservation.view.lkml"
 include: "sf_last_week_accounts_health_score.view.lkml"
 include: "athenadwh_icdcodeall.view.lkml"
 include: "dtc_categorization.view.lkml"
@@ -877,9 +877,9 @@ join: athena_clinicalresult {
   sql_on: ${document_order_results.document_id} = ${athena_clinicalresult.document_id} ;;
 }
 
-join: clinicalresultobservation {
+join: athena_clinicalresultobservation {
   relationship: one_to_many
-  sql_on: ${athena_clinicalresult.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
+  sql_on: ${athena_clinicalresult.clinical_result_id} = ${athena_clinicalresultobservation.clinical_result_id} ;;
 }
 
 join: clinicalprovider_order {
