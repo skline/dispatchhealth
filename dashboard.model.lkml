@@ -165,7 +165,7 @@ include: "idle_time_summary.view.lkml"
 include: "provider_network.view.lkml"
 include: "ga_experiments.view.lkml"
 include: "athena_document_letters.view.lkml"
-include: "document_others.view.lkml"
+include: "athena_document_others.view.lkml"
 include: "postal_codes.view.lkml"
 include: "market_projections_by_month.view.lkml"
 include: "ga_zips_clone.view.lkml"
@@ -867,9 +867,9 @@ join: document_prescriptions {
     sql_on: ${document_prescriptions.document_id} = ${patientmedication_prescriptions.document_id} ;;
   }
 
-join: document_others {
+join: athena_document_others {
   relationship: one_to_many
-  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${document_others.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_others.clinical_encounter_id} ;;
 }
 
 join: athena_clinicalresult {

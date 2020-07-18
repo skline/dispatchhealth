@@ -1,4 +1,4 @@
-view: document_others {
+view: athena_document_others {
   sql_table_name: athena.document_others ;;
   view_label: "Athena Other Documents"
   drill_fields: [id]
