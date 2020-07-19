@@ -1,4 +1,4 @@
-view: providernumber {
+view: athena_providernumber {
   sql_table_name: athena.providernumber ;;
   view_label: "Athena Provider Number (In DEV)"
 

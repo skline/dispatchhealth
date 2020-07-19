@@ -1,7 +1,7 @@
-view: document_prescriptions {
-  sql_table_name: athena.document_prescriptions ;;
-  view_label: "Athena Prescriptions"
+view: athena_document_orders {
+  sql_table_name: athena.document_orders ;;
   drill_fields: [id]
+  view_label: "Athena Document Orders"
 
   dimension: id {
     primary_key: yes
@@ -54,6 +54,7 @@ view: document_prescriptions {
 
   dimension: alarm_days {
     type: number
+    description: "The number of days set before an inbox alarm is triggered"
     sql: ${TABLE}."alarm_days" ;;
   }
 
@@ -95,15 +96,30 @@ view: document_prescriptions {
     sql: ${TABLE}."clinical_encounter_id" ;;
   }
 
+  dimension: clinical_order_genus {
+    type: string
+    description: "The high-level description of the order e.g. 'URINALYSIS', 'CMP', etc."
+    group_label: "Description"
+    sql: ${TABLE}."clinical_order_genus" ;;
+  }
+
   dimension: clinical_order_type {
     type: string
+    description: "The detailed description of the order e.g. 'URINALYSIS DIPSTICK', etc."
     group_label: "Description"
-    description: "The detailed description of the prescription"
     sql: ${TABLE}."clinical_order_type" ;;
+  }
+
+  measure: aggregated_orders {
+    type: string
+    description: "Aggregation of all document orders"
+    group_label: "Description"
+    sql: array_to_string(array_agg(DISTINCT ${clinical_order_type}), ' | ') ;;
   }
 
   dimension: clinical_order_type_group {
     type: string
+    description: "LAB or IMAGING"
     group_label: "Description"
     sql: ${TABLE}."clinical_order_type_group" ;;
   }
@@ -112,6 +128,13 @@ view: document_prescriptions {
     type: number
     group_label: "IDs"
     sql: ${TABLE}."clinical_provider_id" ;;
+  }
+
+  dimension: clinical_provider_order_type {
+    type: string
+    description: "The order type as defined by the fulfilling provider"
+    group_label: "Description"
+    sql: ${TABLE}."clinical_provider_order_type" ;;
   }
 
   dimension_group: created_at {
@@ -137,7 +160,7 @@ view: document_prescriptions {
 
   dimension: created_clinical_encounter_id {
     type: number
-    group_label: "IDs"
+    hidden: yes
     sql: ${TABLE}."created_clinical_encounter_id" ;;
   }
 
@@ -153,6 +176,12 @@ view: document_prescriptions {
       year
     ]
     sql: ${TABLE}."created_datetime" ;;
+  }
+
+  dimension: cvx {
+    type: string
+    hidden: yes
+    sql: ${TABLE}."cvx" ;;
   }
 
   dimension: deactivated_by {
@@ -217,14 +246,15 @@ view: document_prescriptions {
 
   dimension: department_id {
     type: number
-    group_label: "IDs"
     # hidden: yes
+    group_label: "IDs"
     sql: ${TABLE}."department_id" ;;
   }
 
   dimension: document_class {
     type: string
-    group_label: "Descriptions"
+    description: "ORDER or DME"
+    group_label: "Description"
     sql: ${TABLE}."document_class" ;;
   }
 
@@ -234,10 +264,17 @@ view: document_prescriptions {
     sql: ${TABLE}."document_id" ;;
   }
 
-  dimension: document_subclass {
-    type: string
-    group_label: "Descriptions"
-    sql: ${TABLE}."document_subclass" ;;
+  dimension: document_results_document_id {
+    type: number
+    group_label: "IDs"
+    description: "The document ID associated with the order result"
+    sql: ${TABLE}."document_results_document_id" ;;
+  }
+
+  dimension: document_results_id {
+    type: number
+    hidden: yes
+    sql: ${TABLE}."document_results_id" ;;
   }
 
   dimension: external_note {
@@ -268,7 +305,6 @@ view: document_prescriptions {
 
   dimension: image_exists_yn {
     type: string
-    hidden: yes
     sql: ${TABLE}."image_exists_yn" ;;
   }
 
@@ -280,8 +316,23 @@ view: document_prescriptions {
 
   dimension: notifier {
     type: string
-    hidden: yes
+    group_label: "User Actions"
+    description: "The entity creating the notification of the order e.g. 'ATHENA', 'HOU - HOME STAFF', etc."
     sql: ${TABLE}."notifier" ;;
+  }
+
+  dimension_group: observation {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."observation_datetime" ;;
   }
 
   dimension_group: order {
@@ -306,6 +357,7 @@ view: document_prescriptions {
 
   dimension: order_text {
     type: string
+    group_label: "Notes"
     sql: ${TABLE}."order_text" ;;
   }
 
@@ -330,7 +382,7 @@ view: document_prescriptions {
 
   dimension: patient_note {
     type: string
-    hidden: yes
+    group_label: "Notes"
     sql: ${TABLE}."patient_note" ;;
   }
 
@@ -347,7 +399,6 @@ view: document_prescriptions {
 
   dimension: provider_username {
     type: string
-    group_label: "User Actions"
     sql: ${TABLE}."provider_username" ;;
   }
 
@@ -371,8 +422,29 @@ view: document_prescriptions {
     sql: ${TABLE}."result_notes" ;;
   }
 
+  dimension: reviewed_by {
+    type: string
+    group_label: "User Actions"
+    sql: ${TABLE}."reviewed_by" ;;
+  }
+
+  dimension_group: reviewed {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."reviewed_datetime" ;;
+  }
+
   dimension: route {
     type: string
+    hidden: yes
     sql: ${TABLE}."route" ;;
   }
 
@@ -381,12 +453,47 @@ view: document_prescriptions {
     sql: ${TABLE}."source" ;;
   }
 
+  dimension: specimen_collected_by {
+    type: string
+    group_label: "User Actions"
+    sql: ${TABLE}."specimen_collected_by" ;;
+  }
+
+  dimension_group: specimen_collected {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."specimen_collected_datetime" ;;
+  }
+
+  dimension: specimen_description {
+    type: string
+    sql: ${TABLE}."specimen_description" ;;
+  }
+
+  dimension: specimen_draw_location {
+    type: string
+    sql: ${TABLE}."specimen_draw_location" ;;
+  }
+
+  dimension: specimen_source {
+    type: string
+    sql: ${TABLE}."specimen_source" ;;
+  }
+
   dimension: status {
     type: string
     sql: ${TABLE}."status" ;;
   }
 
-  dimension_group: updated_at {
+  dimension_group: updated {
     type: time
     hidden: yes
     timeframes: [
@@ -403,51 +510,145 @@ view: document_prescriptions {
 
   dimension: vaccine_route {
     type: string
+    hidden: yes
     sql: ${TABLE}."vaccine_route" ;;
   }
 
-  dimension: prescription_created_to_submitted  {
+  dimension: order_created_to_submitted  {
     type: number
     hidden: yes
     value_format: "0.00"
-    sql: (EXTRACT(EPOCH FROM ${athena_prescription_submitted.order_submitted_raw}) -
-      EXTRACT(EPOCH FROM ${athena_prescription_created.order_created_raw})) / 3600 ;;
+    sql: (EXTRACT(EPOCH FROM ${athena_order_submitted.order_submitted_raw}) -
+          EXTRACT(EPOCH FROM ${athena_order_created.order_created_raw})) / 3600 ;;
   }
 
   measure: average_created_to_submitted {
-    description: "Average time between prescription created and submitted (Hrs)"
+    description: "Average time between order created and submitted (Hrs)"
     group_label: "Time Cycle Management"
     type: average
-    drill_fields: [document_id, patients.ehr_id, clinical_order_type, prescription_created_to_submitted]
-    filters: [clinical_order_type_group: "PRESCRIPTION", status: "-DELETED"]
-    sql: ${prescription_created_to_submitted} ;;
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, order_created_to_submitted]
+    filters: [clinical_order_type_group: "LAB, IMAGING"]
+    sql: ${order_created_to_submitted} ;;
     value_format: "0.00"
   }
 
+  dimension: order_submitted_to_result_rcvd  {
+    type: number
+    hidden: yes
+    value_format: "0.00"
+    sql: (EXTRACT(EPOCH FROM ${athena_result_created.result_created_raw}) -
+      EXTRACT(EPOCH FROM ${athena_order_submitted.order_submitted_raw})) / 3600 ;;
+  }
 
+  measure: average_submitted_to_result_rcvd {
+    description: "Average time between order submitted and result received (Hrs)"
+    group_label: "Time Cycle Management"
+    type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, order_submitted_to_result_rcvd]
+    filters: [clinical_order_type_group: "LAB, IMAGING", status: "-DELETED"]
+    sql: ${order_submitted_to_result_rcvd} ;;
+    value_format: "0.00"
+  }
+
+  dimension: result_rcvd_to_closed  {
+    type: number
+    hidden: yes
+    value_format: "0.00"
+    sql: (EXTRACT(EPOCH FROM ${athena_result_closed.result_closed_raw}) -
+      EXTRACT(EPOCH FROM ${athena_result_created.result_created_raw})) / 3600 ;;
+  }
+
+  measure: average_result_rcvd_to_closed {
+    description: "Average time between order result received and closed (Hrs)"
+    group_label: "Time Cycle Management"
+    type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, result_rcvd_to_closed]
+    filters: [clinical_order_type_group: "LAB, IMAGING"]
+    sql: ${result_rcvd_to_closed} ;;
+    value_format: "0.00"
+  }
 
   measure: count {
     type: count
     drill_fields: [detail*]
   }
 
+  dimension: labs_ordered {
+    description: "Care requests where one or more labs were ordered"
+    type: yesno
+    hidden: yes
+    sql: upper(${clinical_order_type_group}) = 'LAB' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
+  }
+
+  measure: count_appointments_with_labs {
+    description: "Count of care requests where one or more labs were ordered"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: labs_ordered
+      value: "yes"
+    }
+    group_label: "Labs, Imaging & Procedures"
+  }
+
+  dimension: imaging_ordered {
+    description: "Identifies care requests where one or more imaging orders were placed"
+    type: yesno
+    hidden: yes
+    sql: upper(${clinical_order_type_group}) = 'IMAGING' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
+  }
+
+  measure: count_appointments_with_imaging {
+    description: "Count of care requests where one or more imaging orders were placed"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: imaging_ordered
+      value: "yes"
+    }
+    group_label: "Labs, Imaging & Procedures"
+  }
+
+  dimension: procedures_performed {
+    description: "Identifies care requests where one or more procedures were performed"
+    type: yesno
+    hidden: yes
+    sql: upper(${clinical_order_type_group}) = 'PROCEDURE' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
+  }
+
+  measure: count_appointments_with_procedures {
+    description: "Count of care requests where one or more procedures were performed"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: procedures_performed
+      value: "yes"
+    }
+    group_label: "Labs, Imaging & Procedures"
+  }
+
+
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
       id,
-      out_of_network_ref_reason_name,
-      interface_vendor_name,
       provider_username,
-      department.department_name,
-      department.billing_name,
-      department.gpci_location_name,
-      department.department_id,
+      interface_vendor_name,
+      out_of_network_ref_reason_name,
       patient.first_name,
       patient.last_name,
       patient.new_patient_id,
       patient.guarantor_first_name,
       patient.guarantor_last_name,
-      patient.emergency_contact_name
+      patient.emergency_contact_name,
+      department.department_name,
+      department.billing_name,
+      department.gpci_location_name,
+      department.department_id,
+      document_results.provider_username,
+      document_results.id,
+      document_results.interface_vendor_name,
+      document_results.out_of_network_ref_reason_name
     ]
   }
 }

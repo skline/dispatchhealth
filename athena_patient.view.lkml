@@ -1,4 +1,4 @@
-view: patient {
+view: athena_patient {
   sql_table_name: athena.patient ;;
   drill_fields: [new_patient_id]
   view_label: "Athena Patients (DEV)"
