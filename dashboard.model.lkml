@@ -789,7 +789,7 @@ join: athena_order_created {
   join: athena_prescription_created {
     from: athena_order_created
     relationship: one_to_one
-    sql_on: ${document_prescriptions.document_id} = ${athena_prescription_created.document_id} ;;
+    sql_on: ${athena_document_prescriptions.document_id} = ${athena_prescription_created.document_id} ;;
     fields: []
   }
 
@@ -802,7 +802,7 @@ join: athena_order_submitted {
   join: athena_prescription_submitted {
     from: athena_order_submitted
     relationship: one_to_one
-    sql_on: ${document_prescriptions.document_id} = ${athena_prescription_submitted.document_id} ;;
+    sql_on: ${athena_document_prescriptions.document_id} = ${athena_prescription_submitted.document_id} ;;
     fields: []
   }
 

@@ -406,6 +406,24 @@ view: athena_document_prescriptions {
     sql: ${TABLE}."vaccine_route" ;;
   }
 
+  dimension: prescription_created_to_submitted  {
+    type: number
+    hidden: yes
+    value_format: "0.00"
+    sql: (EXTRACT(EPOCH FROM ${athena_prescription_submitted.order_submitted_raw}) -
+      EXTRACT(EPOCH FROM ${athena_prescription_created.order_created_raw})) / 3600 ;;
+  }
+
+  measure: average_created_to_submitted {
+    description: "Average time between prescription created and submitted (Hrs)"
+    group_label: "Time Cycle Management"
+    type: average
+    drill_fields: [document_id, patients.ehr_id, clinical_order_type, prescription_created_to_submitted]
+    filters: [clinical_order_type_group: "PRESCRIPTION", status: "-DELETED"]
+    sql: ${prescription_created_to_submitted} ;;
+    value_format: "0.00"
+  }
+
   measure: count {
     type: count
     drill_fields: [detail*]
