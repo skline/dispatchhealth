@@ -793,11 +793,25 @@ join: athena_order_created {
   fields: []
 }
 
+  join: athena_prescription_created {
+    from: athena_order_created
+    relationship: one_to_one
+    sql_on: ${document_prescriptions.document_id} = ${athena_prescription_created.document_id} ;;
+    fields: []
+  }
+
 join: athena_order_submitted {
   relationship: one_to_one
   sql_on: ${document_orders.document_id} = ${athena_order_submitted.document_id} ;;
   fields: []
 }
+
+  join: athena_prescription_submitted {
+    from: athena_order_submitted
+    relationship: one_to_one
+    sql_on: ${document_prescriptions.document_id} = ${athena_prescription_submitted.document_id} ;;
+    fields: []
+  }
 
 join: athena_first_result {
   relationship: one_to_one
@@ -866,7 +880,7 @@ join: clinicalletter {
 join: document_prescriptions {
   relationship: one_to_many
   sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
-  fields: []
+  # fields: []
 }
 
   join: patientmedication_prescriptions {
