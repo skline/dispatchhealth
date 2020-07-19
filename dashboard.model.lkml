@@ -3646,11 +3646,21 @@ explore: shift_teams
          AND (${zizzl_detailed_shift_hours.shift_name} LIKE 'DHMT/%' OR ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%');;
   }
 
-
-
   join: provider_profiles {
     relationship: one_to_one
     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
+  }
+
+  join: athena_provider {
+    relationship: one_to_one
+    sql_on: ${provider_profiles.npi} = ${athena_provider.provider_npi_number} ;;
+  }
+
+  join: athena_inbox_review_provider {
+    from: athena_documentaction
+    relationship: one_to_many
+    sql_on: ${athena_provider.provider_user_name} = ${athena_inbox_review_provider.created_by}
+            AND ${athena_inbox_review_provider.status} = 'REVIEW';;
   }
 
   join: shift_team_market_assignment_logs {
