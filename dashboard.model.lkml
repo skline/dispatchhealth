@@ -3656,12 +3656,12 @@ explore: shift_teams
     sql_on: ${provider_profiles.npi} = ${athena_provider.provider_npi_number} ;;
   }
 
-  join: athena_inbox_review_provider {
-    from: athena_documentaction
-    relationship: one_to_many
-    sql_on: ${athena_provider.provider_user_name} = ${athena_inbox_review_provider.created_by}
-            AND ${athena_inbox_review_provider.status} = 'REVIEW';;
-  }
+#   join: athena_inbox_review_provider {
+#     from: athena_documentaction
+#     relationship: one_to_many
+#     sql_on: ${athena_provider.provider_user_name} = ${athena_inbox_review_provider.created_by}
+#             AND ${athena_inbox_review_provider.status} = 'REVIEW';;
+#   }
 
   join: shift_team_market_assignment_logs {
     sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} AND ${shift_team_market_assignment_logs.lend} ;;
