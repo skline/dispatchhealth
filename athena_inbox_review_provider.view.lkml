@@ -27,9 +27,10 @@ view: athena_inbox_review_provider {
         WHERE status = 'REVIEW' AND document_class IN ('LABRESULT','IMAGINGRESULT')
             AND created_by NOT IN ('INTERFACE','ATHENA')) AS da
     INNER JOIN athena.provider prv
-        ON (prv."provider_user_name") = (da."created_by")
+        ON (prv."provider_user_name") = (da."created_by") ;;
 
-    ;;
+    sql_trigger_value: SELECT MAX(document_action_id) FROM athena.documentaction ;;
+    indexes: ["document_action_id","document_id","provider_npi_number"]
 
   }
 
