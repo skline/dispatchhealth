@@ -290,6 +290,7 @@ include: "athena_provider.view.lkml"
 include: "athena_providergroup.view.lkml"
 include: "document_close_tmp.view.lkml"
 include: "predictions.view.lkml"
+include: "athena_inbox_review_provider.view.lkml"
 
 
 
@@ -3651,17 +3652,10 @@ explore: shift_teams
     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
   }
 
-  join: athena_provider {
-    relationship: one_to_one
-    sql_on: ${provider_profiles.npi} = ${athena_provider.provider_npi_number} ;;
+  join: athena_inbox_review_provider {
+    relationship: one_to_many
+    sql_on: ${provider_profiles.npi} = ${athena_inbox_review_provider.npi} ;;
   }
-
-#   join: athena_inbox_review_provider {
-#     from: athena_documentaction
-#     relationship: one_to_many
-#     sql_on: ${athena_provider.provider_user_name} = ${athena_inbox_review_provider.created_by}
-#             AND ${athena_inbox_review_provider.status} = 'REVIEW';;
-#   }
 
   join: shift_team_market_assignment_logs {
     sql_on: ${shift_teams.id} = ${shift_team_market_assignment_logs.shift_team_id} AND ${shift_team_market_assignment_logs.lend} ;;
