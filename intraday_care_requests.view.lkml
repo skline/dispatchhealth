@@ -105,8 +105,8 @@ view: intraday_care_requests {
   }
 
   dimension: service_line_id {
-    type: number
-    sql: ${TABLE}.meta_data ->> 'service_line_id' ;;
+    type: string
+    sql: ${TABLE}.meta_data ->> 'service_line_id'::varchar ;;
   }
 
   dimension: zipcode {
