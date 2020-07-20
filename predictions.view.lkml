@@ -60,11 +60,13 @@ view: predictions {
   dimension: probability_false {
     type: number
     sql: ${TABLE}."probability_false" ;;
+    value_format: "0.00"
   }
 
   dimension: probability_true {
     type: number
     sql: ${TABLE}."probability_true" ;;
+    value_format: "0.00"
   }
 
   dimension_group: updated {
