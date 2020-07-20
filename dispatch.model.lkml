@@ -93,6 +93,7 @@ include: "tacoma_mssp.view.lkml"
 include: "ed_diversion_survey_response.view.lkml"
 include: "ut_membership.view.lkml"
 include: "uhc_hotspot.view.lkml"
+include: "hartford_zips.view.lkml"
 
 explore: visit_facts {
 
@@ -588,3 +589,4 @@ explore: uhc_hotspot {}
 explore: nc_dx_data {}
 explore: ut_membership {}
 explore: tampa_wellmed_optum {}
+explore: hartford_zips {}
