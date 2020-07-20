@@ -1,15 +1,6 @@
-view: clinicalencounterdiagnosis {
-  sql_table_name: athena.clinicalencounterdiagnosis ;;
-  view_label: "Athena Clinical Encounter Diagnoses (DEV)"
-
-  drill_fields: [id]
-
-  dimension: id {
-    primary_key: yes
-    type: number
-    hidden: yes
-    sql: ${TABLE}."id" ;;
-  }
+view: athena_clinicalresultobservation {
+  sql_table_name: athena.clinicalresultobservation ;;
+  view_label: "Athena Clinical Result Observations"
 
   dimension: __batch_id {
     type: string
@@ -17,18 +8,9 @@ view: clinicalencounterdiagnosis {
     sql: ${TABLE}."__batch_id" ;;
   }
 
-  dimension_group: __file {
-    type: time
+  dimension: __file_date {
+    type: string
     hidden: yes
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
     sql: ${TABLE}."__file_date" ;;
   }
 
@@ -38,16 +20,16 @@ view: clinicalencounterdiagnosis {
     sql: ${TABLE}."__from_file" ;;
   }
 
-  dimension: clinical_encounter_dx_id {
-    type: number
-    hidden: yes
-    sql: ${TABLE}."clinical_encounter_dx_id" ;;
-  }
-
-  dimension: clinical_encounter_id {
+  dimension: clinical_observation_id {
     type: number
     group_label: "IDs"
-    sql: ${TABLE}."clinical_encounter_id" ;;
+    sql: ${TABLE}."clinical_observation_id" ;;
+  }
+
+  dimension: clinical_result_id {
+    type: number
+    group_label: "IDs"
+    sql: ${TABLE}."clinical_result_id" ;;
   }
 
   dimension_group: created_at {
@@ -67,6 +49,7 @@ view: clinicalencounterdiagnosis {
 
   dimension: created_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."created_by" ;;
   }
 
@@ -86,6 +69,7 @@ view: clinicalencounterdiagnosis {
 
   dimension: deleted_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deleted_by" ;;
   }
 
@@ -103,40 +87,60 @@ view: clinicalencounterdiagnosis {
     sql: ${TABLE}."deleted_datetime" ;;
   }
 
-  dimension: icd_code_id {
-    type: string
-    group_label: "IDs"
-    sql: ${TABLE}."icd_code_id" ;;
-  }
-
-  dimension: laterality {
-    type: string
-    hidden: yes
-    sql: ${TABLE}."laterality" ;;
-  }
-
-  dimension: note {
-    type: string
-    hidden: yes
-    sql: ${TABLE}."note" ;;
-  }
-
-  dimension: ordering {
-    type: number
-    description: "The priority order of the ICD-10 code (e.g. 0 is first priority)"
-    sql: ${TABLE}."ordering" ;;
-  }
-
-  dimension: snomed_code {
+  dimension: loinc_id {
     type: number
     group_label: "IDs"
-    sql: ${TABLE}."snomed_code" ;;
+    sql: ${TABLE}."loinc_id" ;;
   }
 
-  dimension: status {
+  dimension: observation_abnormal_flag_id {
     type: string
     hidden: yes
-    sql: ${TABLE}."status" ;;
+    sql: ${TABLE}."observation_abnormal_flag_id" ;;
+  }
+
+  dimension: observation_identifier {
+    type: string
+    hidden: yes
+    sql: ${TABLE}."observation_identifier" ;;
+  }
+
+  dimension: observation_identifier_text {
+    type: string
+    hidden: yes
+    sql: ${TABLE}."observation_identifier_text" ;;
+  }
+
+  dimension: observation_units {
+    type: string
+    sql: ${TABLE}."observation_units" ;;
+  }
+
+  dimension: observation_value_type {
+    type: string
+    hidden: yes
+    sql: ${TABLE}."observation_value_type" ;;
+  }
+
+  dimension: performing_lab_key {
+    type: string
+    hidden: yes
+    sql: ${TABLE}."performing_lab_key" ;;
+  }
+
+  dimension: reference_range {
+    type: string
+    sql: ${TABLE}."reference_range" ;;
+  }
+
+  dimension: result {
+    type: string
+    sql: ${TABLE}."result" ;;
+  }
+
+  dimension: template_analyte_name {
+    type: string
+    sql: ${TABLE}."template_analyte_name" ;;
   }
 
   dimension_group: updated_at {
@@ -156,6 +160,6 @@ view: clinicalencounterdiagnosis {
 
   measure: count {
     type: count
-    drill_fields: [id]
+    drill_fields: [template_analyte_name]
   }
 }

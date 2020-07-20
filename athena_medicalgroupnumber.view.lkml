@@ -1,5 +1,6 @@
-view: providernumberdepartment {
-  sql_table_name: athena.providernumberdepartment ;;
+view: athena_medicalgroupnumber {
+  sql_table_name: athena.medicalgroupnumber ;;
+  view_label: "Athena Medical Group Number (IN DEV)"
 
   dimension: __batch_id {
     type: string
@@ -77,19 +78,59 @@ view: providernumberdepartment {
     sql: ${TABLE}."deleted_datetime" ;;
   }
 
-  dimension: enrolled_department_id {
-    type: number
-    sql: ${TABLE}."enrolled_department_id" ;;
+  dimension_group: effective {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    convert_tz: no
+    datatype: date
+    sql: ${TABLE}."effective_date" ;;
   }
 
-  dimension: provider_number_department_id {
-    type: number
-    sql: ${TABLE}."provider_number_department_id" ;;
+  dimension_group: expiration {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    convert_tz: no
+    datatype: date
+    sql: ${TABLE}."expiration_date" ;;
   }
 
-  dimension: provider_number_id {
+  dimension: medical_group_id {
     type: number
-    sql: ${TABLE}."provider_number_id" ;;
+    sql: ${TABLE}."medical_group_id" ;;
+  }
+
+  dimension: medical_group_number_id {
+    type: number
+    sql: ${TABLE}."medical_group_number_id" ;;
+  }
+
+  dimension: notes {
+    type: string
+    sql: ${TABLE}."notes" ;;
+  }
+
+  dimension: number {
+    type: string
+    sql: ${TABLE}."number" ;;
+  }
+
+  dimension: type {
+    type: string
+    sql: ${TABLE}."type" ;;
   }
 
   dimension_group: updated {
@@ -104,6 +145,11 @@ view: providernumberdepartment {
       year
     ]
     sql: ${TABLE}."updated_at" ;;
+  }
+
+  dimension: verification_status {
+    type: string
+    sql: ${TABLE}."verification_status" ;;
   }
 
   measure: count {

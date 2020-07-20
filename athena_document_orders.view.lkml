@@ -1,4 +1,4 @@
-view: document_orders {
+view: athena_document_orders {
   sql_table_name: athena.document_orders ;;
   drill_fields: [id]
   view_label: "Athena Document Orders"

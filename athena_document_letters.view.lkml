@@ -1,11 +1,10 @@
-view: document_prescriptions {
-  sql_table_name: athena.document_prescriptions ;;
-  view_label: "Athena Prescriptions"
+view: athena_document_letters {
+  sql_table_name: athena.document_letters ;;
   drill_fields: [id]
+  view_label: "Athena Clinical Letters"
 
   dimension: id {
     primary_key: yes
-    hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
   }
@@ -35,26 +34,6 @@ view: document_prescriptions {
     type: string
     hidden: yes
     sql: ${TABLE}."__from_file" ;;
-  }
-
-  dimension_group: alarm {
-    type: time
-    timeframes: [
-      raw,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    convert_tz: no
-    datatype: date
-    sql: ${TABLE}."alarm_date" ;;
-  }
-
-  dimension: alarm_days {
-    type: number
-    sql: ${TABLE}."alarm_days" ;;
   }
 
   dimension: approved_by {
@@ -95,19 +74,6 @@ view: document_prescriptions {
     sql: ${TABLE}."clinical_encounter_id" ;;
   }
 
-  dimension: clinical_order_type {
-    type: string
-    group_label: "Description"
-    description: "The detailed description of the prescription"
-    sql: ${TABLE}."clinical_order_type" ;;
-  }
-
-  dimension: clinical_order_type_group {
-    type: string
-    group_label: "Description"
-    sql: ${TABLE}."clinical_order_type_group" ;;
-  }
-
   dimension: clinical_provider_id {
     type: number
     group_label: "IDs"
@@ -137,7 +103,7 @@ view: document_prescriptions {
 
   dimension: created_clinical_encounter_id {
     type: number
-    group_label: "IDs"
+    hidden: yes
     sql: ${TABLE}."created_clinical_encounter_id" ;;
   }
 
@@ -153,26 +119,6 @@ view: document_prescriptions {
       year
     ]
     sql: ${TABLE}."created_datetime" ;;
-  }
-
-  dimension: deactivated_by {
-    type: string
-    group_label: "User Actions"
-    sql: ${TABLE}."deactivated_by" ;;
-  }
-
-  dimension_group: deactivated {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}."deactivated_datetime" ;;
   }
 
   dimension: deleted_by {
@@ -197,12 +143,13 @@ view: document_prescriptions {
 
   dimension: denied_by {
     type: string
-    group_label: "User Actions"
+    hidden: yes
     sql: ${TABLE}."denied_by" ;;
   }
 
-  dimension_group: denied {
+  dimension_group: denied_datetime {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -224,7 +171,8 @@ view: document_prescriptions {
 
   dimension: document_class {
     type: string
-    group_label: "Descriptions"
+    group_label: "Description"
+    description: "LETTER"
     sql: ${TABLE}."document_class" ;;
   }
 
@@ -236,46 +184,15 @@ view: document_prescriptions {
 
   dimension: document_subclass {
     type: string
-    group_label: "Descriptions"
+    group_label: "Description"
+    description: "LETTER_PATIENTCORRESPONDENCE or NULL"
     sql: ${TABLE}."document_subclass" ;;
-  }
-
-  dimension: external_note {
-    type: string
-    group_label: "Notes"
-    sql: ${TABLE}."external_note" ;;
-  }
-
-  dimension: fbd_med_id {
-    type: string
-    group_label: "IDs"
-    sql: ${TABLE}."fbd_med_id" ;;
-  }
-
-  dimension_group: future_submit {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}."future_submit_datetime" ;;
   }
 
   dimension: image_exists_yn {
     type: string
     hidden: yes
     sql: ${TABLE}."image_exists_yn" ;;
-  }
-
-  dimension: interface_vendor_name {
-    type: string
-    hidden: yes
-    sql: ${TABLE}."interface_vendor_name" ;;
   }
 
   dimension: notifier {
@@ -304,17 +221,6 @@ view: document_prescriptions {
     sql: ${TABLE}."order_document_id" ;;
   }
 
-  dimension: order_text {
-    type: string
-    sql: ${TABLE}."order_text" ;;
-  }
-
-  dimension: out_of_network_ref_reason_name {
-    type: string
-    hidden: yes
-    sql: ${TABLE}."out_of_network_ref_reason_name" ;;
-  }
-
   dimension: patient_char {
     type: string
     hidden: yes
@@ -328,12 +234,6 @@ view: document_prescriptions {
     sql: ${TABLE}."patient_id" ;;
   }
 
-  dimension: patient_note {
-    type: string
-    hidden: yes
-    sql: ${TABLE}."patient_note" ;;
-  }
-
   dimension: priority {
     type: string
     sql: ${TABLE}."priority" ;;
@@ -341,7 +241,6 @@ view: document_prescriptions {
 
   dimension: provider_note {
     type: string
-    group_label: "Notes"
     sql: ${TABLE}."provider_note" ;;
   }
 
@@ -351,26 +250,6 @@ view: document_prescriptions {
     sql: ${TABLE}."provider_username" ;;
   }
 
-  dimension_group: received {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}."received_datetime" ;;
-  }
-
-  dimension: result_notes {
-    type: string
-    group_label: "Notes"
-    sql: ${TABLE}."result_notes" ;;
-  }
-
   dimension: route {
     type: string
     sql: ${TABLE}."route" ;;
@@ -378,6 +257,7 @@ view: document_prescriptions {
 
   dimension: source {
     type: string
+    description: "ENCOUNTER"
     sql: ${TABLE}."source" ;;
   }
 
@@ -401,22 +281,53 @@ view: document_prescriptions {
     sql: ${TABLE}."updated_at" ;;
   }
 
-  dimension: vaccine_route {
-    type: string
-    sql: ${TABLE}."vaccine_route" ;;
-  }
-
   measure: count {
     type: count
     drill_fields: [detail*]
+  }
+
+  dimension: clinical_letters_sent_all {
+    description: "Identifies clinical letters sent to any recipient"
+    hidden: yes
+    type: yesno
+    sql: (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' ;;
+  }
+
+  measure: count_notes_sent_any {
+    description: "Count appointments where the clinical letter was sent to any recipient (not patient correspondence)"
+    type: count_distinct
+
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: clinical_letters_sent_all
+      value: "yes"
+    }
+    group_label: "Clinical Letters Sent"
+  }
+
+  dimension: clinical_letters_sent_pcp {
+    description: "Identifies clinical letters sent to the patient's primary care provider"
+    hidden: yes
+    type: yesno
+    sql:  (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' AND upper(${clinicalletter.role}) = 'PRIMARY CARE PROVIDER' ;;
+  }
+
+  measure: count_notes_sent_pcp {
+    description: "Count appointments where the clinical letter was sent to the patient's primary care provider"
+    type: count_distinct
+
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: clinical_letters_sent_pcp
+      value: "yes"
+    }
+    group_label: "Clinical Letters Sent"
   }
 
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
       id,
-      out_of_network_ref_reason_name,
-      interface_vendor_name,
       provider_username,
       department.department_name,
       department.billing_name,

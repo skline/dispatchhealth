@@ -11,7 +11,7 @@ include: "provider_fit_testing.view.lkml"
 include: "funnel_agg.view.lkml"
 include: "users.view.lkml"
 include: "sf_last_quarter_accounts_health_score.view.lkml"
-include: "clinicalprovider.view.lkml"
+include: "athena_clinicalprovider.view.lkml"
 include: "addressable_items.view.lkml"
 include: "diversion_type.view.lkml"
 include: "insurance_network_insurance_plans.view.lkml"
@@ -21,7 +21,7 @@ include: "visit_dimensions_clone.view.lkml"
 include: "care_request_consents.view.lkml"
 include: "genesys_conversation_wrapup.view.lkml"
 include: "sf_accounts.view.lkml"
-include: "claimdiagnosis.view.lkml"
+include: "athena_claimdiagnosis.view.lkml"
 include: "mailchimp_activities.view.lkml"
 include: "adwords_ad_clone.view.lkml"
 include: "variable_shift_agg.view.lkml"
@@ -30,7 +30,7 @@ include: "insurance_networks.view.lkml"
 include: "sf_priority_accounts.view.lkml"
 include: "ga_pageviews_clone.view.lkml"
 include: "intraday_monitoring_agg.view.lkml"
-include: "department.view.lkml"
+include: "athena_department.view.lkml"
 include: "bidtellect_cost_clone.view.lkml"
 include: "diversion.view.lkml"
 include: "market_geo_locations.view.lkml"
@@ -46,16 +46,16 @@ include: "non_phone_crs.view.lkml"
 include: "covid_testing_results.view.lkml"
 include: "shift_team_stops.view.lkml"
 include: "last_documentaction.view.lkml"
-include: "document_results.view.lkml"
-include: "claim.view.lkml"
+include: "athena_document_results.view.lkml"
+include: "athena_claim.view.lkml"
 include: "toc_predictions.view.lkml"
 include: "icd_visit_joins_clone.view.lkml"
 include: "day_of_week_variation.view.lkml"
-include: "appointment.view.lkml"
+include: "athena_appointment.view.lkml"
 include: "tch_low_acuity_zips.view.lkml"
 include: "ga_adwords_stats_clone.view.lkml"
 include: "athenadwh_appointments_clone.view.lkml"
-include: "first_major_class_admit_date_post_visit.view.lkml"
+include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -70,7 +70,7 @@ include: "zizzl_detailed_shift_hours.view.lkml"
 include: "humanity_dashboard_provider_id_crosswalk.view.lkml"
 include: "athenadwh_clinical_results_clone.view.lkml"
 include: "athenadwh_clinical_providers_fax_clone.view.lkml"
-include: "clinicalencounter.view.lkml"
+include: "athena_clinicalencounter.view.lkml"
 include: "marketing_data_processed.view.lkml"
 include: "diagnosis_rank_clone.view.lkml"
 include: "budget_projections_by_market_clone.view.lkml"
@@ -81,7 +81,7 @@ include: "sem_run_rate.view.lkml"
 include: "care_requests.view.lkml"
 include: "email_unsubscribes_clone.view.lkml"
 include: "thr_zips.view.lkml"
-include: "documentaction.view.lkml"
+include: "athena_documentaction.view.lkml"
 include: "bi_events.view.lkml"
 include: "primary_payer_dimensions_clone.view.lkml"
 include: "athenadwh_procedure_codes_clone.view.lkml"
@@ -146,14 +146,14 @@ include: "insurance_network_network_referrals.view.lkml"
 include: "care_request_network_referrals.view.lkml"
 include: "collective_medical.view.lkml"
 include: "thpg_texashealth_backcare.view.lkml"
-include: "transaction.view.lkml"
+include: "athena_transaction.view.lkml"
 include: "zizzl_employee_roster.view.lkml"
 include: "csc_agent_location.view.lkml"
 include: "csc_survey_clone.view.lkml"
 include: "psu_count_data.view.lkml"
 include: "athenadwh_chart_closing.view.lkml"
 include: "census_zipcode.view.lkml"
-include: "clinicalresult.view.lkml"
+include: "athena_clinicalresult.view.lkml"
 include: "marketing_cost_clone.view.lkml"
 include: "athenadwh_medical_history_flat.view.lkml"
 include: "athenadwh_documentaction.view.lkml"
@@ -164,13 +164,13 @@ include: "driver_licenses.view.lkml"
 include: "idle_time_summary.view.lkml"
 include: "provider_network.view.lkml"
 include: "ga_experiments.view.lkml"
-include: "document_letters.view.lkml"
-include: "document_others.view.lkml"
+include: "athena_document_letters.view.lkml"
+include: "athena_document_others.view.lkml"
 include: "postal_codes.view.lkml"
 include: "market_projections_by_month.view.lkml"
 include: "ga_zips_clone.view.lkml"
 include: "operational_excellence_metrics.view.lkml"
-include: "document_prescriptions.view.lkml"
+include: "athena_document_prescriptions.view.lkml"
 include: "survey_responses_flat_clone.view.lkml"
 include: "stop_times_by_care_request.view.lkml"
 include: "drg_to_icd10_crosswalk.view.lkml"
@@ -178,7 +178,7 @@ include: "sf_activities.view.lkml"
 include: "athena_inbox_tracking.view.lkml"
 include: "user_roles.view.lkml"
 include: "diversion_categories_flat.view.lkml"
-include: "document_orders.view.lkml"
+include: "athena_document_orders.view.lkml"
 include: "mailchimp_audiences_clone.view.lkml"
 include: "insurance_plans.view.lkml"
 include: "roles.view.lkml"
@@ -205,7 +205,7 @@ include: "thpg_providers.view.lkml"
 include: "income_pop_by_zipcode_small.view.lkml"
 include: "icd_code_risk_assessment_crosswalk.view.lkml"
 include: "markets.view.lkml"
-include: "clinicalencounterdiagnosis.view.lkml"
+include: "athena_clinicalencounterdiagnosis.view.lkml"
 include: "shift_teams.view.lkml"
 include: "market_start_date.view.lkml"
 include: "ad_groups_clone.view.lkml"
@@ -245,7 +245,7 @@ include: "number_to_market.view.lkml"
 include: "patient_safety_flags.view.lkml"
 include: "ga_adwords_cost_clone.view.lkml"
 include: "accepted_agg.view.lkml"
-include: "clinicalresultobservation.view.lkml"
+include: "athena_clinicalresultobservation.view.lkml"
 include: "sf_last_week_accounts_health_score.view.lkml"
 include: "athenadwh_icdcodeall.view.lkml"
 include: "dtc_categorization.view.lkml"
@@ -270,7 +270,7 @@ include: "census_tract_clone.view.lkml"
 include: "mailchimp_sends.view.lkml"
 include: "faxes_sent.view.lkml"
 include: "subtotals_clone.view.lkml"
-include: "patient.view.lkml"
+include: "athena_patient.view.lkml"
 include: "productivity_data_clone.view.lkml"
 include: "transaction_facts_clone.view.lkml"
 include: "athenadwh_patient_insurances_clone.view.lkml"
@@ -283,12 +283,14 @@ include: "fres.view.lkml"
 include: "sbm.view.lkml"
 include: "res_crt.view.lkml"
 include: "res_close.view.lkml"
-include: "patientmedication_prescriptions.view.lkml"
-include: "clinicalletter.view.lkml"
+include: "athena_patientmedication_prescriptions.view.lkml"
+include: "athena_clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
-include: "provider.view.lkml"
-include: "providergroup.view.lkml"
+include: "athena_provider.view.lkml"
+include: "athena_providergroup.view.lkml"
 include: "document_close_tmp.view.lkml"
+include: "predictions.view.lkml"
+
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -310,6 +312,11 @@ explore: care_requests {
   #  field: markets.name
   #  user_attribute: "market_name"
   #}
+
+  join: predictions {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${predictions.care_request_id} ;;
+  }
 
 # Join all Athena data warehouse feed tables -- DE
   join: athenadwh_patient_insurances_clone {
@@ -600,9 +607,9 @@ explore: care_requests {
     sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
   }
 
-  join: first_major_class_admit_date_post_visit {
+  join: collective_medical_first_major_class_admit_date_post_visit {
     relationship: many_to_one
-    sql_on: ${care_requests.id} = ${first_major_class_admit_date_post_visit.care_request_id};;
+    sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
   }
 
   join: er_admits_prior_visit {
@@ -700,25 +707,25 @@ join: covid_testing_results {
 
 ###################################################
 # New Athena Feed - 06/12/2020 - DE
-join: appointment {
+join: athena_appointment {
   relationship: one_to_one
-  sql_on: ${care_requests.ehr_id} = ${appointment.appointment_char} ;;
+  sql_on: ${care_requests.ehr_id} = ${athena_appointment.appointment_char} ;;
 }
 
-join: clinicalencounter {
+join: athena_clinicalencounter {
   relationship: one_to_one
-  sql_on: ${appointment.appointment_id} = ${clinicalencounter.appointment_id} ;;
+  sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
 }
 
-join: clinicalencounterdiagnosis {
+join: athena_clinicalencounterdiagnosis {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${clinicalencounterdiagnosis.clinical_encounter_id} AND
-          ${clinicalencounterdiagnosis.deleted_raw} IS NULL;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_clinicalencounterdiagnosis.clinical_encounter_id} AND
+          ${athena_clinicalencounterdiagnosis.deleted_raw} IS NULL;;
 }
 
 join: athena_provider {
   relationship: many_to_one
-  sql_on: ${appointment.provider_id} = ${athena_provider.provider_id} ;;
+  sql_on: ${athena_appointment.provider_id} = ${athena_provider.provider_id} ;;
 }
 
 join: athena_providergroup {
@@ -727,44 +734,44 @@ join: athena_providergroup {
   fields: [athena_providergroup.provider_group_name]
 }
 
-join: claim {
+join: athena_claim {
   relationship: one_to_one
-  sql_on: ${clinicalencounter.appointment_id} = ${claim.claim_appointment_id} ;;
+  sql_on: ${athena_clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
 }
 
-join: claimdiagnosis {
+join: athena_claimdiagnosis {
   relationship: one_to_many
-  sql_on: ${claim.claim_id} = ${claimdiagnosis.claim_id} AND ${claimdiagnosis.deleted_raw} IS NULL ;;
+  sql_on: ${athena_claim.claim_id} = ${athena_claimdiagnosis.claim_id} AND ${athena_claimdiagnosis.deleted_raw} IS NULL ;;
 }
 
-  join: transaction {
+  join: athena_transaction {
     relationship: one_to_many
-    sql_on: ${claim.claim_id} = ${transaction.claim_id} ;;
+    sql_on: ${athena_claim.claim_id} = ${athena_transaction.claim_id} ;;
   }
 
-join: department {
+join: athena_department {
   relationship: many_to_one
-  sql_on: ${clinicalencounter.department_id} = ${department.department_id} ;;
+  sql_on: ${athena_clinicalencounter.department_id} = ${athena_department.department_id} ;;
 }
 
-join: patient {
+join: athena_patient {
   relationship: many_to_one
-  sql_on: ${appointment.patient_id} = ${patient.patient_id} ;;
+  sql_on: ${athena_appointment.patient_id} = ${athena_patient.patient_id} ;;
 }
 
-join: document_orders {
+join: athena_document_orders {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_orders.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_orders.clinical_encounter_id} ;;
 }
 
-join: document_results {
+join: athena_document_results {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${document_results.order_document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_document_results.order_document_id} ;;
 }
 
 join: document_close_tmp {
   relationship: one_to_one
-  sql_on: ${document_results.document_id} = ${document_close_tmp.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${document_close_tmp.document_id} ;;
 }
 
 join: result_closing_provider {
@@ -775,19 +782,33 @@ join: result_closing_provider {
 
 join: athena_order_created {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${athena_order_created.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_order_created.document_id} ;;
   fields: []
 }
+
+  join: athena_prescription_created {
+    from: athena_order_created
+    relationship: one_to_one
+    sql_on: ${athena_document_prescriptions.document_id} = ${athena_prescription_created.document_id} ;;
+    fields: []
+  }
 
 join: athena_order_submitted {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${athena_order_submitted.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_order_submitted.document_id} ;;
   fields: []
 }
 
+  join: athena_prescription_submitted {
+    from: athena_order_submitted
+    relationship: one_to_one
+    sql_on: ${athena_document_prescriptions.document_id} = ${athena_prescription_submitted.document_id} ;;
+    fields: []
+  }
+
 join: athena_first_result {
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${athena_first_result.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_first_result.document_id} ;;
   fields: []
 }
 
@@ -804,31 +825,31 @@ join: athena_result_closed {
 }
 
 join: document_order_provider {
-  from: clinicalprovider
+  from: athena_clinicalprovider
   view_label: "Athena Document Order Provider"
   relationship: many_to_one
-  sql_on: ${document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
+  sql_on: ${athena_document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
 }
 
 join: athena_order_documentaction {
-  from: documentaction
+  from: athena_documentaction
   view_label: "Athena Order Documentaction"
   relationship: one_to_many
-  sql_on: ${document_orders.document_id} = ${athena_order_documentaction.document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${athena_order_documentaction.document_id} ;;
 }
 
 join: athena_result_documentaction {
-  from: documentaction
+  from: athena_documentaction
   view_label: "Athena Result Documentaction"
   relationship: one_to_many
-  sql_on: ${document_results.document_id} = ${athena_result_documentaction.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${athena_result_documentaction.document_id} ;;
 }
 
 join: document_order_results {
-  from: document_results
+  from: athena_document_results
   view_label: "Athena Order Results"
   relationship: one_to_one
-  sql_on: ${document_orders.document_id} = ${document_order_results.order_document_id} ;;
+  sql_on: ${athena_document_orders.document_id} = ${document_order_results.order_document_id} ;;
 }
 
 join: document_result_last_action {
@@ -838,55 +859,55 @@ join: document_result_last_action {
   sql_on: ${document_order_results.document_id} = ${document_result_last_action.document_id} ;;
 }
 
-join: document_letters {
+join: athena_document_letters {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_letters.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_letters.clinical_encounter_id} ;;
 }
 
-join: clinicalletter {
+join: athena_clinicalletter {
   relationship:many_to_one
-  sql_on:  ${document_letters.document_id} = ${clinicalletter.document_id};;
+  sql_on:  ${athena_document_letters.document_id} = ${athena_clinicalletter.document_id};;
   fields: []
 }
 
-join: document_prescriptions {
+join: athena_document_prescriptions {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_prescriptions.clinical_encounter_id} ;;
-  fields: []
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_prescriptions.clinical_encounter_id} ;;
+  # fields: []
 }
 
-  join: patientmedication_prescriptions {
+  join: athena_patientmedication_prescriptions {
     relationship: one_to_one
-    sql_on: ${document_prescriptions.document_id} = ${patientmedication_prescriptions.document_id} ;;
+    sql_on: ${athena_document_prescriptions.document_id} = ${athena_patientmedication_prescriptions.document_id} ;;
   }
 
-join: document_others {
+join: athena_document_others {
   relationship: one_to_many
-  sql_on: ${clinicalencounter.clinical_encounter_id} = ${document_others.clinical_encounter_id} ;;
+  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_others.clinical_encounter_id} ;;
 }
 
-join: clinicalresult {
+join: athena_clinicalresult {
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${clinicalresult.document_id} ;;
+  sql_on: ${document_order_results.document_id} = ${athena_clinicalresult.document_id} ;;
 }
 
-join: clinicalresultobservation {
+join: athena_clinicalresultobservation {
   relationship: one_to_many
-  sql_on: ${clinicalresult.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
+  sql_on: ${athena_clinicalresult.clinical_result_id} = ${athena_clinicalresultobservation.clinical_result_id} ;;
 }
 
 join: clinicalprovider_order {
-  from: clinicalprovider
+  from: athena_clinicalprovider
   view_label: "Athena Order Fulfilling Provider (DEV)"
   relationship: many_to_one
-  sql_on: ${document_orders.clinical_provider_id} = ${clinicalprovider_order.clinical_provider_id} ;;
+  sql_on: ${athena_document_orders.clinical_provider_id} = ${clinicalprovider_order.clinical_provider_id} ;;
 }
 
 join: department_order {
-  from: department
+  from: athena_department
   view_label: "Athena Order Department (DEV)"
   relationship: many_to_one
-  sql_on: ${document_orders.department_id}   = ${department_order.department_id} ;;
+  sql_on: ${athena_document_orders.department_id}   = ${department_order.department_id} ;;
 }
 
 
@@ -3625,11 +3646,21 @@ explore: shift_teams
          AND (${zizzl_detailed_shift_hours.shift_name} LIKE 'DHMT/%' OR ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%');;
   }
 
-
-
   join: provider_profiles {
     relationship: one_to_one
     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
+  }
+
+  join: athena_provider {
+    relationship: one_to_one
+    sql_on: ${provider_profiles.npi} = ${athena_provider.provider_npi_number} ;;
+  }
+
+  join: athena_inbox_review_provider {
+    from: athena_documentaction
+    relationship: one_to_many
+    sql_on: ${athena_provider.provider_user_name} = ${athena_inbox_review_provider.created_by}
+            AND ${athena_inbox_review_provider.status} = 'REVIEW';;
   }
 
   join: shift_team_market_assignment_logs {

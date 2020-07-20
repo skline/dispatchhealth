@@ -1,4 +1,4 @@
-view: clinicalprovider {
+view: athena_clinicalprovider {
   sql_table_name: athena.clinicalprovider ;;
   view_label: "Athena Clinical Provider"
 

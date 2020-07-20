@@ -1,11 +1,12 @@
-view: document_letters {
-  sql_table_name: athena.document_letters ;;
+view: athena_document_results {
+  sql_table_name: athena.document_results ;;
   drill_fields: [id]
-  view_label: "Athena Clinical Letters"
+  view_label: "Athena Document Results"
 
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}."id" ;;
   }
 
@@ -34,6 +35,22 @@ view: document_letters {
     type: string
     hidden: yes
     sql: ${TABLE}."__from_file" ;;
+  }
+
+  dimension_group: alarm {
+    type: time
+    hidden: yes
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    convert_tz: no
+    datatype: date
+    sql: ${TABLE}."alarm_date" ;;
   }
 
   dimension: approved_by {
@@ -74,10 +91,38 @@ view: document_letters {
     sql: ${TABLE}."clinical_encounter_id" ;;
   }
 
+  dimension: clinical_order_genus {
+    type: string
+    group_label: "Description"
+    description: "High level result genus e.g. 'XR', 'CBC W/ DIFF', etc."
+    sql: ${TABLE}."clinical_order_genus" ;;
+  }
+
+  dimension: clinical_order_type {
+    type: string
+    description: "Detailed description of result e.g. 'XR CHEST 2 VIEW', etc."
+    group_label: "Description"
+    sql: ${TABLE}."clinical_order_type" ;;
+  }
+
+  dimension: clinical_order_type_group {
+    type: string
+    description: "LAB or IMAGING"
+    group_label: "Description"
+    sql: ${TABLE}."clinical_order_type_group" ;;
+  }
+
   dimension: clinical_provider_id {
     type: number
     group_label: "IDs"
     sql: ${TABLE}."clinical_provider_id" ;;
+  }
+
+  dimension: clinical_provider_order_type {
+    type: string
+    description: "The description associated with the clinical provider fulfilling the order"
+    group_label: "Description"
+    sql: ${TABLE}."clinical_provider_order_type" ;;
   }
 
   dimension_group: created_at {
@@ -101,12 +146,6 @@ view: document_letters {
     sql: ${TABLE}."created_by" ;;
   }
 
-  dimension: created_clinical_encounter_id {
-    type: number
-    hidden: yes
-    sql: ${TABLE}."created_clinical_encounter_id" ;;
-  }
-
   dimension_group: created {
     type: time
     timeframes: [
@@ -119,6 +158,26 @@ view: document_letters {
       year
     ]
     sql: ${TABLE}."created_datetime" ;;
+  }
+
+  dimension: deactivated_by {
+    type: string
+    group_label: "User Actions"
+    sql: ${TABLE}."deactivated_by" ;;
+  }
+
+  dimension_group: deactivated {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."deactivated_datetime" ;;
   }
 
   dimension: deleted_by {
@@ -143,13 +202,12 @@ view: document_letters {
 
   dimension: denied_by {
     type: string
-    hidden: yes
+    group_label: "User Actions"
     sql: ${TABLE}."denied_by" ;;
   }
 
-  dimension_group: denied_datetime {
+  dimension_group: denied {
     type: time
-    hidden: yes
     timeframes: [
       raw,
       time,
@@ -172,7 +230,7 @@ view: document_letters {
   dimension: document_class {
     type: string
     group_label: "Description"
-    description: "LETTER"
+    description: "LABRESULT or IMAGINGRESULT"
     sql: ${TABLE}."document_class" ;;
   }
 
@@ -182,27 +240,63 @@ view: document_letters {
     sql: ${TABLE}."document_id" ;;
   }
 
-  dimension: document_subclass {
+  dimension: external_note {
     type: string
-    group_label: "Description"
-    description: "LETTER_PATIENTCORRESPONDENCE or NULL"
-    sql: ${TABLE}."document_subclass" ;;
+    sql: ${TABLE}."external_note" ;;
+  }
+
+  dimension: fbd_med_id {
+    type: string
+    group_label: "IDs"
+    sql: ${TABLE}."fbd_med_id" ;;
+  }
+
+  dimension_group: future_submit {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."future_submit_datetime" ;;
   }
 
   dimension: image_exists_yn {
     type: string
-    hidden: yes
     sql: ${TABLE}."image_exists_yn" ;;
+  }
+
+  dimension: interface_vendor_name {
+    type: string
+    sql: ${TABLE}."interface_vendor_name" ;;
   }
 
   dimension: notifier {
     type: string
-    hidden: yes
     sql: ${TABLE}."notifier" ;;
+  }
+
+  dimension_group: observation_ {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."observation_datetime" ;;
   }
 
   dimension_group: order {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -217,8 +311,19 @@ view: document_letters {
 
   dimension: order_document_id {
     type: number
-    hidden: yes
+    description: "The document ID associated with the order"
+    group_label: "IDs"
     sql: ${TABLE}."order_document_id" ;;
+  }
+
+  dimension: order_text {
+    type: string
+    sql: ${TABLE}."order_text" ;;
+  }
+
+  dimension: out_of_network_ref_reason_name {
+    type: string
+    sql: ${TABLE}."out_of_network_ref_reason_name" ;;
   }
 
   dimension: patient_char {
@@ -232,6 +337,11 @@ view: document_letters {
     group_label: "IDs"
     # hidden: yes
     sql: ${TABLE}."patient_id" ;;
+  }
+
+  dimension: patient_note {
+    type: string
+    sql: ${TABLE}."patient_note" ;;
   }
 
   dimension: priority {
@@ -250,6 +360,45 @@ view: document_letters {
     sql: ${TABLE}."provider_username" ;;
   }
 
+  dimension_group: received {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."received_datetime" ;;
+  }
+
+  dimension: result_notes {
+    type: string
+    sql: ${TABLE}."result_notes" ;;
+  }
+
+  dimension: reviewed_by {
+    type: string
+    group_label: "User Actions"
+    sql: ${TABLE}."reviewed_by" ;;
+  }
+
+  dimension_group: reviewed {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."reviewed_datetime" ;;
+  }
+
   dimension: route {
     type: string
     sql: ${TABLE}."route" ;;
@@ -257,7 +406,6 @@ view: document_letters {
 
   dimension: source {
     type: string
-    description: "ENCOUNTER"
     sql: ${TABLE}."source" ;;
   }
 
@@ -286,59 +434,24 @@ view: document_letters {
     drill_fields: [detail*]
   }
 
-  dimension: clinical_letters_sent_all {
-    description: "Identifies clinical letters sent to any recipient"
-    hidden: yes
-    type: yesno
-    sql: (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' ;;
-  }
-
-  measure: count_notes_sent_any {
-    description: "Count appointments where the clinical letter was sent to any recipient (not patient correspondence)"
-    type: count_distinct
-
-    sql: ${clinical_encounter_id} ;;
-    filters: {
-      field: clinical_letters_sent_all
-      value: "yes"
-    }
-    group_label: "Clinical Letters Sent"
-  }
-
-  dimension: clinical_letters_sent_pcp {
-    description: "Identifies clinical letters sent to the patient's primary care provider"
-    hidden: yes
-    type: yesno
-    sql:  (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' AND upper(${clinicalletter.role}) = 'PRIMARY CARE PROVIDER' ;;
-  }
-
-  measure: count_notes_sent_pcp {
-    description: "Count appointments where the clinical letter was sent to the patient's primary care provider"
-    type: count_distinct
-
-    sql: ${clinical_encounter_id} ;;
-    filters: {
-      field: clinical_letters_sent_pcp
-      value: "yes"
-    }
-    group_label: "Clinical Letters Sent"
-  }
-
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
       id,
       provider_username,
-      department.department_name,
-      department.billing_name,
-      department.gpci_location_name,
-      department.department_id,
+      interface_vendor_name,
+      out_of_network_ref_reason_name,
       patient.first_name,
       patient.last_name,
       patient.new_patient_id,
       patient.guarantor_first_name,
       patient.guarantor_last_name,
-      patient.emergency_contact_name
+      patient.emergency_contact_name,
+      department.department_name,
+      department.billing_name,
+      department.gpci_location_name,
+      department.department_id,
+      document_orders.count
     ]
   }
 }

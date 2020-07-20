@@ -1,4 +1,5 @@
 view: collective_medical {
+  view_label: "Collective Medical Patient Level"
   sql_table_name: collective_medical.collective_medical ;;
   drill_fields: [id]
 
@@ -6,6 +7,7 @@ view: collective_medical {
     primary_key: yes
     type: number
     sql: ${TABLE}."id" ;;
+    group_label: "Ids"
   }
 
   dimension: 12m_ed_visit_count {
@@ -27,6 +29,7 @@ view: collective_medical {
     type: string
     hidden: yes
     sql: ${TABLE}."__batch_id" ;;
+    group_label: "Ids"
   }
 
   dimension: __discharge_date_updated {
@@ -70,6 +73,7 @@ view: collective_medical {
   dimension: patient_id {
     type: number
     sql: ${TABLE}."patient_id" ;;
+    group_label: "Ids"
   }
 
   dimension_group: created {
@@ -167,90 +171,109 @@ view: collective_medical {
   }
 
   dimension: 12_hour_cm_admit_inpatient {
-    description: "Inpatient admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    description: "Inpatient admittance recorded by Collective Medical within 12 hours of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    group_label: "Inpatient Admittance Intervals"
+  }
+
+  dimension: 24_hour_cm_admit_inpatient {
+    description: "Inpatient admittance recorded by Collective Medical within 24 hours of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 24 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    group_label: "Inpatient Admittance Intervals"
   }
 
   dimension: 12_hour_cm_admit_emergency {
-    description: "Emergency admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    description: "Emergency admittance recorded by Collective Medical within 12 hours of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
+    group_label: "Emergency Admittance Intervals"
   }
 
-
-   dimension: 3_day_cm_admit_inpatient {
+  dimension: 3_day_cm_admit_inpatient {
     description: "Inpatient admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    group_label: "Inpatient Admittance Intervals"
   }
 
   dimension: 3_day_cm_admit_observation {
     description: "Observation admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'observation';;
+    group_label: "Observation Admittance Intervals"
   }
 
   dimension: 3_day_cm_admit_emergency {
     description: "Emergency admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
+    group_label: "Emergency Admittance Intervals"
   }
 
   dimension: 14_day_cm_admit_inpatient {
     description: "Inpatient admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    group_label: "Inpatient Admittance Intervals"
   }
 
   dimension: 14_day_cm_admit_observation {
     description: "Observation admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
+    group_label: "Observation Admittance Intervals"
   }
 
   dimension: 14_day_cm_admit_emergency {
     description: "Emergency admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency';;
+    group_label: "Emergency Admittance Intervals"
   }
 
   dimension: 30_day_cm_admit_inpatient {
     description: "Inpatient admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient';;
+    group_label: "Inpatient Admittance Intervals"
   }
 
   dimension: 30_day_cm_admit_observation {
     description: "Observation admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'observation';;
+    group_label: "Observation Admittance Intervals"
   }
 
   dimension: 30_day_cm_admit_emergency {
     description: "Emergency admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'emergency';;
+    group_label: "Emergency Admittance Intervals"
   }
 
   measure: count_12_hour_cm_admit_inpatient {
-    description: "Count Inpatient admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    description: "Count Inpatient admittances recorded by Collective Medical within 12 hours of the DH care request on-scene date"
     type: count_distinct
     sql: ${care_request_flat.care_request_id} ;;
     filters: {
       field: 12_hour_cm_admit_inpatient
       value: "yes"
     }
+    group_label: "Inpatient Admittance Intervals"
   }
 
   measure: count_12_hour_cm_admit_emergency {
-    description: "Count Emergency admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
+    description: "Count Emergency admittances recorded by Collective Medical within 12 hours of the DH care request on-scene date"
     type: count_distinct
     sql: ${care_request_flat.care_request_id}  ;;
     filters: {
       field: 12_hour_cm_admit_emergency
       value: "yes"
     }
+    group_label: "Emergency Admittance Intervals"
   }
 
  measure: count_3_day_cm_admit_inpatient {
@@ -261,6 +284,7 @@ view: collective_medical {
       field: 3_day_cm_admit_inpatient
       value: "yes"
     }
+  group_label: "Inpatient Admittance Intervals"
   }
 
   measure: count_3_day_cm_admit_observation {
@@ -271,6 +295,7 @@ view: collective_medical {
       field: 3_day_cm_admit_observation
       value: "yes"
     }
+    group_label: "Observation Admittance Intervals"
   }
 
     measure: count_3_day_cm_admit_emergency {
@@ -281,6 +306,7 @@ view: collective_medical {
         field: 3_day_cm_admit_emergency
         value: "yes"
       }
+      group_label: "Emergency Admittance Intervals"
   }
 
   measure: count_14_day_cm_admit_inpatient {
@@ -291,6 +317,7 @@ view: collective_medical {
       field: 14_day_cm_admit_inpatient
       value: "yes"
     }
+    group_label: "Inpatient Admittance Intervals"
   }
 
   measure: count_14_day_cm_admit_observation {
@@ -301,6 +328,7 @@ view: collective_medical {
       field: 14_day_cm_admit_observation
       value: "yes"
     }
+    group_label: "Observation Admittance Intervals"
   }
 
   measure: count_14_day_cm_admit_emergency {
@@ -311,6 +339,7 @@ view: collective_medical {
       field: 14_day_cm_admit_emergency
       value: "yes"
     }
+    group_label: "Emergency Admittance Intervals"
   }
 
   measure: count_30_day_cm_admit_inpatient {
@@ -321,6 +350,7 @@ view: collective_medical {
       field: 30_day_cm_admit_inpatient
       value: "yes"
     }
+    group_label: "Inpatient Admittance Intervals"
   }
 
   measure: count_30_day_cm_admit_observation {
@@ -331,6 +361,7 @@ view: collective_medical {
       field: 30_day_cm_admit_observation
       value: "yes"
     }
+    group_label: "Observation Admittance Intervals"
   }
 
   measure: count_30_day_cm_admit_emergency {
@@ -341,6 +372,7 @@ view: collective_medical {
       field: 30_day_cm_admit_emergency
       value: "yes"
     }
+    group_label: "Emergency Admittance Intervals"
   }
 
 
@@ -349,83 +381,7 @@ view: collective_medical {
 #
 #   }
 
-  dimension: 30day_ed_admittance_framework {
-    description: "Categorizes the first recorded ED admittance by day wihtin the first 30 days from the DH on-scene date"
-    type: string
-    sql: CASE WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 1 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '01'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 2 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '02'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 3 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '03'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 4 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '04'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 5 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '05'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 6 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '06'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 7 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '07'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 8 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '08'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 9 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '09'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 10 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '10'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 11 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '11'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '12'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 13 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '13'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 14 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '14'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 15 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '15'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 16 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '16'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 17 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '17'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 18 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '18'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 19 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '19'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 20 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '20'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 21 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '21'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 22 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '22'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 23 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '23'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 24 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '24'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 25 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '25'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 26 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '26'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 27 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '27'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 28 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '28'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 29 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '29'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN '30'
-    WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) > 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN 'Greater then 30 Days'
-    END
-    ;;
 
-  }
-
-  dimension: 30day_inpatient_admittance_framework {
-    description: "Categorizes the first recorded ED admittance by day wihtin the first 30 days from the DH on-scene date"
-    type: string
-    sql: CASE WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) <= 1 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '01'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 2 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '02'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 3 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '03'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 4 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '04'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 5 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '05'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 6 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '06'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 7 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '07'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 8 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '08'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 9 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '09'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 10 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '10'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 11 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '11'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '12'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 13 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '13'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 14 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '14'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 15 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '15'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 16 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '16'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 17 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '17'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 18 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '18'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 19 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '19'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 20 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '20'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 21 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '21'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 22 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '22'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 23 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '23'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 24 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '24'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 25 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '25'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 26 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '26'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 27 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '27'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 28 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '28'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 29 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '29'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) = 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'inpatient' THEN '30'
-          WHEN ((EXTRACT(EPOCH FROM ${admit_date})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_date})) / 86400) > 30 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' THEN 'Greater then 30 Days'
-          END
-          ;;
-
-    }
 
 
 }

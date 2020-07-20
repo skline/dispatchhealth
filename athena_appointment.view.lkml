@@ -1,4 +1,4 @@
-view: appointment {
+view: athena_appointment {
   sql_table_name: athena.appointment ;;
   drill_fields: [rescheduled_appointment_id]
   view_label: "Athena Appointments (IN DEV)"
