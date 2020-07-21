@@ -1,6 +1,6 @@
 view: athena_claimdiagnosis {
   sql_table_name: athena.claimdiagnosis ;;
-  view_label: "Athena Claim Diagnoses (DEV)"
+  view_label: "Athena Claim Diagnoses"
   drill_fields: [id]
 
   dimension: id {

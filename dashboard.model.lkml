@@ -291,6 +291,8 @@ include: "athena_providergroup.view.lkml"
 include: "document_close_tmp.view.lkml"
 include: "predictions.view.lkml"
 include: "athena_inbox_review_provider.view.lkml"
+include: "athena_diagnosis_sequence.view.lkml"
+include: "athena_diagnosis_codes.view.lkml"
 
 
 
@@ -718,11 +720,22 @@ join: athena_clinicalencounter {
   sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
 }
 
-join: athena_clinicalencounterdiagnosis {
+join: athena_diagnosis_sequence {
   relationship: one_to_many
-  sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_clinicalencounterdiagnosis.clinical_encounter_id} AND
-          ${athena_clinicalencounterdiagnosis.deleted_raw} IS NULL;;
+  sql_on: ${athena_appointment.appointment_id} = ${athena_diagnosis_sequence.appointment_id} ;;
+  fields: [athena_diagnosis_sequence.sequence_number]
 }
+
+join: athena_diagnosis_codes {
+  relationship: many_to_one
+  sql_on: ${athena_diagnosis_sequence.icd_code_id} = ${athena_diagnosis_codes.icd_code_id} ;;
+}
+
+# join: athena_clinicalencounterdiagnosis {
+#   relationship: one_to_many
+#   sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_clinicalencounterdiagnosis.clinical_encounter_id} AND
+#           ${athena_clinicalencounterdiagnosis.deleted_raw} IS NULL;;
+# }
 
 join: athena_provider {
   relationship: many_to_one
@@ -740,10 +753,10 @@ join: athena_claim {
   sql_on: ${athena_clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
 }
 
-join: athena_claimdiagnosis {
-  relationship: one_to_many
-  sql_on: ${athena_claim.claim_id} = ${athena_claimdiagnosis.claim_id} AND ${athena_claimdiagnosis.deleted_raw} IS NULL ;;
-}
+# join: athena_claimdiagnosis {
+#   relationship: one_to_many
+#   sql_on: ${athena_claim.claim_id} = ${athena_claimdiagnosis.claim_id} AND ${athena_claimdiagnosis.deleted_raw} IS NULL ;;
+# }
 
   join: athena_transaction {
     relationship: one_to_many

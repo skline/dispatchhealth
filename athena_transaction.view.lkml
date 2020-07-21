@@ -1,7 +1,7 @@
 view: athena_transaction {
   sql_table_name: athena.transaction ;;
   drill_fields: [transaction_id]
-  view_label: "Athena Transactions (DEV)"
+  view_label: "Athena Transactions"
 
   dimension: transaction_id {
     primary_key: yes
@@ -279,6 +279,40 @@ view: athena_transaction {
     type: number
     group_label: "RVUs"
     sql: ${TABLE}."total_rvu" ;;
+  }
+
+  measure: total_rvus {
+    description: "Average Total RVU's"
+    type: sum
+    sql: ${total_rvu} ;;
+    value_format: "0.0"
+  }
+
+  dimension: is_valid_claim {
+    description: "Claim ID is not null and expected allowed amount is greater than 0.01"
+    type: yesno
+    sql:
+         ${voided_date} IS NULL AND
+         ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL AND
+         ${expected_allowed_amount}::float > 0.01 ;;
+  }
+
+  dimension: is_zero_exp_allow_claim {
+    description: "Claim ID is not null and expected allowed amount is $0.00"
+    type: yesno
+    sql: ${voided_date} IS NULL AND
+      ${expected_allowed_amount}::float = 0.0 ;;
+  }
+
+
+  measure: count_claims {
+    type: count_distinct
+    description: "Count of claims where expected allowable > $0.01"
+    sql: ${claim_id} ;;
+    filters: {
+      field: is_valid_claim
+      value: "yes"
+    }
   }
 
   dimension_group: transaction_created {
