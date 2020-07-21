@@ -163,7 +163,7 @@ view: athenadwh_chart_closing {
   }
 
   measure: count_charts_by_clinical_encounter_signed_48_hours {
-    description: "The count of distinct charts by clinical encounter that were signed by the provider within 24 hours of the visit"
+    description: "The count of distinct charts by clinical encounter that were signed by the provider within 48 hours of the visit"
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
     filters: {
