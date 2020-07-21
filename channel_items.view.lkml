@@ -406,7 +406,9 @@ else null end;;
     lower(${provider_network.name}) = 'ou physicians' THEN 'OUMI & OU Physicians'
 
     WHEN  lower(${name}) LIKE '%vcu%' OR
-    lower(${provider_network.name}) = 'virginia commonwealth university health system' THEN 'VCU Health'
+    lower(${provider_network.name}) = 'virginia commonwealth university health system' OR
+    ((${athenadwh_referrals.clinical_order_type}) IS NOT NULL AND
+    lower(${athenadwh_referral_providers.name}) LIKE '%vcuhs%') THEN 'VCU Health'
 
 
     ELSE NULL END ;;
