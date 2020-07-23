@@ -591,6 +591,21 @@ view: athena_document_orders {
     group_label: "Labs, Imaging & Procedures"
   }
 
+  measure: count_labs_ordered_in_ins_network {
+    description: "Count of care requests where the lab was ordered from an in network insurance vendor"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: labs_ordered
+      value: "yes"
+    }
+    filters: {
+      field: insurance_network_network_referrals.default
+      value: "yes"
+    }
+    group_label: "Labs, Imaging & Procedures"
+  }
+
   dimension: imaging_ordered {
     description: "Identifies care requests where one or more imaging orders were placed"
     type: yesno
@@ -604,6 +619,21 @@ view: athena_document_orders {
     sql: ${clinical_encounter_id} ;;
     filters: {
       field: imaging_ordered
+      value: "yes"
+    }
+    group_label: "Labs, Imaging & Procedures"
+  }
+
+  measure: count_imaging_ordered_in_ins_network {
+    description: "Count of care requests where the imaging was ordered from an in network insurance vendor"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: imaging_ordered
+      value: "yes"
+    }
+    filters: {
+      field: insurance_network_network_referrals.default
       value: "yes"
     }
     group_label: "Labs, Imaging & Procedures"

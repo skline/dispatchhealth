@@ -1562,6 +1562,16 @@ join: department_order {
             AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
   }
 
+  join: insurance_networks {
+    relationship: many_to_one
+    sql_on: ${insurance_network_network_referrals.insurance_network_id} = ${insurance_networks.id} ;;
+  }
+
+  join: insurance_network_network_referrals {
+    relationship: one_to_many
+    sql_on: ${network_referrals.id} = ${insurance_network_network_referrals.network_referral_id} ;;
+  }
+
   join: expected_allowable_corporate {
     relationship: many_to_one
     sql_on: ${markets.id} = ${expected_allowable_corporate.market_id} AND
