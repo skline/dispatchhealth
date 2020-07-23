@@ -91,7 +91,8 @@ view: addresses {
 
   dimension_group: updated {
     type: time
-    hidden: yes
+    hidden: no
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -101,7 +102,7 @@ view: addresses {
       quarter,
       year
     ]
-    sql: ${TABLE}.updated_at ;;
+    sql: ${TABLE}.updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension: zipcode {

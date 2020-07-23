@@ -176,6 +176,21 @@ view: athena_clinicalprovider {
     sql: ${TABLE}."zip" ;;
   }
 
+  dimension: provider_category {
+    description: "A flag indicating that the provider is DispatchHealth"
+    type: string
+    sql:
+      CASE
+        WHEN ${name} IS NULL THEN 'Provider Unknown'
+        WHEN ${name} LIKE '%'|| TRIM(${markets.short_name}) ||' -%' OR ${name}  = 'SOUTH METRO FIRE AND RESCUE' THEN 'Performed On-Scene'
+        ELSE 'Performed by Third Party'
+    END;;
+    drill_fields: [
+      athenadwh_lab_imaging_providers.name,
+      athenadwh_lab_imaging_results.clinical_order_type
+    ]
+  }
+
   measure: count {
     type: count
     drill_fields: [name, first_name, middle_name, last_name]
