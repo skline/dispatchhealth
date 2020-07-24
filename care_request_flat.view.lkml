@@ -4102,9 +4102,13 @@ end  ;;
   dimension: timezone_too_late {
     type: number
     value_format: "0.00"
-    sql:
-    (CAST(EXTRACT(HOUR FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
-      ((CAST(EXTRACT(MINUTE FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60);;
+    sql:case when ${markets.name} in('Richmond', 'Olympia') then
+   (CAST(EXTRACT(HOUR FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    else
+        (CAST(EXTRACT(HOUR FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    end;;
   }
 
 
@@ -4112,6 +4116,18 @@ end  ;;
     type: yesno
     sql:  ${created_mountain_decimal} <= ${now_mountain_decimal} OR ${created_mountain_decimal} >= ${timezone_too_late}  ;;
   }
+
+  dimension: too_late_for_overflow {
+    type: yesno
+    sql: ${created_mountain_decimal} >= case when ${markets.name} in('Richmond', 'Olympia') then
+    (CAST(EXTRACT(HOUR FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    else
+        (CAST(EXTRACT(HOUR FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    end;;
+  }
+
 
   dimension: max_time_mountain_predictions {
     type: number
@@ -4233,6 +4249,7 @@ end  ;;
         ${created_date} != ${scheduled_care_date}
         AND
         ${notes_aggregated.notes_aggregated} not like '%pushed pt: pt availability%'
+        and not ${too_late_for_overflow}
         ;;
   }
 
