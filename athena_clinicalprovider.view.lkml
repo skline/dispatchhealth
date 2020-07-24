@@ -181,14 +181,11 @@ view: athena_clinicalprovider {
     type: string
     sql:
       CASE
-        WHEN ${name} IS NULL THEN 'Provider Unknown'
-        WHEN ${name} LIKE '%'|| TRIM(${markets.short_name}) ||' -%' OR ${name}  = 'SOUTH METRO FIRE AND RESCUE' THEN 'Performed On-Scene'
+        WHEN CONCAT(${markets.short_name}, ' -') = SUBSTRING(${name}, 1, 5)
+             OR ${name} LIKE '%DISPATCHHEALTH%' THEN 'Performed On-Scene'
+        WHEN ${name} IS NULL THEN 'No Provider Name Given'
         ELSE 'Performed by Third Party'
     END;;
-    drill_fields: [
-      athenadwh_lab_imaging_providers.name,
-      athenadwh_lab_imaging_results.clinical_order_type
-    ]
   }
 
   measure: count {
