@@ -211,15 +211,27 @@ view: shift_agg {
   }
 
   measure: avg_shift_start_first_on_route_diff{
-    label: "Deadtime Start of Shift (avg)"
+    label: "DT Start of Shift (avg)"
     type: average_distinct
     value_format: "0"
     sql: ${shift_start_first_on_route_diff}*60 ;;
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
 
+  measure: avg_shift_start_first_on_route_diff_w_patient{
+    label: "(W/Assigned) DT Start of Shift (avg)"
+    type: average_distinct
+    value_format: "0"
+    sql: ${shift_start_first_on_route_diff}*60 ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    filters: {
+              field: care_request_assigned_at_shift_start
+                value: "yes"
+            }
+  }
+
   measure: avg_shift_shift_end_last_cr_diff_positive{
-    label: "Deadtime End of Shift (avg)"
+    label: "DT End of Shift (avg)"
     type: average_distinct
     value_format: "0"
     sql: ${shift_end_last_cr_diff_positive}::float*60 ;;
@@ -227,7 +239,7 @@ view: shift_agg {
   }
 
   measure: avg_dead_time_intra_shift{
-    label: "Deadtime Intra Shift (avg)"
+    label: "DT Intra Shift (avg)"
     type: average_distinct
     value_format: "0"
     sql: ${dead_time_intra_shift} ;;
