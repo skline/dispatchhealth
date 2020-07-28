@@ -295,6 +295,7 @@ include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
 include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
+include: "monthly_volume_market_cat.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -4348,3 +4349,4 @@ explore: daily_volume {
     sql_on: ${daily_volume.name_adj} =${max_daily_complete.name_adj} and ${max_daily_complete.max_complete_count} =${daily_volume.complete_count} ;;
   }
 }
+explore:  monthly_volume_market_cat {}
