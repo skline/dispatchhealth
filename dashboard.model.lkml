@@ -293,8 +293,8 @@ include: "predictions.view.lkml"
 include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
-
-
+include: "daily_volume.view.lkml"
+include: "max_daily_complete.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -4343,3 +4343,8 @@ explore: genesys_queue_conversion {
   }
 }
 explore: patients {}
+explore: daily_volume {
+  join: max_daily_complete {
+    sql_on: ${daily_volume.name_adj} =${max_daily_complete.name_adj} and ${max_daily_complete.max_complete_count} =${daily_volume.complete_count} ;;
+  }
+}
