@@ -1,35 +1,39 @@
 view: predictions {
   sql_table_name: risk_model_predictions.predictions ;;
   drill_fields: [id]
-  view_label: "On Scene Risk Predictions"
 
   dimension: id {
     primary_key: yes
     type: number
+    hidden: yes
     sql: ${TABLE}."id" ;;
   }
 
   dimension_group: __data {
     type: time
+    hidden: yes
     timeframes: [
       raw,
-      time,
       date,
       week,
       month,
       quarter,
       year
     ]
+    convert_tz: no
+    datatype: date
     sql: ${TABLE}."__data_date" ;;
   }
 
   dimension: __from_file {
     type: string
+    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
   dimension: __model_version {
     type: number
+    hidden: yes
     sql: ${TABLE}."__model_version" ;;
   }
 
@@ -40,6 +44,7 @@ view: predictions {
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -71,6 +76,7 @@ view: predictions {
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
