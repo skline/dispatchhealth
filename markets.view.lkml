@@ -10,8 +10,9 @@ view: markets {
 
   dimension: id_adj {
     type: string
-    description: "Market ID where WMFR is included as part of Denver (159)"
-    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 159
+    description: "Market ID where WMFR or SMFR is included as part of Denver (159)"
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' OR
+        ${TABLE}.name = 'South Metro Fire Rescue' then 159
       else ${id} end;;
   }
 
@@ -135,7 +136,8 @@ view: markets {
   dimension: name_adj {
     type: string
     description: "Market name where WMFR is included as part of Denver"
-    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue'
+      OR ${TABLE}.name = 'South Metro Fire Rescue' then 'Denver'
     else ${name} end;;
 
   }
