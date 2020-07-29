@@ -1,5 +1,5 @@
 view: predictions {
-  sql_table_name: risk_model_predictions.predictions ;;
+  sql_table_name: bounce_back_risk.predictions ;;
   drill_fields: [id]
 
   dimension: id {
@@ -64,14 +64,14 @@ view: predictions {
 
   dimension: probability_false {
     type: number
-    sql: ${TABLE}."probability_false" ;;
     value_format: "0.00"
+    sql: ${TABLE}."probability_false" ;;
   }
 
   dimension: probability_true {
     type: number
-    sql: ${TABLE}."probability_true" ;;
     value_format: "0.00"
+    sql: ${TABLE}."probability_true" ;;
   }
 
   dimension_group: updated {
