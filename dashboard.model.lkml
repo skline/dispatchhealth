@@ -297,6 +297,7 @@ include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
 include: "dx_conversions.view.lkml"
+include: "genesys_agent_conversion.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -4348,6 +4349,13 @@ explore: genesys_queue_conversion {
 
   join: markets {
     sql_on: ${markets.id} =${genesys_queue_conversion.market_id} ;;
+  }
+}
+
+explore: genesys_agent_conversion {
+
+  join: markets {
+    sql_on: ${markets.id} =${genesys_agent_conversion.market_id} ;;
   }
 }
 explore: patients {}
