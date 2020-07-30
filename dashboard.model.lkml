@@ -296,6 +296,8 @@ include: "athena_diagnosis_codes.view.lkml"
 include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
+include: "dx_conversions.view.lkml"
+
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -975,6 +977,10 @@ join: department_order {
 
   join: notes_aggregated {
     sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;
+  }
+
+  join: dx_conversions {
+    sql_on: ${dx_conversions.patient_id} = ${patients.id} and ${dx_conversions.visit_date} =${care_request_flat.on_scene_date} ;;
   }
 
   join: icd_primary_code_dimensions_clone {
@@ -3521,6 +3527,7 @@ explore: genesys_conversation_summary {
               )
                ;;
   }
+
 
   join: notes_aggregated {
     sql_on: ${notes_aggregated.care_request_id}=${care_request_flat.care_request_id} ;;

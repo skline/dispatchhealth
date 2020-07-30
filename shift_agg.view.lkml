@@ -4,13 +4,10 @@
 view: shift_agg {
   derived_table: {
     sql_trigger_value:  SELECT MAX(care_request_id) FROM ${care_request_flat.SQL_TABLE_NAME} where created_date > current_date - interval '2 days';;
-    indexes: ["shift_start_date", "name_adj"]
+    indexes: ["shift_start", "name_adj"]
     explore_source: care_requests {
-      column: shift_start_date { field: care_request_flat.shift_start_date }
-      column: shift_start_day_of_week { field: care_request_flat.shift_start_day_of_week }
+      column: shift_start { field: care_request_flat.shift_start_raw }
       column: name { field: cars.name }
-      column: shift_start_time { field: care_request_flat.shift_start_time }
-      column: shift_start_time_of_day { field: care_request_flat.shift_start_time_of_day }
       column: shift_end_time { field: care_request_flat.shift_end_time }
       column: shift_end_time_of_day { field: care_request_flat.shift_end_time_of_day }
       column: last_update_time_time { field: shifts_end_of_shift_times.last_update_time_time }
@@ -44,27 +41,29 @@ view: shift_agg {
       }
     }
   }
-  dimension: shift_start_date {
-    description: "The local date/time of a shift start"
-    type: date
-  }
 
-  dimension: shift_start_day_of_week {
-    type: string
+  dimension_group:shift_start {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      time_of_day,
+      hour_of_day,
+      date,
+      day_of_week,
+      day_of_week_index,
+      week,
+      month,
+      quarter,
+      year, day_of_month
+    ]
   }
 
   dimension: name {
     label: "Car Name"
   }
-  dimension: shift_start_time {
-    description: "The local date/time of a shift start"
-    type: date_time
-  }
-  dimension: shift_start_time_of_day {
-    description: "The local date/time of a shift start"
-    type: date_time_of_day
-  }
-  dimension: shift_end_time {
+
+dimension: shift_end_time {
     description: "The local date/time of a shift end"
     type: date_time
   }
@@ -228,6 +227,23 @@ view: shift_agg {
               field: care_request_assigned_at_shift_start
                 value: "yes"
             }
+  }
+
+  measure: count_distinct_shifts_w_assigned{
+    type: count_distinct
+    value_format: "0"
+    sql: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj});;
+    filters: {
+      field: care_request_assigned_at_shift_start
+      value: "yes"
+    }
+  }
+
+  measure: percent_assigned_shifts {
+    type: number
+    value_format: "0%"
+    sql: case when ${count_distinct_shifts}::float>0 then ${count_distinct_shifts_w_assigned}::float/ ${count_distinct_shifts}::float else 0 end;;
   }
 
   measure: avg_shift_shift_end_last_cr_diff_positive{
