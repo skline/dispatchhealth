@@ -1,23 +1,20 @@
-view: athena_patient_current_medications {
+view: patientmedication_medicationlisting {
   sql_table_name: athena.patientmedication_medicationlisting ;;
   drill_fields: [id]
 
   dimension: id {
     primary_key: yes
     type: number
-    hidden: yes
     sql: ${TABLE}."id" ;;
   }
 
   dimension: __batch_id {
     type: string
-    hidden: yes
     sql: ${TABLE}."__batch_id" ;;
   }
 
   dimension_group: __file {
     type: time
-    hidden: yes
     timeframes: [
       raw,
       time,
@@ -32,7 +29,6 @@ view: athena_patient_current_medications {
 
   dimension: __from_file {
     type: string
-    hidden: yes
     sql: ${TABLE}."__from_file" ;;
   }
 
@@ -43,7 +39,6 @@ view: athena_patient_current_medications {
 
   dimension_group: created {
     type: time
-    hidden: yes
     timeframes: [
       raw,
       time,
@@ -58,7 +53,6 @@ view: athena_patient_current_medications {
 
   dimension: created_by {
     type: string
-    hidden: yes
     sql: ${TABLE}."created_by" ;;
   }
 
@@ -78,7 +72,6 @@ view: athena_patient_current_medications {
 
   dimension: deactivated_by {
     type: string
-    hidden: yes
     sql: ${TABLE}."deactivated_by" ;;
   }
 
@@ -122,31 +115,26 @@ view: athena_patient_current_medications {
 
   dimension: display_dosage_units {
     type: string
-    group_label: "Dosage"
     sql: ${TABLE}."display_dosage_units" ;;
   }
 
   dimension: dosage_action {
     type: string
-    group_label: "Dosage"
     sql: ${TABLE}."dosage_action" ;;
   }
 
   dimension: dosage_form {
     type: string
-    group_label: "Dosage"
     sql: ${TABLE}."dosage_form" ;;
   }
 
   dimension: dosage_quantity {
     type: number
-    group_label: "Dosage"
     sql: ${TABLE}."dosage_quantity" ;;
   }
 
   dimension: dosage_route {
     type: string
-    group_label: "Dosage"
     sql: ${TABLE}."dosage_route" ;;
   }
 
@@ -167,13 +155,11 @@ view: athena_patient_current_medications {
 
   dimension: frequency {
     type: string
-    group_label: "Dosage"
     sql: ${TABLE}."frequency" ;;
   }
 
   dimension: length_of_course {
     type: number
-    group_label: "Dosage"
     sql: ${TABLE}."length_of_course" ;;
   }
 
@@ -199,7 +185,6 @@ view: athena_patient_current_medications {
 
   dimension: patient_char {
     type: string
-    hidden: yes
     sql: ${TABLE}."patient_char" ;;
   }
 
@@ -210,13 +195,7 @@ view: athena_patient_current_medications {
 
   dimension: patient_medication_id {
     type: number
-    hidden: yes
     sql: ${TABLE}."patient_medication_id" ;;
-  }
-
-  measure: count_medications {
-    type: count_distinct
-    sql: ${patient_medication_id} ;;
   }
 
   dimension: pharmacy_name {
@@ -276,7 +255,6 @@ view: athena_patient_current_medications {
 
   dimension_group: updated {
     type: time
-    group_label: "Dosage"
     timeframes: [
       raw,
       time,
@@ -289,8 +267,13 @@ view: athena_patient_current_medications {
     sql: ${TABLE}."updated_at" ;;
   }
 
+  measure: count_medications {
+    type: count_distinct
+    sql_distinct_key: ${patient_medication_id} ;;
+  }
+
   measure: count {
     type: count
-    drill_fields: [id, pharmacy_name, medication_name]
+    drill_fields: [id, medication_name, pharmacy_name]
   }
 }

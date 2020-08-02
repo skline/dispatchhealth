@@ -301,7 +301,6 @@ include: "dx_conversions.view.lkml"
 include: "genesys_agent_conversion.view.lkml"
 include: "athena_patient_current_medications.view.lkml"
 
-
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
 datagroup: care_request_datagroup {
@@ -731,6 +730,11 @@ join: athena_patient_medical_history {
   relationship: many_to_one
   sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
 }
+
+  join: athena_patient_current_medications {
+    relationship: many_to_one
+    sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
+  }
 
 join: athena_diagnosis_sequence {
   relationship: one_to_many
