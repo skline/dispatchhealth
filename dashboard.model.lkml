@@ -293,6 +293,7 @@ include: "predictions.view.lkml"
 include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
+include: "athena_patient_medical_history.view.lkml"
 include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
@@ -710,6 +711,7 @@ join: covid_testing_results {
     sql_on: ${athenadwh_clinical_encounters_clone.chart_id} = ${athenadwh_medical_history_flat.chart_id} ;;
   }
 
+
 # End Athena data warehouse tables
 
 ###################################################
@@ -722,6 +724,11 @@ join: athena_appointment {
 join: athena_clinicalencounter {
   relationship: one_to_one
   sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
+}
+
+join: athena_patient_medical_history {
+  relationship: many_to_one
+  sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
 }
 
 join: athena_diagnosis_sequence {
