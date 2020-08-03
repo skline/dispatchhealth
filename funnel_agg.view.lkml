@@ -261,7 +261,10 @@ view: funnel_agg {
   measure: inefficiency_index{
     type: number
     value_format: "0.00"
-    sql: (${overflow_percent}-.2)*(.7-${productivity_agg.total_productivity})*100 ;;
+    sql:case when ${productivity_agg.total_productivity} > .7 then
+    (${overflow_percent}-.2)*(${productivity_agg.total_productivity}-.7)*100
+    else
+    (${overflow_percent}-.2)*(.7-${productivity_agg.total_productivity})*100  end;;
   }
 
 }
