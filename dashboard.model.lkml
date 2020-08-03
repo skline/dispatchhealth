@@ -294,6 +294,7 @@ include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
 include: "athena_patient_medical_history.view.lkml"
+include: "athena_patient_social_history.view.lkml"
 include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
@@ -731,10 +732,15 @@ join: athena_patient_medical_history {
   sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
 }
 
-  join: athenadwh_patient_current_medications {
+join: athena_patient_social_history {
     relationship: many_to_one
-    sql_on: ${athena_clinicalencounter.chart_id} = ${athenadwh_patient_current_medications.chart_id} ;;
+    sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id} ;;
   }
+
+#   join: athena_patient_current_medications {
+#     relationship: many_to_one
+#     sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
+#   }
 
 join: athena_diagnosis_sequence {
   relationship: one_to_many
