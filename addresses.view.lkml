@@ -144,6 +144,17 @@ view: addresses {
     sql: left(${zipcode}, 3) ;;
   }
 
+  measure: count_distinct_states {
+    type: count_distinct
+    sql: ${state} ;;
+  }
+
+  measure: visit_state_concat {
+    label: "List of Care Request States"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT COALESCE(upper(${addresses.state}))), ' | ') ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id]
