@@ -1,4 +1,4 @@
-view: patientmedication_medicationlisting {
+view: athena_patient_current_medications {
   sql_table_name: athena.patientmedication_medicationlisting ;;
   drill_fields: [id]
 
@@ -265,11 +265,6 @@ view: patientmedication_medicationlisting {
       year
     ]
     sql: ${TABLE}."updated_at" ;;
-  }
-
-  measure: count_medications {
-    type: count_distinct
-    sql_distinct_key: ${patient_medication_id} ;;
   }
 
   measure: count {
