@@ -300,6 +300,7 @@ include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
 include: "dx_conversions.view.lkml"
 include: "genesys_agent_conversion.view.lkml"
+include: "athenadwh_patient_current_medications.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -732,7 +733,7 @@ join: athena_patient_medical_history {
   sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
 }
 
-  join: athena_patient_social_history {
+join: athena_patient_social_history {
     relationship: many_to_one
     sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id} ;;
   }
@@ -2855,6 +2856,10 @@ explore: markets {
   join: regional_markets {
     sql_on: ${markets.id} = ${regional_markets.market_id} ;;
   }
+  join: market_start_date{
+    sql_on: ${markets.id}=${market_start_date.market_id} ;;
+  }
+
 }
 
   explore: insurance_plans {
