@@ -51,7 +51,7 @@ view: service_lines {
     type:  string
     sql:  CASE
       WHEN ${care_requests.request_type} = 'manual_911' OR lower(${name}) = '911 service' THEN '911 Service'
-      WHEN lower(${name}) in('acute care', 'acute care (hpn)', 'acute care (senior living)', 'asthma education', 'advanced care') THEN 'Acute Care'
+      WHEN lower(${name}) in('acute care', 'acute care (non covid-19)','acute care (hpn)', 'acute care (senior living)', 'asthma education', 'advanced care') THEN 'Acute Care'
       WHEN lower(${name}) in('post acute follow up', 'post acute follow up (hpn)') THEN 'Post Acute Follow Up'
       ELSE ${name}
     END
