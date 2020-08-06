@@ -13,6 +13,13 @@ view: athena_patient_current_medications {
     sql: ${TABLE}."__batch_id" ;;
   }
 
+  dimension: compound_primary_key {
+#     primary_key: yes
+    hidden: yes
+    type: string
+    sql: CONCAT(${TABLE}.patient_id::varchar, ' ', ${TABLE}.medication_id::varchar) ;;
+  }
+
   dimension_group: __file {
     type: time
     timeframes: [
@@ -271,4 +278,14 @@ view: athena_patient_current_medications {
     type: count
     drill_fields: [id, medication_name, pharmacy_name]
   }
+
+  measure: count_medications {
+    type: count_distinct
+    sql: ${compound_primary_key} ;;
+    filters: {
+      field: deactivation_datetime_date
+      value: "NULL"
+    }
+  }
+
 }
