@@ -33,7 +33,7 @@ view: predictions {
 
   dimension: __model_version {
     type: number
-    hidden: yes
+    hidden: no
     sql: ${TABLE}."__model_version" ;;
   }
 
