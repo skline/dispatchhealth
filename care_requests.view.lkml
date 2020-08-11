@@ -825,10 +825,18 @@ view: care_requests {
     }
   }
 
+#   dimension:  complete_visit {
+#     type: yesno
+#     sql: ${care_request_flat.complete_date} is not null AND (${care_request_flat.primary_resolved_reason} IS NULL OR ${care_request_flat.escalated_on_scene});;
+#   }
+
 
   dimension:  complete_visit {
     type: yesno
-    sql: ${care_request_flat.complete_date} is not null AND (${care_request_flat.primary_resolved_reason} IS NULL OR ${care_request_flat.escalated_on_scene});;
+    sql: ${care_request_flat.complete_date} is not null AND
+      (${care_request_flat.primary_resolved_reason} IS NULL OR
+      UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+      UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE') ;;
   }
 
   dimension:  complete_non_escalated_visit {
@@ -1576,10 +1584,21 @@ measure: distinct_day_of_week {
   }
 
 
+#   dimension: escalated_on_scene {
+#     type: yesno
+#     sql: UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
+#   }
+
   dimension: escalated_on_scene {
+    hidden: yes
     type: yesno
-    sql: UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
-  }
+    sql:UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE: EMERGENCY DEPARTMENT%' OR
+      UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE: ED%' OR
+      (UPPER(${primary_resolved_reason}) = 'REFERRED - POINT OF CARE' AND
+      (UPPER(${secondary_resolved_reason}) LIKE '%EMERGENCY DEPARTMENT%' OR
+      SUBSTRING(UPPER(${secondary_resolved_reason}),1,2) = 'ED')) ;;
+
+    }
 
 # Removing these for now.  These should be calculated in care_request_flat, not duplicated here -- DE 01/17/2019
 #   dimension: lwbs_going_to_ed {
@@ -1619,6 +1638,7 @@ measure: distinct_day_of_week {
 #   }
 
   measure: escalated_on_scene_count {
+    label: "Escalated On-Scene to Ed"
     type: count_distinct
     sql: ${id} ;;
     filters: {
