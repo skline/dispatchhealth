@@ -202,7 +202,7 @@ WITH ort AS (
       LEFT JOIN care_request_statuses archive
       ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
       LEFT JOIN care_request_statuses fu3
-      ON cr.id = fu3.care_request_id AND fu3.name = 'followup_3' and fu3.deleted_at is null
+      ON cr.id = fu3.care_request_id AND fu3.name in('followup_3', 'followup_2') and fu3.deleted_at is null
       LEFT JOIN care_request_statuses fu14
       ON cr.id = fu14.care_request_id AND fu14.name = 'followup_14' and fu14.deleted_at is null
       LEFT JOIN care_request_statuses fu30
