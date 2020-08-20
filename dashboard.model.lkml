@@ -301,6 +301,8 @@ include: "monthly_volume_market_cat.view.lkml"
 include: "dx_conversions.view.lkml"
 include: "genesys_agent_conversion.view.lkml"
 include: "athenadwh_patient_current_medications.view.lkml"
+include: "views/athena_patient_current_medications.view.lkml"
+
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -728,19 +730,19 @@ join: athena_clinicalencounter {
 }
 
 join: athena_patient_medical_history {
-  relationship: many_to_one
+  relationship: one_to_one
   sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
 }
 
 join: athena_patient_social_history {
-    relationship: many_to_one
+    relationship: one_to_one
     sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id} ;;
   }
 
-#   join: athena_patient_current_medications {
-#     relationship: many_to_one
-#     sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
-#   }
+  join: athena_patient_current_medications {
+    relationship: one_to_many
+    sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_current_medications.chart_id} ;;
+  }
 
 join: athena_diagnosis_sequence {
   relationship: one_to_many

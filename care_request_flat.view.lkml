@@ -202,7 +202,7 @@ WITH ort AS (
       LEFT JOIN care_request_statuses archive
       ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
       LEFT JOIN care_request_statuses fu3
-      ON cr.id = fu3.care_request_id AND fu3.name = 'followup_3' and fu3.deleted_at is null
+      ON cr.id = fu3.care_request_id AND fu3.name in('followup_3', 'followup_2') and fu3.deleted_at is null
       LEFT JOIN care_request_statuses fu14
       ON cr.id = fu14.care_request_id AND fu14.name = 'followup_14' and fu14.deleted_at is null
       LEFT JOIN care_request_statuses fu30
@@ -2840,11 +2840,37 @@ measure: avg_first_on_route_mins {
   }
 
 
+#   dimension: escalated_on_scene {
+#     type: yesno
+#     sql: UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+#     ${primary_resolved_reason} = 'Referred - Point of Care';;
+#   }
+
+
   dimension: escalated_on_scene {
+    description: "Escalated to emergency department or 911 on-scene"
+    label: "Escalated On-Scene to Ed"
     type: yesno
-    sql: UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
-    ${primary_resolved_reason} = 'Referred - Point of Care';;
+    sql:UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE: EMERGENCY DEPARTMENT%' OR
+        UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE: ED%' OR
+        (UPPER(${primary_resolved_reason}) = 'REFERRED - POINT OF CARE' AND
+        (UPPER(${secondary_resolved_reason}) LIKE '%EMERGENCY DEPARTMENT%' OR
+        SUBSTRING(UPPER(${secondary_resolved_reason}),1,2) = 'ED')) ;;
+
   }
+
+  dimension: escalated_non_ed_on_scene {
+    description: "Escalated or referred on-scene to non Emergency Department or 911 source"
+    label: "Escalated or Referred On-Scene to Non ED"
+    type: yesno
+    sql:  ${care_request_flat.complete_date} is not null AND
+        ((${care_request_flat.primary_resolved_reason} IS NULL OR
+        UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+        UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE') AND
+        NOT ${escalated_on_scene});;
+  }
+
+
 
   dimension: lwbs_going_to_ed {
     type: yesno
@@ -3207,6 +3233,7 @@ measure: avg_first_on_route_mins {
   }
 
   measure: escalated_on_scene_count {
+    label: "Escalated On-Scene to Ed"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
@@ -3483,9 +3510,17 @@ measure: avg_first_on_route_mins {
         END ;;
   }
 
-  dimension: complete {
+#   dimension: complete {
+#     type: yesno
+#     sql: ${complete_date} is not null AND (${primary_resolved_reason} IS NULL OR ${escalated_on_scene}) ;;
+#   }
+
+  dimension:  complete {
     type: yesno
-    sql: ${complete_date} is not null AND (${primary_resolved_reason} IS NULL OR ${escalated_on_scene}) ;;
+    sql: ${care_request_flat.complete_date} is not null AND
+      (${care_request_flat.primary_resolved_reason} IS NULL OR
+      UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+      UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE') ;;
   }
 
   dimension: accepted {

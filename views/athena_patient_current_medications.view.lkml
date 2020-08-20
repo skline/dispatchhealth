@@ -1,4 +1,4 @@
-view: patientmedication_medicationlisting {
+view: athena_patient_current_medications {
   sql_table_name: athena.patientmedication_medicationlisting ;;
   drill_fields: [id]
 
@@ -11,6 +11,13 @@ view: patientmedication_medicationlisting {
   dimension: __batch_id {
     type: string
     sql: ${TABLE}."__batch_id" ;;
+  }
+
+  dimension: compound_primary_key {
+#     primary_key: yes
+    hidden: yes
+    type: string
+    sql: CONCAT(${TABLE}.patient_id::varchar, ' ', ${TABLE}.medication_id::varchar) ;;
   }
 
   dimension_group: __file {
@@ -267,13 +274,18 @@ view: patientmedication_medicationlisting {
     sql: ${TABLE}."updated_at" ;;
   }
 
-  measure: count_medications {
-    type: count_distinct
-    sql_distinct_key: ${patient_medication_id} ;;
-  }
-
   measure: count {
     type: count
     drill_fields: [id, medication_name, pharmacy_name]
   }
+
+  measure: count_medications {
+    type: count_distinct
+    sql: ${compound_primary_key} ;;
+    filters: {
+      field: deactivation_datetime_date
+      value: "NULL"
+    }
+  }
+
 }
