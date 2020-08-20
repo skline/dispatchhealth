@@ -291,7 +291,7 @@ view: shift_teams {
   measure: hourly_productivity {
     value_format: "0.00"
     type: number
-    sql: ${care_request_flat.complete_count}::float / ${count_distinct_car_date_shift}::float ;;
+    sql: case when  ${count_distinct_car_date_shift}>0 then ${care_request_flat.complete_count}::float / ${count_distinct_car_date_shift}::float else 0 end;;
   }
 
   measure: daily_productivity {

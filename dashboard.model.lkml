@@ -3219,6 +3219,19 @@ explore: dates_hours_reference_clone {
   join: care_requests {
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
   }
+  join: service_lines {
+    sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+  join: channel_items {
+    relationship: many_to_one
+    sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+  join: risk_assessments {
+    relationship: one_to_one
+    sql_on: ${care_request_flat.care_request_id} = ${risk_assessments.care_request_id} ;;
+  }
+
+
 
 }
 explore: marketing_data_processed {

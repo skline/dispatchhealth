@@ -108,7 +108,8 @@ view: dates_hours_reference_clone {
     label: "Average Number of Cars"
     value_format: "0.0"
     type: number
-    sql: ${shift_teams.count_distinct_car_date_shift}::float / ${distinct_datehour_date}::float ;;
+    sql: case when ${distinct_datehour_date}>0 then ${shift_teams.count_distinct_car_date_shift}::float / ${distinct_datehour_date}::float
+    else 0 end;;
   }
   dimension: hours_til_shift_end {
     type: number
