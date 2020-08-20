@@ -302,7 +302,8 @@ include: "dx_conversions.view.lkml"
 include: "genesys_agent_conversion.view.lkml"
 include: "athenadwh_patient_current_medications.view.lkml"
 include: "views/athena_patient_current_medications.view.lkml"
-
+include: "views/feature_importance.view.lkml"
+include: "views/models.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
