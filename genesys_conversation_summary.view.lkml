@@ -16,6 +16,7 @@ view: genesys_conversation_summary {
     sql: ${TABLE}."abandoned" ;;
   }
 
+
   dimension: ani {
     type: string
     sql: ${TABLE}."ani" ;;
@@ -144,6 +145,18 @@ view: genesys_conversation_summary {
     sql: ${abandoned} = 1 and ${firstacdwaitduration} between 1 and  20000 ;;
   }
 
+  dimension: service_level_target {
+    type: number
+    sql: case when lower(${queuename}) in('partner direct', 'humana partner direct', 'atl optum care', 'uhc partner direct', 'uhc nurse line') then 10000
+          when ${inbound_demand} then 20000
+          else null end;;
+  }
+
+  dimension: service_level {
+    type: yesno
+    sql: ${service_level_target} is not null and ${firstacdwaitduration} < ${service_level_target} ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [campaignname, queuename]
@@ -159,6 +172,28 @@ view: genesys_conversation_summary {
       value: "yes"
     }
   }
+
+  measure: count_distinct_sla {
+    label: "Count Distinct SLA (Inbound Demand)"
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key:  ${conversationid};;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+    filters: {
+      field: service_level
+      value: "yes"
+    }
+  }
+
+  measure: sla_percent {
+    type: number
+    value_format: "0%"
+    sql: ${count_distinct_sla}::float/(nullif(${count_distinct},0))::float;;
+  }
+
 
   measure: daily_average_inbound_demand {
     type: number

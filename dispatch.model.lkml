@@ -94,6 +94,7 @@ include: "ed_diversion_survey_response.view.lkml"
 include: "ut_membership.view.lkml"
 include: "uhc_hotspot.view.lkml"
 include: "hartford_zips.view.lkml"
+include: "uhc_member_data.view.lkml"
 
 explore: visit_facts {
 
@@ -590,3 +591,4 @@ explore: nc_dx_data {}
 explore: ut_membership {}
 explore: tampa_wellmed_optum {}
 explore: hartford_zips {}
+explore: uhc_member_data {}

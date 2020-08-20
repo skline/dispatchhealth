@@ -3547,6 +3547,11 @@ measure: avg_first_on_route_mins {
     sql: ${complete_comment} is not null ;;
   }
 
+  dimension: dx_visit {
+    type: yesno
+    sql: ${dx_conversions.patient_id} is not null ;;
+  }
+
 
   measure: complete_count {
     type: count_distinct
@@ -3556,6 +3561,26 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
   }
+
+  measure: complete_count_dx {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: dx_visit
+      value: "yes"
+    }
+  }
+
+  measure: dx_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_dx}::float/ ${complete_count}::float else 0 end;;
+    }
+
 
   measure: complete_count_no_arm_advanced{
     label: "Complete Count (no arm, advanced or tele)"
