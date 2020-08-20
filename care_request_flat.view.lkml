@@ -4754,6 +4754,7 @@ end  ;;
   }
 
   measure: total_lost_percent{
+    label: "Total Captured Percent (Bottom of Funnel)"
     value_format: "0%"
     type: number
     sql:  case when ${complete_plus_total_lost}>0 then ${complete_count}::float/${complete_plus_total_lost}::float else 0 end;;
