@@ -330,6 +330,16 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${predictions.care_request_id} ;;
   }
 
+  join: models {
+    relationship: many_to_one
+    sql_on: ${predictions.__model_version} = ${models.version} ;;
+  }
+
+  join: feature_importance {
+    relationship: many_to_one
+    sql_on: ${feature_importance.model_version} = ${models.version};;
+  }
+
 # Join all Athena data warehouse feed tables -- DE
   join: athenadwh_patient_insurances_clone {
     relationship: one_to_many
