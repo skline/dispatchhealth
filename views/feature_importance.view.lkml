@@ -28,6 +28,12 @@ view: feature_importance {
     sql: ${TABLE}."value" ;;
   }
 
+  measure: relative_importance {
+    type: average
+    sql: ${value} ;;
+    value_format: "0.0000"
+  }
+
   measure: count {
     type: count
     drill_fields: [id, name]
