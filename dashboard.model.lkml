@@ -304,6 +304,7 @@ include: "athenadwh_patient_current_medications.view.lkml"
 include: "views/athena_patient_current_medications.view.lkml"
 include: "views/feature_importance.view.lkml"
 include: "views/models.view.lkml"
+include: "care_team_projected_volume.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -3570,6 +3571,11 @@ explore: genesys_conversation_summary {
     sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
   }
 
+  join: care_team_projected_volume {
+    sql_on: ${genesys_conversation_summary.conversationstarttime_date} =${care_team_projected_volume.date_date}
+    and ${genesys_conversation_summary.queuename}=${care_team_projected_volume.queue};;
+  }
+
   join: patients_mobile {
     sql_on:   (
                 ${patients_mobile.mobile_number} = ${genesys_conversation_summary.ani}
@@ -4239,6 +4245,10 @@ explore: genesys_agg {
   join: markets {
     sql_on: ${markets.id}=${genesys_agg.market_id} ;;
   }
+  join: care_team_projected_volume {
+    sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}
+      ;;
+  }
 }
 
 explore: mailchimp_sends {
@@ -4397,6 +4407,11 @@ explore: genesys_queue_conversion {
 
   join: markets {
     sql_on: ${markets.id} =${genesys_queue_conversion.market_id} ;;
+  }
+
+  join: care_team_projected_volume {
+    sql_on: ${genesys_queue_conversion.conversationstarttime_date} =${care_team_projected_volume.date_date}
+      and ${genesys_queue_conversion.queuename}=${care_team_projected_volume.queue};;
   }
 }
 

@@ -403,8 +403,16 @@ view: genesys_conversation_summary {
       value: "yes"
     }
 
+
+
   }
 
+
+  measure: actuals_compared_to_projections {
+    value_format: "0%"
+    type: number
+    sql: case when ${care_team_projected_volume.sum_projected}>0 then ${count_distinct}::float/${care_team_projected_volume.sum_projected}::float else 0 end;;
+  }
 
   measure: median_talk_time {
     label: "Median Talk Time (Inbound Demand)"

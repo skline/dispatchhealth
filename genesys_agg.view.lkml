@@ -105,4 +105,11 @@ view: genesys_agg {
     type: number
     sql: case when ${sum_inbound_phone_calls}>0 then ${sum_answered}::float/${sum_inbound_phone_calls}::float else 0 end;;
   }
+
+  measure: actuals_compared_to_projections {
+    value_format: "0%"
+    type: number
+    sql: case when ${care_team_projected_volume.sum_projected}>0 then ${sum_inbound_phone_calls}::float/${care_team_projected_volume.sum_projected}::float else 0 end;;
+  }
+
   }
