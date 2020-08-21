@@ -4413,3 +4413,12 @@ explore: daily_volume {
   }
 }
 explore:  monthly_volume_market_cat {}
+
+explore: models {
+    join: feature_importance {
+      relationship: many_to_one
+      sql_on: ${feature_importance.model_version} = ${models.version};;
+    }
+
+
+}
