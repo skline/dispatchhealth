@@ -9,6 +9,11 @@ view: bounce_back_risk_3day_predictions {
     sql: ${TABLE}."id" ;;
   }
 
+  dimension: concat_care_request_id_model_version {
+    type: string
+    sql: ${__model_version} || '-' || ${care_request_id} ;;
+  }
+
   dimension_group: __data {
     type: time
     hidden: yes
@@ -87,6 +92,13 @@ view: bounce_back_risk_3day_predictions {
       year
     ]
     sql: ${TABLE}."updated_at" ;;
+  }
+
+  measure: true_average_probability {
+    type: average_distinct
+    sql: ${probability_true} ;;
+    sql_distinct_key: ${concat_care_request_id_model_version} ;;
+    value_format: "0.0000"
   }
 
   measure: count {
