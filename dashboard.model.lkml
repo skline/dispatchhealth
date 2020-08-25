@@ -302,8 +302,8 @@ include: "dx_conversions.view.lkml"
 include: "genesys_agent_conversion.view.lkml"
 include: "athenadwh_patient_current_medications.view.lkml"
 include: "views/athena_patient_current_medications.view.lkml"
-include: "views/feature_importance.view.lkml"
-include: "views/models.view.lkml"
+include: "views/bounce_back_risk_3day_feature_importance.view.lkml"
+include: "views/bounce_back_risk_3day_models.view.lkml"
 include: "care_team_projected_volume.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -331,14 +331,14 @@ explore: care_requests {
     sql_on: ${care_requests.id} = ${predictions.care_request_id} ;;
   }
 
-  join: models {
+  join: bounce_back_risk_3day_models {
     relationship: many_to_one
-    sql_on: ${predictions.__model_version} = ${models.version} ;;
+    sql_on: ${predictions.__model_version} = ${bounce_back_risk_3day_models.version} ;;
   }
 
-  join: feature_importance {
+  join: bounce_back_risk_3day_feature_importance {
     relationship: many_to_one
-    sql_on: ${feature_importance.model_version} = ${models.version};;
+    sql_on: ${bounce_back_risk_3day_feature_importance.model_version} = ${bounce_back_risk_3day_models.version};;
   }
 
 # Join all Athena data warehouse feed tables -- DE
@@ -4429,10 +4429,10 @@ explore: daily_volume {
 }
 explore:  monthly_volume_market_cat {}
 
-explore: models {
-    join: feature_importance {
+explore: bounce_back_risk_3day_models {
+    join: bounce_back_risk_3day_feature_importance {
       relationship: many_to_one
-      sql_on: ${feature_importance.model_version} = ${models.version};;
+      sql_on: ${bounce_back_risk_3day_feature_importance.model_version} = ${bounce_back_risk_3day_models.version};;
     }
 
 

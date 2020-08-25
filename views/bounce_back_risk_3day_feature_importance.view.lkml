@@ -1,4 +1,4 @@
-view: feature_importance {
+view: bounce_back_risk_3day_feature_importance {
   sql_table_name: bounce_back_risk.feature_importance ;;
   drill_fields: [id]
 
