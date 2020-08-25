@@ -1,4 +1,4 @@
-view: predictions {
+view: bounce_back_risk_3day_predictions {
   sql_table_name: bounce_back_risk.predictions ;;
   drill_fields: [id]
 

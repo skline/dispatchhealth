@@ -289,7 +289,7 @@ include: "notes_aggregated.view.lkml"
 include: "athena_provider.view.lkml"
 include: "athena_providergroup.view.lkml"
 include: "document_close_tmp.view.lkml"
-include: "predictions.view.lkml"
+include: "bounce_back_risk_3day_predictions.view.lkml"
 include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
@@ -326,14 +326,14 @@ explore: care_requests {
   #  user_attribute: "market_name"
   #}
 
-  join: predictions {
+  join: bounce_back_risk_3day_predictions {
     relationship: one_to_one
-    sql_on: ${care_requests.id} = ${predictions.care_request_id} ;;
+    sql_on: ${care_requests.id} = ${bounce_back_risk_3day_predictions.care_request_id} ;;
   }
 
   join: bounce_back_risk_3day_models {
     relationship: many_to_one
-    sql_on: ${predictions.__model_version} = ${bounce_back_risk_3day_models.version} ;;
+    sql_on: ${bounce_back_risk_3day_predictions.__model_version} = ${bounce_back_risk_3day_models.version} ;;
   }
 
   join: bounce_back_risk_3day_feature_importance {
