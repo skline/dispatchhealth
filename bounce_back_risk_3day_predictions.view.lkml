@@ -1,4 +1,4 @@
-view: predictions {
+view: bounce_back_risk_3day_predictions {
   sql_table_name: bounce_back_risk.predictions ;;
   drill_fields: [id]
 
@@ -7,6 +7,11 @@ view: predictions {
     type: number
     hidden: yes
     sql: ${TABLE}."id" ;;
+  }
+
+  dimension: concat_care_request_id_model_version {
+    type: string
+    sql: ${__model_version} || '-' || ${care_request_id} ;;
   }
 
   dimension_group: __data {
@@ -87,6 +92,13 @@ view: predictions {
       year
     ]
     sql: ${TABLE}."updated_at" ;;
+  }
+
+  measure: true_average_probability {
+    type: average_distinct
+    sql: ${probability_true} ;;
+    sql_distinct_key: ${concat_care_request_id_model_version} ;;
+    value_format: "0.0000"
   }
 
   measure: count {

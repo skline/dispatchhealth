@@ -289,7 +289,7 @@ include: "notes_aggregated.view.lkml"
 include: "athena_provider.view.lkml"
 include: "athena_providergroup.view.lkml"
 include: "document_close_tmp.view.lkml"
-include: "predictions.view.lkml"
+include: "bounce_back_risk_3day_predictions.view.lkml"
 include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
@@ -326,14 +326,14 @@ explore: care_requests {
   #  user_attribute: "market_name"
   #}
 
-  join: predictions {
+  join: bounce_back_risk_3day_predictions {
     relationship: one_to_one
-    sql_on: ${care_requests.id} = ${predictions.care_request_id} ;;
+    sql_on: ${care_requests.id} = ${bounce_back_risk_3day_predictions.care_request_id} ;;
   }
 
   join: bounce_back_risk_3day_models {
     relationship: many_to_one
-    sql_on: ${predictions.__model_version} = ${bounce_back_risk_3day_models.version} ;;
+    sql_on: ${bounce_back_risk_3day_predictions.__model_version} = ${bounce_back_risk_3day_models.version} ;;
   }
 
   join: bounce_back_risk_3day_feature_importance {
@@ -4185,7 +4185,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('1a504d3204',  '08f503ca35', 'd2d35689f3',  'fe16ea8819', '10c4662004', '359b4df3c9', '2f6240d04e', 'c271f77a7d', 'fc950cb88d', '91510a27e3','05ed225c96', '495c077092', 'c254664a41', 'ddc3665531', '61b3648256', '6181b333dd', '7cb28f6e1f', '91510a27e3', 'c72570cb2e');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1');;
   }
 
   join: senior_mailchimp_audiences_clone {
