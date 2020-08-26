@@ -1313,10 +1313,10 @@ join: department_order {
     sql_on: ${care_request_network_referrals.care_request_id} = ${care_requests.id} ;;
   }
 
-  join: network_referrals {
-    relationship: one_to_one
-    sql_on: ${network_referrals.id} = ${care_request_network_referrals.network_referral_id} ;;
-  }
+#   join: network_referrals {
+#     relationship: one_to_one
+#     sql_on: ${network_referrals.id} = ${care_request_network_referrals.network_referral_id} ;;
+#   }
 
   join: care_request_consents {
     relationship: one_to_one
@@ -1602,15 +1602,38 @@ join: department_order {
             AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
   }
 
+  # Need to re-work this to start by document ID ??
+  join: insurance_network_insurance_plans {
+    relationship: one_to_one
+    sql_on: ${insurance_coalese_crosswalk.insurance_package_id} = ${insurance_network_insurance_plans.package_id} ;;
+  }
+
   join: insurance_networks {
     relationship: many_to_one
-    sql_on: ${insurance_network_network_referrals.insurance_network_id} = ${insurance_networks.id} ;;
+    sql_on: ${insurance_network_insurance_plans.insurance_network_id} = ${insurance_networks.id}
+      AND ${markets.id_adj} = ${insurance_networks.market_id};;
+    fields: []
   }
 
   join: insurance_network_network_referrals {
     relationship: one_to_many
-    sql_on: ${network_referrals.id} = ${insurance_network_network_referrals.network_referral_id} ;;
+    sql_on: ${insurance_networks.id} = ${insurance_network_network_referrals.insurance_network_id} ;;
+#     sql_where: ${insurance_network_network_referrals.default} IS TRUE ;;
+    fields: []
   }
+
+  join: network_referrals {
+    relationship: many_to_one
+    sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
+    fields: []
+  }
+
+  join: narrow_network_provider {
+    from: athena_clinicalprovider
+    relationship: many_to_one
+    sql_on: ${network_referrals.athena_id} = ${narrow_network_provider.clinical_provider_id} ;;
+  }
+
 
   join: expected_allowable_corporate {
     relationship: many_to_one

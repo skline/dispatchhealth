@@ -1,7 +1,7 @@
 view: athena_clinicalencounter {
   sql_table_name: athena.clinicalencounter ;;
   drill_fields: [id]
-  view_label: "Athena Clinical Encounters (DEV)"
+  view_label: "Athena Clinical Encounters"
 
   dimension: id {
     primary_key: yes
