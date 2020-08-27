@@ -4,6 +4,7 @@ view: athena_procedurecode {
   dimension: __batch_id {
     type: string
     sql: ${TABLE}."__batch_id" ;;
+    group_label: "ID's"
   }
 
   dimension_group: __file {
@@ -70,21 +71,25 @@ view: athena_procedurecode {
   dimension: procedure_code {
     type: string
     sql: ${TABLE}."procedure_code" ;;
+    group_label: "Description"
   }
 
   dimension: procedure_code_description {
     type: string
     sql: ${TABLE}."procedure_code_description" ;;
+    group_label: "Description"
   }
 
   dimension: procedure_code_group {
     type: string
     sql: ${TABLE}."procedure_code_group" ;;
+    group_label: "Description"
   }
 
   dimension: procedure_code_id {
     type: number
     sql: ${TABLE}."procedure_code_id" ;;
+    group_label: "ID's"
   }
 
   dimension_group: updated {
