@@ -963,7 +963,7 @@ join: department_order {
 
 join: athena_procedurecode {
   relationship: one_to_one
-  sql_on: ${athena_transaction.procedure_code} = split_part(${athena_procedurecode.procedure_code},' ',1) AND
+  sql_on: split_part(${athena_transaction.procedure_code},' ',1) = split_part(${athena_procedurecode.procedure_code},' ',1) AND
     ${athena_procedurecode.deleted_datetime_raw} IS NULL ;;
   }
 
