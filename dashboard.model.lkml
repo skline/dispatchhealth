@@ -961,6 +961,12 @@ join: department_order {
   sql_on: ${athena_document_orders.department_id}   = ${department_order.department_id} ;;
 }
 
+join: athena_procedurecode {
+  relationship: one_to_one
+  sql_on: ${athena_transaction.procedure_code} = split_part(${athena_procedurecode.procedure_code},' ',1) AND
+    ${athena_procedurecode.deleted_datetime_raw} IS NULL ;;
+  }
+
 
 ###################################################
 # End New Athena Feed - DE
