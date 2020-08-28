@@ -301,6 +301,7 @@ include: "monthly_volume_market_cat.view.lkml"
 include: "dx_conversions.view.lkml"
 include: "genesys_agent_conversion.view.lkml"
 include: "athenadwh_patient_current_medications.view.lkml"
+include: "athena_procedurecode.view.lkml"
 include: "views/athena_patient_current_medications.view.lkml"
 include: "views/bounce_back_risk_3day_feature_importance.view.lkml"
 include: "views/bounce_back_risk_3day_models.view.lkml"
@@ -959,6 +960,12 @@ join: department_order {
   relationship: many_to_one
   sql_on: ${athena_document_orders.department_id}   = ${department_order.department_id} ;;
 }
+
+join: athena_procedurecode {
+  relationship: one_to_one
+  sql_on: split_part(${athena_transaction.procedure_code},' ',1) = split_part(${athena_procedurecode.procedure_code},' ',1) AND
+    ${athena_procedurecode.deleted_datetime_raw} IS NULL ;;
+  }
 
 
 ###################################################
