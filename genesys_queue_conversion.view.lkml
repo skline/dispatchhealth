@@ -65,9 +65,9 @@ view: genesys_queue_conversion {
   measure: sum_distinct_sla {
     type: sum_distinct
     label: "Sum Distinct SLA (Inbound Demand)"
-    sql: ${count_answered} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
-  }
+    sql: ${count_distinct_sla} ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}) ;;
+    }
 
   measure: sla_percent {
     type: number

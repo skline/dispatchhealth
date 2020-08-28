@@ -32,7 +32,7 @@ view: genesys_agg {
   measure: sum_distinct_sla {
     type: sum_distinct
     label: "Sum Distinct SLA (Inbound Demand)"
-    sql: ${count_answered} ;;
+    sql: ${count_distinct_sla} ;;
     sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
   }
 
