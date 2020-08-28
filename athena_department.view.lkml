@@ -1,11 +1,12 @@
 view: athena_department {
   sql_table_name: athena.department ;;
   drill_fields: [department_id]
-  view_label: "Athena Department (DEV)"
+  view_label: "Athena Department"
 
   dimension: department_id {
     primary_key: yes
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."department_id" ;;
   }
 
@@ -111,25 +112,25 @@ view: athena_department {
 
   dimension: department_address {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."department_address" ;;
   }
 
   dimension: department_address_2 {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."department_address_2" ;;
   }
 
   dimension: department_city {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."department_city" ;;
   }
 
   dimension: department_fax {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."department_fax" ;;
   }
 
@@ -152,7 +153,7 @@ view: athena_department {
 
   dimension: department_phone {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."department_phone" ;;
   }
 
@@ -164,25 +165,25 @@ view: athena_department {
 
   dimension: department_state {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."department_state" ;;
   }
 
   dimension: department_zip {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."department_zip" ;;
   }
 
   dimension: gpci_location_id {
     type: number
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."gpci_location_id" ;;
   }
 
   dimension: gpci_location_name {
     type: string
-    group_item_label: "Contact Information"
+    group_label: "Contact Information"
     sql: ${TABLE}."gpci_location_name" ;;
   }
 
@@ -194,6 +195,7 @@ view: athena_department {
 
   dimension: place_of_service_type {
     type: string
+    description: "HOME, ASSISTED LIVING, etc."
     sql: ${TABLE}."place_of_service_type" ;;
   }
 

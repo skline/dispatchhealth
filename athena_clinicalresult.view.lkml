@@ -1,7 +1,7 @@
 view: athena_clinicalresult {
   sql_table_name: athena.clinicalresult ;;
   drill_fields: [id]
-  view_label: "Athena Clinical Result (DEV - NEEDS NEW UNIQUE KEY)"
+  view_label: "Athena Clinical Result"
 
   dimension: id {
     primary_key: yes
@@ -39,31 +39,40 @@ view: athena_clinicalresult {
 
   dimension: clinical_order_genus {
     type: string
+    group_label: "Description"
     sql: ${TABLE}."clinical_order_genus" ;;
   }
 
   dimension: clinical_order_type {
     type: string
+    group_label: "Description"
+    description: "The detailed description of the order"
     sql: ${TABLE}."clinical_order_type" ;;
   }
 
   dimension: clinical_order_type_group {
     type: string
+    group_label: "Description"
+    description: "The high-level description (LAB, IMAGING, etc.)"
     sql: ${TABLE}."clinical_order_type_group" ;;
   }
 
   dimension: clinical_provider_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_provider_id" ;;
   }
 
   dimension: clinical_provider_order_type {
     type: string
+    group_label: "Description"
+    description: "The order type as defined by the fulfilling provider"
     sql: ${TABLE}."clinical_provider_order_type" ;;
   }
 
   dimension: clinical_result_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."clinical_result_id" ;;
   }
 
@@ -84,6 +93,7 @@ view: athena_clinicalresult {
 
   dimension: created_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."created_by" ;;
   }
 
@@ -101,13 +111,9 @@ view: athena_clinicalresult {
     sql: ${TABLE}."created_datetime" ;;
   }
 
-  dimension: cvx {
-    type: string
-    sql: ${TABLE}."cvx" ;;
-  }
-
   dimension: deleted_by {
     type: string
+    group_label: "User Actions"
     sql: ${TABLE}."deleted_by" ;;
   }
 
@@ -127,16 +133,19 @@ view: athena_clinicalresult {
 
   dimension: document_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."document_id" ;;
   }
 
   dimension: external_note {
     type: string
+    group_label: "Description"
     sql: ${TABLE}."external_note" ;;
   }
 
   dimension: fbd_med_id {
     type: string
+    group_label: "IDs"
     sql: ${TABLE}."fbd_med_id" ;;
   }
 
@@ -156,26 +165,31 @@ view: athena_clinicalresult {
 
   dimension: order_document_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."order_document_id" ;;
   }
 
   dimension: provider_note {
     type: string
+    group_label: "Description"
     sql: ${TABLE}."provider_note" ;;
   }
 
   dimension: report_status {
     type: string
+    group_label: "Description"
     sql: ${TABLE}."report_status" ;;
   }
 
   dimension: result_document_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."result_document_id" ;;
   }
 
   dimension: result_status {
     type: string
+    group_label: "Description"
     sql: ${TABLE}."result_status" ;;
   }
 
@@ -209,6 +223,7 @@ view: athena_clinicalresult {
 
   dimension: specimen_source {
     type: string
+    hidden: yes
     sql: ${TABLE}."specimen_source" ;;
   }
 

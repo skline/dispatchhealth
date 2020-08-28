@@ -1,7 +1,7 @@
 view: athena_patient {
   sql_table_name: athena.patient ;;
   drill_fields: [new_patient_id]
-  view_label: "Athena Patients (DEV)"
+  view_label: "Athena Patients"
 
   dimension: patient_id {
     type: number
@@ -475,6 +475,11 @@ view: athena_patient {
   measure: count {
     type: count
     drill_fields: [detail*]
+  }
+
+  measure: count_distinct_patients {
+    type: count_distinct
+    sql: ${patient_id} ;;
   }
 
   # ----- Sets of fields for drilling ------
