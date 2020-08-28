@@ -251,6 +251,33 @@ view: athena_clinicalencounter {
     sql: ${TABLE}."updated_at" ;;
   }
 
+  measure: count_distinct_charts {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    group_label: "Counts"
+  }
+
+  measure: count_symptom_based_charts {
+    type: count_distinct
+    sql: ${chart_id} ;;
+    group_label: "Counts"
+    filters: {
+      field: athena_diagnosis_codes.symptom_based_diagnosis
+      value: "yes"
+    }
+  }
+
+  measure: count_comorbidity_based_charts {
+    type: count_distinct
+    description: "Count of charts that have non-primary comorbidity diagnoses"
+    sql: ${chart_id} ;;
+    group_label: "Counts"
+    filters: {
+      field: athena_diagnosis_codes.comorbidity_based_diagnosis
+      value: "yes"
+    }
+  }
+
   measure: count {
     type: count
     drill_fields: [id, appointment.rescheduled_appointment_id, claim.original_claim_id]
