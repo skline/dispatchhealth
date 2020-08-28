@@ -9,6 +9,8 @@ view: genesys_queue_conversion {
         column: conversationstarttime {field: genesys_conversation_summary.conversationstarttime_date}
         column: queuename {}
         column: market_id {field:markets.id}
+        column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}
+
 
         column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
@@ -53,6 +55,27 @@ view: genesys_queue_conversion {
     dimension: complete_count {
       type: number
     }
+
+
+  dimension: count_distinct_sla {
+    label: "Count Distinct SLA (Inbound Demand)"
+    type: number
+  }
+
+  measure: sum_distinct_sla {
+    type: sum_distinct
+    label: "Sum Distinct SLA (Inbound Demand)"
+    sql: ${count_distinct_sla} ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}) ;;
+    }
+
+  measure: sla_percent {
+    type: number
+    value_format: "0%"
+    sql: ${sum_distinct_sla}::float/(nullif(${sum_inbound_phone_calls},0))::float;;
+  }
+
+
   dimension_group: conversationstarttime {
     type: time
     timeframes: [
