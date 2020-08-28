@@ -7,6 +7,7 @@ view: genesys_agg {
         column: market_id { field: markets.id }
         column: count_answered {}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
+        column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}
         column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
         filters: {
           field: genesys_conversation_summary.conversationstarttime_date
@@ -22,6 +23,25 @@ view: genesys_agg {
     value_format: "0.00"
     type: number
   }
+
+  dimension: count_distinct_sla {
+    label: "Count Distinct SLA (Inbound Demand)"
+    type: number
+  }
+
+  measure: sum_distinct_sla {
+    type: sum_distinct
+    label: "Sum Distinct SLA (Inbound Demand)"
+    sql: ${count_answered} ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
+  }
+
+  measure: sla_percent {
+    type: number
+    value_format: "0%"
+    sql: ${sum_distinct_sla}::float/(nullif(${sum_inbound_demand},0))::float;;
+  }
+
 
   dimension: wait_time_minutes_x_inbound_phone_calls {
     type: number
