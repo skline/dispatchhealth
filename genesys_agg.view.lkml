@@ -39,7 +39,7 @@ view: genesys_agg {
   measure: sla_percent {
     type: number
     value_format: "0%"
-    sql: ${sum_distinct_sla}::float/(nullif(${sum_inbound_demand},0))::float;;
+    sql: ${sum_distinct_sla}::float/(nullif(${sum_inbound_phone_calls},0))::float;;
   }
 
 
