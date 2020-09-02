@@ -18,7 +18,7 @@ view: risk_assessments {
       WHEN ${TABLE}.protocol_name LIKE '%Vision/eye%' THEN 'Vision Problem'
       WHEN ${TABLE}.protocol_name LIKE '%Extremity Injury/Pain%' THEN 'Extremity Injury'
       WHEN ${TABLE}.protocol_name LIKE '%Upper Respiratory Infection%' THEN 'Cough/URI'
-      ELSE INITCAP(${TABLE}.protocol_name)
+      ELSE INITCAP(split_part(lower(${TABLE}.protocol_name),' (non covid-19)',1))
     END;;
   }
 
