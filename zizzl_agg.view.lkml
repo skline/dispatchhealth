@@ -88,6 +88,11 @@ view: zizzl_agg {
     description: "The primary key from the public users view"
     type: number
   }
+
+  dimension: diff_from_10 {
+    type: number
+    sql: ${sum_shift_hours}-10 ;;
+  }
   measure: avg_dashboard_vs_zizzl_diff {
     value_format: "0.00"
     type: average_distinct
@@ -99,5 +104,39 @@ view: zizzl_agg {
     type: median_distinct
     sql: ${dashboard_vs_zizzl_diff} ;;
     sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name}) ;;
+  }
+
+  measure: sum_dashboard_vs_zizzl_diff {
+    value_format: "0.00"
+    type: sum_distinct
+    sql: ${dashboard_vs_zizzl_diff} ;;
+    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name}) ;;
+  }
+
+  measure: total_shifts {
+    value_format: "0"
+    type: count_distinct
+    sql: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name});;
+    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name}) ;;
+  }
+
+  measure: total_shift_hours {
+    value_format: "0"
+    type: sum_distinct
+    sql: ${sum_shift_hours} ;;
+    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name}) ;;
+  }
+
+  measure: sum_diff_from_10 {
+    value_format: "0"
+    type: sum_distinct
+    sql: ${diff_from_10} ;;
+    sql_distinct_key: concat(${counter_date}, ${shift_name}, ${employee_id}, ${name}) ;;
+  }
+
+  measure: sum_diff_from_10_minus_zizzl {
+    value_format: "0"
+    type: number
+    sql: ${sum_diff_from_10}- ${sum_dashboard_vs_zizzl_diff};;
   }
 }
