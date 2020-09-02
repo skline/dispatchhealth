@@ -178,7 +178,7 @@ view: athena_diagnosis_codes {
     type: yesno
     hidden: yes
     description: "A flag indicating the non-primary ICD-10 code is a co-morbidity. Use only to count charts"
-    sql: ${diagnosis_code} IN ('E10','E11','E13','I10','I87','J45') AND ${athena_diagnosis_sequence.sequence_number} > 1 ;;
+    sql: ${diagnosis_code_short} IN ('E10','E11','E13','I10','I87','J45') AND ${athena_diagnosis_sequence.sequence_number} > 1 ;;
   }
 
   dimension: disease_state {

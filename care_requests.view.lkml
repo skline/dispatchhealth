@@ -675,7 +675,7 @@ view: care_requests {
 
   dimension: request_type {
     type: string
-    sql:  case when ${request_type_id} = 1 OR lower(${channel_items.name}) in('south metro fire rescue', 'smfr employee clinic', 'west metro fire rescure') then 'manual_911'
+    sql:  case when ${request_type_id} = 1 OR lower(${channel_items.name}) in('south metro fire rescue', 'smfr employee clinic', 'west metro fire rescue') then 'manual_911'
                when ${request_type_id} = 0 then 'phone'
                when ${request_type_id} = 2 then 'mobile'
                when ${request_type_id} = 3 then 'web'
@@ -859,7 +859,7 @@ view: care_requests {
     description: "The count of completed visits where the CPT code group is 'Procedure'"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_procedure_codes_clone.procedure_code_group
+      field: athena_procedurecode.procedure_code_group
       value: "Procedure"
     }
     filters: {
