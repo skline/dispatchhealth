@@ -595,14 +595,7 @@ view: athena_document_orders {
     description: "Count of care requests where the lab was ordered from an in network insurance vendor"
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
-    filters: {
-      field: labs_ordered
-      value: "yes"
-    }
-    filters: {
-      field: insurance_network_network_referrals.default
-      value: "yes"
-    }
+    filters: [labs_ordered: "yes", narrow_network_providers.is_default_provider: "yes"]
     group_label: "Labs, Imaging & Procedures"
   }
 
@@ -628,14 +621,7 @@ view: athena_document_orders {
     description: "Count of care requests where the imaging was ordered from an in network insurance vendor"
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
-    filters: {
-      field: imaging_ordered
-      value: "yes"
-    }
-    filters: {
-      field: insurance_network_network_referrals.default
-      value: "yes"
-    }
+    filters: [imaging_ordered: "yes", narrow_network_providers.is_default_provider: "yes"]
     group_label: "Labs, Imaging & Procedures"
   }
 
