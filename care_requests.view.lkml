@@ -859,7 +859,7 @@ view: care_requests {
     description: "The count of completed visits where the CPT code group is 'Procedure'"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_procedure_codes_clone.procedure_code_group
+      field: athena_procedurecode.procedure_code_group
       value: "Procedure"
     }
     filters: {
