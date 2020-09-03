@@ -355,6 +355,12 @@ view: channel_items {
     sql: ${TABLE}.hospitalization_diversion ;;
   }
 
+  dimension: ems_channel {
+    description: "Channel name contains 'Ems', 'Fire' or '911'"
+    type: yesno
+    sql: ${name} like '%Ems%' OR  ${name} LIKE '%Fire%' OR  ${name} like '%911%' ;;
+  }
+
   dimension: senior {
     type: yesno
     sql: lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf')  ;;
