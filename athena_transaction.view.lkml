@@ -428,6 +428,41 @@ view: athena_transaction {
     sql: ${TABLE}."work_rvu" ;;
   }
 
+  dimension: is_valid_exp_allowable {
+    type: yesno
+    hidden: yes
+    sql: ${transaction_type} = 'CHARGE' AND (
+          (${transaction_transfer_type} = 'Primary')
+          OR (${transaction_transfer_type} != 'Primary' AND ${insurance_coalese_crosswalk.insurance_package_id}::int IN (0,-100)));;
+  }
+
+  dimension: fixed_expected_allowable {
+    description: "Expected allowable where charge reversals are dealt with effectively"
+    type: number
+    hidden: yes
+    sql: CASE
+          WHEN ${reversal_flag} THEN ${expected_allowed_amount}::float * -1
+          ELSE ${expected_allowed_amount}::float
+        END ;;
+  }
+
+  dimension: voided_date_is_null {
+    description: "A flag indicating that the voided date is null."
+    type: yesno
+    hidden: yes
+    sql: ${voided_date} IS NULL ;;
+  }
+
+  measure: total_expected_allowable {
+    type: sum_distinct
+    alias: [total_expected_allowable]
+    description: "Transaction type is CHARGE and transfer type is PRIMARY or patient is self-pay"
+    sql: ${fixed_expected_allowable}::float ;;
+    sql_distinct_key: ${transaction_id} ;;
+    value_format: "$#,##0.00"
+    filters: [is_valid_exp_allowable: "yes", is_valid_claim: "yes", voided_date_is_null: "yes"]
+  }
+
   measure: count {
     type: count
     drill_fields: [transaction_id, claim.original_claim_id]

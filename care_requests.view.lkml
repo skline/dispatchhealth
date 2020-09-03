@@ -836,7 +836,9 @@ view: care_requests {
     sql: ${care_request_flat.complete_date} is not null AND
       (${care_request_flat.primary_resolved_reason} IS NULL OR
       UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
-      UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE') ;;
+      UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE' OR
+      UPPER(${care_request_flat.primary_resolved_reason}) = 'ESCALATED TO ADVANCED' OR
+      UPPER(${care_request_flat.other_resolved_reason}) LIKE '%ESCALATED%') ;;
   }
 
   dimension:  complete_non_escalated_visit {

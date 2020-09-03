@@ -72,7 +72,11 @@ view: patients {
 
   dimension: age {
     type: number
-    sql: CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT) ;;
+    sql: CASE WHEN ${care_request_flat.created_date} >= ${dob}
+              AND CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT) <= 107 THEN
+          CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT)
+         ELSE NULL
+        END ;;
     group_label: "Age of Patient"
   }
 

@@ -342,6 +342,7 @@ ORDER BY base.chart_id;  ;;
       type: count_distinct
       description: "Count of patients who indicate they feel unsteady when standing or walking"
       sql: ${chart_id} ;;
+      group_label: "Count Affirmative Responses"
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
       filters: {
         field: fall_risk_unsteady
@@ -357,6 +358,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_activities_daily_living {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       description: "Count of patients who indicate they need help with activities of daily living"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
@@ -435,6 +437,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_feels_unsafe {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       description: "Count of patients who indicate 'N' when asked if they feel safe (does not include other free-form text)"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
@@ -523,6 +526,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_cost_concerns {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       description: "Count of patients who indicate they have financial concerns"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
@@ -549,6 +553,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_food_insecurity {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
       filters: {
@@ -565,6 +570,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_food_insecurity_worry {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
       filters: {
@@ -582,6 +588,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_lack_social_interactions {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       description: "Count of patients who have social interactions less than once per week"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
@@ -606,6 +613,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_lack_housing_security {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       description: "Count of patients who have indicated they have housing insecurity"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
@@ -629,6 +637,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_requested_resources {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       description: "Count of patients who have indicated they would like to be connected to resources"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
@@ -675,6 +684,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: avg_questions_asked {
       type: average_distinct
+      group_label: "Count Survey Respondents"
       sql_distinct_key: ${chart_id} ;;
       sql: ${number_questions_asked} ;;
       value_format: "0.0"
@@ -698,6 +708,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: avg_questions_asked_primary_10_sdoh {
       type: average_distinct
+      group_label: "Count Survey Respondents"
       sql_distinct_key: ${chart_id} ;;
       sql: ${number_questions_asked_primary_10_sdoh} ;;
       value_format: "0.0"
@@ -705,6 +716,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_one_or_more_10_SDOH_asked {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       value_format: "0"
       filters: {
@@ -715,6 +727,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: qn_asked_fall_risk_per_provider {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: fall_risk_provider
@@ -724,6 +737,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_fall_risk_unsteady {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: fall_risk_unsteady
@@ -733,6 +747,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_activities_daily_living {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: activities_daily_living
@@ -742,6 +757,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_safety_feeling {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: safety_feeling
@@ -751,6 +767,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_cost_concerns {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: cost_concerns
@@ -760,6 +777,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_food_insecurity {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: food_insecurity
@@ -769,6 +787,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_food_insecurity_worry {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: food_insecurity_worry
@@ -778,6 +797,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_social_interactions {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: social_interactions
@@ -787,6 +807,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_housing_insecurity {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: housing_insecurity
@@ -796,6 +817,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_resource_help_requested {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: resource_help_requested
@@ -805,6 +827,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: sdoh_qn_asked_transportation {
       type: count_distinct
+      group_label: "Count Survey Respondents"
       sql: ${chart_id} ;;
       filters: {
         field: transportation
@@ -820,6 +843,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_fall_risk_per_provider {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
       filters: {
@@ -830,6 +854,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_lack_of_transportation {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
       filters: {
@@ -840,6 +865,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_lack_of_access_healthy_foods {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       hidden: yes
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]
@@ -851,6 +877,7 @@ ORDER BY base.chart_id;  ;;
 
     measure: count_cant_afford_medications {
       type: count_distinct
+      group_label: "Count Affirmative Responses"
       hidden: yes
       sql: ${chart_id} ;;
       drill_fields: [patients.ehr_id, patients.first_name, patients.last_name, patients.age]

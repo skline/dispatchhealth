@@ -286,6 +286,11 @@ view: athena_document_letters {
     drill_fields: [detail*]
   }
 
+  measure: count_distinct_encounters {
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+  }
+
   dimension: clinical_letters_sent_all {
     description: "Identifies clinical letters sent to any recipient"
     hidden: yes
@@ -298,6 +303,7 @@ view: athena_document_letters {
     type: count_distinct
 
     sql: ${clinical_encounter_id} ;;
+    filters: [clinical_letters_sent_all: "yes", care_requests.complete_visit: "yes"]
     filters: {
       field: clinical_letters_sent_all
       value: "yes"
