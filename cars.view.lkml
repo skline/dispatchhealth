@@ -48,9 +48,17 @@ view: cars {
     sql: ${TABLE}.market_id ;;
   }
 
+  dimension: raw_name {
+    type:  string
+    sql: ${TABLE}.name ;;
+  }
+
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: CASE
+          WHEN UPPER(${raw_name}) LIKE '%SMFR%' THEN 'SMFR_Car'
+          ELSE ${raw_name}
+        END;;
   }
 
   dimension: name_date {
