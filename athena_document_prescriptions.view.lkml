@@ -1,6 +1,6 @@
 view: athena_document_prescriptions {
   sql_table_name: athena.document_prescriptions ;;
-  view_label: "Athena Prescriptions"
+  view_label: "Athena Prescription Orders"
   drill_fields: [id]
 
   dimension: id {
@@ -8,6 +8,12 @@ view: athena_document_prescriptions {
     hidden: yes
     type: number
     sql: ${TABLE}."id" ;;
+  }
+
+  dimension: medication_id {
+    type: number
+    group_label: "IDs"
+    sql: ${TABLE}.medication_id ;;
   }
 
   dimension: __batch_id {
@@ -97,14 +103,14 @@ view: athena_document_prescriptions {
 
   dimension: clinical_order_type {
     type: string
-    group_label: "Description"
+    group_label: "Descriptions"
     description: "The detailed description of the prescription"
     sql: ${TABLE}."clinical_order_type" ;;
   }
 
   dimension: clinical_order_type_group {
     type: string
-    group_label: "Description"
+    group_label: "Descriptions"
     sql: ${TABLE}."clinical_order_type_group" ;;
   }
 
