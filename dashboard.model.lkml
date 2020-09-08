@@ -822,12 +822,13 @@ join: narrow_network_providers {
   sql_on: ${insurance_coalese.package_id_coalese} = ${narrow_network_providers.package_id}
           AND ${care_requests.market_id_adj} = ${narrow_network_providers.market_id}
           AND ${athena_document_orders.clinical_provider_id} = ${narrow_network_providers.athena_id};;
-# fields: []
+fields: []
 }
 
 join: insurance_network_insurance_plans {
   relationship: many_to_one
   sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_network_insurance_plans.package_id};;
+fields: []
 }
 
 join: insurance_networks {
@@ -843,26 +844,22 @@ join: insurance_network_network_referrals {
   sql_on: ${insurance_networks.id} = ${insurance_network_network_referrals.insurance_network_id}
           AND ${insurance_network_network_referrals.default} IS TRUE ;;
 #   sql_where: ${insurance_network_network_referrals.default} IS TRUE ;;
+fields: []
 }
 
 join: network_referrals {
   relationship: many_to_one
   sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
+fields: []
 }
 
 join: narrow_network_orders {
   from: athena_document_orders
-  fields: [clinical_provider_id]
-  relationship: many_to_one
-  sql_on: ${network_referrals.athena_id} = ${narrow_network_orders.clinical_provider_id} ;;
+  relationship: one_to_one
+  sql_on: ${athena_document_orders.document_id} = ${narrow_network_orders.document_id}
+          AND ${network_referrals.athena_id} = ${narrow_network_orders.clinical_provider_id} ;;
+  fields: []
 }
-
-# join: narrow_network_orders {
-#   from: athena_document_orders
-#   relationship: one_to_many
-#   sql_on: ${narrow_network_providers.athena_id} = ${narrow_network_orders.clinical_provider_id} ;;
-# # fields: []
-# }
 
 join: athena_document_results {
   relationship: one_to_one

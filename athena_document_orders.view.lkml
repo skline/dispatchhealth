@@ -1,7 +1,7 @@
 view: athena_document_orders {
   sql_table_name: athena.document_orders ;;
   drill_fields: [id]
-  view_label: "Athena Document Orders"
+#   view_label: "Athena Document Orders"
 
   dimension: id {
     primary_key: yes
@@ -262,6 +262,40 @@ view: athena_document_orders {
     type: number
     group_label: "IDs"
     sql: ${TABLE}."document_id" ;;
+  }
+
+  measure: count_distinct_orders {
+    type: count_distinct
+    group_label: "Order Counts"
+    sql: ${document_id} ;;
+  }
+
+  dimension: is_narrow_network_order {
+    type: yesno
+    hidden: yes
+    sql: ${insurance_networks.id} IS NOT NULL ;;
+  }
+
+  dimension: is_narrow_network_default_provider {
+    type: yesno
+    hidden: yes
+    sql: ${narrow_network_orders.clinical_provider_id} IS NOT NULL ;;
+  }
+
+  measure: count_narrow_network_orders {
+    type: count_distinct
+    description: "Count of distinct orders where patient is part of a narrow network"
+    group_label: "Order Counts"
+    sql: ${document_id} ;;
+    filters: [is_narrow_network_order: "yes"]
+  }
+
+  measure: count_narrow_network_orders_default_provider {
+    type: count_distinct
+    description: "Count of distinct orders where default narrow network provider is chosen"
+    group_label: "Order Counts"
+    sql: ${document_id} ;;
+    filters: [is_narrow_network_default_provider: "yes"]
   }
 
   dimension: document_results_document_id {
@@ -588,7 +622,7 @@ view: athena_document_orders {
       field: labs_ordered
       value: "yes"
     }
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
   measure: count_labs_ordered_in_ins_network {
@@ -596,7 +630,7 @@ view: athena_document_orders {
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
     filters: [labs_ordered: "yes", narrow_network_providers.is_default_provider: "yes"]
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
   dimension: imaging_ordered {
@@ -614,7 +648,7 @@ view: athena_document_orders {
       field: imaging_ordered
       value: "yes"
     }
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
   measure: count_imaging_ordered_in_ins_network {
@@ -622,7 +656,7 @@ view: athena_document_orders {
     type: count_distinct
     sql: ${clinical_encounter_id} ;;
     filters: [imaging_ordered: "yes", narrow_network_providers.is_default_provider: "yes"]
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
   dimension: procedures_performed {
@@ -640,7 +674,7 @@ view: athena_document_orders {
       field: procedures_performed
       value: "yes"
     }
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
 
