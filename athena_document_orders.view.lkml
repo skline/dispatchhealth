@@ -272,7 +272,7 @@ view: athena_document_orders {
 
   dimension: is_narrow_network_order {
     type: yesno
-    hidden: yes
+    hidden: no
     sql: ${insurance_networks.id} IS NOT NULL ;;
   }
 
