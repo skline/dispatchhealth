@@ -278,11 +278,16 @@ view: athena_document_orders {
 
   dimension: is_narrow_network_default_provider {
     type: yesno
-    hidden: yes
-    sql: ${narrow_network_orders.clinical_provider_id} IS NOT NULL ;;
+    hidden: no
+    sql: ${clinical_provider_id} = ${narrow_network_providers.athena_id} ;;
   }
 
-# Change name to count_eligible_narrow_network_orders. Add filters for Deleted and Performed by 3rd party
+#   dimension: is_narrow_network_default_provider {
+#     type: yesno
+#     hidden: yes
+#     sql: ${narrow_network_orders.clinical_provider_id} IS NOT NULL ;;
+#   }
+
   measure: count_narrow_network_orders {
     type: count_distinct
     description: "Count of distinct orders where patient is part of a narrow network"
@@ -291,7 +296,6 @@ view: athena_document_orders {
     filters: [is_narrow_network_order: "yes", status: "-DELETED", document_order_provider.provider_category: "Performed by Third Party"  ]
   }
 
-# Change name to count_eligible_narrow_network_orders. Add filters for Deleted and Performed by 3rd party
   measure: count_narrow_network_orders_default_provider {
     type: count_distinct
     description: "Count of distinct orders where default narrow network provider is chosen"
