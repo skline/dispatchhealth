@@ -803,7 +803,8 @@ view: care_requests {
       &f[markets.name_adj]={{ _filters['markets.name_adj'] | url_encode }}
       &f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}
       &f[care_request_flat.complete_resolved_date]={{ _filters['care_request_flat.complete_resolved_date'] | url_encode }}
-      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}"
+      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}
+      &f[service_lines.name]={{ _filters['service_lines.name'] | url_encode }}"
     }
   }
 
