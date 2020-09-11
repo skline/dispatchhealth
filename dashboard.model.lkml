@@ -6,6 +6,7 @@ include: "incontact_clone.view.lkml"
 include: "expected_allowables_market_budget.view.lkml"
 include: "variable_shift_tracking.view.lkml"
 include: "athenadwh_valid_claims.view.lkml"
+include: "athena_valid_claims.view.lkml"
 include: "goals_by_day_of_week.view.lkml"
 include: "provider_fit_testing.view.lkml"
 include: "funnel_agg.view.lkml"
@@ -791,6 +792,11 @@ join: athena_claim {
   relationship: one_to_one
   sql_on: ${athena_clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
 }
+
+  join: athena_valid_claims {
+    relationship: one_to_one
+    sql_on: ${athena_claim.claim_id} = ${athena_valid_claims.claim_id} ;;
+  }
 
 # join: athena_claimdiagnosis {
 #   relationship: one_to_many

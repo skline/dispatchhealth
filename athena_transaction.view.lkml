@@ -90,8 +90,8 @@ view: athena_transaction {
   dimension: claim_id {
     type: number
     group_label: "IDs"
-    hidden: yes
     # hidden: yes
+
     sql: ${TABLE}."claim_id" ;;
   }
 
@@ -291,9 +291,10 @@ view: athena_transaction {
   dimension: is_valid_claim {
     description: "Claim ID is not null and expected allowed amount is greater than 0.01"
     type: yesno
+    hidden: yes
     sql:
-         ${voided_date} IS NULL AND
-         ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL AND
+         ${athena_valid_claims.claim_id} IS NOT NULL AND
+         ${athena_appointment.no_charge_entry_reason} IS NULL AND
          ${expected_allowed_amount}::float > 0.01 ;;
   }
 
@@ -304,6 +305,16 @@ view: athena_transaction {
       ${expected_allowed_amount}::float = 0.0 ;;
   }
 
+  measure: count_transactions {
+    type: count
+    sql: ${transaction_id} ;;
+  }
+
+  measure: count_valid_transactions {
+    type: count
+    sql: ${transaction_id} ;;
+    filters: [voided_date: "NULL"]
+  }
 
   measure: count_claims {
     type: count_distinct
