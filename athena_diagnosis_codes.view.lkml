@@ -72,8 +72,9 @@ view: athena_diagnosis_codes {
   dimension: diagnosis_code_group {
     type: string
     description: "e.g. CHRONIC LOWER RESPIRATORY DISEASES (J40-J47)"
-    sql: ${TABLE}."diagnosis_code_group" ;;
+    sql: INITCAP(${TABLE}."diagnosis_code_group") ;;
     group_label: "Diagnosis Descriptions"
+    drill_fields: [diagnosis_code_short, diagnosis_description]
   }
 
   dimension: diagnosis_code_set {
