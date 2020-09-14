@@ -182,14 +182,20 @@ view: survey_responses_flat_clone {
   }
 
 # Currently doesn't work - Needs division by zero fixed
-#   measure: nps_score {
-#     type: number
-#     value_format: "0.0"
-#     sql: CASE
-#           WHEN ${distinct_nps_respondent} > 0 THEN ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100
-#           ELSE 0
-#         END ;;
-#   }
+  measure: nps_score {
+    type: number
+    value_format: "0"
+    # sql: CASE
+    #       WHEN ${distinct_nps_respondent} > 0 THEN ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100
+    #       ELSE 0
+    #     END ;;
+
+    sql: CASE WHEN ${distinct_nps_respondent} > 0 THEN
+         (COUNT(DISTINCT CASE WHEN ${promoter} THEN ${care_request_id} ELSE NULL END)
+         - COUNT(DISTINCT CASE WHEN ${detractor} THEN ${care_request_id} ELSE NULL END))*100
+         / COUNT(DISTINCT ${care_request_id})
+        ELSE NULL END ;;
+  }
 
   measure: count_respondents {
     type: count_distinct

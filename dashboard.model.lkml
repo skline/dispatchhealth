@@ -1004,13 +1004,6 @@ join: athena_clinicalresultobservation {
   sql_on: ${athena_clinicalresult.clinical_result_id} = ${athena_clinicalresultobservation.clinical_result_id} ;;
 }
 
-join: clinicalprovider_order {
-  from: athena_clinicalprovider
-  view_label: "Athena Order Fulfilling Provider"
-  relationship: many_to_one
-  sql_on: ${athena_document_orders.clinical_provider_id} = ${clinicalprovider_order.clinical_provider_id} ;;
-}
-
 join: department_order {
   from: athena_department
   view_label: "Athena Order Department"
