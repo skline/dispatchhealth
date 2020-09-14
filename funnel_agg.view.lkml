@@ -4,11 +4,10 @@
 view: funnel_agg {
   derived_table: {
     sql_trigger_value:  SELECT MAX(care_request_id) FROM ${care_request_flat.SQL_TABLE_NAME} where created_date > current_date - interval '2 days';;
-    indexes: ["created_date", "name_adj"]
+    indexes: ["created", "name_adj"]
     explore_source: care_requests {
       column: name_adj { field: markets.name_adj }
-      column: created_date { field: care_request_flat.created_date }
-      column: created_day_of_week { field: care_request_flat.created_day_of_week }
+      column: created { field: care_request_flat.created_date }
       column: cpr_market { field: markets.cpr_market }
       column: care_request_count { field: care_request_flat.care_request_count }
       column: count_distinct_bottom_funnel_care_requests { field: care_request_flat.count_distinct_bottom_funnel_care_requests }
@@ -52,14 +51,26 @@ view: funnel_agg {
   dimension: name_adj {
     description: "Market name where WMFR is included as part of Denver"
   }
-  dimension: created_date {
-    description: "The local date/time that the care request was created."
-    type: date
+
+
+  dimension_group: created {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      time_of_day,
+      hour_of_day,
+      date,
+      day_of_week,
+      day_of_week_index,
+      week,
+      month,
+      quarter,
+      year, day_of_month
+    ]
   }
 
-  dimension: created_day_of_week {
-    type: string
-  }
+
   dimension: cpr_market {
     label: "Markets Cpr Market (Yes / No)"
     description: "Flag to identify CPR markets (hard-coded)"
