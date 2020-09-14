@@ -5,11 +5,10 @@ view: productivity_agg {
 
   derived_table: {
     sql_trigger_value:  SELECT MAX(care_request_id) FROM ${care_request_flat.SQL_TABLE_NAME} where created_date > current_date - interval '2 days';;
-    indexes: ["start_date", "name_adj"]
+    indexes: ["start", "name_adj"]
 
     explore_source: shift_teams {
-      column: start_date {}
-      column: start_day_of_week {}
+      column: start { field: shift_teams.start_date}
       column: sum_shift_hours_no_arm_advanced {}
       column: complete_count { field: care_request_flat.complete_count }
       column: complete_count_no_arm_advanced { field: care_request_flat.complete_count_no_arm_advanced }
@@ -32,13 +31,25 @@ view: productivity_agg {
       }
     }
   }
-  dimension: start_date {
-    type: date
+
+  dimension_group: start {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      time_of_day,
+      hour_of_day,
+      date,
+      day_of_week,
+      day_of_week_index,
+      week,
+      month,
+      quarter,
+      year, day_of_month
+    ]
   }
 
-  dimension: start_day_of_week {
-    type: string
-  }
+
   dimension: sum_shift_hours_no_arm_advanced {
     label: "Shift Teams Sum Shift Hours (no arm, advanced or tele)"
     value_format: "0.0"
