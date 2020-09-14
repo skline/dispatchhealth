@@ -1,7 +1,7 @@
 view: athena_document_orders {
   sql_table_name: athena.document_orders ;;
   drill_fields: [id]
-  view_label: "Athena Document Orders"
+#   view_label: "Athena Document Orders"
 
   dimension: id {
     primary_key: yes
@@ -262,6 +262,46 @@ view: athena_document_orders {
     type: number
     group_label: "IDs"
     sql: ${TABLE}."document_id" ;;
+  }
+
+  measure: count_distinct_orders {
+    type: count_distinct
+    group_label: "Order Counts"
+    sql: ${document_id} ;;
+  }
+
+  dimension: is_narrow_network_order {
+    type: yesno
+    hidden: no
+    sql: ${insurance_networks.id} IS NOT NULL ;;
+  }
+
+  dimension: is_narrow_network_default_provider {
+    type: yesno
+    hidden: no
+    sql: ${clinical_provider_id} = ${narrow_network_providers.athena_id} ;;
+  }
+
+#   dimension: is_narrow_network_default_provider {
+#     type: yesno
+#     hidden: yes
+#     sql: ${narrow_network_orders.clinical_provider_id} IS NOT NULL ;;
+#   }
+
+  measure: count_narrow_network_orders {
+    type: count_distinct
+    description: "Count of distinct orders where patient is part of a narrow network"
+    group_label: "Order Counts"
+    sql: ${document_id} ;;
+    filters: [is_narrow_network_order: "yes", status: "-DELETED", document_order_provider.provider_category: "Performed by Third Party"  ]
+  }
+
+  measure: count_narrow_network_orders_default_provider {
+    type: count_distinct
+    description: "Count of distinct orders where default narrow network provider is chosen"
+    group_label: "Order Counts"
+    sql: ${document_id} ;;
+    filters: [is_narrow_network_default_provider: "yes", status: "-DELETED", document_order_provider.provider_category: "Performed by Third Party"  ]
   }
 
   dimension: document_results_document_id {
@@ -573,57 +613,75 @@ view: athena_document_orders {
     drill_fields: [detail*]
   }
 
-  dimension: labs_ordered {
-    description: "Care requests where one or more labs were ordered"
+  dimension: labs_ordered_3rd_party {
+    description: "Lab ordered from third party"
     type: yesno
-    hidden: yes
-    sql: upper(${clinical_order_type_group}) = 'LAB' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
+    hidden: no
+    sql: upper(${clinical_order_type_group}) = 'LAB' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER' AND UPPER(${document_order_provider.provider_category}) = 'PERFORMED BY THIRD PARTY'  ;;
   }
 
-  measure: count_appointments_with_labs {
-    description: "Count of care requests where one or more labs were ordered"
+  measure: count_lab_orders_from_3rd_party {
+    description: "Count of lab orders from thrid party"
     type: count_distinct
-    sql: ${clinical_encounter_id} ;;
+    sql: ${document_id} ;;
     filters: {
-      field: labs_ordered
+      field: labs_ordered_3rd_party
       value: "yes"
     }
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
-  measure: count_labs_ordered_in_ins_network {
-    description: "Count of care requests where the lab was ordered from an in network insurance vendor"
-    type: count_distinct
-    sql: ${clinical_encounter_id} ;;
-    filters: [labs_ordered: "yes", narrow_network_providers.is_default_provider: "yes"]
-    group_label: "Labs, Imaging & Procedures"
-  }
+#   measure: count_eligible_narrow_network_lab_orders {
+#     description: "Count lab orders for patients that are part of a narrow network"
+#     type: count_distinct
+#     sql: ${document_id} ;;
+#     filters: [labs_ordered_3rd_party: "yes", is_narrow_network_order: "yes"]
+#
+#     group_label: "Order Counts"
+#   }
+#
+#   measure: count_lab_orders_narrow_network_default_provider {
+#     description: "Count of lab orders from an in network provider"
+#     type: count_distinct
+#     sql: ${document_id} ;;
+#     filters: [labs_ordered_3rd_party: "yes", is_narrow_network_default_provider: "yes"]
+#     group_label: "Order Counts"
+#   }
 
-  dimension: imaging_ordered {
-    description: "Identifies care requests where one or more imaging orders were placed"
+  dimension: imaging_ordered_3rd_party {
+    description: "Imaging ordered from third party"
     type: yesno
     hidden: yes
-    sql: upper(${clinical_order_type_group}) = 'IMAGING' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER'  ;;
+    sql: upper(${clinical_order_type_group}) = 'IMAGING' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER' AND UPPER(${document_order_provider.provider_category}) = 'PERFORMED BY THIRD PARTY';;
   }
 
-  measure: count_appointments_with_imaging {
-    description: "Count of care requests where one or more imaging orders were placed"
+  measure: count_imaging_orders_from_3rd_party {
+    description: "Count of imaging orders from thrid party"
     type: count_distinct
-    sql: ${clinical_encounter_id} ;;
+    sql: ${document_id} ;;
     filters: {
-      field: imaging_ordered
+      field: imaging_ordered_3rd_party
       value: "yes"
     }
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
-  measure: count_imaging_ordered_in_ins_network {
-    description: "Count of care requests where the imaging was ordered from an in network insurance vendor"
-    type: count_distinct
-    sql: ${clinical_encounter_id} ;;
-    filters: [imaging_ordered: "yes", narrow_network_providers.is_default_provider: "yes"]
-    group_label: "Labs, Imaging & Procedures"
-  }
+#   measure: count_eligible_narrow_network_imaging_orders {
+#     description: "Count imaging orders for patients that are part of a narrow network"
+#     type: count_distinct
+#     sql: ${document_id} ;;
+#     filters: [imaging_ordered_3rd_party: "yes", is_narrow_network_order: "yes"]
+#
+#     group_label: "Order Counts"
+#   }
+#
+#   measure: count_imaging_orders_narrow_network_default_provider {
+#     description: "Count of imaging orders from an in network provider"
+#     type: count_distinct
+#     sql: ${document_id} ;;
+#     filters: [imaging_ordered_3rd_party: "yes", is_narrow_network_default_provider: "yes"]
+#     group_label: "Order Counts"
+#   }
 
   dimension: procedures_performed {
     description: "Identifies care requests where one or more procedures were performed"
@@ -640,7 +698,7 @@ view: athena_document_orders {
       field: procedures_performed
       value: "yes"
     }
-    group_label: "Labs, Imaging & Procedures"
+    group_label: "Order Counts"
   }
 
 

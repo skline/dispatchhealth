@@ -6,6 +6,7 @@ include: "incontact_clone.view.lkml"
 include: "expected_allowables_market_budget.view.lkml"
 include: "variable_shift_tracking.view.lkml"
 include: "athenadwh_valid_claims.view.lkml"
+include: "athena_valid_claims.view.lkml"
 include: "goals_by_day_of_week.view.lkml"
 include: "provider_fit_testing.view.lkml"
 include: "funnel_agg.view.lkml"
@@ -308,6 +309,7 @@ include: "views/bounce_back_risk_3day_models.view.lkml"
 include: "care_team_projected_volume.view.lkml"
 include: "narrow_network_providers.view.lkml"
 include: "geneysis_custom_conversation_attributes.view.lkml"
+include: "athena_medication_details.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -792,6 +794,11 @@ join: athena_claim {
   sql_on: ${athena_clinicalencounter.appointment_id} = ${athena_claim.claim_appointment_id} ;;
 }
 
+  join: athena_valid_claims {
+    relationship: one_to_one
+    sql_on: ${athena_claim.claim_id} = ${athena_valid_claims.claim_id} ;;
+  }
+
 # join: athena_claimdiagnosis {
 #   relationship: one_to_many
 #   sql_on: ${athena_claim.claim_id} = ${athena_claimdiagnosis.claim_id} AND ${athena_claimdiagnosis.deleted_raw} IS NULL ;;
@@ -820,16 +827,45 @@ join: athena_document_orders {
 join: narrow_network_providers {
   relationship: many_to_one
   sql_on: ${insurance_coalese.package_id_coalese} = ${narrow_network_providers.package_id}
-          AND ${care_requests.market_id_adj} = ${narrow_network_providers.market_id} ;;
-          # AND ${athena_document_orders.clinical_provider_id} = ${narrow_network_providers.athena_id};;
-# fields: []
+          AND ${care_requests.market_id_adj} = ${narrow_network_providers.market_id}
+          AND ${athena_document_orders.clinical_provider_id} = ${narrow_network_providers.athena_id};;
+  fields: []
+}
+
+join: insurance_network_insurance_plans {
+  relationship: many_to_one
+  sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_network_insurance_plans.package_id};;
+fields: []
+}
+
+join: insurance_networks {
+  relationship: many_to_one
+  sql_on: ${insurance_network_insurance_plans.insurance_network_id} = ${insurance_networks.id}
+          AND ${care_requests.market_id_adj} = ${insurance_networks.market_id}
+          AND ${insurance_networks.active} IS TRUE ;;
+# sql_where: ${insurance_networks.active} IS TRUE ;;
+}
+
+join: insurance_network_network_referrals {
+  relationship: one_to_many
+  sql_on: ${insurance_networks.id} = ${insurance_network_network_referrals.insurance_network_id}
+          AND ${insurance_network_network_referrals.default} IS TRUE ;;
+#   sql_where: ${insurance_network_network_referrals.default} IS TRUE ;;
+fields: []
+}
+
+join: network_referrals {
+  relationship: many_to_one
+  sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
+  fields: []
 }
 
 join: narrow_network_orders {
   from: athena_document_orders
-  relationship: one_to_many
-  sql_on: ${narrow_network_providers.athena_id} = ${narrow_network_orders.clinical_provider_id} ;;
-# fields: []
+  relationship: one_to_one
+  sql_on: ${athena_document_orders.document_id} = ${narrow_network_orders.document_id}
+          AND ${network_referrals.athena_id} = ${narrow_network_orders.clinical_provider_id} ;;
+  fields: []
 }
 
 join: athena_document_results {
@@ -947,6 +983,11 @@ join: athena_document_prescriptions {
   join: athena_patientmedication_prescriptions {
     relationship: one_to_one
     sql_on: ${athena_document_prescriptions.document_id} = ${athena_patientmedication_prescriptions.document_id} ;;
+  }
+
+  join: athena_medication_details {
+    relationship: many_to_one
+    sql_on: ${athena_document_prescriptions.medication_id} = ${athena_medication_details.medication_id} ;;
   }
 
 join: athena_document_others {

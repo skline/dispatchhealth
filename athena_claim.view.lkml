@@ -71,11 +71,22 @@ view: athena_claim {
     sql: ${TABLE}."claim_id" ;;
   }
 
-#   measure: count_distinct_claims {
-#     description: "Count of distinct claims"
-#     type: count_distinct
-#     sql: ${claim_id} ;;
-#   }
+  dimension: is_valid_claim {
+    description: "Claim ID is not null and no charge entry reason is null"
+    type: yesno
+    hidden: yes
+    sql:
+         ${athena_valid_claims.claim_id} IS NOT NULL AND
+         ${athena_appointment.no_charge_entry_reason} IS NULL ;;
+  }
+
+  measure: count_distinct_claims {
+    description: "Count of distinct claims"
+    group_label: "Counts"
+    type: count_distinct
+    sql: ${claim_id} ;;
+    filters: [is_valid_claim: "yes"]
+  }
 
   dimension: claim_primary_patient_ins_id {
     type: number

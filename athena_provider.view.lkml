@@ -1,7 +1,7 @@
 view: athena_provider {
   sql_table_name: athena.provider ;;
   drill_fields: [supervising_provider_id]
-  view_label: "Athena Provider"
+  # view_label: "Athena Provider"
 
 
   dimension: supervising_provider_id {
@@ -146,7 +146,7 @@ view: athena_provider {
   dimension: provider_first_name {
     type: string
     group_label: "Provider Details"
-    sql: ${TABLE}."provider_first_name" ;;
+    sql: ${TABLE}.provider_first_name ;;
   }
 
   dimension: provider_group_id {
@@ -298,34 +298,20 @@ view: athena_provider {
     sql: ${TABLE}."updated_at" ;;
   }
 
-  measure: count {
-    type: count
-    drill_fields: [detail*]
-  }
-
   # ----- Sets of fields for drilling ------
-  set: detail {
-    fields: [
-      supervising_provider_id,
-      scheduling_name,
-      reporting_name,
-      billed_name,
-      provider_first_name,
-      provider_last_name,
-      provider_user_name,
-      provider_type_name,
-      patient_facing_name,
-      provider.scheduling_name,
-      provider.reporting_name,
-      provider.billed_name,
-      provider.provider_first_name,
-      provider.provider_last_name,
-      provider.provider_user_name,
-      provider.provider_type_name,
-      provider.supervising_provider_id,
-      provider.patient_facing_name,
-      provider.count,
-      providernumber.count
-    ]
-  }
+  # set: detail {
+  #   fields: [
+  #     provider.scheduling_name,
+  #     provider.reporting_name,
+  #     provider.billed_name,
+  #     provider.provider_first_name,
+  #     provider.provider_last_name,
+  #     provider.provider_user_name,
+  #     provider.provider_type_name,
+  #     provider.supervising_provider_id,
+  #     provider.patient_facing_name,
+  #     provider.count,
+  #     providernumber.count
+  #   ]
+  # }
 }

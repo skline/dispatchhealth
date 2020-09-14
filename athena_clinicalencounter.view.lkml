@@ -251,9 +251,25 @@ view: athena_clinicalencounter {
     sql: ${TABLE}."updated_at" ;;
   }
 
+  dimension_group: chart_first_closed {
+    type: time
+    description: "The timestamp when the chart was first closed by the provider"
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."__chart_first_closed_datetime" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz} ;;
+  }
+
   measure: count_distinct_charts {
     type: count_distinct
     sql: ${chart_id} ;;
+    filters: [encounter_status: "-DELETED"]
     group_label: "Counts"
   }
 
@@ -276,6 +292,39 @@ view: athena_clinicalencounter {
       field: athena_diagnosis_codes.comorbidity_based_diagnosis
       value: "yes"
     }
+  }
+
+  dimension: hours_to_chart_sign {
+    description: "The number of hours between the on-scene time and the chart signature"
+    type: number
+    hidden: yes
+    sql: CASE
+          WHEN ${chart_first_closed_raw} >= ${chart_first_closed_raw}
+                THEN (EXTRACT(EPOCH FROM ${chart_first_closed_raw}) - EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}))/3600
+                ELSE NULL END ;;
+    value_format: "0.0"
+  }
+
+  dimension: chart_signed_24_hours {
+    description: "A flag indicating that the chart was signed within 24 hours of visit"
+    type: yesno
+    hidden: yes
+    sql: ${hours_to_chart_sign} <= 24 ;;
+  }
+
+  dimension: chart_signed_48_hours {
+    description: "A flag indicating that the chart was signed within 48 hours of visit"
+    type: yesno
+    hidden: yes
+    sql: ${hours_to_chart_sign} <= 48 ;;
+  }
+
+  measure: count_charts_signed_24_hours {
+    description: "The count of distinct charts that were signed by the provider within 24 hours of the visit"
+    type: count_distinct
+    group_label: "Counts"
+    sql: ${chart_id} ;;
+    filters: [chart_signed_24_hours: "yes"]
   }
 
   measure: count {

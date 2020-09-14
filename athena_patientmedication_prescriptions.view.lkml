@@ -1,6 +1,6 @@
 view: athena_patientmedication_prescriptions {
   sql_table_name: athena.patientmedication_prescriptions ;;
-  view_label: "Athena New Prescriptions"
+  view_label: "Athena Prescription Details"
   drill_fields: [id]
 
   dimension: id {
@@ -55,7 +55,7 @@ view: athena_patientmedication_prescriptions {
 
   dimension: administered_yn {
     type: string
-    group_label: "User Actions"
+    group_label: "Prescription Details"
     sql: ${TABLE}."administered_yn" ;;
   }
 
@@ -117,7 +117,7 @@ view: athena_patientmedication_prescriptions {
 
   dimension: dispensed_yn {
     type: string
-    group_label: "User Actions"
+    group_label: "Prescription Details"
     sql: ${TABLE}."dispensed_yn" ;;
   }
 
@@ -130,6 +130,7 @@ view: athena_patientmedication_prescriptions {
 
   dimension: document_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."document_id" ;;
   }
 
@@ -189,12 +190,13 @@ view: athena_patientmedication_prescriptions {
 
   dimension: patient_medication_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}."patient_medication_id" ;;
   }
 
   dimension: prescribed_yn {
     type: string
-    group_label: "User Actions"
+    group_label: "Prescription Details"
     sql: ${TABLE}."prescribed_yn" ;;
   }
 

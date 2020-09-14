@@ -281,13 +281,9 @@ view: athena_document_letters {
     sql: ${TABLE}."updated_at" ;;
   }
 
-  measure: count {
-    type: count
-    drill_fields: [detail*]
-  }
-
   measure: count_distinct_encounters {
     type: count_distinct
+    group_label: "Counts"
     sql: ${clinical_encounter_id} ;;
   }
 
@@ -308,7 +304,7 @@ view: athena_document_letters {
       field: clinical_letters_sent_all
       value: "yes"
     }
-    group_label: "Clinical Letters Sent"
+    group_label: "Counts"
   }
 
   dimension: clinical_letters_sent_pcp {
@@ -327,7 +323,22 @@ view: athena_document_letters {
       field: clinical_letters_sent_pcp
       value: "yes"
     }
-    group_label: "Clinical Letters Sent"
+    group_label: "Counts"
+  }
+
+  measure: count_letters {
+    type: count_distinct
+    group_label: "Counts"
+    sql: ${care_request_flat.care_request_id} ;;
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: clinical_letters_sent_all
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.billable_est
+      value: "yes"
+    }
   }
 
   # ----- Sets of fields for drilling ------

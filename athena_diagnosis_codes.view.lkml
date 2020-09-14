@@ -72,8 +72,9 @@ view: athena_diagnosis_codes {
   dimension: diagnosis_code_group {
     type: string
     description: "e.g. CHRONIC LOWER RESPIRATORY DISEASES (J40-J47)"
-    sql: ${TABLE}."diagnosis_code_group" ;;
+    sql: INITCAP(${TABLE}."diagnosis_code_group") ;;
     group_label: "Diagnosis Descriptions"
+    drill_fields: [diagnosis_code_short, diagnosis_description]
   }
 
   dimension: diagnosis_code_set {
@@ -201,7 +202,7 @@ view: athena_diagnosis_codes {
   measure: diagnosis_codes_concatenated {
     description: "Concatenated ICD-10 Diagnosis Codes"
     type: string
-    sql: array_to_string(array_agg(DISTINCT ${diagnosis_code}), ' | ') ;;
+    sql: array_to_string(array_agg(DISTINCT ${diagnosis_code_short}), ' | ') ;;
     group_label: "Diagnosis Codes"
   }
 
