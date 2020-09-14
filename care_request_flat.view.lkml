@@ -3638,6 +3638,19 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
   }
+  measure: complete_count_kaiser{
+    label: "Complete Count (Kaiser)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: insurance_coalese_crosswalk.kaiser_colorado
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
 
 
 

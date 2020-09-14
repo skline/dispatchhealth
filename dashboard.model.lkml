@@ -307,6 +307,7 @@ include: "views/bounce_back_risk_3day_feature_importance.view.lkml"
 include: "views/bounce_back_risk_3day_models.view.lkml"
 include: "care_team_projected_volume.view.lkml"
 include: "narrow_network_providers.view.lkml"
+include: "geneysis_custom_conversation_attributes.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -4447,6 +4448,10 @@ explore: bounce_back_risk_3day_models {
       relationship: many_to_one
       sql_on: ${bounce_back_risk_3day_feature_importance.model_version} = ${bounce_back_risk_3day_models.version};;
     }
+}
 
-
+explore: geneysis_custom_conversation_attributes {
+  join: genesys_conversation_summary {
+    sql_on: ${genesys_conversation_summary.conversationid} = ${geneysis_custom_conversation_attributes.conversationid} ;;
+  }
 }
