@@ -281,11 +281,20 @@ view: athena_transaction {
     sql: ${TABLE}."total_rvu" ;;
   }
 
-  measure: total_rvus {
-    description: "Average Total RVU's"
+  measure: sum_total_rvu {
+    description: "Sum Total RVU's"
     type: sum
+    group_label: "RVU Measures"
     sql: ${total_rvu} ;;
     value_format: "0.0"
+  }
+
+  measure: average_total_rvu {
+    type: number
+    description: "Average total RVU's"
+    group_label: "RVU Measures"
+    sql: ${sum_total_rvu} / ${count_claims} ;;
+    value_format: "0.00"
   }
 
   dimension: is_valid_claim {
