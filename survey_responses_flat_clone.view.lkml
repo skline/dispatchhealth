@@ -191,9 +191,9 @@ view: survey_responses_flat_clone {
     #     END ;;
 
     sql: CASE WHEN ${distinct_nps_respondent} > 0 THEN
-         (COUNT(DISTINCT CASE WHEN ${promoter} THEN ${care_request_id} ELSE NULL END)
-         - COUNT(DISTINCT CASE WHEN ${detractor} THEN ${care_request_id} ELSE NULL END))*100
-         / COUNT(DISTINCT ${care_request_id})
+         (COUNT(DISTINCT CASE WHEN ${promoter} THEN ${care_request_id} ELSE NULL END)::float(4)
+         - COUNT(DISTINCT CASE WHEN ${detractor} THEN ${care_request_id} ELSE NULL END)::float(4))*100
+         / COUNT(DISTINCT ${care_request_id})::float(4)
         ELSE NULL END ;;
   }
 
