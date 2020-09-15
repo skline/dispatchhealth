@@ -247,7 +247,7 @@ measure: revenue_per_hour {
 
   dimension: kaiser_colorado {
     type: yesno
-    sql: ${insurance_package_id} in('58390', '12225', '23794') ;;
+    sql: ${insurance_package_id} in('58390', '12225', '23794', '22523') ;;
   }
 
   measure: count {

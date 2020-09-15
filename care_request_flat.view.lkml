@@ -2527,7 +2527,7 @@ measure: avg_first_on_route_mins {
 
   dimension_group: yesterday_mountain{
     type: time
-    timeframes: [date, day_of_week_index, week, month, day_of_month]
+    timeframes: [date, day_of_week_index, week, month, day_of_month, quarter]
     sql: current_date - interval '1 day';;
   }
 
@@ -2678,6 +2678,7 @@ measure: avg_first_on_route_mins {
   }
 
   measure: max_day_on_scene {
+    timeframes: [date, day_of_week_index, week, month, day_of_month, quarter]
     type: date
     sql:max(${on_scene_date}) ;;
   }
@@ -3923,6 +3924,28 @@ measure: avg_first_on_route_mins {
           ) end;;
   }
 
+ measure:  days_in_quarter{
+   type: number
+  sql: case when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 1  then 90
+            when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 2   then 91
+            when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 3 then 92
+            when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 4   then 92
+            else null end;;
+ }
+  measure: days_left_in_quarter {
+    type: number
+    sql:
+       (  CAST(date_trunc('quarter',  ${yesterday_mountain_date})  + interval '3 months' - interval '1 day' AS date) - CAST( ${yesterday_mountain_date} AS date))
+;;
+  }
+
+  measure: quarter_percent{
+    type: number
+    sql: case when ${max_on_scene_quarter} != ${yesterday_mountain_quarter} then 1
+    else
+      (${days_in_quarter}::float-${days_left_in_quarter}::float)/${days_in_quarter}::float end
+     ;;
+  }
   measure: month_percent_created {
     type: number
     sql:
@@ -3942,6 +3965,17 @@ measure: avg_first_on_route_mins {
     type: number
     sql: round(${complete_count}/${month_percent});;
   }
+
+  measure: quarterly_complete_run_rate {
+    type: number
+    sql: round(${complete_count}/${quarter_percent});;
+  }
+
+  measure: quarterly_complete_run_rate_seaosonal_adj {
+    type: number
+    sql: round(${complete_count_seasonal_adj}/${quarter_percent});;
+  }
+
 
   measure: monthly_accepted_run_rate {
     type: number
@@ -4002,6 +4036,14 @@ measure: avg_first_on_route_mins {
     sql:
     case when ${on_scene_date} >= current_date - interval '30 day' then 'past 30 days'
     when  ${on_scene_date} between current_date - interval '60 day' and  current_date - interval '30 day' then 'previous 30 days'
+    else null end;;
+  }
+
+  dimension: rolling_90_day {
+    type: string
+    sql:
+    case when ${on_scene_date} >= current_date - interval '90 day' then 'past 90 days'
+    when  ${on_scene_date} between current_date - interval '180 day' and  current_date - interval '90 day' then 'previous 90 days'
     else null end;;
   }
 
