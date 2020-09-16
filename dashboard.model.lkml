@@ -1963,6 +1963,8 @@ join: ga_pageviews_clone {
 
 }
 
+explore: athenadwh_transactions_clone {}
+
 explore: zizzl_detailed_shift_hours {
   join: users {
     relationship: many_to_one
