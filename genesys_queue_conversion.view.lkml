@@ -20,7 +20,7 @@ view: genesys_queue_conversion {
         column: complete_count { field: care_request_flat_number.complete_count }
         filters: {
           field: genesys_conversation_summary.conversationstarttime_time
-          value: "120 days ago for 120 days"
+          value: "180 days ago for 180 days"
         }
         filters: {
           field: genesys_conversation_summary.queuename
