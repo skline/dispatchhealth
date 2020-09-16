@@ -3972,6 +3972,7 @@ measure: avg_first_on_route_mins {
   }
 
   measure: quarterly_complete_run_rate_seaosonal_adj {
+    label: "Quarterly Complete Run Rate Seasonal Adj"
     type: number
     sql: round(${complete_count_seasonal_adj}/${quarter_percent});;
   }
