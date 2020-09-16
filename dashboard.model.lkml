@@ -310,6 +310,7 @@ include: "care_team_projected_volume.view.lkml"
 include: "narrow_network_providers.view.lkml"
 include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
+include: "geneysis_evaluations.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -4489,5 +4490,11 @@ explore: bounce_back_risk_3day_models {
 explore: geneysis_custom_conversation_attributes {
   join: genesys_conversation_summary {
     sql_on: ${genesys_conversation_summary.conversationid} = ${geneysis_custom_conversation_attributes.conversationid} ;;
+  }
+}
+
+explore: geneysis_evaluations {
+  join: genesys_conversation_summary {
+    sql_on: ${genesys_conversation_summary.conversationid} = ${geneysis_evaluations.conversationid} ;;
   }
 }
