@@ -209,11 +209,13 @@ view: mbo_metrics_quarterly_goals {
   }
 
   dimension: gross_clinical_partner_revenue_qg {
+    label: "gross_partner_revenue_qg"
     type: number
     sql: ${TABLE}."gross_clinical_partner_revenue_qg" ;;
   }
 
   measure: sum_gross_clinical_partner_revenue_qg {
+    label: "sum_gross_partner_revenue_qg"
     description: "Sum gross clinical partner revenue quarterly goal"
     type: sum_distinct
     sql_distinct_key: ${id} ;;
@@ -289,11 +291,13 @@ view: mbo_metrics_quarterly_goals {
 
 
   dimension: new_gross_clinical_partner_revenue_qg {
+    label: "new_gross_partner_revenue_qg"
     type: number
     sql: ${TABLE}."new_gross_clinical_partner_revenue_qg" ;;
   }
 
   measure: sum_new_gross_clinical_partner_revenue_qg {
+    label: "sum_new_gross_partner_revenue_qg"
     description: "Sum new gross clinical partner revenue quarterly goal"
     type: sum_distinct
     sql_distinct_key: ${id} ;;
