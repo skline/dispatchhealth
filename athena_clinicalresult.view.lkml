@@ -76,7 +76,7 @@ view: athena_clinicalresult {
     sql: ${TABLE}."clinical_result_id" ;;
   }
 
-  dimension_group: created {
+  dimension_group: created_at {
     type: time
     hidden: yes
     timeframes: [
@@ -97,7 +97,7 @@ view: athena_clinicalresult {
     sql: ${TABLE}."created_by" ;;
   }
 
-  dimension_group: created_datetime {
+  dimension_group: created {
     type: time
     timeframes: [
       raw,
@@ -117,7 +117,7 @@ view: athena_clinicalresult {
     sql: ${TABLE}."deleted_by" ;;
   }
 
-  dimension_group: deleted_datetime {
+  dimension_group: deleted {
     type: time
     timeframes: [
       raw,
@@ -149,7 +149,7 @@ view: athena_clinicalresult {
     sql: ${TABLE}."fbd_med_id" ;;
   }
 
-  dimension_group: observation_datetime {
+  dimension_group: observation {
     type: time
     timeframes: [
       raw,
@@ -193,7 +193,7 @@ view: athena_clinicalresult {
     sql: ${TABLE}."result_status" ;;
   }
 
-  dimension_group: results_reported_datetime {
+  dimension_group: results_reported {
     type: time
     timeframes: [
       raw,
@@ -207,7 +207,7 @@ view: athena_clinicalresult {
     sql: ${TABLE}."results_reported_datetime" ;;
   }
 
-  dimension_group: specimen_received_datetime {
+  dimension_group: specimen_received {
     type: time
     timeframes: [
       raw,

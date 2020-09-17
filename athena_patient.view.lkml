@@ -49,19 +49,19 @@ view: athena_patient {
   dimension: address {
     type: string
     group_label: "Contact Information"
-    sql: ${TABLE}."address" ;;
+    sql: INITCAP(${TABLE}."address") ;;
   }
 
   dimension: address_2 {
     type: string
     group_label: "Contact Information"
-    sql: ${TABLE}."address_2" ;;
+    sql: INITCAP(${TABLE}."address_2") ;;
   }
 
   dimension: city {
     type: string
     group_label: "Contact Information"
-    sql: ${TABLE}."city" ;;
+    sql: INITCAP(${TABLE}."city") ;;
   }
 
   dimension_group: consent_to_call_eff {
@@ -174,7 +174,7 @@ view: athena_patient {
   dimension: first_name {
     type: string
     group_label: "Contact Information"
-    sql: ${TABLE}."first_name" ;;
+    sql: INITCAP(${TABLE}."first_name") ;;
   }
 
   dimension: first_last_name {
@@ -197,7 +197,9 @@ view: athena_patient {
     type: string
     description: "Address, Address2, City, State Zip"
     group_label: "Contact Information"
-    sql: CONCAT(${address},', ',${address_2},', ',${city},', ',${state}, ' ', ${zip}) ;;
+    sql: CASE WHEN ${address_2} IS NOT NULL THEN CONCAT(${address},', ',${address_2},', ',${city},', ',${state}, ' ', ${zip})
+        ELSE CONCAT(${address},', ',${city},', ',${state}, ' ', ${zip})
+        END ;;
   }
 
   dimension: guarantor_address {
@@ -316,7 +318,7 @@ view: athena_patient {
   dimension: last_name {
     type: string
     group_label: "Contact Information"
-    sql: ${TABLE}."last_name" ;;
+    sql: INITCAP(${TABLE}."last_name") ;;
   }
 
   dimension: middle_initial {
