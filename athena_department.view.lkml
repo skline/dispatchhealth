@@ -136,7 +136,7 @@ view: athena_department {
 
   dimension: department_group {
     type: string
-    hidden: yes
+    hidden: no
     sql: ${TABLE}."department_group" ;;
   }
 
