@@ -120,12 +120,14 @@ view: mbo_metrics {
   }
 
   dimension: gross_clinical_partner_revenue {
+    label: "gross_partner_revenue"
     type: number
     sql: ${TABLE}."gross_clinical_partner_revenue" ;;
     value_format:  "$#,##0;($#,##0)"
   }
 
   measure: sum_gross_clinical_partner_revenue {
+    label: "sum_gross_partner_revenue"
     description: "Sum of goss clinical partner revenue"
     type: sum_distinct
     sql_distinct_key: ${id} ;;
@@ -235,12 +237,14 @@ view: mbo_metrics {
   }
 
   dimension: new_gross_clinical_partner_revenue {
+    label: "new_gross_partner_revenue"
     type: number
     sql: ${TABLE}."new_gross_clinical_partner_revenue" ;;
     value_format:  "$#,##0;($#,##0)"
   }
 
   measure: sum_new_gross_clinical_partner_revenue {
+    label: "sum_new_gross_partner_revenue"
     description: "Sum of new gross clinical partner revenue"
     type: sum_distinct
     sql_distinct_key: ${id} ;;

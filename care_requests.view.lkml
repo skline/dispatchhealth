@@ -1294,7 +1294,8 @@ view: care_requests {
   }
 
   measure: count_cpr_market_visits {
-    description: "Counts the number of visits for a CPR assocaited market"
+    label: "count_partner_revenue_market_visits"
+    description: "Counts the number of visits for a partner revenue market"
     type: count_distinct
     sql: ${id} ;;
     filters:  {
@@ -1308,7 +1309,8 @@ view: care_requests {
   }
 
   measure: count_non_cpr_market_visits {
-    description: "Counts the number of visits for a Non-CPR assocaited market"
+    label: "count_non_partner_revenue_market_visits"
+    description: "Counts the number of visits for a Non-partner revenue market"
     type: count_distinct
     sql: ${id} ;;
     filters:  {
