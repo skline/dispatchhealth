@@ -136,6 +136,7 @@ view: athena_department {
 
   dimension: department_group {
     type: string
+    group_label: "Contact Information"
     hidden: no
     sql: ${TABLE}."department_group" ;;
   }
@@ -148,6 +149,7 @@ view: athena_department {
 
   dimension: department_name {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."department_name" ;;
   }
 
