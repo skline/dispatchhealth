@@ -50,6 +50,7 @@ view: zizzl_agg {
   }
 
   dimension: cpr_market {
+    label: "partner_revenue_market"
     description: "The Zizzl employee shift date"
     type: yesno
   }
