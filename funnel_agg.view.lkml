@@ -72,7 +72,7 @@ view: funnel_agg {
 
 
   dimension: cpr_market {
-    label: "Markets Cpr Market (Yes / No)"
+    label: "Markets Partner Revenue Market (Yes / No)"
     description: "Flag to identify CPR markets (hard-coded)"
     type: yesno
   }
