@@ -177,10 +177,27 @@ view: athena_patient {
     sql: ${TABLE}."first_name" ;;
   }
 
-  dimension: full_name {
+  dimension: first_last_name {
     type: string
+    description: "First Last"
     group_label: "Contact Information"
     sql: CONCAT(${first_name}, ' ', ${last_name}) ;;
+  }
+
+  dimension: last_first_mi_name {
+    type: string
+    description: "Last, First, MI"
+    group_label: "Contact Information"
+    sql: CASE WHEN ${middle_initial} IS NOT NULL THEN CONCAT(${last_name}, ', ', ${first_name}, ', ', ${middle_initial})
+         ELSE CONCAT(${last_name}, ', ', ${first_name})
+         END ;;
+  }
+
+  dimension: address_full {
+    type: string
+    description: "Address, Address2, City, State Zip"
+    group_label: "Contact Information"
+    sql: CONCAT(${address},', ',${address_2},', ',${city},', ',${state}, ' ', ${zip}) ;;
   }
 
   dimension: guarantor_address {

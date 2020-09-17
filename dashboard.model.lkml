@@ -824,6 +824,13 @@ join: athena_document_orders {
   sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_document_orders.clinical_encounter_id} ;;
 }
 
+join: athena_document_order_provider {
+  from: athena_provider
+  view_label: "Athena Document Ordering Provider"
+  relationship: many_to_one
+  sql_on: ${athena_document_orders.created_by} = ${athena_document_order_provider.provider_user_name} ;;
+}
+
 join: narrow_network_providers {
   relationship: many_to_one
   sql_on: ${insurance_coalese.package_id_coalese} = ${narrow_network_providers.package_id}
@@ -928,11 +935,11 @@ join: athena_result_closed {
   fields: []
 }
 
-join: document_order_provider {
+join: document_order_fulfilling_provider {
   from: athena_clinicalprovider
-  view_label: "Athena Document Order Provider"
+  view_label: "Athena Document Fulfilling Provider"
   relationship: many_to_one
-  sql_on: ${athena_document_orders.clinical_provider_id} = ${document_order_provider.clinical_provider_id} ;;
+  sql_on: ${athena_document_orders.clinical_provider_id} = ${document_order_fulfilling_provider.clinical_provider_id} ;;
 }
 
 join: athena_order_documentaction {

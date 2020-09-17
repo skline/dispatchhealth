@@ -169,6 +169,12 @@ view: athena_provider {
     sql: ${TABLE}."provider_last_name" ;;
   }
 
+  dimension: provider_last_first_name {
+    type: string
+    group_label: "Provider Details"
+    sql: CONCAT(INITCAP(${provider_last_name}), ', ', INITCAP(${provider_first_name})) ;;
+  }
+
   dimension: provider_medical_group_id {
     type: number
     group_label: "IDs"
