@@ -136,7 +136,8 @@ view: athena_department {
 
   dimension: department_group {
     type: string
-    hidden: yes
+    group_label: "Contact Information"
+    hidden: no
     sql: ${TABLE}."department_group" ;;
   }
 
@@ -148,6 +149,7 @@ view: athena_department {
 
   dimension: department_name {
     type: string
+    group_label: "Contact Information"
     sql: ${TABLE}."department_name" ;;
   }
 
@@ -173,6 +175,16 @@ view: athena_department {
     type: string
     group_label: "Contact Information"
     sql: ${TABLE}."department_zip" ;;
+  }
+
+  dimension: department_address_full {
+    type: string
+    group_label: "Contact Information"
+    description: "Address1, Address2, City, State Zip"
+    sql: CASE WHEN ${department_address_2} IS NOT NULL
+          THEN CONCAT(INITCAP(${department_address}),', ', INITCAP(${department_address_2}), ', ', INITCAP(${department_city}), ', ', ${department_state}, ' ', ${department_zip})
+          ELSE CONCAT(INITCAP(${department_address}),', ', INITCAP(${department_city}), ', ', ${department_state}, ' ', ${department_zip})
+          END ;;
   }
 
   dimension: gpci_location_id {
