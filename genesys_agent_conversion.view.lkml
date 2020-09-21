@@ -23,7 +23,7 @@ view: genesys_agent_conversion {
       }
       filters: {
         field: genesys_conversation_summary.queuename
-        value: "General Care,DTC,Partner Direct,DTC Pilot"
+        value: "General Care,DTC,Partner Direct,DTC Pilot,ATL Optum Care"
       }
       filters: {
         field: markets.id
