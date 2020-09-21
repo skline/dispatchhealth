@@ -1816,6 +1816,11 @@ join: athena_procedurecode {
     sql_on: ${sf_accounts.channel_items_id}=${channel_items.id} and lower(${sf_accounts.account_name}) not like '%test%' ;;
   }
 
+  join: parent_accounts {
+    from: sf_accounts
+    sql_on: ${parent_accounts.account_id} =  ${sf_accounts.parent_account_id};;
+  }
+
   join: sf_priority_accounts {
     sql_on: ${sf_priority_accounts.account_id} = ${sf_accounts.account_id} ;;
   }
