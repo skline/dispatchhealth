@@ -3,7 +3,7 @@ view: genesys_agent_conversion {
 # If necessary, uncomment the line below to include explore_source.
 # include: "dashboard.model.lkml"
   derived_table: {
-    sql_trigger_value: SELECT count(*) FROM looker_scratch.genesys_conversation_summary  where genesys_conversation_summary.conversationstarttime > current_date - interval '2 day';;
+    sql_trigger_value: SELECT count(*) FROM looker_scratch.genesys_conversation_wrapup  where conversationstarttime > current_date - interval '2 day';;
     indexes: ["conversationstarttime", "queuename", "market_id", "agent_name"]
     explore_source: genesys_conversation_summary {
       column: conversationstarttime {field: genesys_conversation_summary.conversationstarttime_date}
