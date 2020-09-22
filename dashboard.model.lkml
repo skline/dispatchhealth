@@ -4306,7 +4306,7 @@ explore: genesys_agg {
     sql_on: ${accepted_agg.market_id} =${genesys_agg.market_id} and ${accepted_agg.first_accepted_date} = ${genesys_agg.conversationstarttime_date}  ;;
   }
   join: markets {
-    sql_on: ${markets.id}=${genesys_agg.market_id} ;;
+    sql_on: ${markets.id_adj}=${genesys_agg.market_id} ;;
   }
   join: care_team_projected_volume {
     sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}

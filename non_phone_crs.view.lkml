@@ -11,7 +11,7 @@ view: non_phone_cr {
       column: this_week_created { field: care_request_flat.this_week_created }
       column: same_day_of_week_created { field: care_request_flat.same_day_of_week_created}
       column: last_week_created { field: care_request_flat.last_week_created}
-      column: market_id { field: care_request_flat.market_id}
+      column: market_id { field: markets.id_adj}
 
       filters: {
         field: care_requests.request_type
