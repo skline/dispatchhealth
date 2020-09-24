@@ -607,6 +607,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     indexes: ["care_request_id", "insurance_package_id"]
 
   }
+
   dimension: care_request_id {
     primary_key: yes
     type: number
@@ -625,12 +626,16 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: care_request_flat.escalated_on_scene
       value: "No"
     }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
-      field: care_requests.post_acute_follow_up
-      value: "No"
-    }
-    filters: {
-      field: care_requests.DHFU_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
     filters: {
@@ -654,13 +659,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion_911
       value: "Yes"
@@ -681,13 +690,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion_er
       value: "Yes"
@@ -709,13 +722,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion_er
       value: "Yes"
@@ -735,13 +752,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion_observation
       value: "Yes"
@@ -763,13 +784,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion_observation
       value: "Yes"
@@ -789,13 +814,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion_hosp
       value: "Yes"
@@ -817,13 +846,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion_hosp
       value: "Yes"
@@ -868,13 +901,17 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
     filters: {
       field: diversion
       value: "Yes"
@@ -895,15 +932,19 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: diversion_or_escalated_on_scene
       value: "Yes"
     }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
+    }
 
-    filters: {
-      field: care_requests.post_acute_follow_up
-      value: "No"
-    }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
 
   }
 
@@ -916,15 +957,19 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: diversion_or_escalated_on_scene
       value: "Yes"
     }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
+    }
 
-    filters: {
-      field: care_requests.post_acute_follow_up
-      value: "No"
-    }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
 
   }
 
@@ -935,15 +980,18 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: diversion_or_escalated_on_scene
       value: "No"
     }
-
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
 
   }
 
@@ -956,15 +1004,18 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: diversion_or_escalated_on_scene
       value: "No"
     }
-
     filters: {
-      field: care_requests.post_acute_follow_up
+      field: care_requests.non_acute_ems_populations_cost_savings
       value: "No"
     }
-    filters: {
-      field: care_requests.DHFU_follow_up
-      value: "No"
-    }
+    # filters: {
+    #   field: care_requests.post_acute_follow_up
+    #   value: "No"
+    # }
+    # filters: {
+    #   field: care_requests.DHFU_follow_up
+    #   value: "No"
+    # }
   }
 
   dimension: bounceback_14_day_case_rate_adjustment {

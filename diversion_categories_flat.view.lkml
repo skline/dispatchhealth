@@ -224,11 +224,11 @@ dimension: care_request_id {
     sql: ${TABLE}.dc41 ;;
   }
 
-  dimension: identify_pops_exclude_from_diversion_cats {
-    description: "Excludes post acute follow ups, dh follow ups and escalated on-scene care requests from the diversion category sum measures"
-    type: yesno
-    sql: ${care_requests.post_acute_follow_up} = 'yes' OR ${care_requests.DHFU_follow_up} = 'yes' OR ${care_request_flat.escalated_on_scene} = 'yes';;
-  }
+  # dimension: identify_pops_exclude_from_diversion_cats {
+  #   description: "Excludes post acute follow ups, dh follow ups and escalated on-scene care requests from the diversion category sum measures"
+  #   type: yesno
+  #   sql: ${care_requests.post_acute_follow_up} = 'yes' OR ${care_requests.DHFU_follow_up} = 'yes' OR ${care_request_flat.escalated_on_scene} = 'yes';;
+  # }
 
 measure: sum_diagnosis_olny {
   label: "DC01: Diagnosis Only"
@@ -236,9 +236,17 @@ measure: sum_diagnosis_olny {
   sql_distinct_key: ${care_request_id} ;;
   sql: ${diagnosis_only} ;;
   group_label: "Diversion Category Sum Measures"
+  # filters: {
+  #   field: identify_pops_exclude_from_diversion_cats
+  #   value: "no"
+  # }
   filters: {
-    field: identify_pops_exclude_from_diversion_cats
-    value: "no"
+    field: care_request_flat.escalated_on_scene
+    value: "No"
+  }
+  filters: {
+    field: care_requests.non_acute_ems_populations_cost_savings
+    value: "No"
   }
 }
 
@@ -248,9 +256,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${survey_yes_to_er} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -260,9 +276,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${diversion_911} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -272,9 +296,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${pos_snf} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -284,9 +316,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${pos_al} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -296,9 +336,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${referral} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -308,9 +356,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${after_hours} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -320,9 +376,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${abnormal_vitals} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -332,9 +396,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${confusion} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -343,10 +415,18 @@ measure: sum_diagnosis_olny {
     type: sum_distinct
     sql_distinct_key: ${care_request_id} ;;
     sql: ${wheelchair_hb} ;;
-    group_label: "Diversion Category Sum Measures"
+    # group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -356,9 +436,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${ekg} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -368,9 +456,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${nebulizer} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -380,9 +476,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${iv_fluids} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -392,9 +496,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${blood_tests} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -404,9 +516,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${catheter_placement} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -416,9 +536,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${laceration_repair} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -428,9 +556,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${epistaxis} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -440,9 +576,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${hernia_rp_reduction} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -452,9 +596,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${joint_reduction} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -464,9 +616,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${gastronomy_tube} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -476,9 +636,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${abscess_drain} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -488,9 +656,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc22} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -500,9 +676,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc23} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -512,9 +696,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc24} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -524,9 +716,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc25} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -536,9 +736,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc26} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -548,9 +756,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc27} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -560,9 +776,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc28} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -572,9 +796,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc29} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -584,9 +816,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc30} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -596,9 +836,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc31} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -608,9 +856,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc32} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -620,9 +876,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc33} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -632,9 +896,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc34} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -644,9 +916,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc35} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -656,9 +936,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc36} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -668,9 +956,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc37} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -680,9 +976,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc38} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -692,9 +996,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc39} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -704,9 +1016,17 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc40} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
@@ -716,16 +1036,24 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc41} ;;
     group_label: "Diversion Category Sum Measures"
+    # filters: {
+    #   field: identify_pops_exclude_from_diversion_cats
+    #   value: "no"
+    # }
     filters: {
-      field: identify_pops_exclude_from_diversion_cats
-      value: "no"
+      field: care_request_flat.escalated_on_scene
+      value: "No"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
     }
   }
 
   measure: pct_diagnosis_olny_of_billable_est {
     label: "DC01: Pct Diagnosis Only"
     type: number
-    sql:  ${sum_diagnosis_olny} / ${care_requests.sum_billable_est};;
+    sql:  ${sum_diagnosis_olny} / ${care_requests.sum_billable_est_acute_ems_cost_savings};;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -733,7 +1061,7 @@ measure: sum_diagnosis_olny {
   measure: pct_survey_yes_to_er_of_billable_est {
     label: "DC02: Pct Survey Response YES to ER"
     type: number
-    sql:  ${sum_survey_yes_to_er} / ${care_requests.sum_billable_est};;
+    sql:  ${sum_survey_yes_to_er} / ${care_requests.sum_billable_est_acute_ems_cost_savings};;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -741,7 +1069,7 @@ measure: sum_diagnosis_olny {
   measure: pct_diversion_911_of_billable_est {
     label: "DC03: Pct 911 Diversion Program"
     type: number
-    sql:  ${sum_diversion_911} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_diversion_911} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -749,7 +1077,7 @@ measure: sum_diagnosis_olny {
   measure: pct_pos_snf_of_billable_est {
     label: "DC04: Pct POS Skilled Nursing Facility"
     type: number
-    sql:  ${sum_pos_snf} / ${care_requests.sum_billable_est};;
+    sql:  ${sum_pos_snf} / ${care_requests.sum_billable_est_acute_ems_cost_savings};;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -757,7 +1085,7 @@ measure: sum_diagnosis_olny {
   measure: pct_pos_al_of_billable_est {
     label: "DC05: Pct POS Assisted Living"
     type: number
-    sql:  ${sum_pos_al} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_pos_al} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -765,7 +1093,7 @@ measure: sum_diagnosis_olny {
   measure: pct_referral_of_billable_est {
     label: "DC06: Pct Referred from Home Health, PCP or Care Mgmt"
     type: number
-    sql:  ${sum_referral} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_referral} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -773,7 +1101,7 @@ measure: sum_diagnosis_olny {
   measure: pct_after_hours_of_billable_est {
     label: "DC07: Pct Weekends or After 3 PM"
     type: number
-    sql:  ${sum_after_hours} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_after_hours} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -781,7 +1109,7 @@ measure: sum_diagnosis_olny {
   measure: pct_abnormal_vitals_of_billable_est {
     label: "DC08: Pct  Abnormal Vitals (O2 sat < 90%, HR > 100, SBP < 90 for adults)"
     type: number
-    sql:  ${sum_abnormal_vitals} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_abnormal_vitals} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -789,7 +1117,7 @@ measure: sum_diagnosis_olny {
   measure: pct_confusion_of_billable_est {
     label: "DC09: Pct Additional Dx of Confusion or Altered Awareness"
     type: number
-    sql:  ${sum_confusion} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_confusion} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -797,7 +1125,7 @@ measure: sum_diagnosis_olny {
   measure: pct_wheelchair_hb_of_billable_est {
     label: "DC10: Pct Wheelchair or Homebound"
     type: number
-    sql:  ${sum_wheelchair_hb} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_wheelchair_hb} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -805,7 +1133,7 @@ measure: sum_diagnosis_olny {
   measure: pct_ekg_of_billable_est {
     label: "DC11: Pct EKG Performed"
     type: number
-    sql:  ${sum_ekg} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_ekg} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -813,7 +1141,7 @@ measure: sum_diagnosis_olny {
   measure: pct_nebulizer_of_billable_est {
     label: "DC12: Pct Nebulizer Treatment"
     type: number
-    sql:  ${sum_nebulizer} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_nebulizer} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -821,7 +1149,7 @@ measure: sum_diagnosis_olny {
   measure: pct_iv_fluids_of_billable_est {
     label: "DC13: Pct IV/Fluids Administered"
     type: number
-    sql:  ${sum_iv_fluids} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_iv_fluids} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -829,7 +1157,7 @@ measure: sum_diagnosis_olny {
   measure: pct_blood_tests_of_billable_est {
     label: "DC14: Pct Blood Tests Performed"
     type: number
-    sql:  ${sum_blood_tests} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_blood_tests} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -837,7 +1165,7 @@ measure: sum_diagnosis_olny {
   measure: pct_catheter_placement_of_billable_est {
     label: "DC15: Pct Catheter Adjustment or Placement"
     type: number
-    sql:  ${sum_catheter_placement} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_catheter_placement} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -845,7 +1173,7 @@ measure: sum_diagnosis_olny {
   measure: pct_laceration_repair_of_billable_est {
     label: "DC16: Pct Laceration Repair"
     type: number
-    sql:  ${sum_laceration_repair} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_laceration_repair} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -853,7 +1181,7 @@ measure: sum_diagnosis_olny {
   measure: pct_epistaxis_of_billable_est {
     label: "DC17: Pct Epistaxis Tx"
     type: number
-    sql:  ${sum_epistaxis} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_epistaxis} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -861,7 +1189,7 @@ measure: sum_diagnosis_olny {
   measure: pct_hernia_rp_reduction_of_billable_est {
     label: "DC18: Pct Rectal Prolapse Reduction or Hernia Reduction"
     type: number
-    sql:  ${sum_hernia_rp_reduction} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_hernia_rp_reduction} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -869,7 +1197,7 @@ measure: sum_diagnosis_olny {
   measure: pct_joint_reduction_of_billable_est {
     label: "DC19: Pct Nursemaids elbow reduction or other joint reduction"
     type: number
-    sql: ${sum_joint_reduction} / ${care_requests.sum_billable_est} ;;
+    sql: ${sum_joint_reduction} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -877,7 +1205,7 @@ measure: sum_diagnosis_olny {
   measure: pct_gastronomy_tube_of_billable_est {
     label: "DC20: Pct Gastrostomy Tube replacement or repair"
     type: number
-    sql:  ${sum_gastronomy_tube} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_gastronomy_tube} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
    group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -885,7 +1213,7 @@ measure: sum_diagnosis_olny {
   measure: pct_abscess_drain_of_billable_est {
     label: "DC21: Pct I&D of Abscess"
     type: number
-    sql:  ${sum_abscess_drain} / ${care_requests.sum_billable_est};;
+    sql:  ${sum_abscess_drain} / ${care_requests.sum_billable_est_acute_ems_cost_savings};;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -893,7 +1221,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc22_of_billable_est {
     label: "DC22: Pct POS SNF AND (abnormal vital signs  OR altered mental status)"
     type: number
-    sql:  ${sum_dc22} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc22} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -901,7 +1229,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc23_of_billable_est {
     label: "DC23: Pct POS SNF AND any procedures"
     type: number
-    sql:  ${sum_dc23} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc23} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -909,7 +1237,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc24_of_billable_est {
     label: "DC24: Pct POS SNF AND referral"
     type: number
-    sql:  ${sum_dc24} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc24} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -917,7 +1245,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc25_of_billable_est {
     label: "DC25: Pct POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
-    sql:  ${sum_dc25} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc25} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -925,7 +1253,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc26_of_billable_est {
     label: "DC26: Pct POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
-    sql:  ${sum_dc26} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc26} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -933,7 +1261,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc27_of_billable_est {
     label: "DC27: Pct POS AL AND (abnormal vital signs OR altered mental status)"
     type: number
-    sql:  ${sum_dc27} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc27} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -941,7 +1269,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc28_of_billable_est {
     label: "DC28: Pct POS AL AND procedures"
     type: number
-    sql: ${sum_dc28} / ${care_requests.sum_billable_est} ;;
+    sql: ${sum_dc28} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -949,7 +1277,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc29_of_billable_est {
     label: "DC29: Pct POS AL AND referral"
     type: number
-    sql:  ${sum_dc29} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc29} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -957,7 +1285,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc30_of_billable_est {
     label: "DC30: Pct POS AL AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
-    sql:  ${sum_dc30} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc30} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -965,7 +1293,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc31_of_billable_est {
     label: "DC31: Pct POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
-    sql:  ${sum_dc31} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc31} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -973,7 +1301,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc32_of_billable_est {
     label: "DC32: Pct POS HOME AND (abnormal vital signs OR altered mental status)"
     type: number
-    sql:  ${sum_dc32} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc32} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -981,7 +1309,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc33_of_billable_est {
     label: "DC33: Pct POS HOME AND any procedures"
     type: number
-    sql:  ${sum_dc33} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc33} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -989,7 +1317,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc34_of_billable_est {
     label: "DC34: Pct POS HOME AND referral"
     type: number
-    sql:  ${sum_dc34} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc34} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -997,7 +1325,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc35_of_billable_est {
     label: "DC35: Pct POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
-    sql:  ${sum_dc35} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc35} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -1005,7 +1333,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc36_of_billable_est {
     label: "DC36: Pct POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
-    sql:  ${sum_dc36} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc36} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -1013,7 +1341,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc37_of_billable_est {
     label: "DC37: Pct POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)"
     type: number
-    sql:  ${sum_dc37} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc37} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -1021,7 +1349,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc38_of_billable_est {
     label: "DC38: Pct POS HOME AND wheelchair/homebound AND any procedures"
     type: number
-    sql:  ${sum_dc38} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc38} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -1029,7 +1357,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc39_of_billable_est {
     label: "DC39: Pct POS HOME AND wheelchair/homebound AND referral"
     type: number
-    sql:  ${sum_dc39} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc39} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -1037,7 +1365,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc40_of_billable_est {
     label: "DC40: Pct POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures"
     type: number
-    sql:  ${sum_dc40} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc40} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }
@@ -1045,7 +1373,7 @@ measure: sum_diagnosis_olny {
   measure: pct_dc41_of_billable_est {
     label: "DC41: Pct POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
     type: number
-    sql:  ${sum_dc41} / ${care_requests.sum_billable_est} ;;
+    sql:  ${sum_dc41} / ${care_requests.sum_billable_est_acute_ems_cost_savings} ;;
     value_format: "0.00%"
     group_label: "Diversion Category Pct of Billable Est Measures"
   }

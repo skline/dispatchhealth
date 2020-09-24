@@ -891,6 +891,28 @@ view: care_requests {
     sql: ${billable_est} AND ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL ;;
   }
 
+  dimension: non_acute_ems_populations_cost_savings {
+    description: "Logic to idenitfy Non-AcuteCare and Non-EMS populations based on select service lines, visit types and risk protocols"
+    type: yesno
+    sql:
+    ${care_requests.post_acute_follow_up} OR
+    ${care_requests.DHFU_follow_up} OR
+   lower(${service_lines.service_line_name_consolidated}) in(
+      'hedis (hpn)',
+      'covid-19 facility testing',
+      'ed education',
+      'post acute follow up') OR
+  lower(${risk_assessments.protocol_name}) in(
+      'covid-19 facility testing',
+      'covid-19 testing request (for patients without symptoms)',
+      'dispatchhealth education program (emergency department use education, asthma education)',
+      'dispatchhealth education program (emergency department use education, asthma, diabetes education)',
+      'post-acute patient',
+      'post-acute patient (post hospital discharge patient)',
+      'post-acute patient (post hospital/skilled nursing facility/rehabilitation facility discharge patient)',
+      'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)');;
+  }
+
   measure: count_billable_est {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations"
@@ -935,6 +957,33 @@ view: care_requests {
     type: sum_distinct
     sql_distinct_key: ${id} ;;
     sql: ${billable_est_numeric} ;;
+  }
+
+
+  measure: count_billable_est_acute_ems_cost_savings {
+    type: count_distinct
+    description: "Count of Acute Care and EMS completed care requests OR on-scene escalations"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: non_acute_ems_populations_cost_savings
+      value: "no"
+    }
+  }
+
+  measure: sum_billable_est_acute_ems_cost_savings {
+    description: "Sum of Acute Care and EMS billable Est to use in LookML calculations in place of count_billable_est (return the same results)"
+    hidden: yes
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${billable_est_numeric} ;;
+    filters: {
+      field: non_acute_ems_populations_cost_savings
+      value: "no"
+    }
   }
 
   measure: count_antibiotics_prescriptions {
