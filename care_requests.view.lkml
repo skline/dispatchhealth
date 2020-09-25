@@ -962,7 +962,7 @@ view: care_requests {
 
   measure: count_billable_est_acute_ems_cost_savings {
     type: count_distinct
-    description: "Count of Acute Care and EMS completed care requests OR on-scene escalations"
+    description: "Count of Acute Care and EMS completed care requests (excludes on-scene escalations)"
     sql: ${id} ;;
     filters: {
       field: billable_est
@@ -972,7 +972,11 @@ view: care_requests {
       field: non_acute_ems_populations_cost_savings
       value: "no"
     }
-  }
+    filters: {
+      field: escalated_on_scene
+      value: "no"
+    }
+    }
 
   measure: sum_billable_est_acute_ems_cost_savings {
     description: "Sum of Acute Care and EMS billable Est to use in LookML calculations in place of count_billable_est (return the same results)"

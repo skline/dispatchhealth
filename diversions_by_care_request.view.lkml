@@ -1032,12 +1032,20 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     type: sum_distinct
     sql: ${bounceback_14_day_case_rate_adjustment} ;;
     sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
+    }
   }
 
   measure: count_bounceback_14_day_calc {
     type: sum_distinct
     sql: ${bounceback_multiplier} ;;
     sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "No"
+    }
   }
 
 #   dimension: 14_day_bounceback_case_rate_calculated {
