@@ -972,10 +972,10 @@ view: care_requests {
       field: non_acute_ems_populations_cost_savings
       value: "no"
     }
-    filters: {
-      field: escalated_on_scene
-      value: "no"
-    }
+    # filters: {
+    #   field: escalated_on_scene
+    #   value: "no"
+    # }
     }
 
   measure: sum_billable_est_acute_ems_cost_savings {
