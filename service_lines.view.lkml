@@ -43,7 +43,7 @@ view: service_lines {
 
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: initcap(${TABLE}.name) ;;
   }
 
   dimension: service_line_name_consolidated {
