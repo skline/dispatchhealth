@@ -1,5 +1,4 @@
 view: addressable_items {
-  label: ""
   sql_table_name: public.addressable_items ;;
 
   dimension: id {

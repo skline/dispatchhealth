@@ -131,6 +131,7 @@ view: markets {
   dimension: name {
     type: string
     sql: ${TABLE}.name ;;
+    drill_fields: [users.full_name]
   }
 
   dimension: name_adj {

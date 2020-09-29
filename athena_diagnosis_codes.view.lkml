@@ -32,6 +32,7 @@ view: athena_diagnosis_codes {
     type: string
     sql: ${TABLE}."bodily_system" ;;
     group_label: "Diagnosis Descriptions"
+    drill_fields: [diagnosis_code_group]
   }
 
   dimension: code_class {
@@ -77,11 +78,11 @@ view: athena_diagnosis_codes {
     drill_fields: [diagnosis_code_short, diagnosis_description]
   }
 
-  dimension: diagnosis_code_set {
-    type: string
-    hidden: yes
-    sql: ${TABLE}."diagnosis_code_set" ;;
-  }
+  # dimension: diagnosis_code_set {
+  #   type: string
+  #   hidden: yes
+  #   sql: ${TABLE}."diagnosis_code_set" ;;
+  # }
 
   dimension: diagnosis_code_short {
     type: string
