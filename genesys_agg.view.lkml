@@ -4,7 +4,7 @@ view: genesys_agg {
       derived_table: {
       explore_source: genesys_conversation_summary {
         column: conversationstarttime {  field: genesys_conversation_summary.conversationstarttime_date}
-        column: market_id { field: markets.id }
+        column: market_id { field: markets.id_adj }
         column: count_answered {}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
         column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}

@@ -56,6 +56,11 @@ view: productivity_agg {
     type: number
   }
 
+  dimension: after_15_minutes_experiment {
+    type: yesno
+    sql: ${start_date} >= '2020-09-10' ;;
+  }
+
   measure: total_shift_hours_no_arm_advanced {
     type: sum_distinct
     value_format: "0.0"

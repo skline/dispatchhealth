@@ -3,7 +3,7 @@ view: genesys_agent_conversion {
 # If necessary, uncomment the line below to include explore_source.
 # include: "dashboard.model.lkml"
   derived_table: {
-    sql_trigger_value: SELECT count(*) FROM looker_scratch.genesys_conversation_summary  where genesys_conversation_summary.conversationstarttime > current_date - interval '2 day';;
+    sql_trigger_value: SELECT count(*) FROM looker_scratch.genesys_conversation_wrapup  where conversationstarttime > current_date - interval '2 day';;
     indexes: ["conversationstarttime", "queuename", "market_id", "agent_name"]
     explore_source: genesys_conversation_summary {
       column: conversationstarttime {field: genesys_conversation_summary.conversationstarttime_date}
@@ -23,7 +23,7 @@ view: genesys_agent_conversion {
       }
       filters: {
         field: genesys_conversation_summary.queuename
-        value: "General Care,DTC,Partner Direct,DTC Pilot"
+        value: "General Care,DTC,Partner Direct,DTC Pilot,ATL Optum Care"
       }
       filters: {
         field: markets.id
@@ -127,77 +127,4 @@ view: genesys_agent_conversion {
     value_format: "0%"
     sql: case when ${sum_inbound_phone_calls} >0 then ${sum_inbound_answers}::float/${sum_inbound_phone_calls}::float else 0 end ;;
   }
-
-
-
-
 }
-view: geneysis_agent_conversion {
-  # # You can specify the table name if it's different from the view name:
-  # sql_table_name: my_schema_name.tester ;;
-  #
-  # # Define your dimensions and measures here, like this:
-  # dimension: user_id {
-  #   description: "Unique ID for each user that has ordered"
-  #   type: number
-  #   sql: ${TABLE}.user_id ;;
-  # }
-  #
-  # dimension: lifetime_orders {
-  #   description: "The total number of orders for each user"
-  #   type: number
-  #   sql: ${TABLE}.lifetime_orders ;;
-  # }
-  #
-  # dimension_group: most_recent_purchase {
-  #   description: "The date when each user last ordered"
-  #   type: time
-  #   timeframes: [date, week, month, year]
-  #   sql: ${TABLE}.most_recent_purchase_at ;;
-  # }
-  #
-  # measure: total_lifetime_orders {
-  #   description: "Use this for counting lifetime orders across many users"
-  #   type: sum
-  #   sql: ${lifetime_orders} ;;
-  # }
-}
-
-# view: geneysis_agent_conversion {
-#   # Or, you could make this view a derived table, like this:
-#   derived_table: {
-#     sql: SELECT
-#         user_id as user_id
-#         , COUNT(*) as lifetime_orders
-#         , MAX(orders.created_at) as most_recent_purchase_at
-#       FROM orders
-#       GROUP BY user_id
-#       ;;
-#   }
-#
-#   # Define your dimensions and measures here, like this:
-#   dimension: user_id {
-#     description: "Unique ID for each user that has ordered"
-#     type: number
-#     sql: ${TABLE}.user_id ;;
-#   }
-#
-#   dimension: lifetime_orders {
-#     description: "The total number of orders for each user"
-#     type: number
-#     sql: ${TABLE}.lifetime_orders ;;
-#   }
-#
-#   dimension_group: most_recent_purchase {
-#     description: "The date when each user last ordered"
-#     type: time
-#     timeframes: [date, week, month, year]
-#     sql: ${TABLE}.most_recent_purchase_at ;;
-#   }
-#
-#   measure: total_lifetime_orders {
-#     description: "Use this for counting lifetime orders across many users"
-#     type: sum
-#     sql: ${lifetime_orders} ;;
-#   }
-# }

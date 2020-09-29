@@ -57,6 +57,7 @@ include: "tch_low_acuity_zips.view.lkml"
 include: "ga_adwords_stats_clone.view.lkml"
 include: "athenadwh_appointments_clone.view.lkml"
 include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
+include: "collective_medical_admit_emergency_and_inpatient_within_24_hours.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -308,6 +309,7 @@ include: "care_team_projected_volume.view.lkml"
 include: "narrow_network_providers.view.lkml"
 include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
+include: "geneysis_evaluations.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -626,6 +628,12 @@ explore: care_requests {
   join: collective_medical_first_major_class_admit_date_post_visit {
     relationship: many_to_one
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
+  }
+
+  join: collective_medical_admit_emergency_and_inpatient_within_24_hours {
+    relationship: many_to_one
+    sql_on: ${care_requests.id} = ${collective_medical_admit_emergency_and_inpatient_within_24_hours.care_request_id};;
+    fields: []
   }
 
   join: er_admits_prior_visit {
@@ -1802,6 +1810,11 @@ join: athena_procedurecode {
 
   join: sf_accounts{
     sql_on: ${sf_accounts.channel_items_id}=${channel_items.id} and lower(${sf_accounts.account_name}) not like '%test%' ;;
+  }
+
+  join: parent_accounts {
+    from: sf_accounts
+    sql_on: ${parent_accounts.account_id} =  ${sf_accounts.parent_account_id};;
   }
 
   join: sf_priority_accounts {
@@ -4073,10 +4086,10 @@ explore: sf_accounts {
   join: sf_contacts {
     sql_on: ${sf_contacts.account_id} =${sf_accounts.account_id} ;;
   }
-  #join: parent_accounts {
-  #  from: sf_accounts
-  #  sql_on: ${parent_accounts.account_id} =  ${sf_accounts.parent_account_id};;
-  #}
+  join: parent_accounts {
+    from: sf_accounts
+    sql_on: ${parent_accounts.account_id} =  ${sf_accounts.parent_account_id};;
+  }
   join:  sf_yesterday_accounts_health_score {
     sql_on: ${sf_accounts.account_id} =${sf_yesterday_accounts_health_score.account_id} ;;
   }
@@ -4208,7 +4221,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50');;
   }
 
   join: senior_mailchimp_audiences_clone {
@@ -4289,7 +4302,7 @@ explore: genesys_agg {
     sql_on: ${accepted_agg.market_id} =${genesys_agg.market_id} and ${accepted_agg.first_accepted_date} = ${genesys_agg.conversationstarttime_date}  ;;
   }
   join: markets {
-    sql_on: ${markets.id}=${genesys_agg.market_id} ;;
+    sql_on: ${markets.id_adj}=${genesys_agg.market_id} ;;
   }
   join: care_team_projected_volume {
     sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}
@@ -4485,5 +4498,11 @@ explore: bounce_back_risk_3day_models {
 explore: geneysis_custom_conversation_attributes {
   join: genesys_conversation_summary {
     sql_on: ${genesys_conversation_summary.conversationid} = ${geneysis_custom_conversation_attributes.conversationid} ;;
+  }
+}
+
+explore: geneysis_evaluations {
+  join: genesys_conversation_summary {
+    sql_on: ${genesys_conversation_summary.conversationid} = ${geneysis_evaluations.conversationid} ;;
   }
 }

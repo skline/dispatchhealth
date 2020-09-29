@@ -3271,12 +3271,25 @@ measure: avg_first_on_route_mins {
   }
 
   measure: escalated_on_scene_count {
-    label: "Escalated On-Scene to Ed"
+    label: "Escalated On-Scene to Ed Count"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
       field: escalated_on_scene
       value: "yes"
+    }
+  }
+
+  measure: escalated_on_scene_to_ed_acute_ems_cost_savings_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "no"
     }
   }
 
