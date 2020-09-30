@@ -11,6 +11,7 @@ view: addresses {
 
   dimension: city {
     type: string
+    group_label: "Description"
     sql: ${TABLE}.city ;;
   }
 
@@ -31,61 +32,52 @@ view: addresses {
 
   dimension: latitude {
     type: number
+    group_label: "Description"
     sql: ${TABLE}.latitude ;;
-  }
-
-  dimension: latitude_round_4_decimal {
-    type: number
-    sql:round(${latitude}::numeric,4);;
   }
 
   dimension: longitude {
     type: number
+    group_label: "Description"
     sql: ${TABLE}.longitude ;;
-  }
-
-  dimension: longitude_round_4_decimal {
-    type: number
-    sql: round(${longitude}::numeric,4);;
   }
 
   dimension: care_request_location {
     description: "The Latitude/Longitude combination of the care request (used for maps)"
     type: location
+    group_label: "Description"
     sql_latitude:${latitude} ;;
     sql_longitude:${longitude} ;;
   }
 
-  dimension: care_request_location_truncated {
-    description: "Used to approximate households. The location based on rounded 4 decimal Latitude/Longitude combination of the care request (used for maps)."
-    type: location
-    sql_latitude:${latitude_round_4_decimal} ;;
-    sql_longitude:${longitude_round_4_decimal} ;;
-  }
-
-
   dimension: state {
     type: string
+    group_label: "Description"
     sql: ${TABLE}.state ;;
   }
 
   dimension: street_address_1 {
     type: string
+    group_label: "Description"
     sql: ${TABLE}.street_address_1 ;;
   }
 
   dimension: full_addresss {
     type: string
-    sql: concat(${street_address_1},': ', ${street_address_2},': ', ${city},': ', ${state},': ', ${zipcode}) ;;
+    description: "Add1, Add2, City, State ZIP"
+    group_label: "Description"
+    sql: concat(${street_address_1},', ', ${street_address_2},', ', ${city},', ', ${state},' ', ${zipcode_short}) ;;
   }
 
   dimension: street_address_2 {
     type: string
+    group_label: "Description"
     sql: ${TABLE}.street_address_2 ;;
   }
 
   measure: count_unique_addresses {
     type: count_distinct
+    group_label: "Counts"
     sql: ${street_address_1} ;;
   }
 
@@ -107,23 +99,15 @@ view: addresses {
 
   dimension: zipcode {
     type: zipcode
+    group_label: "Description"
     sql: ${TABLE}.zipcode ;;
   }
 
   dimension: zipcode_short {
     label: "Five Digit Zip Code"
     type: zipcode
+    group_label: "Description"
     sql: left(${zipcode}, 5) ;;
-  }
-
-  dimension: fort_worth {
-    type: yesno
-    sql: ${zipcode_short} in('76028', '75078', '76262', '76248', '76244', '76182', '76180', '76177', '76164', '76148', '76140', '76137', '76134', '76133', '76132', '76131', '76129', '76127', '76123', '76120', '76119', '76118', '76117', '76116', '76115', '76114', '76112', '76111', '76110', '76109', '76107', '76105', '76104', '76103', '76102', '76092', '76060', '76054', '76053', '76034') ;;
-  }
-
-  dimension: zip_23139 {
-    type: yesno
-    sql: ${zipcode_short} = '23139' ;;
   }
 
   dimension: zip_code_in_dh_market {
@@ -135,28 +119,28 @@ view: addresses {
 
   measure: zipcode_list {
     type: string
+    group_label: "Aggregated Lists"
     sql: array_agg(${zipcode_short}) ;;
   }
 
   dimension: scf_code {
     type: string
+    group_label: "Description"
     description: "The sectional center facility code (first 3 digits of the zip)"
     sql: left(${zipcode}, 3) ;;
   }
 
   measure: count_distinct_states {
     type: count_distinct
+    group_label: "Counts"
     sql: ${state} ;;
   }
 
   measure: visit_state_concat {
     label: "List of Care Request States"
     type: string
+    group_label: "Aggregated Lists"
     sql: array_to_string(array_agg(DISTINCT COALESCE(upper(${addresses.state}))), ' | ') ;;
   }
 
-  measure: count {
-    type: count
-    drill_fields: [id]
-  }
 }

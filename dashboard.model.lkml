@@ -177,7 +177,6 @@ include: "survey_responses_flat_clone.view.lkml"
 include: "stop_times_by_care_request.view.lkml"
 include: "drg_to_icd10_crosswalk.view.lkml"
 include: "sf_activities.view.lkml"
-include: "athena_inbox_tracking.view.lkml"
 include: "user_roles.view.lkml"
 include: "diversion_categories_flat.view.lkml"
 include: "athena_document_orders.view.lkml"
@@ -240,7 +239,6 @@ include: "insurance_coalese.view.lkml"
 include: "csc_working_rate_week_clone.view.lkml"
 include: "productivity_agg.view.lkml"
 include: "cpt_code_types_clone.view.lkml"
-include: "athena_inbox_lab_imaging_results.view.lkml"
 include: "sf_contacts_activities.view.lkml"
 include: "oversight_provider.view.lkml"
 include: "number_to_market.view.lkml"
@@ -575,16 +573,6 @@ explore: care_requests {
   join: athenadwh_documents_clone {
     relationship: one_to_many
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_documents_clone.clinical_encounter_id};;
-  }
-
-  join: athena_inbox_tracking {
-    relationship: one_to_one
-    sql_on: ${athenadwh_documents_clone.document_id} = ${athena_inbox_tracking.document_id} ;;
-  }
-
-  join: athena_inbox_lab_imaging_results {
-    relationship: one_to_one
-    sql_on: ${athena_inbox_tracking.result_document_id} = ${athena_inbox_lab_imaging_results.document_id} ;;
   }
 
   join: athenadwh_documentaction {
@@ -1303,30 +1291,30 @@ join: athena_procedurecode {
 #     sql_on: ${shift_planning_facts_clone.car_dim_id} = ${visit_facts_clone.car_dim_id} ;;
 #   }
 
-  join: app_shift_planning_facts_clone {
-    view_label: "APP Shift Information"
-    from: shift_planning_facts_clone
-    type: full_outer
-    relationship: many_to_one
-    sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
-            replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
-            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
-    sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
-               ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
-               ${care_requests.id} IS NOT NULL ;;
-  }
+  # join: app_shift_planning_facts_clone {
+  #   view_label: "APP Shift Information"
+  #   from: shift_planning_facts_clone
+  #   type: full_outer
+  #   relationship: many_to_one
+  #   sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
+  #           replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+  #           ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+  #   sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
+  #             ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
+  #             ${care_requests.id} IS NOT NULL ;;
+  # }
 
-  join: dhmt_shift_planning_facts_clone {
-    view_label: "DHMT Shift Information"
-    from: shift_planning_facts_clone
-    type: full_outer
-    relationship: many_to_one
-    sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
-            replace(upper(trim(regexp_replace(replace(${users.first_name},'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
-            ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
-            ${dhmt_shift_planning_facts_clone.schedule_role} IN ('DHMT', 'EMT') AND
-            ${dhmt_shift_planning_facts_clone.car_dim_id} IS NOT NULL ;;
-  }
+  # join: dhmt_shift_planning_facts_clone {
+  #   view_label: "DHMT Shift Information"
+  #   from: shift_planning_facts_clone
+  #   type: full_outer
+  #   relationship: many_to_one
+  #   sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
+  #           replace(upper(trim(regexp_replace(replace(${users.first_name},'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+  #           ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
+  #           ${dhmt_shift_planning_facts_clone.schedule_role} IN ('DHMT', 'EMT') AND
+  #           ${dhmt_shift_planning_facts_clone.car_dim_id} IS NOT NULL ;;
+  # }
 
   join: survey_responses_flat_clone {
     relationship: one_to_one
@@ -1349,6 +1337,7 @@ join: athena_procedurecode {
   join: addressable_items {
     relationship: one_to_one
     sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;
+    fields: []
   }
   join: addresses {
     relationship: many_to_one
