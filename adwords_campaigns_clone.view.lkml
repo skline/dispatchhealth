@@ -61,6 +61,8 @@ view: adwords_campaigns_clone {
           when ${campaign_name_lower}  like '%-tpa%' then 181
           when ${campaign_name_lower}  like '%-hrt%' then 186
           when ${campaign_name_lower}  like '%-mor%' then 185
+          when ${campaign_name_lower}  like '%-ind%' then 188
+
 
           else null end;;
   }
