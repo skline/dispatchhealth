@@ -194,6 +194,29 @@ dimension: shift_end_time {
     ${dead_time}::float/(${shift_hours}*60)::float else 0 end ;;
     }
 
+  measure: sum_visits{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${count_billable_est} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+  measure: sum_hours{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${shift_hours} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+
+  measure: avg_shift_productivity {
+    type: average_distinct
+    value_format: "0.00"
+    sql: ${shift_productivity} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+
+  }
+
 
   measure: avg_dead_time{
     type: average_distinct
