@@ -213,7 +213,7 @@ dimension: shift_end_time {
   measure: avg_shift_productivity {
     type: number
     value_format: "0.00"
-    sql: case when ${sum_hours}::float>0 then ${sum_visits::float/ ${sum_hours}::float else 0 end;;
+    sql: case when ${sum_hours}::float>0 then ${sum_visits}::float/ ${sum_hours}::float else 0 end;;
 
   }
 
