@@ -122,6 +122,7 @@ dimension: shift_end_time {
     type: yesno
   }
   dimension: emt_car_staff {
+    label: "DHMT Car Staff"
     type: string
   }
   dimension: total_drive_time_minutes_coalesce {
