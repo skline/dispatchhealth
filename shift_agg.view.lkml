@@ -211,10 +211,9 @@ dimension: shift_end_time {
 
 
   measure: avg_shift_productivity {
-    type: average_distinct
+    type: number
     value_format: "0.00"
-    sql: ${shift_productivity} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql: case when ${sum_hours}::float>0 then ${sum_visits::float/ ${sum_hours}::float else 0 end;;
 
   }
 
