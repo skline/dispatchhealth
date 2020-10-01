@@ -106,7 +106,7 @@ dimension: shift_end_time {
     type: number
   }
   dimension: app_car_staff {
-    type: number
+    type: string
   }
   dimension: count_billable_est {
     description: "Count of completed care requests OR on-scene escalations"
@@ -121,7 +121,7 @@ dimension: shift_end_time {
     type: yesno
   }
   dimension: emt_car_staff {
-    type: number
+    type: string
   }
   dimension: total_drive_time_minutes_coalesce {
     description: "google drive time if available, otherwise regular drive time"

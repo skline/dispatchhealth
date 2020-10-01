@@ -27,7 +27,7 @@ view: non_phone_cr {
       }
       filters: {
         field: risk_assessments.protocol_name
-        value: "-Covid-19 Facility Testing"
+        value: "-COVID-19 Facility Testing,-Advanced Care"
       }
       filters: {
         field: care_request_flat.pafu_or_follow_up
