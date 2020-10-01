@@ -113,6 +113,7 @@ dimension: shift_end_time {
     type: number
   }
   dimension: name_adj {
+    label: "Market Name"
     description: "Market name where WMFR is included as part of Denver"
   }
   dimension: cpr_market {
@@ -264,6 +265,7 @@ dimension: shift_end_time {
   }
 
   measure: percent_assigned_shifts {
+    label: "Percent w/Patient Assigned at Start of Shift"
     type: number
     value_format: "0%"
     sql: case when ${count_distinct_shifts}::float>0 then ${count_distinct_shifts_w_assigned}::float/ ${count_distinct_shifts}::float else 0 end;;
