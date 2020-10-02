@@ -70,9 +70,9 @@ view: athena_diagnosis_codes {
     group_label: "Diagnosis Descriptions"
   }
 
-  dimension: covid_related {
+  dimension: asymptomatic_covid_related {
     type: yesno
-    sql: ${diagnosis_code}  in('Z20828', 'Z03818', 'U071','Z0389') ;;
+    sql: ${diagnosis_code}  in('Z20828', 'Z03818','Z0389') ;;
   }
 
   dimension: diagnosis_code_group {
