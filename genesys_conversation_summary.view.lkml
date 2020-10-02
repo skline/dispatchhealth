@@ -185,7 +185,7 @@ view: genesys_conversation_summary {
     filters: {
       field: answered
       value: "0"
-      }
+    }
   }
 
   measure: count_distinct_sla {
@@ -205,8 +205,8 @@ view: genesys_conversation_summary {
 
   measure: answer_rate {
     type: number
-    value_format: "0.0%"
-    sql: ${answered}::float/(nullif(${inbound_demand},0))::float ;;
+    value_format: "0%"
+    sql: ${count_answered}::float/(nullif(${count_distinct},0))::float ;;
   }
 
   measure: sla_percent {
