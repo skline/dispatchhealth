@@ -206,7 +206,7 @@ view: genesys_conversation_summary {
   measure: answer_rate {
     type: number
     value_format: "0.0%"
-    sql: ${answered}::float/(nullif${inbound_demand},0))::float ;;
+    sql: ${answered}::float/(nullif(${inbound_demand},0))::float ;;
   }
 
   measure: sla_percent {
