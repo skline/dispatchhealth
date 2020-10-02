@@ -4,7 +4,7 @@ view: genesys_agg {
       derived_table: {
       explore_source: genesys_conversation_summary {
         column: conversationstarttime {  field: genesys_conversation_summary.conversationstarttime_date}
-        column: market_id { field: markets.id }
+        column: market_id { field: markets.id_adj }
         column: count_answered {}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
         column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}
@@ -120,6 +120,18 @@ view: genesys_agg {
     sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
   }
 
+  measure: sum_inbound_demand_month_run_rate {
+    type: number
+    value_format: "#,##0"
+    sql:  ${sum_inbound_demand}/max(${month_percent});;
+  }
+
+  measure: sum_inbound_demand_quarterly_run_rate {
+    type: number
+    value_format: "#,##0"
+    sql:  ${sum_inbound_demand}/max(${quarter_percent});;
+  }
+
   measure: answer_rate {
     value_format: "0%"
     type: number
@@ -131,5 +143,50 @@ view: genesys_agg {
     type: number
     sql: case when ${care_team_projected_volume.sum_projected}>0 then ${sum_inbound_phone_calls}::float/${care_team_projected_volume.sum_projected}::float else 0 end;;
   }
+
+  dimension_group: yesterday_mountain{
+    type: time
+    timeframes: [date, day_of_week_index, week, month, day_of_month, quarter]
+    sql: current_date - interval '1 day';;
+  }
+
+  dimension: month_percent {
+    type: number
+    sql:
+
+        case when to_char(${conversationstarttime_date} , 'YYYY-MM') != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
+  }
+
+  dimension: quarter_percent{
+    type: number
+    sql: case when ${conversationstarttime_quarter} != ${yesterday_mountain_quarter} then 1
+          else
+            (${days_in_quarter}::float-${days_left_in_quarter}::float)/${days_in_quarter}::float end
+           ;;
+  }
+
+  dimension:  days_in_quarter{
+    type: number
+    sql: case when EXTRACT(QUARTER FROM ${conversationstarttime_raw}) = 1  then 90
+            when EXTRACT(QUARTER FROM ${conversationstarttime_raw}) = 2   then 91
+            when EXTRACT(QUARTER FROM ${conversationstarttime_raw}) = 3 then 92
+            when EXTRACT(QUARTER FROM ${conversationstarttime_raw}) = 4   then 92
+            else null end;;
+  }
+
+  dimension: days_left_in_quarter {
+    type: number
+    sql:
+       (  CAST(date_trunc('quarter',  ${conversationstarttime_raw})  + interval '3 months' - interval '1 day' AS date) - CAST( ${yesterday_mountain_date} AS date))
+;;
+  }
+
 
   }

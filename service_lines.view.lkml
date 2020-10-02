@@ -43,7 +43,10 @@ view: service_lines {
 
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: CASE
+      WHEN lower(TRIM(BOTH ' ' FROM ${TABLE}.name)) = 'tele-presentation' THEN 'Tele-Presentation'
+      ELSE TRIM(BOTH ' ' FROM ${TABLE}.name)
+      END;;
   }
 
   dimension: service_line_name_consolidated {

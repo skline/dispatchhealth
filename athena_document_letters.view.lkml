@@ -298,7 +298,8 @@ view: athena_document_letters {
     description: "Count appointments where the clinical letter was sent to any recipient (not patient correspondence)"
     type: count_distinct
 
-    sql: ${clinical_encounter_id} ;;
+    sql: ${care_request_flat.care_request_id} ;;
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
     filters: [clinical_letters_sent_all: "yes", care_requests.complete_visit: "yes"]
     filters: {
       field: clinical_letters_sent_all
@@ -311,14 +312,15 @@ view: athena_document_letters {
     description: "Identifies clinical letters sent to the patient's primary care provider"
     hidden: yes
     type: yesno
-    sql:  (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' AND upper(${clinicalletter.role}) = 'PRIMARY CARE PROVIDER' ;;
+    sql:  (upper(${document_subclass}) != 'LETTER_PATIENTCORRESPONDENCE' OR ${document_subclass} IS NULL) and upper(${status}) != 'DELETED' AND upper(${athena_clinicalletter.role}) = 'PRIMARY CARE PROVIDER' ;;
   }
 
   measure: count_notes_sent_pcp {
     description: "Count appointments where the clinical letter was sent to the patient's primary care provider"
     type: count_distinct
 
-    sql: ${clinical_encounter_id} ;;
+    sql: ${care_request_flat.care_request_id} ;;
+    sql_distinct_key: ${care_request_flat.care_request_id} ;;
     filters: {
       field: clinical_letters_sent_pcp
       value: "yes"

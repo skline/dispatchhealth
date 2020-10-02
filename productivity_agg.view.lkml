@@ -27,7 +27,7 @@ view: productivity_agg {
       }
       filters: {
         field: service_lines.name
-        value: "-COVID-19 Facility Testing"
+        value: "-COVID-19 Facility Testing,-Advanced Care"
       }
     }
   }
@@ -54,6 +54,11 @@ view: productivity_agg {
     label: "Shift Teams Sum Shift Hours (no arm, advanced or tele)"
     value_format: "0.0"
     type: number
+  }
+
+  dimension: after_15_minutes_experiment {
+    type: yesno
+    sql: ${start_date} >= '2020-09-10' ;;
   }
 
   measure: total_shift_hours_no_arm_advanced {

@@ -375,6 +375,12 @@ view: collective_medical {
     group_label: "Emergency Admittance Intervals"
   }
 
+  dimension: inpatient_admit_within_24_hours_of_emergency_admit {
+    description: "Identifies care requests where an emergency admit occurs within 30 days of a dh visit and a CM Inpatient admit occurrs within 24 hours of a CM emergency admit"
+    type: yesno
+    sql: ${collective_medical_admit_emergency_and_inpatient_within_24_hours.care_request_id} = care_requests.id ;;
+  }
+
 
 #   measure: count_er_admits {
 #     type: count_distinct

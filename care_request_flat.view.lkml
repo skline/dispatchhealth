@@ -243,26 +243,31 @@ WITH ort AS (
   dimension: care_request_id {
     type: number
     primary_key: yes
+    group_label: "IDs"
     sql: ${TABLE}.care_request_id ;;
   }
 
   dimension: self_report_primary_package_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.package_id ;;
   }
 
   dimension: patient_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}.patient_id ;;
   }
 
   dimension: origin_phone {
     type: string
+    hidden: yes
     sql: ${TABLE}.origin_phone ;;
   }
 
   dimension: contact_id {
     type: string
+    group_label: "IDs"
     sql:
     case
           when ${TABLE}.contact_id  ='' then null
@@ -277,24 +282,28 @@ WITH ort AS (
   }
   dimension: on_scene_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between complete time and on scene time"
     sql: EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}) ;;
   }
 
   dimension: drive_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between on route time and on scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}) ;;
   }
 
   dimension: in_queue_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between requested time and accepted time"
     sql: EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
   }
 
   dimension: time_to_call_seconds {
     type: number
+    hidden: yes
     value_format: "0"
     description: "The number of seconds between requested time and call time"
     sql: EXTRACT(EPOCH FROM ${call_time_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
@@ -302,6 +311,7 @@ WITH ort AS (
 
   dimension: time_to_call_minutes {
     type: number
+    hidden: yes
     value_format: "0.0"
     description: "The number of minutes between requested time and call time"
     sql: ${time_to_call_seconds}/60.0 ;;
@@ -309,12 +319,14 @@ WITH ort AS (
 
   dimension: assigned_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between accepted time and on-route time"
     sql: EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
   }
 
   dimension: on_scene_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between complete time and on scene time"
     sql: CASE
           WHEN ABS((EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}))::float/60.0) < 241
@@ -326,6 +338,7 @@ WITH ort AS (
 
   dimension: created_to_resolved_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between created time and archived time"
     sql: (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0 ;;
     value_format: "0.00"
@@ -333,6 +346,7 @@ WITH ort AS (
 
   dimension: accepted_to_resolved_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between accepted time and archived time"
     sql: CASE
           WHEN ABS((EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0) < 241
@@ -344,18 +358,22 @@ WITH ort AS (
 
   dimension: created_to_on_scene_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between care request created time and on scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})/60 -EXTRACT(EPOCH FROM ${created_raw})/60 ;;
   }
 
   dimension: accepted_initial_to_on_scene_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between when a care request is accepted time and on scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})/60 -EXTRACT(EPOCH FROM ${accept_initial_raw})/60 ;;
   }
 
   dimension: on_scene_time_tier {
     type: tier
+    group_label: "Care Delivery Times"
+    description: "On scene time, grouped in bins of 10 minutes"
     tiers: [10,20,30,40,50,60,70,80,90,100]
     style: integer
     sql: ${on_scene_time_minutes} ;;
@@ -363,16 +381,19 @@ WITH ort AS (
 
   dimension: mins_on_scene_predicted {
     type: number
+    group_label: "On Scene Predictions"
     sql: ${TABLE}.mins_on_scene_predicted::int ;;
   }
 
   dimension: actual_minus_pred_on_scene {
     type: number
+    group_label: "On Scene Predictions"
     sql: ${on_scene_time_minutes}::float - ${mins_on_scene_predicted}::float ;;
   }
 
   dimension: real_minus_pred_tier {
     type: tier
+    group_label: "On Scene Predictions"
     tiers: [-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60]
     style: integer
     sql: ${actual_minus_pred_on_scene} ;;
@@ -380,6 +401,7 @@ WITH ort AS (
 
   dimension: on_scene_time_tier_predicted {
     type: tier
+    group_label: "On Scene Predictions"
     tiers: [10,20,30,40,50,60,70,80,90,100]
     style: integer
     sql: ${mins_on_scene_predicted} ;;
@@ -387,6 +409,7 @@ WITH ort AS (
 
   dimension: shift_team_id_initial {
     type: number
+    group_label: "IDs"
     description: "The shift team ID of the team initially assigned to the care request"
     sql: ${TABLE}.shift_team_id_initial ;;
   }
@@ -405,79 +428,75 @@ WITH ort AS (
 
   dimension: on_scene_time_30min_or_less {
     type: yesno
+    group_label: "Care Delivery Times"
     description: "A flag indicating the on scene time was less than 30 minutes"
     sql: ${on_scene_time_minutes} < 30.0 ;;
   }
 
-  dimension: post_logistics_flag {
-    type: yesno
-    description: "A flag indicating the logistics platform was put into production"
-    sql: (${market_id} IN (160, 162, 165, 166) AND ${created_date} >= '2018-06-27') OR
-         (${market_id} = 161 AND ${created_date} >= '2018-07-30') OR
-         (${market_id} = 159 AND ${created_date} >= '2018-07-31') OR
-         (${created_date} >= '2018-08-07') ;;
-  }
-
-  dimension: post_cc_fix_date {
-    type: yesno
-    description: "A flag indicating a credit card fix was put into production (06/22/2018)"
-    sql: ${complete_date} >= '2018-06-22' ;;
-  }
-
   dimension: auto_assigned_initial {
     type: string
+    group_label: "Optimizer Details"
     description: "A flag indicating the care request was initially auto-assigned"
     sql: ${TABLE}.auto_assigned_initial ;;
   }
 
   dimension: reassignment_reason_initial {
     type: string
+    group_label: "Optimizer Details"
     description: "The initial reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_initial ;;
   }
 
   dimension: auto_assignment_overridden {
     type: yesno
+    group_label: "Optimizer Details"
     sql: ${auto_assigned_initial} = 'true' AND ${auto_assigned_final} = 'false' ;;
   }
 
   dimension: reassignment_reason_other_initial {
     type: string
+    group_label: "Optimizer Details"
     description: "The secondary initial reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_other_initial ;;
   }
 
   dimension: auto_assigned_final {
     type: string
+    group_label: "Optimizer Details"
     description: "A flag indicating the care request was auto-assigned (String)"
     sql: ${TABLE}.auto_assigned_final ;;
   }
 
   dimension: auto_assigned_flag {
     type: yesno
+    group_label: "Optimizer Details"
     description: "A flag indicating the care request was auto-assigned (Boolean)"
     sql: ${TABLE}.auto_assigned_final = 'true' ;;
   }
 
   dimension: board_optimizer_assigned {
     type: yesno
+    group_label: "Optimizer Details"
     sql: ${auto_assigned_final} = 'false' AND ${accept_employee_user_id} IN (7419,14804,10941,24564,20171,13134,6620,12582) ;;
   }
 
   dimension: reassignment_reason_final {
     type: string
+    group_label: "Optimizer Details"
     description: "The reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_final ;;
   }
 
   dimension: reassignment_reason_other_final {
     type: string
+    group_label: "Optimizer Details"
     description: "The reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_other_final ;;
   }
 
   dimension: drive_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between on-route time and on-scene time"
     sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}))::float/60.0 ;;
     value_format: "0.0"
@@ -486,6 +505,7 @@ WITH ort AS (
 
   dimension: drive_time_minutes_coalesce {
     type: number
+    group_label: "Care Delivery Times"
     description: "google drive time if available, otherwise regular drive time"
     sql: coalesce(${drive_time_minutes_google}, ${drive_time_minutes});;
     value_format: "0.0"
@@ -494,6 +514,7 @@ WITH ort AS (
 
   measure: total_drive_time_minutes {
     type: sum_distinct
+    group_label: "Care Delivery Times"
     description: "The number of minutes between on-route time and on-scene time"
     sql_distinct_key: ${care_request_id} ;;
     sql: ${drive_time_minutes};;
@@ -502,6 +523,7 @@ WITH ort AS (
 
   measure: total_drive_time_minutes_coalesce {
     type: sum_distinct
+    group_label: "Care Delivery Times"
     description: "google drive time if available, otherwise regular drive time"
     sql_distinct_key: ${care_request_id} ;;
     sql: ${drive_time_minutes_coalesce};;
@@ -510,6 +532,7 @@ WITH ort AS (
 
   measure: average_drive_time_minutes_coalesce_complete {
     type: number
+    group_label: "Care Delivery Times"
     description: "google drive time if available, otherwise regular drive time divided by complete visits"
     sql: case when ${care_request_flat.complete_count_no_arm_advanced}>0 then ${total_drive_time_minutes_coalesce}::float/${care_request_flat.complete_count_no_arm_advanced}::float else null end;;
     value_format: "0.0"
@@ -517,6 +540,7 @@ WITH ort AS (
 
   measure: average_on_scene_minutes_complete {
     type: number
+    group_label: "Care Delivery Times"
     description: "On scene time divided by complete visits"
     sql: case when ${care_request_flat.complete_count_no_arm_advanced}>0 then ${total_on_scene_time_minutes}::float/${care_request_flat.complete_count_no_arm_advanced}::float else null end;;
     value_format: "0.0"
@@ -525,11 +549,14 @@ WITH ort AS (
 
   dimension: drive_time_seconds_google {
     type: number
+    hidden: yes
+    group_label: "Care Delivery Times"
     sql: ${TABLE}.drive_time_seconds ;;
   }
 
   dimension: drive_time_minutes_google_initial {
     type: number
+    group_label: "Care Delivery Times"
     description: "The initial Google drive time for the care request"
     sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
     value_format: "0.00"
@@ -537,6 +564,7 @@ WITH ort AS (
 
   dimension: drive_time_minutes_google {
     type: number
+    group_label: "Care Delivery Times"
     sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
     value_format: "0.00"
   }
@@ -544,12 +572,15 @@ WITH ort AS (
   dimension: initial_drive_time_minutes_google {
     description: "The Google drive time of the care team that was initially assigned"
     type: number
+    group_label: "Care Delivery Times"
     sql: ${TABLE}.drive_time_seconds_initial::float / 60.0 ;;
     value_format: "0.00"
   }
 
   dimension: google_drive_time_tier {
   type: tier
+  group_label: "Care Delivery Times"
+  description: "Google drive time minutes in groups of 5"
   tiers: [0,5,10,15,20,25,30,35,40,45,50]
   style: integer
   sql: ${drive_time_minutes_google} ;;
@@ -557,6 +588,7 @@ WITH ort AS (
 
   measure:  average_drive_time_minutes_google {
     type: average_distinct
+    group_label: "Care Delivery Times"
     description: "The average drive time from Google in minutes"
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
@@ -565,6 +597,7 @@ WITH ort AS (
 
   measure: total_drive_time_minutes_google {
     type: sum_distinct
+    group_label: "Care Delivery Times"
     description: "The sum of drive time from Google in minutes"
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
@@ -573,6 +606,7 @@ WITH ort AS (
 
   dimension: under_20_minute_drive_time {
     type: yesno
+    group_label: "Care Delivery Times"
     sql: ${drive_time_minutes_google} <= 20.0 ;;
   }
 
@@ -584,6 +618,7 @@ WITH ort AS (
 
   dimension: in_queue_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between requested time and accepted time"
     sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
     value_format: "0.00"
@@ -591,11 +626,13 @@ WITH ort AS (
 
   dimension: is_reasonable_in_queue_time {
     type: yesno
+    hidden: yes
     sql: ${in_queue_time_minutes} < 240  ;;
   }
 
   dimension: assigned_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between accepted time and on-route time"
     sql: (EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
     value_format: "0.00"
@@ -3234,12 +3271,25 @@ measure: avg_first_on_route_mins {
   }
 
   measure: escalated_on_scene_count {
-    label: "Escalated On-Scene to Ed"
+    label: "Escalated On-Scene to Ed Count"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
       field: escalated_on_scene
       value: "yes"
+    }
+  }
+
+  measure: escalated_on_scene_to_ed_acute_ems_cost_savings_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.non_acute_ems_populations_cost_savings
+      value: "no"
     }
   }
 

@@ -57,6 +57,7 @@ include: "tch_low_acuity_zips.view.lkml"
 include: "ga_adwords_stats_clone.view.lkml"
 include: "athenadwh_appointments_clone.view.lkml"
 include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
+include: "collective_medical_admit_emergency_and_inpatient_within_24_hours.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -176,7 +177,6 @@ include: "survey_responses_flat_clone.view.lkml"
 include: "stop_times_by_care_request.view.lkml"
 include: "drg_to_icd10_crosswalk.view.lkml"
 include: "sf_activities.view.lkml"
-include: "athena_inbox_tracking.view.lkml"
 include: "user_roles.view.lkml"
 include: "diversion_categories_flat.view.lkml"
 include: "athena_document_orders.view.lkml"
@@ -239,7 +239,6 @@ include: "insurance_coalese.view.lkml"
 include: "csc_working_rate_week_clone.view.lkml"
 include: "productivity_agg.view.lkml"
 include: "cpt_code_types_clone.view.lkml"
-include: "athena_inbox_lab_imaging_results.view.lkml"
 include: "sf_contacts_activities.view.lkml"
 include: "oversight_provider.view.lkml"
 include: "number_to_market.view.lkml"
@@ -576,16 +575,6 @@ explore: care_requests {
     sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_documents_clone.clinical_encounter_id};;
   }
 
-  join: athena_inbox_tracking {
-    relationship: one_to_one
-    sql_on: ${athenadwh_documents_clone.document_id} = ${athena_inbox_tracking.document_id} ;;
-  }
-
-  join: athena_inbox_lab_imaging_results {
-    relationship: one_to_one
-    sql_on: ${athena_inbox_tracking.result_document_id} = ${athena_inbox_lab_imaging_results.document_id} ;;
-  }
-
   join: athenadwh_documentaction {
     relationship: one_to_many
     sql_on: ${athenadwh_documents_clone.document_id} = ${athenadwh_documentaction.document_id} ;;
@@ -639,6 +628,12 @@ explore: care_requests {
   join: collective_medical_first_major_class_admit_date_post_visit {
     relationship: many_to_one
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
+  }
+
+  join: collective_medical_admit_emergency_and_inpatient_within_24_hours {
+    relationship: many_to_one
+    sql_on: ${care_requests.id} = ${collective_medical_admit_emergency_and_inpatient_within_24_hours.care_request_id};;
+    fields: []
   }
 
   join: er_admits_prior_visit {
@@ -1296,30 +1291,30 @@ join: athena_procedurecode {
 #     sql_on: ${shift_planning_facts_clone.car_dim_id} = ${visit_facts_clone.car_dim_id} ;;
 #   }
 
-  join: app_shift_planning_facts_clone {
-    view_label: "APP Shift Information"
-    from: shift_planning_facts_clone
-    type: full_outer
-    relationship: many_to_one
-    sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
-            replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
-            ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
-    sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
-               ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
-               ${care_requests.id} IS NOT NULL ;;
-  }
+  # join: app_shift_planning_facts_clone {
+  #   view_label: "APP Shift Information"
+  #   from: shift_planning_facts_clone
+  #   type: full_outer
+  #   relationship: many_to_one
+  #   sql_on: TRIM(UPPER(${app_shift_planning_facts_clone.clean_employee_name})) =
+  #           replace(upper(trim(regexp_replace(replace(trim(${users.first_name}),'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+  #           ${app_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} ;;
+  #   sql_where: ${app_shift_planning_facts_clone.schedule_role} LIKE '%Training%' OR
+  #             ${app_shift_planning_facts_clone.schedule_role} LIKE '%NP/PA%' OR
+  #             ${care_requests.id} IS NOT NULL ;;
+  # }
 
-  join: dhmt_shift_planning_facts_clone {
-    view_label: "DHMT Shift Information"
-    from: shift_planning_facts_clone
-    type: full_outer
-    relationship: many_to_one
-    sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
-            replace(upper(trim(regexp_replace(replace(${users.first_name},'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
-            ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
-            ${dhmt_shift_planning_facts_clone.schedule_role} IN ('DHMT', 'EMT') AND
-            ${dhmt_shift_planning_facts_clone.car_dim_id} IS NOT NULL ;;
-  }
+  # join: dhmt_shift_planning_facts_clone {
+  #   view_label: "DHMT Shift Information"
+  #   from: shift_planning_facts_clone
+  #   type: full_outer
+  #   relationship: many_to_one
+  #   sql_on: TRIM(UPPER(${dhmt_shift_planning_facts_clone.clean_employee_name})) =
+  #           replace(upper(trim(regexp_replace(replace(${users.first_name},'"',''), '^.* ', '')) || ' ' || trim(${users.last_name})), '''', '') AND
+  #           ${dhmt_shift_planning_facts_clone.local_actual_start_date} = ${visit_dimensions_clone.local_visit_date} AND
+  #           ${dhmt_shift_planning_facts_clone.schedule_role} IN ('DHMT', 'EMT') AND
+  #           ${dhmt_shift_planning_facts_clone.car_dim_id} IS NOT NULL ;;
+  # }
 
   join: survey_responses_flat_clone {
     relationship: one_to_one
@@ -1342,6 +1337,7 @@ join: athena_procedurecode {
   join: addressable_items {
     relationship: one_to_one
     sql_on: ${addressable_items.addressable_type} = 'CareRequest' and ${care_requests.id} = ${addressable_items.addressable_id};;
+    fields: []
   }
   join: addresses {
     relationship: many_to_one
@@ -4225,7 +4221,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50');;
   }
 
   join: senior_mailchimp_audiences_clone {
@@ -4306,7 +4302,7 @@ explore: genesys_agg {
     sql_on: ${accepted_agg.market_id} =${genesys_agg.market_id} and ${accepted_agg.first_accepted_date} = ${genesys_agg.conversationstarttime_date}  ;;
   }
   join: markets {
-    sql_on: ${markets.id}=${genesys_agg.market_id} ;;
+    sql_on: ${markets.id_adj}=${genesys_agg.market_id} ;;
   }
   join: care_team_projected_volume {
     sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}
