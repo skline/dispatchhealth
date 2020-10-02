@@ -173,6 +173,21 @@ view: genesys_conversation_summary {
     }
   }
 
+  measure: not_answered {
+    label: "Not Answered (Inbound Demand)"
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid} ;;
+    filters: {
+      field: inbound_demand
+      value: "1"
+    }
+    filters: {
+      field: answered
+      value: "0"
+      }
+  }
+
   measure: count_distinct_sla {
     label: "Count Distinct SLA (Inbound Demand)"
     type: count_distinct
