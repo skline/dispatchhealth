@@ -310,6 +310,7 @@ include: "narrow_network_providers.view.lkml"
 include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
 include: "geneysis_evaluations.view.lkml"
+include: "high_overflow_days.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -1968,6 +1969,9 @@ join: ga_pageviews_clone {
   join: sf_accounts_npi {
     from: sf_accounts
     sql_on:  ${sf_accounts_npi.account_id} = ${sf_contacts_npi.account_id} and lower(${sf_accounts_npi.account_name}) not like '%test%';;
+  }
+  join: high_overflow_days {
+    sql_on: ${shift_teams.start_date}=${high_overflow_days.start_date} and ${markets.name_adj}=${high_overflow_days.name_adj} ;;
   }
 
 }
