@@ -1,5 +1,5 @@
 view: collective_medical_first_major_class_admit_date_post_visit {
-  sql_table_name: collective_medical.first_major_class_admit_date_post_visit ;;
+  sql_table_name: collective_medical.first_major_class_admit_date_post_visit_clone ;;
   drill_fields: [id]
 
   dimension: id {
