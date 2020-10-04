@@ -106,13 +106,14 @@ dimension: shift_end_time {
     type: number
   }
   dimension: app_car_staff {
-    type: number
+    type: string
   }
   dimension: count_billable_est {
     description: "Count of completed care requests OR on-scene escalations"
     type: number
   }
   dimension: name_adj {
+    label: "Market Name"
     description: "Market name where WMFR is included as part of Denver"
   }
   dimension: cpr_market {
@@ -121,7 +122,8 @@ dimension: shift_end_time {
     type: yesno
   }
   dimension: emt_car_staff {
-    type: number
+    label: "DHMT Car Staff"
+    type: string
   }
   dimension: total_drive_time_minutes_coalesce {
     description: "google drive time if available, otherwise regular drive time"
@@ -194,6 +196,28 @@ dimension: shift_end_time {
     ${dead_time}::float/(${shift_hours}*60)::float else 0 end ;;
     }
 
+  measure: sum_visits{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${count_billable_est} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+  measure: sum_hours{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${shift_hours} ;;
+    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+  }
+
+
+  measure: avg_shift_productivity {
+    type: number
+    value_format: "0.00"
+    sql: case when ${sum_hours}::float>0 then ${sum_visits}::float/ ${sum_hours}::float else 0 end;;
+
+  }
+
 
   measure: avg_dead_time{
     type: average_distinct
@@ -241,6 +265,7 @@ dimension: shift_end_time {
   }
 
   measure: percent_assigned_shifts {
+    label: "Percent w/Patient Assigned at Start of Shift"
     type: number
     value_format: "0%"
     sql: case when ${count_distinct_shifts}::float>0 then ${count_distinct_shifts_w_assigned}::float/ ${count_distinct_shifts}::float else 0 end;;

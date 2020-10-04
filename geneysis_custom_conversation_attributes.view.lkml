@@ -98,6 +98,7 @@ view: geneysis_custom_conversation_attributes {
 
   dimension: customnumber02 {
     type: number
+    label: "Verification"
     sql: ${TABLE}."customnumber02" ;;
   }
 
@@ -108,16 +109,19 @@ view: geneysis_custom_conversation_attributes {
 
   dimension: customstring01 {
     type: string
+    label: "Applicationname"
     sql: ${TABLE}."customstring01" ;;
   }
 
   dimension: customstring02 {
     type: string
+    label: "Exittype"
     sql: ${TABLE}."customstring02" ;;
   }
 
   dimension: customstring03 {
     type: string
+    label: "Exitdata"
     sql: ${TABLE}."customstring03" ;;
   }
 

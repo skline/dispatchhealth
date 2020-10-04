@@ -27,7 +27,7 @@ view: productivity_agg {
       }
       filters: {
         field: service_lines.name
-        value: "-COVID-19 Facility Testing"
+        value: "-COVID-19 Facility Testing,-Advanced Care"
       }
     }
   }
