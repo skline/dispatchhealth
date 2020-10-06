@@ -257,18 +257,38 @@ view: genesys_conversation_summary {
   }
 
   measure: distinct_repeat_callers {
-    type: count_distinct
-    sql:  ${count_distinct}::float-(nullif(distinct_callers,0))::float ;;
+    type: number
+    sql: ${count_distinct}-${distinct_callers} ;;
     filters: {
       field: inbound_demand
       value: "yes"
     }
   }
 
+
   dimension:  same_day_of_week {
     type: yesno
     sql:  ${yesterday_mountain_day_of_week_index} = ${conversationstarttime_day_of_week_index};;
   }
+
+measure: distinct_one_time_callers{
+  type:  number
+  sql: ${count_distinct}-${distinct_repeat_callers} ;;
+  filters: {
+    field:  inbound_demand
+    value: "yes"
+  }
+}
+
+measure: percent_repeat_callers {
+  type: number
+  value_format: "0%"
+  sql:${distinct_repeat_callers}/(nullif(${count_distinct},0))::float  ;;
+  filters: {
+    field: inbound_demand
+    value: "yes"
+  }
+}
 
   dimension_group: last_week_mountain{
     type: time
@@ -699,7 +719,6 @@ view: genesys_conversation_summary {
     type: yesno
     sql: ${transfered} = 0 and ${markets.name_adj} = 'Richmond' ;;
   }
-
 
   #dimension: dispositions_raw {
   #  type: string
