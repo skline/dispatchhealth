@@ -18,6 +18,7 @@ view: genesys_conversation_summary {
 
 
   dimension: ani {
+    label: "incoming phone numbers"
     type: string
     sql: ${TABLE}."ani" ;;
   }
@@ -243,6 +244,25 @@ view: genesys_conversation_summary {
     sql_distinct_key: ${conversationstarttime_week} ;;
     sql: ${conversationstarttime_week} ;;
 
+  }
+
+  measure: distinct_callers {
+    type: count_distinct
+    sql: ${ani} ;;
+    sql_distinct_key: ${ani} ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+  }
+
+  measure: distinct_repeat_callers {
+    type: count_distinct
+    sql:  ${count_distinct}::float-(nullif(distinct_callers,0))::float ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
   }
 
   dimension:  same_day_of_week {
