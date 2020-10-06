@@ -70,6 +70,11 @@ view: athena_diagnosis_codes {
     group_label: "Diagnosis Descriptions"
   }
 
+  dimension: asymptomatic_covid_related {
+    type: yesno
+    sql: ${diagnosis_code}  in('Z20828', 'Z03818','Z0389') ;;
+  }
+
   dimension: diagnosis_code_group {
     type: string
     description: "e.g. CHRONIC LOWER RESPIRATORY DISEASES (J40-J47)"
@@ -78,11 +83,12 @@ view: athena_diagnosis_codes {
     drill_fields: [diagnosis_code_short, diagnosis_description]
   }
 
-  # dimension: diagnosis_code_set {
-  #   type: string
-  #   hidden: yes
-  #   sql: ${TABLE}."diagnosis_code_set" ;;
-  # }
+  dimension: sequence_number {
+    type: number
+    description: "The priority of the diagnosis e.g. 1 = first diagnosis code, etc."
+    group_label: "Diagnosis Priority"
+    sql: ${athena_diagnosis_sequence.sequence_number} ;;
+  }
 
   dimension: diagnosis_code_short {
     type: string
@@ -223,7 +229,9 @@ view: athena_diagnosis_codes {
 
   dimension: likely_flu_diganosis {
     type: yesno
-    sql: ${diagnosis_code} in('J09', 'J11', 'J10','J06',  'J20', 'J18', 'J20') ;;
+    description: "Diagnosis code is one of: J06, J09, J10, J11, J18"
+    group_label: "Diagnosis Descriptions"
+    sql: ${diagnosis_code_short} in('J09', 'J11', 'J10','J06', 'J20', 'J18') ;;
   }
 
   measure: count {

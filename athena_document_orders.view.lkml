@@ -110,6 +110,19 @@ view: athena_document_orders {
     sql: ${TABLE}."clinical_order_type" ;;
   }
 
+  dimension: urinalysis_performed {
+    type: yesno
+    description: "A flag indicating a Urinalysis was performed (culture, panel, dipstick or complete)"
+    group_label: "Description"
+    sql: ${clinical_order_type} IN ('URINALYSIS REFLEX CULTURE',
+        'URINALYSIS PANEL AUTO',
+        'URINALYSIS DIPSTICK REFLEX MICRO',
+        'URINALYSIS DIPSTICK AUTO',
+        'URINALYSIS DIPSTICK',
+        'URINALYSIS COMPLETE REFLEX CULTURE',
+        'URINALYSIS COMPLETE') ;;
+  }
+
   measure: aggregated_orders {
     type: string
     description: "Aggregation of all document orders"
@@ -617,11 +630,14 @@ view: athena_document_orders {
     description: "Lab ordered from third party"
     type: yesno
     hidden: no
-    sql: upper(${clinical_order_type_group}) = 'LAB' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER' AND UPPER(${document_order_provider.provider_category}) = 'PERFORMED BY THIRD PARTY'  ;;
+    sql: upper(${clinical_order_type_group}) = 'LAB'
+     AND upper(${status}) != 'DELETED'
+     AND upper(${document_class}) = 'ORDER'
+     AND UPPER(${athena_document_order_provider.provider_category}) = 'PERFORMED BY THIRD PARTY'  ;;
   }
 
   measure: count_lab_orders_from_3rd_party {
-    description: "Count of lab orders from thrid party"
+    description: "Count of lab orders from third party"
     type: count_distinct
     sql: ${document_id} ;;
     filters: {

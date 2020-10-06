@@ -58,6 +58,7 @@ include: "ga_adwords_stats_clone.view.lkml"
 include: "athenadwh_appointments_clone.view.lkml"
 include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
 include: "collective_medical_admit_emergency_and_inpatient_within_24_hours.view.lkml"
+include: "collective_medical_first_emergency_inpatient_admit_date_post_visit.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -310,6 +311,7 @@ include: "narrow_network_providers.view.lkml"
 include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
 include: "geneysis_evaluations.view.lkml"
+include: "high_overflow_days.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -628,6 +630,11 @@ explore: care_requests {
   join: collective_medical_first_major_class_admit_date_post_visit {
     relationship: many_to_one
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
+  }
+
+  join: collective_medical_first_emergency_inpatient_admit_date_post_visit {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${collective_medical_first_emergency_inpatient_admit_date_post_visit.care_request_id};;
   }
 
   join: collective_medical_admit_emergency_and_inpatient_within_24_hours {
@@ -1968,6 +1975,9 @@ join: ga_pageviews_clone {
   join: sf_accounts_npi {
     from: sf_accounts
     sql_on:  ${sf_accounts_npi.account_id} = ${sf_contacts_npi.account_id} and lower(${sf_accounts_npi.account_name}) not like '%test%';;
+  }
+  join: high_overflow_days {
+    sql_on: ${shift_teams.start_date}=${high_overflow_days.start_date} and ${markets.name_adj}=${high_overflow_days.name_adj} ;;
   }
 
 }
