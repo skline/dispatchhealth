@@ -259,10 +259,6 @@ view: genesys_conversation_summary {
   measure: distinct_repeat_callers {
     type: number
     sql: ${count_distinct}-${distinct_callers} ;;
-    filters: {
-      field: inbound_demand
-      value: "yes"
-    }
   }
 
 
