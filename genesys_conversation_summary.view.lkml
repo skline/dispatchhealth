@@ -274,20 +274,12 @@ view: genesys_conversation_summary {
 measure: distinct_one_time_callers{
   type:  number
   sql: ${count_distinct}-${distinct_repeat_callers} ;;
-  filters: {
-    field:  inbound_demand
-    value: "yes"
-  }
 }
 
 measure: percent_repeat_callers {
   type: number
   value_format: "0%"
-  sql:${distinct_repeat_callers}/(nullif(${count_distinct},0))::float  ;;
-  filters: {
-    field: inbound_demand
-    value: "yes"
-  }
+  sql:${distinct_repeat_callers}::float/(nullif(${count_distinct},0))::float  ;;
 }
 
   dimension_group: last_week_mountain{
