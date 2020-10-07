@@ -98,6 +98,13 @@ view: collective_medical_first_emergency_inpatient_admit_date_post_visit {
     group_label: "Inpatient Emergency Admittance Intervals"
   }
 
+  dimension: 7_day_first_admit_inpatient_emergency {
+    description: "First Inpatient Emergency admittance recorded by Collective Medical within 7 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${first_emergency_ip_admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 168 and EXTRACT(EPOCH FROM ${first_emergency_ip_admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' and ${admitted_ip};;
+    group_label: "Inpatient Emergency Admittance Intervals"
+  }
+
   dimension: 14_day_first_admit_inpatient_emergency {
     description: "First Inpatient Emergency admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
@@ -130,6 +137,17 @@ view: collective_medical_first_emergency_inpatient_admit_date_post_visit {
     sql: ${care_request_flat.care_request_id} ;;
     filters: {
       field: 3_day_first_admit_inpatient_emergency
+      value: "yes"
+    }
+    group_label: "Inpatient Emergency Admittance Intervals"
+  }
+
+  measure: count_7_day_first_admit_inpatient_emergency {
+    description: "Count First Inpatient Emergency admittances recorded by Collective Medical within 7 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id} ;;
+    filters: {
+      field: 7_day_first_admit_inpatient_emergency
       value: "yes"
     }
     group_label: "Inpatient Emergency Admittance Intervals"
