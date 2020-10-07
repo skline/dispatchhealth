@@ -16,6 +16,11 @@ view: number_to_market {
     sql: ${TABLE}."mvp"=1 ;;
   }
 
+  dimension: sem_covid {
+    type: yesno
+    sql: lower(${name}) like '%sem_covid%' ;;
+  }
+
   dimension: name {
     type: string
     sql: ${TABLE}."name" ;;
@@ -35,3 +40,4 @@ view: number_to_market {
     drill_fields: [name]
   }
 }
+
