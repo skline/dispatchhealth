@@ -1881,6 +1881,10 @@ join: ga_pageviews_clone {
       ;;
   }
 
+  join: number_to_market {
+    sql_on: ${number_to_market.number} = ${genesys_conversation_summary.dnis} ;;
+  }
+
   join: genesys_conversation_wrapup {
     sql_on: ${genesys_conversation_summary.conversationid}=${genesys_conversation_wrapup.conversationid} ;;
   }
