@@ -207,6 +207,7 @@ include: "thpg_providers.view.lkml"
 include: "income_pop_by_zipcode_small.view.lkml"
 include: "icd_code_risk_assessment_crosswalk.view.lkml"
 include: "markets.view.lkml"
+include: "views/market_regions.view.lkml"
 include: "athena_clinicalencounterdiagnosis.view.lkml"
 include: "shift_teams.view.lkml"
 include: "market_start_date.view.lkml"
@@ -1589,6 +1590,11 @@ join: athena_procedurecode {
   join: regional_markets {
     relationship: one_to_one
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${regional_markets.market_id} ;;
   }
 
   join: market_start_date{
@@ -3832,6 +3838,11 @@ explore: shift_teams
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
   join: market_start_date{
     sql_on: ${markets.id}=${market_start_date.market_id} ;;
   }
@@ -3884,6 +3895,10 @@ explore: budget_projections_by_market_clone {
   }
   join: regional_markets {
     sql_on: ${markets.id} = ${regional_markets.market_id} ;;
+  }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
   }
 }
 
@@ -4467,6 +4482,11 @@ explore: productivity_agg {
     sql_on:  ${shift_agg.shift_start_date}=${productivity_agg.start_date} and ${shift_agg.name_adj} =${productivity_agg.name_adj};;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${productivity_agg.id_adj} = ${market_regions.market_id} ;;
+  }
+
   #join: markets {
   #  sql_on: ${markets.name_adj} = ${productivity_agg.name_adj} ;;
   #}
@@ -4475,11 +4495,20 @@ explore: productivity_agg {
   #}
 
 }
-explore: shift_agg {}
+explore: shift_agg {
+  join: market_regions {
+    relationship: many_to_one
+    sql_on: ${shift_agg.id_adj} = ${market_regions.market_id} ;;
+  }
+}
 explore: genesys_queue_conversion {
 
   join: markets {
     sql_on: ${markets.id} =${genesys_queue_conversion.market_id} ;;
+  }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
   }
 
   join: care_team_projected_volume {
