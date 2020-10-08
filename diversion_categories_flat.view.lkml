@@ -224,11 +224,11 @@ dimension: care_request_id {
     sql: ${TABLE}.dc41 ;;
   }
 
-  # dimension: identify_pops_exclude_from_diversion_cats {
-  #   description: "Excludes post acute follow ups, dh follow ups and escalated on-scene care requests from the diversion category sum measures"
-  #   type: yesno
-  #   sql: ${care_requests.post_acute_follow_up} = 'yes' OR ${care_requests.DHFU_follow_up} = 'yes' OR ${care_request_flat.escalated_on_scene} = 'yes';;
-  # }
+  dimension: identify_pops_exclude_from_diversion_cats {
+    description: "Excludes post acute follow ups, dh follow ups and escalated on-scene care requests from the diversion category sum measures"
+    type: yesno
+    sql: ${care_requests.DHFU_follow_up} OR ${care_request_flat.escalated_on_scene} ;;
+  }
 
 measure: sum_diagnosis_olny {
   label: "DC01: Diagnosis Only"
@@ -236,17 +236,13 @@ measure: sum_diagnosis_olny {
   sql_distinct_key: ${care_request_id} ;;
   sql: ${diagnosis_only} ;;
   group_label: "Diversion Category Sum Measures"
-  # filters: {
-  #   field: identify_pops_exclude_from_diversion_cats
-  #   value: "no"
-  # }
   filters: {
-    field: care_request_flat.escalated_on_scene
-    value: "No"
+    field: identify_pops_exclude_from_diversion_cats
+    value: "no"
   }
   filters: {
-    field: care_requests.non_acute_ems_populations_cost_savings
-    value: "No"
+    field: care_requests.acute_ems_population_cost_savings
+    value: "Yes"
   }
 }
 
@@ -256,17 +252,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${survey_yes_to_er} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -276,17 +268,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${diversion_911} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -296,17 +284,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${pos_snf} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -316,17 +300,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${pos_al} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -336,17 +316,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${referral} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -356,17 +332,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${after_hours} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -376,17 +348,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${abnormal_vitals} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -396,17 +364,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${confusion} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -415,18 +379,13 @@ measure: sum_diagnosis_olny {
     type: sum_distinct
     sql_distinct_key: ${care_request_id} ;;
     sql: ${wheelchair_hb} ;;
-    # group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -436,17 +395,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${ekg} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -456,17 +411,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${nebulizer} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -476,17 +427,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${iv_fluids} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -496,17 +443,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${blood_tests} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -516,17 +459,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${catheter_placement} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -536,17 +475,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${laceration_repair} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -556,17 +491,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${epistaxis} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -576,17 +507,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${hernia_rp_reduction} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -596,17 +523,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${joint_reduction} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -616,17 +539,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${gastronomy_tube} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -636,17 +555,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${abscess_drain} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -656,17 +571,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc22} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -676,17 +587,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc23} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -696,17 +603,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc24} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -716,17 +619,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc25} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -736,17 +635,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc26} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -756,17 +651,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc27} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -776,17 +667,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc28} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -796,17 +683,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc29} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -816,17 +699,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc30} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -836,17 +715,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc31} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -856,17 +731,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc32} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -876,17 +747,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc33} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -896,17 +763,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc34} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -916,17 +779,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc35} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -936,17 +795,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc36} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -956,17 +811,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc37} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -976,17 +827,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc38} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -996,17 +843,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc39} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -1016,17 +859,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc40} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
@@ -1036,17 +875,13 @@ measure: sum_diagnosis_olny {
     sql_distinct_key: ${care_request_id} ;;
     sql: ${dc41} ;;
     group_label: "Diversion Category Sum Measures"
-    # filters: {
-    #   field: identify_pops_exclude_from_diversion_cats
-    #   value: "no"
-    # }
     filters: {
-      field: care_request_flat.escalated_on_scene
-      value: "No"
+      field: identify_pops_exclude_from_diversion_cats
+      value: "no"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "No"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
