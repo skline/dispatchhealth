@@ -3288,8 +3288,8 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "no"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 

@@ -891,18 +891,33 @@ view: care_requests {
     sql: ${billable_est} AND ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL ;;
   }
 
-  dimension: non_acute_ems_populations_cost_savings {
-    description: "Logic to idenitfy Non-AcuteCare and Non-EMS populations based on select service lines, visit types and risk protocols"
-    type: yesno
-    sql:
-    ${care_requests.post_acute_follow_up} OR
-    ${care_requests.DHFU_follow_up} OR
-   lower(${service_lines.service_line_name_consolidated}) in(
-      'hedis (hpn)',
-      'covid-19 facility testing',
-      'ed education',
-      'post acute follow up') OR
-  lower(${risk_assessments.protocol_name}) in(
+  # dimension: non_acute_ems_populations_cost_savings {
+  #   description: "Logic to idenitfy Non-AcuteCare and Non-EMS populations based on select service lines, visit types and risk protocols"
+  #   type: yesno
+  #   sql:
+  #   ${care_requests.post_acute_follow_up} OR
+  # lower(${service_lines.service_line_name_consolidated}) in(
+  #     'hedis (hpn)',
+  #     'covid-19 facility testing',
+  #     'ed education',
+  #     'post acute follow up') OR
+  # lower(${risk_assessments.protocol_name}) in(
+  #     'covid-19 facility testing',
+  #     'covid-19 testing request (for patients without symptoms)',
+  #     'dispatchhealth education program (emergency department use education, asthma education)',
+  #     'dispatchhealth education program (emergency department use education, asthma, diabetes education)',
+  #     'post-acute patient',
+  #     'post-acute patient (post hospital discharge patient)',
+  #     'post-acute patient (post hospital/skilled nursing facility/rehabilitation facility discharge patient)',
+  #     'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)');;
+  # }
+
+  dimension: acute_ems_population_cost_savings {
+    description: "Logic to idenitfy Acute Care and EMS populations based on select service lines, visit types and risk protocols"
+    type: string
+    sql: CASE
+    WHEN ${care_requests.post_acute_follow_up} THEN 'No'
+    WHEN lower(${risk_assessments.protocol_name}) in(
       'covid-19 facility testing',
       'covid-19 testing request (for patients without symptoms)',
       'dispatchhealth education program (emergency department use education, asthma education)',
@@ -910,7 +925,14 @@ view: care_requests {
       'post-acute patient',
       'post-acute patient (post hospital discharge patient)',
       'post-acute patient (post hospital/skilled nursing facility/rehabilitation facility discharge patient)',
-      'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)');;
+      'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)') THEN 'No'
+    WHEN lower(${service_lines.service_line_name_consolidated}) in(
+    '911 service',
+    'acute care',
+    'tele-presentation',
+    'virtual visit') THEN 'Yes'
+    ELSE 'No'
+    END;;
   }
 
   measure: count_billable_est {
@@ -969,8 +991,8 @@ view: care_requests {
       value: "yes"
     }
     filters: {
-      field: non_acute_ems_populations_cost_savings
-      value: "no"
+      field: acute_ems_population_cost_savings
+      value: "Yes"
     }
     # filters: {
     #   field: escalated_on_scene
@@ -985,8 +1007,8 @@ view: care_requests {
     sql_distinct_key: ${id} ;;
     sql: ${billable_est_numeric} ;;
     filters: {
-      field: non_acute_ems_populations_cost_savings
-      value: "no"
+      field: acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 
