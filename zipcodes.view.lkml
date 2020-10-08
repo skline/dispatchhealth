@@ -7,6 +7,11 @@ view: zipcodes {
     sql: ${TABLE}.id ;;
   }
 
+  dimension: billing_city_id {
+    type: number
+    sql: ${TABLE}.billing_city_id ;;
+  }
+
   dimension_group: created {
     type: time
     timeframes: [
@@ -19,6 +24,20 @@ view: zipcodes {
       year
     ]
     sql: ${TABLE}.created_at ;;
+  }
+
+  dimension_group: deleted_at {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.deleted_at ;;
   }
 
   dimension: latitude {

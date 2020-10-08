@@ -313,6 +313,8 @@ include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
 include: "geneysis_evaluations.view.lkml"
 include: "high_overflow_days.view.lkml"
+include: "billing_cities.view.lkml"
+include: "bulk_variable_shift_tracking.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -2935,8 +2937,12 @@ explore: ga_pageviews_clone {
         }
 
   explore: zipcodes {
+    sql_always_where: ${zipcodes.deleted_at_raw} is null ;;
+    join: billing_cities {
+      sql_on: ${zipcodes.billing_city_id} = ${billing_cities.id} ;;
+    }
     join: markets {
-      sql_on: ${zipcodes.market_id} = ${markets.id} ;;
+      sql_on: ${billing_cities.market_id} = ${markets.id} ;;
     }
     join: regional_markets {
       sql_on: ${markets.id} = ${regional_markets.market_id} ;;
