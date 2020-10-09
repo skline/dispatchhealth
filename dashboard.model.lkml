@@ -4395,6 +4395,40 @@ explore: mailchimp_sends {
 
 explore: day_of_week_variation {}
 
+explore: bulk_variable_shift_tracking {
+  join: cars {
+    sql_on: ${cars.market_id} = ${bulk_variable_shift_tracking.market_id} ;;
+  }
+  join: shift_teams {
+    sql_on: ${shift_teams.start_date} = ${bulk_variable_shift_tracking.date_date}
+    and ${cars.id} = ${shift_teams.car_id} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id}=${bulk_variable_shift_tracking.market_id} ;;
+  }
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+  join: users {
+    relationship: one_to_one
+    sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+  join: shift_team_members {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
+  }
+
+  join: zizzl_detailed_shift_hours {
+    relationship: one_to_many
+    sql_on: ${users.id} = ${zizzl_detailed_shift_hours.employee_id} AND
+          ${zizzl_detailed_shift_hours.counter_date} = ${shift_teams.start_date} AND
+          ${zizzl_detailed_shift_hours.counter_name} IN ('Regular','Salary Plus')
+               AND (${zizzl_detailed_shift_hours.shift_name} != 'Administration' OR ${zizzl_detailed_shift_hours.shift_name} IS NULL)
+               AND ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%' ;;
+  }
+}
 explore: variable_shift_tracking {
   sql_always_where: ${variable_shift_tracking.date_date} < current_date ;;
   join: cars {
