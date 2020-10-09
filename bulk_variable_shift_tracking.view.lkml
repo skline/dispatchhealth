@@ -62,7 +62,7 @@ view: bulk_variable_shift_tracking {
   measure: actual_diff_to_recommendation {
     type: number
     value_format: "0.0"
-    sql: ${shift_teams.sum_shift_hours}::float - ${sum_recommendation_total_hours}::float    ;;
+    sql:  ${sum_recommendation_total_hours}::float - ${shift_teams.sum_shift_hours}::float    ;;
   }
 
   measure: actual_recommendation_captured {
