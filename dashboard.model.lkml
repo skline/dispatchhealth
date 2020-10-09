@@ -1596,7 +1596,7 @@ join: athena_procedurecode {
 
   join: market_regions {
     relationship: one_to_one
-    sql_on: ${markets.id_adj} = ${regional_markets.market_id} ;;
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
   }
 
   join: market_start_date{
