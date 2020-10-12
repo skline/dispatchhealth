@@ -4,16 +4,19 @@ view: users {
   dimension: id {
     primary_key: yes
     type: number
+    value_format: "0"
     sql: ${TABLE}.id ;;
   }
 
   dimension: authentication_token {
     type: string
+    hidden: yes
     sql: ${TABLE}.authentication_token ;;
   }
 
   dimension_group: confirmation_sent {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -28,11 +31,13 @@ view: users {
 
   dimension: confirmation_token {
     type: string
+    hidden: yes
     sql: ${TABLE}.confirmation_token ;;
   }
 
   dimension_group: confirmed {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -61,6 +66,7 @@ view: users {
 
   dimension_group: current_sign_in {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -75,6 +81,7 @@ view: users {
 
   dimension: current_sign_in_ip {
     type: string
+    hidden: yes
     sql: ${TABLE}.current_sign_in_ip ;;
   }
 
@@ -99,6 +106,7 @@ view: users {
 
   dimension: encrypted_password {
     type: string
+    hidden: yes
     sql: ${TABLE}.encrypted_password ;;
   }
 
@@ -113,8 +121,33 @@ view: users {
   }
 
   dimension: csc_name {
+    label: "Full Name"
     type: string
-    sql: initcap(concat(trim(${last_name}), ', ', trim(${first_name})));;
+    sql: initcap(concat(trim(${first_name}), ' ', trim(${last_name})));;
+  }
+
+  filter: provider_select {
+    suggest_dimension: csc_name
+  }
+
+  dimension: provider_comparitor {
+    type: string
+    sql:
+    CASE
+      WHEN {% condition provider_select %} ${csc_name} {% endcondition %}
+        THEN ${csc_name}
+      ELSE ${id}::varchar
+    END ;;
+
+#     html:
+#     {% if value == {{ _name }}%}
+#     <font color="blue">{{ rendered_value }}</font>
+#     {% endif %};;
+  }
+
+  dimension: selected_provider {
+    type: string
+    sql: {% parameter provider_select %} ;;
   }
 
   dimension: chart_scrubbing_name {
@@ -127,6 +160,7 @@ view: users {
 
   dimension_group: last_sign_in {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -141,6 +175,7 @@ view: users {
 
   dimension: last_sign_in_ip {
     type: string
+    hidden: yes
     sql: ${TABLE}.last_sign_in_ip ;;
   }
 
@@ -165,6 +200,7 @@ view: users {
 
   dimension_group: reset_password_sent {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -179,6 +215,7 @@ view: users {
 
   dimension: reset_password_token {
     type: string
+    hidden: yes
     sql: ${TABLE}.reset_password_token ;;
   }
 
@@ -195,6 +232,7 @@ view: users {
 
   dimension: unconfirmed_email {
     type: string
+    hidden: yes
     sql: ${TABLE}.unconfirmed_email ;;
   }
 

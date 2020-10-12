@@ -23,10 +23,11 @@ view: athenadwh_chart_closing {
         ON ce.clinical_encounter_id = ce_first.clinical_encounter_id AND ce_first.rn = 1
         JOIN athenadwh_patients_clone p
           ON ce.patient_id = p.patient_id AND p.new_patient_id IS NULL
+        WHERE ce.encounter_status = 'CLOSED'
         GROUP BY 1,2,3,4,5,6,7,10 ;;
 
   indexes: ["clinical_encounter_id", "patient_id", "chart_id", "appointment_id", "provider_id"]
-  sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+  sql_trigger_value: SELECT COUNT(*) FROM athenadwh_clinical_encounters_clone ;;
   }
 
   dimension: clinical_encounter_id {
@@ -135,12 +136,38 @@ view: athenadwh_chart_closing {
     sql: ${hours_to_chart_sign} <= 24 ;;
   }
 
+  dimension: chart_signed_48_hours {
+    description: "A flag indicating that the chart was signed within 48 hours of visit"
+    type: yesno
+    sql: ${hours_to_chart_sign} <= 48 ;;
+  }
+
   measure: count_charts_signed_on_time {
     description: "The count of distinct charts that were signed by the provider within 24 hours of the visit"
     type: count_distinct
     sql: ${chart_id} ;;
     filters: {
       field: chart_signed_on_time
+      value: "yes"
+    }
+  }
+
+  measure: count_charts_by_clinical_encounter_signed_on_time {
+    description: "The count of distinct charts by clinical encounter that were signed by the provider within 24 hours of the visit"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: chart_signed_on_time
+      value: "yes"
+    }
+  }
+
+  measure: count_charts_by_clinical_encounter_signed_48_hours {
+    description: "The count of distinct charts by clinical encounter that were signed by the provider within 48 hours of the visit"
+    type: count_distinct
+    sql: ${clinical_encounter_id} ;;
+    filters: {
+      field: chart_signed_48_hours
       value: "yes"
     }
   }

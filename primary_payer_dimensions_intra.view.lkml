@@ -90,7 +90,7 @@ view: primary_payer_dimensions_intra {
   measure: avg_expected_allowable {
     type: average_distinct
     value_format: "0.00"
-    sql_distinct_key:  intraday_care_requests.care_request_id;;
+    sql_distinct_key:  concat(intraday_care_requests.care_request_id, ${insurance_package_id});;
     sql: ${expected_allowable} ;;
     }
 

@@ -49,6 +49,26 @@ view: athenadwh_medication_clone {
     sql: ${TABLE}.hic3_description ;;
   }
 
+  dimension: antibiotic_medication {
+    type: yesno
+    sql: ${hic3_description} IN
+    ('AMINOGLYCOSIDE ANTIBIOTICS',
+'ANTIBIOTICS, MISCELLANEOUS, OTHER',
+'ANTITUBERCULAR ANTIBIOTICS',
+'CEPHALOSPORIN ANTIBIOTICS - 1ST GENERATION',
+'CEPHALOSPORIN ANTIBIOTICS - 2ND GENERATION',
+'CEPHALOSPORIN ANTIBIOTICS - 3RD GENERATION',
+'CEPHALOSPORIN ANTIBIOTICS - 4TH GENERATION',
+'LINCOSAMIDE ANTIBIOTICS',
+'MACROLIDE ANTIBIOTICS',
+'OXAZOLIDINONE ANTIBIOTICS',
+'PENICILLIN ANTIBIOTICS',
+'QUINOLONE ANTIBIOTICS',
+'RIFAMYCINS AND RELATED DERIVATIVE ANTIBIOTICS',
+'TETRACYCLINE ANTIBIOTICS',
+'VANCOMYCIN ANTIBIOTICS AND DERIVATIVES');;
+  }
+
   dimension: hic4_ingredient_base {
     type: string
     sql: ${TABLE}.hic4_ingredient_base ;;
@@ -82,5 +102,23 @@ view: athenadwh_medication_clone {
   measure: count {
     type: count
     drill_fields: [medication_name]
+  }
+
+  dimension: dea_scheduled_medication {
+    description: "Identifies a prescription that is a Scheduled substance/medication by the DEA"
+    type: yesno
+    sql: ${dea_schedule} IS NOT NULL ;;
+
+  }
+
+  measure: count_dea_scheduled_medication {
+    description: "Counts prescriptions that are Scheduled substances/medications by the DEA"
+    type: count_distinct
+    sql: ${care_requests.id} ;;
+    filters: {
+      field: dea_scheduled_medication
+      value: "yes"
+    }
+
   }
 }

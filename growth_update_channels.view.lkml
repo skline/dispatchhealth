@@ -6,6 +6,11 @@ view: growth_update_channels {
     sql: ${TABLE}.identifier_id ;;
   }
 
+  dimension: target {
+    type: yesno
+    sql:  ${identifier_id} is not null;;
+  }
+
   dimension: identifier_type {
     type: string
     sql: ${TABLE}.identifier_type ;;

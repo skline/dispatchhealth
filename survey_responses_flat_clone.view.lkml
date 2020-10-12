@@ -6,6 +6,7 @@ view: survey_responses_flat_clone {
           srf.care_request_id,
           srf.visit_date,
           nps.answer_range_value AS nps_response,
+          mnps.max_nps_answer_range_value,
           CASE
             WHEN v2.answer_selection_value = 'Yes' THEN 'Emergency Room'
             ELSE alt.answer_selection_value
@@ -23,6 +24,13 @@ view: survey_responses_flat_clone {
           ) srf
           LEFT JOIN survey_response_facts_clone nps
             ON srf.care_request_id = nps.care_request_id AND nps.question_dim_id = 4
+          LEFT JOIN (SELECT
+                    care_request_id,
+                    MAX(answer_range_value) as max_nps_answer_range_value
+            FROM survey_response_facts_clone
+            WHERE question_dim_id = 4
+            GROUP BY 1) mnps
+            ON srf.care_request_id = mnps.care_request_id
           LEFT JOIN survey_response_facts_clone alt
             ON srf.care_request_id = alt.care_request_id AND alt.question_dim_id = 3
           LEFT JOIN survey_response_facts_clone ovr
@@ -65,16 +73,22 @@ view: survey_responses_flat_clone {
     sql: ${TABLE}.nps_response ;;
   }
 
+  dimension: max_nps_answer_range_value {
+    label: "Max NPS Selected Range Value"
+    type: number
+    sql: ${TABLE}.max_nps_answer_range_value ;;
+  }
+
   dimension: promoter {
     label: "Promoter"
     type: yesno
-    sql: ${answer_range_value} > 8 AND ${answer_range_value} IS NOT NULL;;
+    sql: ${max_nps_answer_range_value} > 8 AND ${max_nps_answer_range_value} IS NOT NULL;;
   }
 
   dimension: detractor {
     label: "Detractor"
     type: yesno
-    sql: ${answer_range_value} < 7 AND ${answer_range_value} IS NOT NULL;;
+    sql: ${max_nps_answer_range_value} < 7 AND ${max_nps_answer_range_value} IS NOT NULL;;
   }
 
   dimension: nps_respondent {
@@ -168,14 +182,20 @@ view: survey_responses_flat_clone {
   }
 
 # Currently doesn't work - Needs division by zero fixed
-#   measure: nps_score {
-#     type: number
-#     value_format: "0.0"
-#     sql: CASE
-#           WHEN ${distinct_nps_respondent} > 0 THEN ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100
-#           ELSE 0
-#         END ;;
-#   }
+  measure: nps_score {
+    type: number
+    value_format: "0"
+    # sql: CASE
+    #       WHEN ${distinct_nps_respondent} > 0 THEN ((${distinct_promoters} -${distinct_detractors})/${distinct_nps_respondent})*100
+    #       ELSE 0
+    #     END ;;
+
+    sql: CASE WHEN ${distinct_nps_respondent} > 0 THEN
+         (COUNT(DISTINCT CASE WHEN ${promoter} THEN ${care_request_id} ELSE NULL END)::float(4)
+         - COUNT(DISTINCT CASE WHEN ${detractor} THEN ${care_request_id} ELSE NULL END)::float(4))*100
+         / COUNT(DISTINCT ${care_request_id})::float(4)
+        ELSE NULL END ;;
+  }
 
   measure: count_respondents {
     type: count_distinct

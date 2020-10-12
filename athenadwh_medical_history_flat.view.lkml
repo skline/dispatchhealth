@@ -114,7 +114,7 @@ view: athenadwh_medical_history_flat {
     GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14
     ORDER BY base.chart_id ;;
 
-      sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
+      sql_trigger_value: SELECT COUNT(*) FROM athenadwh_medical_history_clone ;;
       indexes: ["chart_id"]
     }
 
@@ -267,6 +267,23 @@ view: athenadwh_medical_history_flat {
           (CASE WHEN ${pulmonary_embolism_flag} THEN 1 ELSE 0 END))
         ELSE NULL END ;;
   }
+
+dimension: comorbidities_greater_0 {
+  type: yesno
+  sql: ${number_comorbidities} > 0 ;;
+}
+
+  measure: count_comorbidities_greater_0 {
+    type: count_distinct
+    sql: ${patients.id} ;;
+    sql_distinct_key:  ${patients.id} ;;
+    filters: {
+      field: comorbidities_greater_0
+      value: "yes"
+    }
+  }
+
+
 
   dimension: medical_history_collected {
     type: yesno

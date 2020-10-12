@@ -88,7 +88,8 @@ view: intraday_shift_teams {
       week,
       month,
       quarter,
-      year
+      year,
+      day_of_week
     ]
     sql: ${TABLE}.start_time ;;
   }
@@ -168,7 +169,7 @@ view: intraday_shift_teams {
   measure: inclusive_shift_length  {
     type: number
     sql: max(
-             case when ${markets_intra.name} ='Colorado Springs' then 1.1
+             case when ${markets_intra.name} ='Colorado Springs' then 1.155
               else 1.2 end)
               ;;
   }
@@ -217,6 +218,27 @@ view: intraday_shift_teams {
     }
     filters: {
       field: intraday_care_requests.smfr_care_request
+      value: "yes"
+    }
+  }
+
+  measure: accepted_elgible_wmfr {
+    type: count_distinct
+    sql: ${intraday_care_requests.care_request_id};;
+    filters: {
+      field: intraday_care_requests.accepted
+      value: "yes"
+    }
+    filters: {
+      field: intraday_care_requests.resolved
+      value: "no"
+    }
+    filters: {
+      field: intraday_care_requests.complete
+      value: "no"
+    }
+    filters: {
+      field: intraday_care_requests.wmfr_care_request
       value: "yes"
     }
   }
@@ -390,7 +412,7 @@ view: intraday_shift_teams {
 measure: sum_shift_hours {
   type: sum_distinct
   value_format: "0.00"
-  sql_distinct_key: concat(${shift_team_id}, ${start_date}) ;;
+  sql_distinct_key: concat(${cars_intra.name}, case when ${cars_intra.name} ='Virtual Visit' then ${id}::varchar else ${shift_team_id}::varchar end) ;;
   sql: ${hours_in_shift_no_agg} ;;
 }
 

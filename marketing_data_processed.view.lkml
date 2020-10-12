@@ -1,6 +1,6 @@
 view: marketing_data_processed {
-    derived_table: {
-      sql:
+derived_table: {
+sql:
       SELECT
         lower(coalesce(invoca_clone.utm_source, ga_pageviews_full_clone.source, marketing_cost_clone.type))  AS "source_final",
         lower(coalesce(adwords_campaigns_clone.campaign_name,  marketing_cost_clone.campaign_name, invoca_clone.utm_campaign, ga_pageviews_full_clone.campaign))  AS "campaign_final",
@@ -45,21 +45,21 @@ FULL OUTER JOIN looker_scratch.marketing_cost_clone  AS marketing_cost_clone ON 
     and lower((lower(coalesce(ad_groups_clone.ad_group_name, (coalesce(invoca_clone.utm_content, (split_part(substring(ga_pageviews_full_clone.full_url from 'utm_content=\w+'), '=', 2)))))))) = lower((lower(marketing_cost_clone.ad_group_name)))
     and lower((lower(coalesce(adwords_campaigns_clone.campaign_name, invoca_clone.utm_campaign, ga_pageviews_full_clone.campaign)))) = lower(marketing_cost_clone.campaign_name)
     ;;
-      sql_trigger_value: select sum(timevalue)
-from
-(select count(*) as timevalue
-from looker_scratch.ga_pageviews_clone
-union all
-select count(*)  as timevalue
-from looker_scratch.invoca_clone
-union all
-select count(*) as timevalue
-from looker_scratch.marketing_cost_clone
-union all
-select extract(epoch from max(timestamp_mst))::float/10000.0
-from looker_scratch.ga_pageviews_clone
-)lq;;
-      indexes: ["marketing_time"]
+    #sql_trigger_value: select sum(timevalue)
+    #  from
+    #  (select count(*) as timevalue
+    #  from looker_scratch.ga_pageviews_clone
+    #  union all
+    #  select count(*)  as timevalue
+    #  from looker_scratch.invoca_clone
+    #  union all
+    #  select count(*) as timevalue
+    #  from looker_scratch.marketing_cost_clone
+    #  union all
+     # select extract(epoch from max(timestamp_mst))::float/10000.0
+    #  from looker_scratch.ga_pageviews_clone
+    #  )lq;;
+    #indexes: ["marketing_time"]
   }
 
   dimension: source_final {
@@ -258,6 +258,7 @@ dimension: content_final {
            when lower(${marketing_cost_campaign_name})  like '%dal%' then 169
           when lower(${marketing_cost_campaign_name})  like '%tac%' then 170
           when lower(${marketing_cost_campaign_name})  like '%las%' or lower(${marketing_cost_campaign_name})  like '%las%' then 162
+             when lower(${marketing_cost_campaign_name})  like '%njr%' or lower(${invoca_profile_campaign})  like '%ridgewood%' then 171
 
            else null
         end;;
@@ -276,6 +277,7 @@ dimension: content_final {
                when lower(${invoca_profile_campaign})  like '%springfield%' then 168
      when lower(${invoca_profile_campaign})  like '%dal%' then 169
     when lower(${invoca_profile_campaign})  like '%tac%' then 170
+     when lower(${invoca_profile_campaign})  like '%njr%' or lower(${invoca_profile_campaign})  like '%ridgewood%' then 171
            else null end ;;
   }
 
@@ -331,7 +333,6 @@ dimension: content_final {
   {
     type: string
     sql: case
-            when lower(${channel_items.name}) = 'article or press' then 'Self Report article or press'
             when ${source_final} in('google', 'google.com') and (${campaign_final} in('[agt] remarketing', '[agt] look a like audiences') or lower(${campaign_final}) like '%display%'  or lower(${campaign_final}) like '%video%')  then 'Google Display'
             when ${source_final} in('google', 'bing', 'ask', 'yahoo') and ${medium_final} = 'organic' then 'Organic Search'
             when ((${source_final} in('google', 'bing', 'ask', 'yahoo', 'google.com') and ${medium_final} in('cpc', 'paid search')) or lower(${medium_final}) like '%google%' or lower(${source_final}) like '%bing ad extension%') and (lower(${ad_group_final}) like '%brand%' or lower(${invoca_promo_number_description}) like '%brand%') then 'SEM: Brand'

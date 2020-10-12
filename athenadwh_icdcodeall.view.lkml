@@ -27,6 +27,22 @@ view: athenadwh_icdcodeall {
     sql: SUBSTRING(TRIM(${TABLE}.diagnosis_code), 0, 4) ;;
   }
 
+  dimension: antibiotic_stewardship_diagnosis {
+    type: string
+    description: "The combined primary diagnoses for bronchitis, sinusitis, pharyngitis, and UTI"
+    sql: CASE
+          WHEN ${diagnosis_code} = 'J01' THEN 'Sinusitis'
+          WHEN ${diagnosis_code} = 'J02' THEN 'Pharyngitis'
+          WHEN ${diagnosis_code} IN ('J20','J40') OR ${unstripped_diagnosis_code} = 'J06.9' THEN 'Bronchitis'
+          ELSE 'Other'
+        END ;;
+  }
+
+  measure: diagnosis_code_max {
+    type: string
+    sql:  MAX(${diagnosis_code}) ;;
+  }
+
   dimension: diagnosis_code_full {
     type: string
     description: "The full diagnosis code (not restricted to first 3 characters)"
@@ -47,9 +63,54 @@ view: athenadwh_icdcodeall {
     sql: ${diagnosis_code} IN ('E10','E11','E13','I10','I87','J45') AND ${athenadwh_clinicalencounter_diagnosis.ordering} > 0 ;;
   }
 
+  dimension: icd_risk_protocol_match {
+    type: yesno
+    sql:
+    (${diagnosis_code_full} = 'N390' AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Blood In Urine|Urinary Tract Infection|Abdominal Pain)%') OR
+    (${diagnosis_code_full} IN ('J069','R05') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Upper Respiratory|Shortness Of Breath|Cough/URI|Cough/Uri|Flu-Like Symptoms)%') OR
+    (${diagnosis_code_full} IN ('E860') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Dehydration|Weakness|Lethargy|Lethargic|Nausea/Vomiting)%') OR
+    (${diagnosis_code_full} IN ('R509') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Fever|Upper Respiratory Symptoms)%') OR
+    (${diagnosis_code_full} IN ('J209', 'J441', 'J189') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Upper Respiratory Symptoms|Shortness Of Breath|Flu-Like Symptoms)%') OR
+    (${diagnosis_code_full} IN ('J029') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Sore Throat|Upper Respiratory Symptoms|Sinus Pain)%') OR
+    (${diagnosis_code_full} IN ('R197') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Diarrhea|Abdominal Pain)%') OR
+    (${diagnosis_code_full} IN ('R112') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Nausea/Vomiting|Dehydration)%') OR
+    (${diagnosis_code_full} IN ('J189') AND
+    ${risk_assessments.protocol_name} = 'Fever') OR
+    (${diagnosis_code_full} IN ('M6281') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Weakness|Lethargy|Lethargic)%') OR
+    (${diagnosis_code_full} IN ('R42') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Dizziness|Weakness)%') OR
+    (${diagnosis_code_full} IN ('R300') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Blood In Urine|Abdominal Pain)%') OR
+    (${diagnosis_code_full} IN ('J0190') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Sinus Pain|Upper Respiratory Symptoms)%') OR
+    (${diagnosis_code_full} IN ('B349') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Fever|Upper Respiratory Symptoms|Sinus Pain|Flu-Like Symptoms|Rash)%') OR
+    (${diagnosis_code_full} IN ('R600') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Extremity Swelling|Extremity Pain)%') OR
+    (${diagnosis_code_full} IN ('I509') AND
+    ${risk_assessments.protocol_name} SIMILAR TO '%(Shortness Of Breath|Chest Pain|Upper Respiratory Symptoms)%') OR
+    (${diagnosis_code_full} IN ('R1110') AND
+    ${risk_assessments.protocol_name} = 'Nausea/Vomiting')
+    ;;
+  }
+
   dimension: diagnosis_description {
     type: string
     sql: ${TABLE}.diagnosis_code_description ;;
+  }
+
+  measure: diagnosis_description_max {
+    type: string
+    sql: MAX(${diagnosis_description}) ;;
   }
 
   dimension: diagnosis_code_group {
@@ -110,7 +171,7 @@ view: athenadwh_icdcodeall {
   measure: diagnosis_desc_concat {
     label: "ICD 10 Diagnosis Descriptions"
     type: string
-    sql: array_to_string(array_agg(DISTINCT  ${diagnosis_description}), ' | ') ;;
+    sql: array_to_string(array_agg(DISTINCT COALESCE(${diagnosis_description},${icd_code_dimensions_clone.diagnosis_description})), ' | ') ;;
   }
 
   dimension: likely_flu_diganosis {

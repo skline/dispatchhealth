@@ -23,7 +23,7 @@ view: care_request_consents {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at ;;
+    sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: discharge_instructions_received {

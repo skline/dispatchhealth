@@ -173,7 +173,7 @@ view: athenadwh_transactions_clone {
     type: yesno
     sql: ${transaction_type} = 'CHARGE' AND (
     (${transaction_transfer_type} = 'Primary')
-    OR (${transaction_transfer_type} != 'Primary' AND ${athenadwh_patient_insurances_clone.insurance_package_id}::int = -100));;
+    OR (${transaction_transfer_type} != 'Primary' AND ${insurance_coalese_crosswalk.insurance_package_id}::int IN (0,-100)));;
   }
 
   dimension: fixed_expected_allowable {
@@ -186,13 +186,22 @@ view: athenadwh_transactions_clone {
   }
 
   measure: total_expected_allowable_test {
-    type: sum
+    type: sum_distinct
     alias: [total_expected_allowable]
     description: "Transaction type is CHARGE and transfer type is PRIMARY or patient is self-pay"
     sql: ${fixed_expected_allowable}::float ;;
-    value_format: "0.00"
+    sql_distinct_key: ${transaction_id} ;;
+    value_format: "$#,##0.00"
     filters: {
       field: is_valid_exp_allowable
+      value: "yes"
+    }
+    filters: {
+      field: is_valid_claim
+      value: "yes"
+    }
+    filters: {
+      field: voided_date_is_null
       value: "yes"
     }
   }
@@ -218,7 +227,15 @@ view: athenadwh_transactions_clone {
     description: "Claim ID is not null and expected allowed amount is greater than 0.01"
     type: yesno
     sql: ${athenadwh_valid_claims.claim_id} IS NOT NULL AND
+         ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL AND
          ${expected_allowed_amount}::float > 0.01 ;;
+  }
+
+  dimension: is_zero_exp_allow_claim {
+    description: "Claim ID is not null and expected allowed amount is $0.00"
+    type: yesno
+    sql: ${athenadwh_valid_claims.claim_id} IS NOT NULL AND
+      ${expected_allowed_amount}::float = 0.0 ;;
   }
 
   # measure: total_expected_allowable {
@@ -257,9 +274,20 @@ view: athenadwh_transactions_clone {
 
   measure: count_claims {
     type: count_distinct
+    description: "Count of claims where expected allowable > $0.01"
     sql: ${claim_id} ;;
     filters: {
       field: is_valid_claim
+      value: "yes"
+    }
+  }
+
+  measure: count_zero_dollar_claims {
+    type: count_distinct
+    description: "Count of claims with zero dollar exp. allowable"
+    sql: ${claim_id} ;;
+    filters: {
+      field: is_zero_exp_allow_claim
       value: "yes"
     }
   }
@@ -290,6 +318,20 @@ view: athenadwh_transactions_clone {
       value: "yes"
     }
   }
+
+  measure: count_insurance_contracted_claims {
+    type: count_distinct
+    sql: ${claim_id} ;;
+    filters: {
+      field: is_valid_claim
+      value: "yes"
+    }
+    filters: {
+      field: insurance_plans.contracted
+      value: "yes"
+    }
+  }
+
 
   dimension_group: created {
     type: time

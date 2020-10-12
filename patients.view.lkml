@@ -14,12 +14,12 @@ view: patients {
 
   dimension: first_name {
     type: string
-    sql: ${TABLE}.first_name ;;
+    sql: INITCAP(${TABLE}.first_name) ;;
   }
 
   dimension: last_name {
     type: string
-    sql: ${TABLE}.last_name ;;
+    sql: INITCAP(${TABLE}.last_name) ;;
   }
 
   dimension: dob {
@@ -37,7 +37,7 @@ view: patients {
     sql: CASE
           WHEN ${TABLE}.gender = 'f' THEN 'Female'
           WHEN ${TABLE}.gender = 'm' THEN 'Male'
-          ELSE ${TABLE}.gender
+          ELSE INITCAP(${TABLE}.gender)
         END ;;
   }
 
@@ -72,13 +72,26 @@ view: patients {
 
   dimension: age {
     type: number
-    sql: CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT) ;;
+    sql: CASE WHEN ${care_request_flat.created_date} >= ${dob}
+              AND CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT) <= 107 THEN
+          CAST(EXTRACT(YEAR from AGE(${care_request_flat.created_date}, ${dob})) AS INT)
+         ELSE NULL
+        END ;;
+    group_label: "Age of Patient"
+  }
+
+  dimension: age_in_months {
+    hidden: yes
+    type: number
+    sql: extract(year from age(${care_request_flat.created_date}, ${dob})) * 12 + extract(month from age(${care_request_flat.created_date}, ${dob})) ;;
+    group_label: "Age of Patient"
   }
 
   dimension: bad_age_filter {
     type: yesno
     hidden: yes
     sql: ${age} >= 110 or ${age}<0;;
+    group_label: "Age of Patient"
   }
 
   dimension: pediatric_patient {
@@ -92,6 +105,7 @@ view: patients {
     description: "A flag indicating patients age > 65"
     type: yesno
     sql: ${age} > 65 AND NOT ${bad_age_filter} ;;
+    group_label: "Age of Patient"
   }
 
 
@@ -113,6 +127,7 @@ view: patients {
           WHEN ${age} >= 90 AND ${age} <= 110 THEN 'k'
           ELSE 'z'
          END ;;
+   group_label: "Age of Patient"
   }
 
   dimension: age_band {
@@ -132,6 +147,34 @@ view: patients {
           WHEN ${age} >= 90 AND ${age} <= 110 THEN 'age_90_plus'
           ELSE NULL
          END ;;
+    group_label: "Age of Patient"
+  }
+
+  dimension: age_band_life_stage_sort {
+    type: string
+    hidden: yes
+    alpha_sort: yes
+    sql: CASE
+          WHEN ${age_in_months} >= 0 AND ${age_in_months} < 3  THEN 'a'
+          WHEN ${age_in_months} >= 3 AND ${age_in_months} <= 227 THEN 'b'
+          WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'c'
+          WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'd'
+          ELSE 'z'
+         END ;;
+  }
+
+  dimension: age_band_life_stage {
+    type: string
+    order_by_field:  age_band_life_stage_sort
+    sql:  CASE
+          WHEN ${age_in_months} >= 0 AND ${age_in_months} < 3 THEN 'age_less_than_3_months'
+          WHEN ${age_in_months} >= 3 AND ${age_in_months} <= 227 THEN 'age_3_months_to_18_years'
+          WHEN ${age_in_months} >= 228 AND ${age_in_months} <= 779 THEN 'age_19_to_64_years'
+          WHEN ${age_in_months} >= 780 AND ${age_in_months} <= 1320 THEN 'age_65_plus_years'
+          ELSE NULL
+          END
+          ;;
+    group_label: "Age of Patient"
   }
 
   dimension: age_band_wide {
@@ -148,6 +191,7 @@ view: patients {
           WHEN ${age} >= 95 AND ${age} <= 110 THEN 'age_95_plus'
           ELSE NULL
          END ;;
+    group_label: "Age of Patient"
   }
 
 
@@ -160,6 +204,7 @@ view: patients {
       field: bad_age_filter
       value: "no"
     }
+    group_label: "Age of Patient"
 
   }
 
@@ -172,6 +217,7 @@ view: patients {
       field: bad_age_filter
       value: "no"
     }
+    group_label: "Age of Patient"
   }
 
   dimension_group: created {
@@ -194,6 +240,8 @@ view: patients {
       raw,
       time,
       date,
+      day_of_week_index,
+      day_of_week,
       week,
       month,
       quarter,
@@ -320,9 +368,37 @@ view: patients {
     sql: ${TABLE}.updated_at ;;
   }
 
+  dimension_group: updated_mountain {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      day_of_week_index,
+      day_of_week,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.updated_at  AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain'  ;;
+  }
+
+  dimension: patient_updated_greater_than_created_time {
+    type: yesno
+    sql: ${updated_mountain_raw} > ${created_mountain_raw} ;;
+  }
+
   dimension: user_id {
     type: number
     sql: ${TABLE}.user_id ;;
+  }
+
+  dimension: ssn {
+    type: string
+    sql: CASE WHEN ${TABLE}.ssn = '000-00-0000' THEN NULL
+        ELSE ${TABLE}.ssn
+        END ;;
   }
 
   measure: count {
@@ -334,6 +410,17 @@ view: patients {
     type: count_distinct
     sql_distinct_key: ${id} ;;
     sql: ${id};;
+  }
+
+  measure: count_distinct_patients_updated {
+    description: "Count of distinct patients where the updated date is greater than the created date"
+    type: count_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${id};;
+    filters: {
+      field: patient_updated_greater_than_created_time
+      value: "yes"
+    }
   }
 
   # ----- Sets of fields for drilling ------

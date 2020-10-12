@@ -4,7 +4,7 @@ view: shift_details {
   dimension: id {
     primary_key: yes
     type: number
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.id ;;
   }
 
@@ -50,6 +50,26 @@ view: shift_details {
     type: string
     sql: ${TABLE}.employee_name ;;
   }
+  dimension: mcfaker {
+    type: yesno
+    sql: lower(${employee_name}) like '%mcfaker%' ;;
+  }
+
+  measure:  sum_valid_app_expected_shift_time_hours_mcfaker {
+    type: sum
+    label: "McFaker Hours"
+    sql: ${expected_shift_time_hours};;
+    value_format: "#,##0.00"
+    filters: {
+      field: employee_name_present
+      value: "yes"
+    }
+    filters: {
+      field: mcfaker
+      value: "yes"
+    }
+  }
+
 
   dimension_group: local_actual_end {
     type: time
@@ -63,6 +83,7 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
       day_of_month
     ]
@@ -81,10 +102,26 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
+      day_of_week_index,
       day_of_month
     ]
     sql: ${TABLE}.local_actual_start_time ;;
+  }
+
+  dimension: weekday_shift {
+    type: string
+    description: "A flag indicating the shift was on a weekday or weekend"
+    sql: CASE WHEN ${local_actual_start_day_of_week_index} IN (0,1,2,3,4) THEN 'Weekday'
+          WHEN ${local_actual_start_day_of_week_index} IN (5,6) THEN 'Weekend'
+          ELSE NULL END;;
+  }
+
+  measure: first_shift_date {
+    type: date
+    sql: MIN(${local_actual_start_raw}) ;;
+    convert_tz: no
   }
 
   dimension_group: local_expected_end {
@@ -98,8 +135,10 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
-      day_of_month
+      day_of_month,
+      day_of_week_index
     ]
     sql: ${TABLE}.local_expected_end_time ;;
   }
@@ -115,6 +154,7 @@ view: shift_details {
       month,
       quarter,
       year,
+      hour_of_day,
       day_of_week,
       day_of_month
     ]
@@ -130,6 +170,13 @@ view: shift_details {
   dimension: schedule_location_id {
     type: number
     sql: ${TABLE}.schedule_location_id ;;
+  }
+
+
+  dimension: schedule_location_id_w_loan {
+    type: number
+    sql: case when ${shift_name} = 'COS02' and ${local_expected_end_day_of_week_index} in(0,1,2,3,4)  and ${local_expected_end_month} in('2019-09','2019-10') then 565234
+           else ${TABLE}.schedule_location_id end  ;;
   }
 
   dimension: schedule_name {
@@ -163,7 +210,10 @@ view: shift_details {
     # sql: position('NP/PA' in ${TABLE}.schedule_name) > 0 ;;
     sql: ${schedule_name} LIKE '%NP/PA:%';;
   }
-
+dimension: app_shift_or_mcfaker {
+  type: yesno
+  sql: ${app_shift} or ${mcfaker} ;;
+  }
 
 dimension: dhmt_shift {
   type:  yesno
@@ -176,15 +226,40 @@ dimension: dhmt_shift {
     description: "The number of hours between Local Actual Start time and Local Actual End Time for APP Shifts"
     sql:
     ((EXTRACT(EPOCH FROM ${local_actual_end_raw})-EXTRACT(EPOCH FROM ${local_actual_start_raw}))/3600) ;;
-    value_format: "0.0"
+    value_format: "#,##0.00"
 
+  }
+
+  dimension: expected_shift_time_hours {
+    type: number
+    description: "The number of hours between Local Actual Start time and Local Actual End Time for APP Shifts"
+    sql:
+    ((EXTRACT(EPOCH FROM ${local_expected_end_raw})-EXTRACT(EPOCH FROM ${local_expected_start_raw}))/3600) ;;
+    value_format: "#,##0.00"
+
+  }
+
+  dimension: on_call_placeholder {
+    type: yesno
+    description: "A flag indicating that the shift is 15 minutes long (placeholder for on-call)"
+    sql:(${shift_name} = 'DEN12' and ${local_expected_end_month} = '2020-03')
+           OR
+        (${shift_time_hours} = 0.25)
+          OR
+        (${shift_name} = 'DEN13' and ${local_expected_end_month} in('2020-04', '2020-05', '2020-06'));;
   }
 
 
   dimension: valid_shift {
     type: yesno
-    description: "Employee is assinged to shift"
-    sql: ${employee_name} IS NOT NULL ;;
+    description: "Employee is assinged to shift and shift is not on-call placeholder"
+    sql: ${employee_name} IS NOT NULL AND NOT ${on_call_placeholder};;
+  }
+
+  dimension: employee_name_present {
+    type: yesno
+    description: "Employee is assinged to shift and shift is not on-call placeholder"
+    sql: ${employee_name} IS NOT NULL;;
   }
 
   dimension: holiday_shift {
@@ -245,7 +320,7 @@ measure:  sum_valid_shift_time_hours {
   type: sum
   description: "sum of shift hours"
   sql: ${shift_time_hours} ;;
-  value_format: "0.00"
+  value_format: "#,##0.00"
 
   filters: {
     field: valid_shift
@@ -253,28 +328,67 @@ measure:  sum_valid_shift_time_hours {
   }
 }
 
-  measure:  sum_valid_app_shift_time_hours {
+  measure:  sum_valid_app_expected_shift_time_hours {
     type: sum
-    description: "sum of APP shift hours"
-    sql: ${shift_time_hours} ;;
-    value_format: "0.00"
-
+    label: "Sum Expected App Assigned Hours"
+    sql: ${expected_shift_time_hours};;
+    value_format: "#,##0.00"
+    filters: {
+      field: employee_name_present
+      value: "yes"
+    }
     filters: {
       field: app_shift
       value: "yes"
     }
   }
 
+  measure:  sum_invalid_app_expected_shift_time_hours {
+    type: sum_distinct
+    label: "Sum Expected App Unassigned Hours"
+    sql_distinct_key: concat(${shift_id}, ${local_expected_start_date}) ;;
+    sql: ${expected_shift_time_hours};;
+    value_format: "#,##0.00"
+    filters: {
+      field: employee_name_present
+      value: "no"
+    }
+    filters: {
+      field: app_shift
+      value: "yes"
+    }
+  }
+
+  measure:  sum_valid_app_shift_time_hours {
+    type: sum
+    description: "sum of APP valid shift hours"
+    sql: ${shift_time_hours} ;;
+    value_format: "#,##0.00"
+
+    filters: {
+      field: app_shift
+      value: "yes"
+    }
+    filters: {
+      field: valid_shift
+      value: "yes"
+    }
+  }
+
   measure:  sum_valid_dhmt_shift_time_hours {
     type: sum
-    description: "sum of DHMT shift hours"
+    description: "sum of DHMT valid shift hours"
     sql: ${shift_time_hours} ;;
-    value_format: "0.00"
+    value_format: "#,##0.00"
 
     filters: {
       field: dhmt_shift
       value: "yes"
       }
+    filters: {
+      field: valid_shift
+      value: "yes"
+    }
     }
 
 measure: count_total_app_shift {

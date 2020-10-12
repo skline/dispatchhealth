@@ -9,6 +9,7 @@ view: cars {
 
   dimension: base_location_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.base_location_id ;;
   }
 
@@ -28,6 +29,7 @@ view: cars {
 
   dimension: last_location_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.last_location_id ;;
   }
 
@@ -46,9 +48,26 @@ view: cars {
     sql: ${TABLE}.market_id ;;
   }
 
+  dimension: raw_name {
+    type:  string
+    sql: ${TABLE}.name ;;
+  }
+
   dimension: name {
     type: string
-    sql: ${TABLE}.name ;;
+    sql: CASE
+          WHEN UPPER(${raw_name}) LIKE '%SMFR%' THEN 'SMFR_Car'
+          ELSE ${raw_name}
+        END;;
+  }
+
+  dimension: name_date {
+    type: string
+    sql: concat(${name}, ': ',${care_request_flat.on_scene_date}::varchar) ;;
+  }
+  dimension: non_actue_car {
+    type: yesno
+    sql: ${service_lines.name} in('COVID-19 Facility Testing') ;;
   }
 
   dimension: smfr_wmfr_other {
@@ -80,20 +99,50 @@ view: cars {
     sql: ${name} like '%SMFR_Car%' ;;
   }
 
+  dimension: advanced_care_car  {
+    type: yesno
+    sql: lower(${name}) like '%advanced%' ;;
+  }
+
+  dimension: telemedicine_car  {
+    type: yesno
+    sql: lower(${name}) like '%virtual%' ;;
+  }
+
+
   dimension: mfr_flex_car  {
     type: yesno
     sql: ${name} like '%MFR%' OR ${name} LIKE '%Flex%' ;;
   }
 
+  dimension: test_car  {
+    type: yesno
+    sql: lower(${name}) like '%test%' ;;
+  }
   measure: count_distinct_cars {
-    description: "Count of distinct cars, not including SMFR/WMFR/Flex"
+    description: "Count of distinct cars, not including SMFR/WMFR/Flex/Virtual/Advanced"
     type: count_distinct
     sql: ${name} ;;
     filters: {
       field: mfr_flex_car
       value: "no"
     }
+    filters: {
+      field: advanced_care_car
+      value: "no"
+    }
+    filters: {
+      field: telemedicine_car
+      value: "no"
+    }
   }
+
+  dimension: car_lending_flag {
+    description: "Identifies cars where the care request market differs from the car's home market"
+    type: yesno
+    sql: ${care_requests.market_id} != ${cars.market_id} ;;
+  }
+
 
   measure: emt_car_staff {
     type: string

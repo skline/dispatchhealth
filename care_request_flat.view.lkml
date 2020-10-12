@@ -1,6 +1,19 @@
 view: care_request_flat {
   derived_table: {
     sql:
+WITH ort AS (
+    SELECT
+        st.id AS shift_team_id,
+        st.start_time,
+        cr.id AS care_request_id,
+        MAX(crs.started_at) AS on_route
+        FROM public.shift_teams st
+        LEFT JOIN public.care_requests cr
+            ON st.id = cr.shift_team_id
+        INNER JOIN public.care_request_statuses crs
+            ON cr.id = crs.care_request_id AND crs.name = 'on_route' AND crs.deleted_at IS NULL
+        WHERE LOWER(cr.chief_complaint) <> 'test'
+        GROUP BY 1,2,3)
     SELECT
         markets.id AS market_id,
         cr.id as care_request_id,
@@ -16,11 +29,15 @@ view: care_request_flat {
         max(onscene.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS on_scene_date,
         MIN(coalesce(comp.started_at, esc.started_at)) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS complete_date,
         MIN(archive.started_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS archive_date,
+        fst_or.on_route AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS first_on_route_date,
+        fst_cra.accepted AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS first_accepted_date,
         fu3.comment AS followup_3day_result,
         fu3.commentor_id AS followup_3day_id,
         fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS day3_followup_date,
         fu14.comment AS followup_14day_result,
         fu30.comment AS followup_30day_result,
+        --accept1.initial_eta::timestamptz AS initial_eta,
+        accept1.initial_eta::timestamptz AT TIME ZONE t.pg_tz AS initial_eta,
         accept1.auto_assigned AS auto_assigned_initial,
         accept1.reassignment_reason AS reassignment_reason_initial,
         accept1.reassignment_reason_other AS reassignment_reason_other_initial,
@@ -33,7 +50,14 @@ view: care_request_flat {
         accept.drive_time_seconds,
         accept.first_name AS accept_employee_first_name,
         accept.last_name AS accept_employee_last_name,
-        accept.eta_time::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS eta_date,
+        accept.user_id AS accept_employee_user_id,
+        --accept.eta_time::timestamptz AS eta_date,
+        accept.eta_time::timestamptz AT TIME ZONE t.pg_tz AS eta_date,
+        eta.starts_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta_start,
+        eta.ends_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta_end,
+        resolved.first_name AS resolved_employee_first_name,
+        resolved.last_name AS resolved_employee_last_name,
+        resolved.resolved_role,
         case when array_to_string(array_agg(distinct comp.comment), ':') = '' then null
         else array_to_string(array_agg(distinct comp.comment), ':')end
         as complete_comment,
@@ -49,7 +73,10 @@ view: care_request_flat {
         callers.origin_phone,
         callers.contact_id,
         cr.patient_id as patient_id,
-        foc.first_on_scene_time
+        foc.first_on_scene_time,
+        onscene.mins_on_scene_predicted,
+        n_assign.count_assignments,
+        max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
@@ -74,6 +101,7 @@ view: care_request_flat {
         (SELECT care_request_id,
         name,
         started_at,
+        meta_data::Json->> 'eta' AS initial_eta,
         meta_data::json->> 'auto_assigned' AS auto_assigned,
         meta_data::json->> 'drive_time' AS drive_time_seconds,
         meta_data::json->> 'shift_team_id' AS shift_team_id_initial,
@@ -82,13 +110,11 @@ view: care_request_flat {
         ROW_NUMBER() OVER(PARTITION BY care_request_id
                                 ORDER BY started_at) AS rn
         FROM care_request_statuses
-
         WHERE name = 'accepted' AND deleted_at IS NULL) AS accept1
       ON cr.id = accept1.care_request_id AND accept1.rn = 1
       LEFT JOIN public.notes
       ON notes.care_request_id = cr.id
       AND notes.note_type = 'reorder_reason'
-
       LEFT JOIN (SELECT care_request_id,
         name,
         crs.started_at,
@@ -100,17 +126,85 @@ view: care_request_flat {
         ROW_NUMBER() OVER(PARTITION BY care_request_id
                                 ORDER BY crs.started_at DESC) AS rn,
         first_name,
-        last_name
+        last_name,
+        users.id AS user_id
         FROM care_request_statuses crs
         LEFT JOIN users
         ON crs.user_id = users.id
         WHERE name = 'accepted' AND crs.deleted_at IS NULL) AS accept
       ON cr.id = accept.care_request_id AND accept.rn = 1
-
+      LEFT JOIN (
+          SELECT
+              care_request_id,
+              COUNT(DISTINCT (meta_data::json ->> 'shift_team_id')) AS count_assignments
+          FROM public.care_request_statuses
+          WHERE name = 'accepted' AND deleted_at IS NULL
+          GROUP BY 1) AS n_assign
+      ON cr.id = n_assign.care_request_id
+      LEFT JOIN (
+          SELECT
+              crs.care_request_id,
+              MIN(crs.started_at) AS archive_date,
+              INITCAP(users.first_name) AS first_name,
+              INITCAP(users.last_name) AS last_name,
+              roles.name AS resolved_role
+          FROM public.care_request_statuses crs
+          LEFT JOIN public.users
+              ON crs.user_id = users.id
+          LEFT JOIN (
+              SELECT
+                  users.id AS user_id,
+                  COALESCE(csc.role_id, prv.role_id) AS role_id
+                  FROM public.users
+                  LEFT JOIN public.user_roles csc
+                      ON users.id = csc.user_id AND csc.role_id = 5
+                  LEFT JOIN public.user_roles prv
+                      ON users.id = prv.user_id AND prv.role_id = 2) ur
+              ON ur.user_id = users.id
+          JOIN public.roles
+              ON ur.role_id = roles.id AND roles.name IN ('csc','provider')
+          WHERE crs.name = 'archived' AND crs.comment IS NOT NULL AND crs.deleted_at IS NULL
+          GROUP BY 1,3,4,5) AS resolved
+        ON cr.id =resolved.care_request_id
       LEFT JOIN care_request_statuses AS onroute
       ON cr.id = onroute.care_request_id AND onroute.name = 'on_route' and onroute.deleted_at is null
-      LEFT JOIN care_request_statuses onscene
-      ON cr.id = onscene.care_request_id AND onscene.name = 'on_scene' and onscene.deleted_at is null
+      LEFT JOIN (
+        SELECT
+                shift_team_id,
+                MIN(on_route) AS on_route
+            FROM ort
+            GROUP BY shift_team_id) AS fst_or
+        ON cr.shift_team_id = fst_or.shift_team_id
+      LEFT JOIN (
+            SELECT
+                CAST(meta_data::json->> 'shift_team_id' AS INT) AS shift_team_id,
+                MIN(crs.started_at) AS accepted
+            FROM public.care_requests cr
+            LEFT JOIN public.care_request_statuses crs
+                ON cr.id = crs.care_request_id
+            WHERE crs.name = 'accepted' AND crs.deleted_at IS NULL AND meta_data::json->> 'shift_team_id' IS NOT NULL AND
+                  LOWER(cr.chief_complaint) <> 'test'
+            GROUP BY 1) AS fst_cra
+        ON cr.shift_team_id = fst_cra.shift_team_id
+      LEFT JOIN (
+          SELECT
+              care_request_id,
+              started_at,
+              meta_data::jsonb->>'etoc' AS mins_on_scene_predicted,
+              ROW_NUMBER() OVER(PARTITION BY care_request_id
+                                ORDER BY started_at DESC) AS rn
+              FROM public.care_request_statuses
+              WHERE name = 'on_scene' AND deleted_at IS NULL
+      ) onscene
+        ON cr.id = onscene.care_request_id AND onscene.rn = 1
+      LEFT JOIN
+          (SELECT
+              care_request_id,
+              starts_at,
+              ends_at,
+              ROW_NUMBER() OVER(PARTITION BY care_request_id ORDER BY care_request_id, created_at) AS rn
+           FROM public.eta_ranges) eta
+      ON cr.id = eta.care_request_id AND eta.rn = 1
       LEFT JOIN care_request_statuses comp
       ON cr.id = comp.care_request_id AND comp.name = 'complete' and comp.deleted_at is null
       LEFT JOIN care_request_statuses esc
@@ -119,11 +213,11 @@ view: care_request_flat {
       LEFT JOIN care_request_statuses archive
       ON cr.id = archive.care_request_id AND archive.name = 'archived' and archive.deleted_at is null
       LEFT JOIN care_request_statuses fu3
-      ON cr.id = fu3.care_request_id AND fu3.name = 'followup_3'
+      ON cr.id = fu3.care_request_id AND fu3.name in('followup_3', 'followup_2') and fu3.deleted_at is null
       LEFT JOIN care_request_statuses fu14
-      ON cr.id = fu14.care_request_id AND fu14.name = 'followup_14'
+      ON cr.id = fu14.care_request_id AND fu14.name = 'followup_14' and fu14.deleted_at is null
       LEFT JOIN care_request_statuses fu30
-      ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30'
+      ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30' and fu30.deleted_at is null
       LEFT JOIN public.shift_teams
       ON shift_teams.id = cr.shift_team_id
       LEFT JOIN public.shift_teams st_init
@@ -148,40 +242,47 @@ view: care_request_flat {
         and insurances.package_id is not null
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
-      GROUP BY 1,2,3,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id, foc.first_on_scene_time;;
+      GROUP BY 1,2,3,4,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,
+               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
+               foc.first_on_scene_time,onscene.mins_on_scene_predicted, n_assign.count_assignments;;
 
-    sql_trigger_value: SELECT MAX(created_at) FROM care_request_statuses ;;
-    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date"]
+    # Run trigger every 2 hours
+    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date", "first_accepted_date"]
   }
 
   dimension: care_request_id {
     type: number
     primary_key: yes
+    group_label: "IDs"
     sql: ${TABLE}.care_request_id ;;
   }
 
   dimension: self_report_primary_package_id {
     type: number
+    hidden: yes
     sql: ${TABLE}.package_id ;;
   }
 
   dimension: patient_id {
     type: number
+    group_label: "IDs"
     sql: ${TABLE}.patient_id ;;
   }
 
   dimension: origin_phone {
     type: string
+    hidden: yes
     sql: ${TABLE}.origin_phone ;;
   }
 
   dimension: contact_id {
-    type: number
+    type: string
+    group_label: "IDs"
     sql:
     case
           when ${TABLE}.contact_id  ='' then null
-          else ${TABLE}.contact_id::bigint
+          else ${TABLE}.contact_id
          end;;
   }
 
@@ -192,30 +293,57 @@ view: care_request_flat {
   }
   dimension: on_scene_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between complete time and on scene time"
     sql: EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}) ;;
   }
 
   dimension: drive_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between on route time and on scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}) ;;
   }
 
   dimension: in_queue_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between requested time and accepted time"
     sql: EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
   }
 
+  dimension: time_to_call_seconds {
+    type: number
+    hidden: yes
+    value_format: "0"
+    description: "The number of seconds between requested time and call time"
+    sql: EXTRACT(EPOCH FROM ${call_time_raw})-EXTRACT(EPOCH FROM ${requested_raw}) ;;
+  }
+
+  dimension: time_to_call_minutes {
+    type: number
+    hidden: yes
+    value_format: "0.0"
+    description: "The number of minutes between requested time and call time"
+    sql: ${time_to_call_seconds}/60.0 ;;
+  }
+
   dimension: assigned_time_seconds {
     type: number
+    hidden: yes
     description: "The number of seconds between accepted time and on-route time"
     sql: EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
   }
 
+  dimension: num_assignments {
+    type: number
+    description: "The number of times the patient was assigned to a clinical team"
+    sql: ${TABLE}.count_assignments ;;
+  }
+
   dimension: on_scene_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between complete time and on scene time"
     sql: CASE
           WHEN ABS((EXTRACT(EPOCH FROM ${complete_raw})-EXTRACT(EPOCH FROM ${on_scene_raw}))::float/60.0) < 241
@@ -227,6 +355,7 @@ view: care_request_flat {
 
   dimension: created_to_resolved_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between created time and archived time"
     sql: (EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${created_raw}))::float/60.0 ;;
     value_format: "0.00"
@@ -234,6 +363,7 @@ view: care_request_flat {
 
   dimension: accepted_to_resolved_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between accepted time and archived time"
     sql: CASE
           WHEN ABS((EXTRACT(EPOCH FROM ${archive_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0) < 241
@@ -245,19 +375,58 @@ view: care_request_flat {
 
   dimension: created_to_on_scene_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between care request created time and on scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw})/60 -EXTRACT(EPOCH FROM ${created_raw})/60 ;;
   }
 
+  dimension: accepted_initial_to_on_scene_minutes {
+    type: number
+    group_label: "Care Delivery Times"
+    description: "The number of minutes between when a care request is accepted time and on scene time"
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw})/60 -EXTRACT(EPOCH FROM ${accept_initial_raw})/60 ;;
+  }
+
   dimension: on_scene_time_tier {
     type: tier
+    group_label: "Care Delivery Times"
+    description: "On scene time, grouped in bins of 10 minutes"
     tiers: [10,20,30,40,50,60,70,80,90,100]
     style: integer
     sql: ${on_scene_time_minutes} ;;
   }
 
+  dimension: mins_on_scene_predicted {
+    type: number
+    group_label: "On Scene Predictions"
+    sql: ${TABLE}.mins_on_scene_predicted::int ;;
+  }
+
+  dimension: actual_minus_pred_on_scene {
+    type: number
+    group_label: "On Scene Predictions"
+    sql: ${on_scene_time_minutes}::float - ${mins_on_scene_predicted}::float ;;
+  }
+
+  dimension: real_minus_pred_tier {
+    type: tier
+    group_label: "On Scene Predictions"
+    tiers: [-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60]
+    style: integer
+    sql: ${actual_minus_pred_on_scene} ;;
+  }
+
+  dimension: on_scene_time_tier_predicted {
+    type: tier
+    group_label: "On Scene Predictions"
+    tiers: [10,20,30,40,50,60,70,80,90,100]
+    style: integer
+    sql: ${mins_on_scene_predicted} ;;
+  }
+
   dimension: shift_team_id_initial {
     type: number
+    group_label: "IDs"
     description: "The shift team ID of the team initially assigned to the care request"
     sql: ${TABLE}.shift_team_id_initial ;;
   }
@@ -270,92 +439,149 @@ view: care_request_flat {
 
   measure: app_months_of_experience {
     type: number
-    sql: date_part('year', age(${app_shift_planning_facts_clone.first_shift_date}::date))*12 +
-         date_part('month', age(${app_shift_planning_facts_clone.first_shift_date}::date)) ;;
-    #date_part('month',age('2010-04-01', '2012-03-05'))
+    sql: EXTRACT('year' FROM age(MIN(${on_scene_date})::date, ${shift_details.first_shift_date}::date))*12 +
+      EXTRACT('month'FROM age(MIN(${on_scene_date})::date, ${shift_details.first_shift_date}::date)) ;;
   }
 
   dimension: on_scene_time_30min_or_less {
     type: yesno
+    group_label: "Care Delivery Times"
     description: "A flag indicating the on scene time was less than 30 minutes"
     sql: ${on_scene_time_minutes} < 30.0 ;;
   }
 
-  dimension: post_logistics_flag {
-    type: yesno
-    description: "A flag indicating the logistics platform was put into production"
-    sql: (${market_id} IN (160, 162, 165, 166) AND ${created_date} >= '2018-06-27') OR
-         (${market_id} = 161 AND ${created_date} >= '2018-07-30') OR
-         (${market_id} = 159 AND ${created_date} >= '2018-07-31') OR
-         (${created_date} >= '2018-08-07') ;;
-  }
-
-  dimension: post_cc_fix_date {
-    type: yesno
-    description: "A flag indicating a credit card fix was put into production (06/22/2018)"
-    sql: ${complete_date} >= '2018-06-22' ;;
-  }
-
   dimension: auto_assigned_initial {
     type: string
+    group_label: "Optimizer Details"
     description: "A flag indicating the care request was initially auto-assigned"
     sql: ${TABLE}.auto_assigned_initial ;;
   }
 
   dimension: reassignment_reason_initial {
     type: string
+    group_label: "Optimizer Details"
     description: "The initial reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_initial ;;
   }
 
   dimension: auto_assignment_overridden {
     type: yesno
+    group_label: "Optimizer Details"
     sql: ${auto_assigned_initial} = 'true' AND ${auto_assigned_final} = 'false' ;;
   }
 
   dimension: reassignment_reason_other_initial {
     type: string
+    group_label: "Optimizer Details"
     description: "The secondary initial reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_other_initial ;;
   }
 
   dimension: auto_assigned_final {
     type: string
+    group_label: "Optimizer Details"
     description: "A flag indicating the care request was auto-assigned (String)"
     sql: ${TABLE}.auto_assigned_final ;;
   }
 
   dimension: auto_assigned_flag {
     type: yesno
+    group_label: "Optimizer Details"
     description: "A flag indicating the care request was auto-assigned (Boolean)"
     sql: ${TABLE}.auto_assigned_final = 'true' ;;
   }
 
+  dimension: board_optimizer_assigned {
+    type: yesno
+    group_label: "Optimizer Details"
+    sql: ${auto_assigned_final} = 'false' AND ${accept_employee_user_id} IN (7419,14804,10941,24564,20171,13134,6620,12582) ;;
+  }
+
   dimension: reassignment_reason_final {
     type: string
+    group_label: "Optimizer Details"
     description: "The reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_final ;;
   }
 
   dimension: reassignment_reason_other_final {
     type: string
+    group_label: "Optimizer Details"
     description: "The reassignment reason logged by the CSC"
     sql: ${TABLE}.reassignment_reason_other_final ;;
   }
 
   dimension: drive_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between on-route time and on-scene time"
     sql: (EXTRACT(EPOCH FROM ${on_scene_raw})-EXTRACT(EPOCH FROM ${on_route_raw}))::float/60.0 ;;
+    value_format: "0.0"
   }
+
+
+  dimension: drive_time_minutes_coalesce {
+    type: number
+    group_label: "Care Delivery Times"
+    description: "google drive time if available, otherwise regular drive time"
+    sql: coalesce(${drive_time_minutes_google}, ${drive_time_minutes});;
+    value_format: "0.0"
+  }
+
+
+  measure: total_drive_time_minutes {
+    type: sum_distinct
+    group_label: "Care Delivery Times"
+    description: "The number of minutes between on-route time and on-scene time"
+    sql_distinct_key: ${care_request_id} ;;
+    sql: ${drive_time_minutes};;
+    value_format: "0.0"
+  }
+
+  measure: total_drive_time_minutes_coalesce {
+    type: sum_distinct
+    group_label: "Care Delivery Times"
+    description: "google drive time if available, otherwise regular drive time"
+    sql_distinct_key: ${care_request_id} ;;
+    sql: ${drive_time_minutes_coalesce};;
+    value_format: "0.0"
+  }
+
+  measure: average_drive_time_minutes_coalesce_complete {
+    type: number
+    group_label: "Care Delivery Times"
+    description: "google drive time if available, otherwise regular drive time divided by complete visits"
+    sql: case when ${care_request_flat.complete_count_no_arm_advanced}>0 then ${total_drive_time_minutes_coalesce}::float/${care_request_flat.complete_count_no_arm_advanced}::float else null end;;
+    value_format: "0.0"
+  }
+
+  measure: average_on_scene_minutes_complete {
+    type: number
+    group_label: "Care Delivery Times"
+    description: "On scene time divided by complete visits"
+    sql: case when ${care_request_flat.complete_count_no_arm_advanced}>0 then ${total_on_scene_time_minutes}::float/${care_request_flat.complete_count_no_arm_advanced}::float else null end;;
+    value_format: "0.0"
+  }
+
 
   dimension: drive_time_seconds_google {
     type: number
+    hidden: yes
+    group_label: "Care Delivery Times"
     sql: ${TABLE}.drive_time_seconds ;;
+  }
+
+  dimension: drive_time_minutes_google_initial {
+    type: number
+    group_label: "Care Delivery Times"
+    description: "The initial Google drive time for the care request"
+    sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
+    value_format: "0.00"
   }
 
   dimension: drive_time_minutes_google {
     type: number
+    group_label: "Care Delivery Times"
     sql: ${TABLE}.drive_time_seconds::float / 60.0 ;;
     value_format: "0.00"
   }
@@ -363,12 +589,15 @@ view: care_request_flat {
   dimension: initial_drive_time_minutes_google {
     description: "The Google drive time of the care team that was initially assigned"
     type: number
+    group_label: "Care Delivery Times"
     sql: ${TABLE}.drive_time_seconds_initial::float / 60.0 ;;
     value_format: "0.00"
   }
 
   dimension: google_drive_time_tier {
   type: tier
+  group_label: "Care Delivery Times"
+  description: "Google drive time minutes in groups of 5"
   tiers: [0,5,10,15,20,25,30,35,40,45,50]
   style: integer
   sql: ${drive_time_minutes_google} ;;
@@ -376,6 +605,7 @@ view: care_request_flat {
 
   measure:  average_drive_time_minutes_google {
     type: average_distinct
+    group_label: "Care Delivery Times"
     description: "The average drive time from Google in minutes"
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
@@ -384,6 +614,7 @@ view: care_request_flat {
 
   measure: total_drive_time_minutes_google {
     type: sum_distinct
+    group_label: "Care Delivery Times"
     description: "The sum of drive time from Google in minutes"
     value_format: "0.00"
     sql_distinct_key: concat(${care_request_id}) ;;
@@ -392,6 +623,7 @@ view: care_request_flat {
 
   dimension: under_20_minute_drive_time {
     type: yesno
+    group_label: "Care Delivery Times"
     sql: ${drive_time_minutes_google} <= 20.0 ;;
   }
 
@@ -403,6 +635,7 @@ view: care_request_flat {
 
   dimension: in_queue_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between requested time and accepted time"
     sql: (EXTRACT(EPOCH FROM ${accept_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
     value_format: "0.00"
@@ -416,6 +649,7 @@ view: care_request_flat {
 
   dimension: assigned_time_minutes {
     type: number
+    group_label: "Care Delivery Times"
     description: "The number of minutes between accepted time and on-route time"
     sql: (EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}))::float/60.0;;
     value_format: "0.00"
@@ -436,14 +670,49 @@ view: care_request_flat {
   dimension: accept_employee_first_name {
     description: "The first name of the user who accepted the patient"
     type: string
-    sql: ${TABLE}.accept_employee_first_name ;;
+    sql: initcap(${TABLE}.accept_employee_first_name) ;;
   }
 
   dimension: accept_employee_last_name {
     description: "The last name of the user who accepted the patient"
     type: string
-    sql: ${TABLE}.accept_employee_last_name ;;
+    sql: initcap(${TABLE}.accept_employee_last_name) ;;
   }
+
+  dimension: accept_employee_full_name {
+    type: string
+    sql: concat(${accept_employee_first_name}, ' ', ${accept_employee_last_name}) ;;
+  }
+
+  dimension: resolved_employee_full_name {
+    type: string
+    sql: concat(${resolved_employee_first_name}, ' ', ${resolved_employee_last_name}) ;;
+  }
+
+  dimension: accept_employee_user_id {
+    description: "The user ID of the user who accepted the patient"
+    type: number
+    sql: ${TABLE}.accept_employee_user_id ;;
+  }
+
+  dimension: resolved_employee_first_name {
+    description: "The first name of the user who resolved the care request"
+    type: string
+    sql: ${TABLE}.resolved_employee_first_name ;;
+  }
+
+  dimension: resolved_employee_last_name {
+    description: "The last name of the user who resolved the care request"
+    type: string
+    sql: ${TABLE}.resolved_employee_last_name ;;
+  }
+
+  dimension: resolved_employee_role {
+    description: "The role of the employee who resolved the care request"
+    type: string
+    sql: ${TABLE}.resolved_role ;;
+  }
+
 
   dimension: accepted_patient {
     type: yesno
@@ -499,13 +768,21 @@ view: care_request_flat {
   measure:  average_drive_time_minutes{
     type: average_distinct
     description: "The average minutes between on-route time and on-scene time"
-    value_format: "0.00"
+    value_format: "0"
     sql_distinct_key: concat(${care_request_id}) ;;
     sql: ${drive_time_minutes} ;;
     filters: {
       field: is_reasonable_drive_time
       value: "yes"
     }
+  }
+
+  measure:  average_drive_time_minutes_coalesce{
+    type: average_distinct
+    description: "The average minutes between on-route time and on-scene time"
+    value_format: "0"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${drive_time_minutes_coalesce} ;;
   }
 
   measure:  median_drive_time_minutes{
@@ -528,6 +805,44 @@ view: care_request_flat {
     }
   }
 
+  measure:  average_time_to_call_minutes{
+    type: average_distinct
+    label: "Average Time to Submition of Caller Information in Dashboard"
+    description: "The average minutes between requested time and accepted time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${time_to_call_minutes} ;;
+  }
+
+  measure:  median_time_to_call_minutes{
+    type: median_distinct
+    label: "Median Time to Submition of Caller Information in Dashboard"
+    description: "The average minutes between requested time and accepted time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${time_to_call_minutes} ;;
+  }
+
+
+  dimension: initial_in_queue_time_minutes {
+    type: number
+    description: "The number of minutes between requested time and accepted time"
+    sql: (EXTRACT(EPOCH FROM ${accept_initial_raw})-EXTRACT(EPOCH FROM ${requested_raw}))::float/60.0 ;;
+    value_format: "0.00"
+  }
+
+
+  measure:  average_initial_in_queue_time_minutes{
+    type: average_distinct
+    description: "The average minutes between requested time and accepted time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${initial_in_queue_time_minutes} ;;
+    filters: {
+      field: is_reasonable_in_queue_time
+      value: "yes"
+    }
+  }
   measure:  average_assigned_time_minutes{
     type: average_distinct
     description: "The average minutes between accepted time and on-route time"
@@ -550,6 +865,14 @@ view: care_request_flat {
       field: is_reasonable_on_scene_time
       value: "yes"
     }
+  }
+
+  measure:  average_on_scene_time_predicted {
+    type: average_distinct
+    description: "The average predicted minutes between complete time and on scene time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${mins_on_scene_predicted} ;;
   }
 
   measure:  average_created_to_resolved_minutes{
@@ -584,6 +907,14 @@ view: care_request_flat {
     sql: ${accepted_to_resolved_minutes} ;;
   }
 
+  measure: average_accepted_initial_to_on_scene_minutes{
+    type: average_distinct
+    description: "The average minutes between the initial accepted time and On-Scene Time"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${accepted_initial_to_on_scene_minutes} ;;
+  }
+
 
 
   measure:  total_on_scene_time_minutes{
@@ -597,6 +928,15 @@ view: care_request_flat {
       value: "yes"
     }
   }
+
+  measure:  total_predicted_on_scene_time_minutes{
+    type: sum_distinct
+    description: "The sum of predicted minutes on scene"
+    value_format: "0.00"
+    sql_distinct_key: concat(${care_request_id}) ;;
+    sql: ${mins_on_scene_predicted} ;;
+  }
+
 #   Need to get this working for histograms
    parameter: bucket_size {
      default_value: "10"
@@ -623,6 +963,12 @@ view: care_request_flat {
     type: number
     value_format: "0"
     sql: ${average_in_queue_time_seconds} + ${average_assigned_time_seconds} + ${average_drive_time_seconds} ;;
+  }
+
+  dimension: wait_time_greater_than_3_hours {
+    type: yesno
+    description: "A flag indicating that total patient wait time is greater than 3 hours"
+    sql: (${in_queue_time_seconds} + ${assigned_time_seconds} + ${drive_time_seconds})/3600 >= 3 ;;
   }
 
   measure: average_wait_time_total_pre_logistics {
@@ -795,15 +1141,81 @@ view: care_request_flat {
     sql: ${TABLE}.eta_date ;;
   }
 
+  dimension_group: eta_range_start {
+    type: time
+    description: "The initial ETA range start time that was given to the patient"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time
+    ]
+    sql: ${TABLE}.initial_eta_start ;;
+  }
+
+  dimension_group: eta_range_end {
+    type: time
+    description: "The initial ETA range end time that was given to the patient"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time
+    ]
+    sql: ${TABLE}.initial_eta_end ;;
+  }
+
+  dimension: eta_window {
+    description: "The ETA range given to the patient for care"
+    sql: (EXTRACT(EPOCH FROM ${eta_range_end_raw}) - EXTRACT(EPOCH FROM ${eta_range_start_raw}))/3600 ;;
+    value_format: "0.0"
+    group_label: "ETAs"
+  }
+
+  dimension_group: initial_eta {
+    type: time
+    description: "The initial ETA that was calculated for the patient"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week,
+      day_of_month
+    ]
+    sql: ${TABLE}.initial_eta ;;
+  }
+
   dimension: bounceback_3day {
     type: yesno
     sql: ${followup_3day_result} LIKE '%same_complaint%' ;;
   }
 
-  dimension: followup_14day_result {
+  dimension: raw_followup_14day_result {
     type: string
     description: "The 14-day follow-up result"
     sql: TRIM(${TABLE}.followup_14day_result) ;;
+  }
+
+
+  dimension: followup_14day_result {
+    type: string
+    description: "The 14-day follow-up result (or 30 day result if the 14 day result is NULL and the 30 day is populated)"
+    sql: CASE
+    WHEN (TRIM(${raw_followup_14day_result}) IS NULL OR  TRIM(${raw_followup_14day_result}) = 'no_hie_data' OR TRIM(${raw_followup_14day_result}) = '')
+    AND (TRIM(${raw_followup_30day_result}) IS NOT NULL AND  TRIM(${raw_followup_30day_result}) != 'no_hie_data' AND TRIM(${raw_followup_30day_result}) != '')
+    THEN TRIM(${raw_followup_30day_result})
+    ELSE TRIM(${raw_followup_14day_result})
+    END;;
+
   }
 
   dimension: bounceback_14day {
@@ -817,9 +1229,9 @@ view: care_request_flat {
     type: yesno
     sql: ((${bounceback_3day} AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)
          OR ${followup_14day_result} = 'ed_same_complaint' OR ${followup_14day_result} = 'hospitalization_same_complaint')
-      AND ${followup_3day_result} != 'REMOVED';;
+    ;;
   }
-
+# AND ${followup_3day_result} != 'REMOVED'
   measure: bb_14_day_count_in_sample {
     label: "14-Day Bounce back Count With No Followups Removed"
     type: count_distinct
@@ -830,18 +1242,80 @@ view: care_request_flat {
     }
   }
 
-  dimension: followup_30day_result {
+  dimension: ed_any_14day_followup_in_sample {
+    type: yesno
+    sql: ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)  OR
+      ((UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) ;;
+  }
+
+  measure: count_ed_any_14day_followup_in_sample {
+    label: "14-Day Any ED (same or different complaint) Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: ed_any_14day_followup_in_sample
+      value: "yes"
+    }
+  }
+
+  dimension: hospitalization_any_14day_followup_in_sample {
+    type: yesno
+    sql: ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)  OR
+      ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) ;;
+  }
+
+  measure: count_hospitalization_any_14day_followup_in_sample {
+    label: "14-Day Any Hospitalization (same or different complaint) Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: hospitalization_any_14day_followup_in_sample
+      value: "yes"
+    }
+  }
+
+  dimension: raw_followup_30day_result {
     type: string
     description: "The 30-day follow-up result"
     sql: TRIM(${TABLE}.followup_30day_result) ;;
   }
 
+  dimension: followup_30day_result {
+    type: string
+    description: "The 30-day follow-up result (or the 14 day result if the 30 day result is NULL and the 14 day is populated)"
+    sql: CASE
+    WHEN (TRIM(${raw_followup_30day_result}) IS NULL OR TRIM(${raw_followup_30day_result}) = 'no_hie_data' OR TRIM(${raw_followup_30day_result}) = '')
+    AND (TRIM(${raw_followup_14day_result}) IS NOT NULL AND  TRIM(${raw_followup_14day_result}) != 'no_hie_data' AND TRIM(${raw_followup_14day_result}) != '')
+    THEN TRIM(${raw_followup_14day_result})
+    ELSE TRIM(${raw_followup_30day_result})
+    END;;
+  }
+
+
   dimension: followup_30day {
+    type: yesno
+    description: "A flag indicating the 14/30-day follow-up was completed (also includes 3 day bouncebacks)"
+    sql: ${complete_date} IS NOT NULL AND
+    ((${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} != '') OR
+    ${bounceback_3day} OR ${bounceback_14day}) ;;
+  }
+
+  dimension: followup_30day_sample_only {
     type: yesno
     description: "A flag indicating the 14/30-day follow-up was completed"
     sql: ${complete_date} IS NOT NULL AND
-    ((${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data') OR
-    ${bounceback_3day} OR ${bounceback_14day}) ;;
+          (${followup_30day_result} IS NOT NULL AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} != '')  ;;
+  }
+
+  measure: count_followup_30day_sample_only {
+    type: count_distinct
+    sql: ${care_request_id}    ;;
+    filters: {
+      field: followup_30day_sample_only
+      value: "yes"
+    }
   }
 
   # Add 3 or 30 day followup measures
@@ -863,20 +1337,137 @@ view: care_request_flat {
   }
   # End 3 or 30 day followup measures
 
+  #   Add consolidated dimensions and measures to combine 3, 14 and 30 day Followup results to a single value for inclusive reporting
+
+  dimension: followup_results_consolidated {
+    type: string
+    description: "Consolidated followup results from 3, 14 and 30 day results. This returns a single value from the three possible results based on the hierarchy of hospitalization_same, ed_same, Hospitalization_differing, Ed_differing, No_ed_hosptilization, and NULL'"
+    sql: CASE
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' THEN 'hospitalization_same_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT' THEN 'ed_same_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'hospitalization_different_complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ed_different_complaint'
+      WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_30day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_30day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'no_ed-hospitalization'
+      ELSE NULL
+      END
+      ;;
+  }
+
+  dimension: followup_results_3_14day_bounceback {
+    description: "Consolidated followup results from 3 and 14 day results with 14 day followup segmented into separate categories. This returns a single value from the three possible results based on the hierarchy of hospitalization_same, ed_same, Hospitalization_differing, Ed_differing, No_ed_hosptilization, and NULL'"
+    sql: CASE
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT')) AND (${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'Hospitilization Same Complaint with 30 Day Followup'
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' )) AND (${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'ED Same Complaint with 30 Day Followup'
+
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' THEN 'Hospitilization Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' THEN 'ED Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'Hospitilization Different Complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ED Different Complaint'
+      WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'No Hospilization/ED'
+      ELSE NULL
+      END
+      ;;
+  }
+
+  dimension: followup_results_3_14_30day_bounceback {
+  description: "Consolidated followup results from 3, 14 and 30 day results with 30 day followup segmented into separate categories. This returns a single value from the three possible results based on the hierarchy of hospitalization_same, ed_same, Hospitalization_differing, Ed_differing, No_ed_hosptilization, and NULL'"
+    sql: CASE
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'Hospitilization Same Complaint with 30 Day Followup'
+      WHEN ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) THEN 'ED Same Complaint with 30 Day Followup'
+
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' THEN 'Hospitilization Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT' THEN 'ED Same Complaint NO 30 Day Followup'
+      WHEN UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' THEN 'Hospitilization Different Complaint'
+      WHEN UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' THEN 'ED Different Complaint'
+      WHEN (UPPER(${followup_3day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_3day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_14day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_14day_result}) LIKE 'NO ED/HOSPITALIZATION') OR (UPPER(${followup_30day_result}) LIKE 'NO_ED-HOSPITALIZATION' OR UPPER(${followup_30day_result}) LIKE 'NO ED/HOSPITALIZATION') THEN 'No Hospilization/ED'
+      ELSE NULL
+      END
+      ;;
+  }
+
+# WHEN (UPPER(${followup_3day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_3day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') OR (UPPER(${followup_14day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_14day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') OR (UPPER(${followup_30day_result}) LIKE 'NO_HIE_DATA' OR UPPER(${followup_30day_result}) LIKE 'PATIENT_CALLED_BUT_DID_NOT_ANSWER') THEN 'contact_attempt_unsucessful'
+# End consolidated dimensions and measures
+
   dimension: bb_30_day_in_sample {
     label: "30-Day Bounce back flag, removing any bouncebacks without a 30 day followup"
     type: yesno
     sql: (((${bounceback_3day} OR ${bounceback_14day}) AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)
          OR ${followup_30day_result} = 'ed_same_complaint' OR ${followup_30day_result} = 'hospitalization_same_complaint')
-      AND ${followup_3day_result} != 'REMOVED';;
+      ;;
   }
-
+# AND ${followup_3day_result} != 'REMOVED';;
   measure: bb_30_day_count_in_sample {
     label: "30-Day Bounce back Count With No Followups Removed"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
       field: bb_30_day_in_sample
+      value: "yes"
+    }
+  }
+
+  dimension: hospitalization_any_30day_followup_in_sample {
+    type: yesno
+    sql: ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)  OR
+    ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) ;;
+  }
+
+  measure: count_hospitalization_any_30day_followup_in_sample {
+    label: "30-Day Any Hospitalization (same or different complaint) Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: hospitalization_any_30day_followup_in_sample
+      value: "yes"
+    }
+  }
+
+  dimension: hospitalization_same_complaint_30day_followup_in_sample {
+    type: yesno
+    sql: ((UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) ;;
+  }
+
+  measure: count_hospitalization_same_complaint_30day_followup_in_sample {
+    label: "30-Day Hospitalization Same Complaint Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: hospitalization_same_complaint_30day_followup_in_sample
+      value: "yes"
+    }
+  }
+
+  dimension: ed_any_30day_followup_in_sample {
+    type: yesno
+    sql: ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL)  OR
+      ((UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_DIFFERENT_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_DIFFERENT_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) ;;
+  }
+
+  measure: count_ed_any_30day_followup_in_sample {
+    label: "30-Day Any ed (same or different complaint) Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: ed_any_30day_followup_in_sample
+      value: "yes"
+    }
+  }
+
+  dimension: ed_same_complaint_30day_followup_in_sample {
+    type: yesno
+    sql: ((UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_14day_result}) LIKE 'ED_SAME_COMPLAINT' OR UPPER(${followup_30day_result}) LIKE 'ED_SAME_COMPLAINT') AND ${followup_30day_result} != 'no_hie_data' AND ${followup_30day_result} IS NOT NULL) ;;
+  }
+
+  measure: count_ed_same_complaint_30day_followup_in_sample {
+    label: "30-Day ed Same Complaint Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: ed_same_complaint_30day_followup_in_sample
       value: "yes"
     }
   }
@@ -908,6 +1499,41 @@ view: care_request_flat {
       value: "yes"
     }
   }
+
+  dimension: ed_any_3day_followup {
+    type: yesno
+    sql: UPPER(${followup_3day_result}) LIKE 'ED_SAME_COMPLAINT' OR
+      UPPER(${followup_3day_result}) LIKE 'ED_DIFFERENT_COMPLAINT'  ;;
+  }
+
+  measure: count_ed_any_3day_followup {
+    label: "3-Day Any ED (same or different complaint) Bounce back Count"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field: ed_any_3day_followup
+      value: "yes"
+    }
+  }
+
+  dimension: hospitalization_any_3day_followup {
+    type: yesno
+    sql: UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_SAME_COMPLAINT' OR
+      UPPER(${followup_3day_result}) LIKE 'HOSPITALIZATION_DIFFERENT_COMPLAINT' ;;
+  }
+
+  measure: count_hospitalization_any_3day_followup {
+    label: "3-Day Any Hospitalization (same or different complaint) Bounce back Count With No Followups Removed"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+
+    filters: {
+      field:  hospitalization_any_3day_followup
+      value: "yes"
+    }
+  }
+
 
   measure: count_3day_followups {
     type: count_distinct
@@ -963,6 +1589,49 @@ view: care_request_flat {
     sql: ${TABLE}.on_route_date ;;
   }
 
+  dimension_group: first_on_route {
+    type: time
+    description: "The first local date and time when the shift team went on-route"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.first_on_route_date ;;
+  }
+
+  dimension_group: first_accepted {
+    type: time
+    description: "The first local date and time when the shift team was assigned a care request"
+    convert_tz: no
+    hidden: yes
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      day_of_week_index,
+      day_of_month
+    ]
+    sql: ${TABLE}.first_accepted_date ;;
+  }
+
+  dimension: accepted_cr_at_shift_start {
+    description: "Flag indicating if the shift had an accepted care request time occurring before or equal to the shirt start time"
+    type: yesno
+    sql: ${first_accepted_raw} <= ${shift_start_raw} ;;
+  }
+
   dimension_group: drive_start {
     type: time
     description: "The on-scene date and time minus the Google drive time"
@@ -1016,10 +1685,39 @@ view: care_request_flat {
     sql: ${TABLE}.created_date ;;
   }
 
+  dimension_group: scheduled_care_created_coalese {
+    type: time
+    description: "The local date/time that the care request was created."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      year,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,
+      month_num,
+      quarter
+    ]
+    sql: coalesce(case when ${pafu_or_follow_up} then ${scheduled_care_raw} else null end, ${created_raw}) ;;
+  }
+
   measure: count_distinct_days_created {
     type: count_distinct
     sql_distinct_key: ${created_date} ;;
     sql: ${created_date} ;;
+
+  }
+
+  measure: distinct_days_scheduled_care_created_coalese_date {
+    type: count_distinct
+    sql_distinct_key: ${scheduled_care_created_coalese_date} ;;
+    sql: ${scheduled_care_created_coalese_date} ;;
 
   }
 
@@ -1099,6 +1797,7 @@ view: care_request_flat {
   dimension: on_route_decimal {
     description: "The local on-route time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
+    value_format: "0.00"
     sql: (CAST(EXTRACT(HOUR FROM ${on_route_raw}) AS INT)) +
         ((CAST(EXTRACT(MINUTE FROM ${on_route_raw} ) AS FLOAT)) / 60) ;;
   }
@@ -1132,6 +1831,95 @@ view: care_request_flat {
     sql: ${TABLE}.on_scene_date ;;
   }
 
+  dimension_group: call_time {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour,
+      year
+    ]
+    sql: ${TABLE}.caller_date ;;
+  }
+
+
+  measure: max_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      quarter,
+      hour,
+      year
+    ]
+    sql: max(${TABLE}.on_scene_date) ;;
+  }
+
+  measure: max_created {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      quarter,
+      hour,
+      year
+    ]
+    sql: max(${TABLE}.created_date) ;;
+  }
+
+  measure: min_on_scene {
+    type: time
+    description: "The local date/time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour,
+      year
+    ]
+    sql: min(${TABLE}.on_scene_date) ;;
+  }
+
   dimension_group: first_visit {
     type: time
     description: "The first local date/time that the patient was seen by DispatchHealth"
@@ -1162,6 +1950,7 @@ view: care_request_flat {
   }
 
   dimension: first_visit_pafu {
+    label: "First Visit Bridge Care Visit"
     type: yesno
     description: "A flag indicating that the first visit is a post-acute follow up"
     sql: ${first_visit_raw} IS NOT NULL AND ${care_requests.post_acute_follow_up} ;;
@@ -1197,6 +1986,27 @@ view: care_request_flat {
       hour
     ]
     sql: ${TABLE}.on_scene_date AT TIME ZONE ${pg_tz} AT TIME ZONE 'US/Mountain' ;;
+  }
+
+  dimension_group: accept_mountain_intial {
+    type: time
+    description: "The mountain time that the care request team arrived on-scene"
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      month_num,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,quarter,
+      hour
+    ]
+    sql: ${TABLE}.accept_date_initial AT TIME ZONE ${pg_tz} AT TIME ZONE 'US/Mountain' ;;
   }
 
   dimension_group: accept_mountain {
@@ -1302,11 +2112,28 @@ view: care_request_flat {
     sql: ${TABLE}.requested_date ;;
   }
 
+  dimension: requested_rounded_integer {
+    description: "The requested visit time of day, represented as a rounded decimal (e.g. 10:15 AM = 10)"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${requested_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${requested_raw} ) AS FLOAT)) / 60)) ;;
+      value_format: "0"
+  }
+
+
   dimension: on_scene_decimal {
     description: "The on-scene time of day, represented as a decimal (e.g. 10:15 AM = 10.25)"
     type: number
     sql: (CAST(EXTRACT(HOUR FROM ${on_scene_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60) ;;
+  }
+
+  dimension: on_scene_rounded_integer {
+    description: "The on-scene time of day, represented as a decimal (e.g. 10:15 AM = 10)"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${on_scene_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${on_scene_raw} ) AS FLOAT)) / 60)) ;;
+      value_format: "0"
   }
 
   dimension: accepted_decimal {
@@ -1315,6 +2142,14 @@ view: care_request_flat {
     sql: (CAST(EXTRACT(HOUR FROM ${accept_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${accept_raw} ) AS FLOAT)) / 60) ;;
     value_format: "0.00"
+  }
+
+  dimension: accepted_rounded_integer {
+    description: "The accepted time of day, represented as a rounded decimal (e.g. 10:15 AM = 10)"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${accept_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${accept_raw} ) AS FLOAT)) / 60)) ;;
+    value_format: "0"
   }
 
   measure: first_accepted_decimal {
@@ -1351,6 +2186,7 @@ view: care_request_flat {
       time_of_day,
       date,
       time,
+      hour,
       week,
       month,
       day_of_week,
@@ -1361,6 +2197,55 @@ view: care_request_flat {
       year
       ]
     sql: ${TABLE}.complete_date ;;
+  }
+
+   parameter: care_request_complete_timeframe_picker {
+    label: "Select care request Complete Date grouping "
+    type: string
+    allowed_value: { value: "Date" }
+    allowed_value: { value: "Week" }
+    allowed_value: { value: "Month" }
+    allowed_value: { value: "Quarter" }
+    allowed_value: { value: "Year" }
+    default_value: "Date"
+  }
+
+  dimension: dynamic_care_request_complete_timeframe {
+    type: string
+    sql:
+    CASE
+    WHEN {% parameter care_request_complete_timeframe_picker %} = 'Date' THEN TO_CHAR(${care_request_flat.complete_date},'YYYY-MM-DD')
+    WHEN {% parameter care_request_complete_timeframe_picker %} = 'Week' THEN ${care_request_flat.complete_week}
+    WHEN{% parameter care_request_complete_timeframe_picker %} = 'Month' THEN ${care_request_flat.complete_month}
+    WHEN{% parameter care_request_complete_timeframe_picker %} = 'Quarter' THEN
+      CASE
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '01' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q1'
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '04' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q2'
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '07' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q3'
+      WHEN substring(${care_request_flat.complete_quarter},6,2) = '10' THEN substring(${care_request_flat.complete_quarter},1,5)||'Q4'
+      END
+    WHEN{% parameter care_request_complete_timeframe_picker %} = 'Year' THEN to_char(${care_request_flat.complete_date},'YYYY')
+    END ;;
+  }
+
+  dimension: complete_decimal_half_hour_increment {
+    description: "Complete Time of Day as Decimal rounded to the nearest 1/2 hour increment"
+    type: number
+    sql: CASE
+      WHEN CAST(EXTRACT(MINUTE FROM ${complete_raw}) AS FLOAT) < 15 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 0
+      WHEN CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT) >= 15 AND CAST(EXTRACT(MINUTE FROM ${complete_raw} ) AS FLOAT) < 45 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 0.5
+      ELSE  FLOOR(CAST(EXTRACT(HOUR FROM ${complete_raw}) AS INT)) + 1
+      END
+      ;;
+    value_format: "0.0"
+  }
+
+  dimension: weekday_complete {
+    type: string
+    description: "A flag indicating the complete date is during the week"
+    sql: CASE WHEN ${complete_day_of_week_index} IN (0,1,2,3,4) THEN 'Weekday'
+            WHEN ${complete_day_of_week_index} IN (5,6) THEN 'Weekend'
+            ELSE NULL END;;
   }
 
   dimension_group: archive {
@@ -1376,6 +2261,7 @@ view: care_request_flat {
       week,
       month,
       day_of_week_index,
+      day_of_week,
       day_of_month
     ]
     sql: ${TABLE}.archive_date ;;
@@ -1408,6 +2294,7 @@ view: care_request_flat {
       week,
       month,
       day_of_week_index,
+      day_of_week,
       day_of_month
     ]
     sql: CASE
@@ -1416,21 +2303,84 @@ view: care_request_flat {
          END ;;
   }
 
+  dimension_group: claim_created_resolved {
+    type: time
+    description: "The claim created date or archive date, depending on whether the request was complete or resolved"
+    convert_tz: no
+    timeframes: [
+      raw,
+      date,
+      time,
+      week,
+      month
+    ]
+    sql: CASE
+          WHEN ${archive_comment} IS NOT NULL AND LOWER(${primary_resolved_reason}) <> 'referred - point of care' THEN ${archive_raw}
+          ELSE ${athenadwh_claims_clone.claim_created_datetime_raw}
+         END ;;
+  }
+
   dimension: eta_to_on_scene_resolved_minutes  {
     type: number
+    group_label: "ETAs"
     description: "The number of minutes between the initial ETA and either the on-scene or resolved time"
     sql: EXTRACT(EPOCH FROM COALESCE(${on_scene_raw},${archive_raw}) - ${eta_raw})/60 ;;
   }
 
+  dimension: initial_eta_end_to_on_scene_minutes  {
+    type: number
+    group_label: "ETAs"
+    description: "The number of minutes between the initial ETA end time and the on-scene time"
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw} - ${eta_range_end_raw})/60;;
+  }
+
+  dimension: initial_eta_window_to_on_scene_2_groups {
+    type: string
+    group_label: "ETAs"
+    description: "On-scene time relative to initial ETA window grouping (2 bins)"
+    sql: CASE
+          WHEN ${initial_eta_end_to_on_scene_minutes} <= 15 THEN 'Arrived as Expected'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 15 THEN 'Arrived 15 Minutes or Later'
+          ELSE NULL
+          END
+          ;;
+  }
+
+  dimension: initial_eta_window_to_on_scene_expanded_groups {
+    type: string
+    group_label: "ETAs"
+    description: "On-scene time relative to initial ETA window grouping (5 bins)"
+    sql:  CASE
+          WHEN ${on_scene_raw} <  ${eta_range_start_raw} THEN '(1) Early'
+          WHEN ${initial_eta_end_to_on_scene_minutes} <= 15 THEN '(2) On Time'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 15 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '(3) 16-60 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 60 AND ${initial_eta_end_to_on_scene_minutes} <= 240 THEN '(4) 61 Minutes to 4 Hours Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 240 THEN '(5) Greater than 4 Hours Late'
+          ELSE NULL
+          END
+          ;;
+  }
+
   dimension: accepted_to_initial_eta_minutes  {
     type: number
-    description: "The number of minutes between when the care request was created and the initial ETA"
+    view_label: "Accepted to ETA Minutes"
+    group_label: "ETAs"
+    description: "The number of minutes between when the care request was accepted and the ETA"
     sql: ROUND(CAST(EXTRACT(EPOCH FROM ${eta_raw} - ${accept_raw})/60 AS integer), 0) ;;
+    value_format: "0"
+  }
+
+  dimension: accepted_initial_to_eta_initial_minutes  {
+    type: number
+    group_label: "ETAs"
+    description: "The number of minutes between when the care request was first accepted and the initial ETA"
+    sql: ROUND(CAST(EXTRACT(EPOCH FROM ${initial_eta_raw} - ${accept_initial_raw})/60 AS integer), 0) ;;
     value_format: "0"
   }
 
   dimension: mins_early_late_tier {
     type: tier
+    group_label: "ETAs"
     tiers: [-60, -45, -30, -15, 0, 10, 15, 30, 45, 60]
     style: integer
     sql: ${eta_to_on_scene_resolved_minutes} ;;
@@ -1438,6 +2388,7 @@ view: care_request_flat {
 
   dimension: mins_to_eta_tier {
     type: tier
+    group_label: "ETAs"
     description: "The grouped number of minutes between accepted and ETA"
     tiers: [30, 60, 90, 120, 150, 180, 210, 240]
     style: integer
@@ -1446,6 +2397,7 @@ view: care_request_flat {
 
   dimension: mins_to_eta_tier_wide {
     type: tier
+    group_label: "ETAs"
     description: "The grouped number of minutes between accepted and ETA"
     tiers: [60, 120, 180, 240]
     style: integer
@@ -1517,6 +2469,13 @@ view: care_request_flat {
     sql: EXTRACT(EPOCH FROM ${shift_end_raw} - ${shift_start_raw})/3600 ;;
   }
 
+  dimension: shift_start_to_first_onroute {
+      type: number
+      description: "The number of minutes between shift start and first on route"
+      sql: EXTRACT(EPOCH FROM ${first_on_route_raw} - ${shift_start_raw})/60 ;;
+      value_format: "0.0"
+  }
+
   dimension: end_of_shift_dead_time {
     type: number
     description: "The number of hours between last updated and shift end"
@@ -1544,6 +2503,13 @@ measure:  count_end_of_shift_dead_time_45_mins {
     field: end_of_shift_dead_time_45_mins
     value: "yes"
   }
+}
+
+measure: avg_first_on_route_mins {
+  type: average_distinct
+  description: "The average minutes between shift start and first on-route"
+  sql: ${shift_start_to_first_onroute} ;;
+  value_format: "0.0"
 }
 
 
@@ -1579,6 +2545,14 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: (CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) +
       ((CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT)) / 60) ;;
       value_format: "0.00"
+  }
+
+  dimension: created_rounded_integer {
+    description: "Complete Time of Day as Decimal"
+    type: number
+    sql: round((CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) +
+      ((CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT)) / 60)) ;;
+    value_format: "0"
   }
 
   dimension: complete_decimal {
@@ -1617,8 +2591,14 @@ measure:  count_end_of_shift_dead_time_45_mins {
 
   dimension_group: yesterday_mountain{
     type: time
-    timeframes: [date, day_of_week_index, week, month, day_of_month]
+    timeframes: [date, day_of_week_index, week, month, day_of_month, quarter]
     sql: current_date - interval '1 day';;
+  }
+
+  dimension_group: last_week_mountain{
+    type: time
+    timeframes: [date, day_of_week_index, week, month, day_of_month]
+    sql: current_date - interval '7 day';;
   }
 
   dimension:  same_day_of_week_on_scene {
@@ -1653,6 +2633,19 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: ${yesterday_mountain_week} =  ${on_scene_week};;
 
   }
+
+  dimension: last_week_on_scene {
+    type:  yesno
+    sql: ${last_week_mountain_week} =  ${on_scene_week};;
+
+  }
+
+  dimension: last_week_created {
+    type:  yesno
+    sql: ${last_week_mountain_week} =  ${created_week};;
+
+  }
+
 
   dimension: this_week_created {
     type:  yesno
@@ -1690,10 +2683,18 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: count(DISTINCT ${on_scene_date}) ;;
   }
 
+
+
   measure: distinct_days_created {
     type: number
     sql: count(DISTINCT ${created_date}) ;;
   }
+
+  measure: distinct_weeks_created {
+    type: number
+    sql: count(DISTINCT ${created_week}) ;;
+  }
+
 
 
   measure: distinct_weeks_on_scene {
@@ -1706,6 +2707,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
     value_format: "0.0"
     sql: ${complete_count}::float/(nullif(${distinct_days_on_scene},0))::float  ;;
   }
+
 
   measure: daily_average_created {
     type: number
@@ -1720,6 +2722,13 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: ${complete_count}/(nullif(${distinct_weeks_on_scene},0))::float  ;;
   }
 
+  measure: weekly_average_created{
+    type: number
+    value_format: "0.0"
+    sql: ${care_request_count}/(nullif(${distinct_weeks_created},0))::float  ;;
+  }
+
+
   measure: monthly_average_complete {
     type: number
     value_format: "0.0"
@@ -1733,13 +2742,30 @@ measure:  count_end_of_shift_dead_time_45_mins {
   }
 
   measure: max_day_on_scene {
+    timeframes: [date, day_of_week_index, week, month, day_of_month, quarter]
     type: date
     sql:max(${on_scene_date}) ;;
   }
 
+  measure: min_day_created {
+    type: date
+    sql: min(${created_date}) ;;
+  }
+
+  measure: max_day_created{
+    type: date
+    sql:max(${created_date}) ;;
+  }
+
+
   measure: min_week_on_scene {
     type: string
     sql: min(${on_scene_week}) ;;
+  }
+
+  measure: min_week_created{
+    type: string
+    sql: min(${created_week}) ;;
   }
 
   measure: max_week_on_scene {
@@ -1757,6 +2783,14 @@ measure:  count_end_of_shift_dead_time_45_mins {
   }
 
   measure: min_max_range_day_on_scene {
+    type: string
+    sql:
+      case when ${min_week_on_scene} =  ${yesterday_mountain_week} then ${min_day_on_scene}::text
+      else concat(trim(to_char(current_date - interval '1 day', 'day')), 's ', ${min_day_on_scene}, ' thru ', ${max_day_on_scene}) end ;;
+
+    }
+
+  measure: min_max_range_day_created {
     type: string
     sql:
       case when ${min_week_on_scene} =  ${yesterday_mountain_week} then ${min_day_on_scene}::text
@@ -1805,17 +2839,28 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: coalesce(${complete_comment}, ${archive_comment}) ;;
   }
 
+#   dimension: primary_resolved_reason {
+#     type:  string
+#     sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
+#     drill_fields: [secondary_resolved_reason]
+#   }
+
   dimension: primary_resolved_reason {
     type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
-    drill_fields: [secondary_resolved_reason]
+    sql: CASE
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'CANCELLED BY PATIENT'  THEN 'Cancelled by Patient or Partner'
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'REFERRED VIA PHONE' THEN 'Referred - Phone Triage'
+        ELSE  trim(split_part(${resolved_reason_full}, ':', 1))
+        END;;
+        drill_fields: [secondary_resolved_reason]
   }
 
   dimension: secondary_resolved_reason {
     type:  string
     sql: CASE
-          WHEN ${resolved_reason_full} LIKE '%Spoke to my family doctor%'
-          THEN 'Spoke to my Family Doctor'
+          WHEN ${resolved_reason_full} LIKE '%Spoke to my family doctor%' THEN 'Spoke to my Family Doctor'
+          WHEN trim(split_part(${resolved_reason_full}, ':', 2)) SIMILAR TO '%(Going to an Emergency Department|Going to Emergency Department)%' THEN 'Going to Emergency Department'
+          WHEN trim(split_part(${resolved_reason_full}, ':', 2)) SIMILAR TO '%(Going to an Urgent Care|Going to Urgent Care)%' THEN 'Going to Urgent Care'
           ELSE trim(split_part(${resolved_reason_full}, ':', 2))
         END ;;
   }
@@ -1831,6 +2876,24 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: trim(split_part(${resolved_reason_full}, ':', 3)) ;;
   }
 
+  dimension: resolved_to_advanced_care {
+    description: "Resolved to Advanced Care (resolved reason contains 'Advanced Care)"
+    type: yesno
+    sql: lower(${resolved_reason_full}) LIKE '%advanced care%' or lower(${resolved_reason_full}) LIKE '%advancedcare%' or lower(${resolved_reason_full}) LIKE '%escalated to advanced%';;
+  }
+
+  measure: resolved_to_advanced_care_count {
+    description: "Count of Resolved to Advanced Care (resolved reason contains 'Advanced Care)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: resolved_to_advanced_care
+      value: "yes"
+    }
+
+  }
+
+
   dimension: escalation_type {
     type: string
     sql: CASE
@@ -1842,11 +2905,37 @@ measure:  count_end_of_shift_dead_time_45_mins {
   }
 
 
+#   dimension: escalated_on_scene {
+#     type: yesno
+#     sql: UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+#     ${primary_resolved_reason} = 'Referred - Point of Care';;
+#   }
+
+
   dimension: escalated_on_scene {
+    description: "Escalated to emergency department or 911 on-scene"
+    label: "Escalated On-Scene to Ed"
     type: yesno
-    sql: UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
-    ${primary_resolved_reason} = 'Referred - Point of Care';;
+    sql:UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE: EMERGENCY DEPARTMENT%' OR
+        UPPER(${complete_comment}) LIKE '%REFERRED - POINT OF CARE: ED%' OR
+        (UPPER(${primary_resolved_reason}) = 'REFERRED - POINT OF CARE' AND
+        (UPPER(${secondary_resolved_reason}) LIKE '%EMERGENCY DEPARTMENT%' OR
+        SUBSTRING(UPPER(${secondary_resolved_reason}),1,2) = 'ED')) ;;
+
   }
+
+  dimension: escalated_non_ed_on_scene {
+    description: "Escalated or referred on-scene to non Emergency Department or 911 source"
+    label: "Escalated or Referred On-Scene to Non ED"
+    type: yesno
+    sql:  ${care_request_flat.complete_date} is not null AND
+        ((${care_request_flat.primary_resolved_reason} IS NULL OR
+        UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+        UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE') AND
+        NOT ${escalated_on_scene});;
+  }
+
+
 
   dimension: lwbs_going_to_ed {
     type: yesno
@@ -1916,6 +3005,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
           WHEN ${resolved_911_divert} THEN '911 Diversion'
           WHEN ${escalated_on_phone} THEN 'Escalated Over Phone'
           WHEN ${resolved_other} THEN 'Other Resolved'
+          WHEN ${booked_shaping_placeholder_resolved} THEN 'Booked or Shaping'
           ELSE 'Billable Visit'
         END
           ;;
@@ -2027,8 +3117,10 @@ measure:  count_end_of_shift_dead_time_45_mins {
   }
 
   dimension: pafu_or_follow_up {
+    label: "Bridge Care Visit OR DH Follow Up"
+    description: "DH Followup AND Post Acute Followups are counted. Use the 'Post Acute Followups' flag in the 'Care Request' view to report on PAFU only"
     type: yesno
-    sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} ;;
+    sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} or lower(${service_lines.name}) like '%post acute%' or lower(${service_lines.name}) like '%post-acute%' ;;
   }
 
   measure: follow_up_limbo_count {
@@ -2195,7 +3287,18 @@ measure:  count_end_of_shift_dead_time_45_mins {
     }
   }
 
+  measure: lwbs_wait_time_too_long_count {
+    type: count_distinct
+    description: "Count of care requests where resolve reason is 'Wait time too long'"
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs_wait_time_too_long
+      value: "yes"
+    }
+  }
+
   measure: escalated_on_scene_count {
+    label: "Escalated On-Scene to Ed Count"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
@@ -2204,9 +3307,22 @@ measure:  count_end_of_shift_dead_time_45_mins {
     }
   }
 
+  measure: escalated_on_scene_to_ed_acute_ems_cost_savings_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_scene
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
+    }
+  }
+
   dimension: escalated_on_phone {
     type: yesno
-    sql: (${archive_comment} SIMILAR TO '(%Referred via Phone%|%Referred - Phone Triage%)') and not ${booked_shaping_placeholder_resolved};;
+    sql: (${archive_comment} SIMILAR TO '%(Referred via Phone|Referred - Phone Triage)%') and not ${booked_shaping_placeholder_resolved};;
   }
 
   dimension: escalated_on_phone_ed {
@@ -2472,10 +3588,24 @@ measure:  count_end_of_shift_dead_time_45_mins {
         END ;;
   }
 
-  dimension: complete {
+#   dimension: complete {
+#     type: yesno
+#     sql: ${complete_date} is not null AND (${primary_resolved_reason} IS NULL OR ${escalated_on_scene}) ;;
+#   }
+
+  dimension:  complete {
     type: yesno
-    sql: ${complete_date} is not null ;;
+    sql: ${care_request_flat.complete_date} is not null AND
+      (${care_request_flat.primary_resolved_reason} IS NULL OR
+      UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+      UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE') ;;
   }
+
+  dimension: accepted {
+    type: yesno
+    sql: ${accept_date} is not null ;;
+  }
+
 
   dimension: prior_complete_week_flag {
     description: "The complete date is in the past complete week"
@@ -2530,6 +3660,11 @@ measure:  count_end_of_shift_dead_time_45_mins {
     sql: ${complete_comment} is not null ;;
   }
 
+  dimension: dx_visit {
+    type: yesno
+    sql: ${dx_conversions.patient_id} is not null ;;
+  }
+
 
   measure: complete_count {
     type: count_distinct
@@ -2539,6 +3674,103 @@ measure:  count_end_of_shift_dead_time_45_mins {
       value: "yes"
     }
   }
+
+  measure: complete_count_dx {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: dx_visit
+      value: "yes"
+    }
+  }
+
+  measure: dx_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_dx}::float/ ${complete_count}::float else 0 end;;
+    }
+
+
+  measure: complete_count_no_arm_advanced{
+    label: "Complete Count (no arm, advanced or tele)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.mfr_flex_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.advanced_care_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.telemedicine_car
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+  measure: complete_count_kaiser{
+    label: "Complete Count (Kaiser)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: insurance_coalese_crosswalk.kaiser_colorado
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+
+
+  measure: complete_count_advanced{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.advanced_care_car
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+  measure: complete_count_telemedicine{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.telemedicine_car
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+
+
+
+  measure: accepted_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: accepted
+      value: "yes"
+    }
+  }
+
+
 
     measure: complete_count_medicaid {
       type: count_distinct
@@ -2582,14 +3814,32 @@ measure:  count_end_of_shift_dead_time_45_mins {
   dimension: flu_chief_complaint {
     type: yesno
     sql:
-    lower(${care_requests.chief_complaint}) SIMILAR TO '%(flu|cough)%'
+    (lower(${care_requests.chief_complaint}) like '%cough%'
+    OR
+    lower(${care_requests.chief_complaint}) like '%fever%'
+    OR
+    lower(${care_requests.chief_complaint}) like '%diarrhea%'
+    OR
+    lower(${care_requests.chief_complaint}) like '%upper respiratory%'
+    OR
+    lower(${care_requests.chief_complaint}) like '%sore throat%'
     OR
     lower(${care_requests.chief_complaint}) like '%uri'
     OR
     lower(${care_requests.chief_complaint}) like '%uri %'
     OR
     lower(${care_requests.chief_complaint}) like '%uri/%'
-    or trim(lower(${care_requests.chief_complaint})) = 'uri';;
+    OR
+    trim(lower(${care_requests.chief_complaint})) = 'uri'
+    OR
+    lower(${care_requests.chief_complaint}) like '%flu'
+    OR
+    lower(${care_requests.chief_complaint}) like '%flu %'
+    OR
+    lower(${care_requests.chief_complaint}) like '%flu/%'
+    OR
+    trim(lower(${care_requests.chief_complaint})) = 'flu')
+    and not ${risk_assessments.asymptomatic_covid_testing};;
   }
 
   measure: complete_count_flu {
@@ -2618,12 +3868,59 @@ measure:  count_end_of_shift_dead_time_45_mins {
     }
   }
 
+  measure: complete_count_communicable_protocol {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: risk_assessments.communicable_protocol
+      value: "yes"
+    }
+  }
+
+  measure: complete_count_asymptomatic_covid_testing {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: risk_assessments.asymptomatic_covid_testing
+      value: "yes"
+    }
+  }
+
+
 
   measure: flu_percent {
     type: number
     value_format: "0.0%"
     sql: ${complete_count_flu}::float/nullif(${complete_count}::float,0);;
   }
+
+
+  measure: asymptomatic_covid_testing_percent {
+    type: number
+    value_format: "0.0%"
+    sql: ${complete_count_asymptomatic_covid_testing}::float/nullif(${complete_count}::float,0);;
+  }
+
+  measure: communicable_protocol_percent{
+    type: number
+    value_format: "0.0%"
+    sql: ${complete_count_communicable_protocol}::float/nullif(${complete_count}::float,0);;
+  }
+
+  measure: communicable_and_asymptomatic_covid_testing_percent{
+    type: number
+    value_format: "0.0%"
+    sql: ${communicable_protocol_percent}::float+${asymptomatic_covid_testing_percent}::float;;
+  }
+
 
   measure: flu_percent_chief_complaint {
     type: number
@@ -2704,10 +4001,76 @@ measure:  count_end_of_shift_dead_time_45_mins {
           ) end;;
   }
 
+ measure:  days_in_quarter{
+   type: number
+  sql: case when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 1  then 90
+            when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 2   then 91
+            when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 3 then 92
+            when EXTRACT(QUARTER FROM ${max_on_scene_raw}) = 4   then 92
+            else null end;;
+ }
+  measure: days_left_in_quarter {
+    type: number
+    sql:
+       (  CAST(date_trunc('quarter',  ${yesterday_mountain_date})  + interval '3 months' - interval '1 day' AS date) - CAST( ${yesterday_mountain_date} AS date))
+;;
+  }
+
+  measure: quarter_percent{
+    type: number
+    sql: case when ${max_on_scene_quarter} != ${yesterday_mountain_quarter} then 1
+    else
+      (${days_in_quarter}::float-${days_left_in_quarter}::float)/${days_in_quarter}::float end
+     ;;
+  }
+  measure: month_percent_created {
+    type: number
+    sql:
+
+        case when to_char(${max_created_date} , 'YYYY-MM') != ${yesterday_mountain_month} then 1
+        else
+            extract(day from ${yesterday_mountain_date})
+          /    DATE_PART('days',
+              DATE_TRUNC('month', ${yesterday_mountain_date})
+              + '1 MONTH'::INTERVAL
+              - '1 DAY'::INTERVAL
+          ) end;;
+  }
+
+
   measure: monthly_visits_run_rate {
     type: number
     sql: round(${complete_count}/${month_percent});;
   }
+
+  measure: quarterly_complete_run_rate {
+    type: number
+    sql: round(${complete_count}/${quarter_percent});;
+  }
+
+  measure: quarterly_complete_run_rate_seaosonal_adj {
+    label: "Quarterly Complete Run Rate Seasonal Adj"
+    type: number
+    sql: round(${complete_count_seasonal_adj}/${quarter_percent});;
+  }
+
+
+  measure: monthly_accepted_run_rate {
+    type: number
+    sql: round(${accepted_count}/${month_percent});;
+  }
+
+  measure: monthly_new_patients_run_rate{
+    type: number
+    sql: round(${count_new_patient_first_visits}/${month_percent});;
+  }
+
+  measure: overflow_visits_run_rate {
+    type: number
+    value_format: "0"
+    sql: round(${count_overflow}::float/${month_percent});;
+  }
+
 
   measure: care_request_count_run_rate {
     type: number
@@ -2754,6 +4117,14 @@ measure:  count_end_of_shift_dead_time_45_mins {
     else null end;;
   }
 
+  dimension: rolling_90_day {
+    type: string
+    sql:
+    case when ${on_scene_date} >= current_date - interval '90 day' then 'past 90 days'
+    when  ${on_scene_date} between current_date - interval '180 day' and  current_date - interval '90 day' then 'previous 90 days'
+    else null end;;
+  }
+
   dimension: complete_month_number {
     type:  number
     sql: EXTRACT(MONTH from ${complete_raw}) ;;
@@ -2778,6 +4149,30 @@ measure:  count_end_of_shift_dead_time_45_mins {
     else
       DATE_PART('days',
         DATE_TRUNC('month', ${on_scene_date})
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ) end ;;
+  }
+
+  dimension: days_in_month_complete {
+    type: number
+    sql:
+     case when to_char(${complete_date} , 'YYYY-MM') = ${yesterday_mountain_month} then ${yesterday_mountain_day_of_month}
+    else
+      DATE_PART('days',
+        DATE_TRUNC('month', ${on_scene_date})
+        + '1 MONTH'::INTERVAL
+        - '1 DAY'::INTERVAL
+    ) end ;;
+  }
+
+  dimension: days_in_month_created {
+    type: number
+    sql:
+     case when to_char(${created_date} , 'YYYY-MM') = ${yesterday_mountain_month} then ${yesterday_mountain_day_of_month}
+    else
+      DATE_PART('days',
+        DATE_TRUNC('month', ${created_date})
         + '1 MONTH'::INTERVAL
         - '1 DAY'::INTERVAL
     ) end ;;
@@ -2841,523 +4236,9 @@ end  ;;
     sql: ${on_scene_hour_of_day} > 15 OR ${on_scene_day_of_week_index} IN (5, 6)  ;;
   }
 
-  dimension: dc1 {
-    description: "Diagnosis Only"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${diversion_flat.diagnosis_code} IS NOT NULL THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc2 {
-    description: "Survey Response YES to ER"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${ed_diversion_survey_response_clone.survey_yes_to_er} OR ${medical_necessity_notes.er_911_alternative} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc3 {
-    description: "911 Diversion Program"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${channel_items.divert_from_911} OR ${medical_necessity_notes.er_911_alternative} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc4 {
-    description: "POS SNF"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc5 {
-    description: "POS Assisted Living"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc6 {
-    description: "Referred from Home Health, PCP or Care Mgmt"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc7 {
-    description: "Weekends or After 3 PM"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc8 {
-    description: "Abnormal Vitals (O2 sat < 90%, HR > 100, SBP < 90 for adults)"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${vitals_flat.abnormal_vitals} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc9 {
-    description: "Additional Dx of Confusion or Altered Awareness"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${athenadwh_icdcodeall.confusion_altered_awareness} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc10 {
-    description: "Wheelchair or Homebound"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${athenadwh_icdcodeall.wheelchair_homebound} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc11 {
-    description: "EKG Performed"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.ekg_performed} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc12 {
-    description: "Nebulizer Treatment"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.nebulizer} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc13 {
-    description: "IV/Fluids Administered"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.iv_fluids} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc14 {
-    description: "Blood Tests Performed"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.blood_tests} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc15 {
-    description: "Catheter Adjustment or Placement"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.catheter_placement} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc16 {
-    description: "Laceration Repair"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.laceration_repair} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc17 {
-    description: "Epistaxis Tx"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.epistaxis} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc18 {
-    description: "Rectal Prolapse Reduction or Hernia Reduction"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.hernia_rp_reduction} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc19 {
-    description: "Nursemaids elbow reduction or other joint reduction"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.joint_reduction} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc20 {
-    description: "Gastrostomy Tube replacement or repair"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.gastronomy_tube} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc21 {
-    description: "I&D of Abscess"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${cpt_code_dimensions_clone.abscess_drain} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc22 {
-    description: "POS SNF AND (abnormal vital signs  OR altered mental status)"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc23 {
-    description: "POS SNF AND any procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc24 {
-    description: "POS SNF AND referral"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc25 {
-    description: "POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
-    ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc26 {
-    description: "POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_snf} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
-    ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc27 {
-    description: "POS AL AND (abnormal vital signs OR altered mental status)"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc28 {
-    description: "POS AL AND procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc29 {
-    description: "POS AL AND referral"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc30 {
-    description: "POS AL AND (abnormal vital signs OR altered mental status) AND any procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
-    ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc31 {
-    description: "POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_al} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
-    ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc32 {
-    description: "POS HOME AND (abnormal vital signs OR altered mental status)"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc33 {
-    description: "POS HOME AND any procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc34 {
-    description: "POS HOME AND referral"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc35 {
-    description: "POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness}) AND
-    ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc36 {
-    description: "POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND (${vitals_flat.abnormal_vitals} OR ${athenadwh_icdcodeall.confusion_altered_awareness} OR
-    ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc37 {
-    description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${athenadwh_icdcodeall.confusion_altered_awareness}) THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc38 {
-    description: "POS HOME AND wheelchair/homebound AND any procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc39 {
-    description: "POS HOME AND wheelchair/homebound AND referral"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND ${channel_items.referred_from_hh_pcp_cm} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc40 {
-    description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${athenadwh_icdcodeall.confusion_altered_awareness}) AND ${cpt_code_dimensions_clone.any_cs_procedure} THEN 1 ELSE 0 END ;;
-  }
-  dimension: dc41 {
-    description: "POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday"
-    type: number
-    #hidden: yes
-    sql: CASE WHEN ${care_requests.pos_home} AND ${athenadwh_icdcodeall.wheelchair_homebound} AND (${vitals_flat.abnormal_vitals} OR
-    ${athenadwh_icdcodeall.confusion_altered_awareness} OR ${cpt_code_dimensions_clone.any_cs_procedure} OR ${channel_items.referred_from_hh_pcp_cm}) AND
-    ${care_request_flat.weekend_after_3pm} THEN 1 ELSE 0 END ;;
-  }
-
-  dimension: diversion_category_first_met {
-    description: "The first diversion category that was met"
-    type: string
-    sql: CASE
-          WHEN ${dc1} = 1 AND ${diversion_flat.dc1} = 1 THEN 'Diagnosis Only'
-          WHEN ${dc2} = 1 AND ${diversion_flat.dc2} = 1 THEN 'Survey Response Yes to ER'
-          WHEN ${dc3} = 1 AND ${diversion_flat.dc3} = 1 THEN '911 Diversion Program'
-          WHEN ${dc4} = 1 AND ${diversion_flat.dc4} = 1 THEN 'POS SNF'
-          WHEN ${dc5} = 1 AND ${diversion_flat.dc5} = 1 THEN 'POS Assisted Living'
-          WHEN ${dc6} = 1 AND ${diversion_flat.dc6} = 1 THEN 'Referred from HH, PCP or CM'
-          WHEN ${dc7} = 1 AND ${diversion_flat.dc7} = 1 THEN 'Weekends or After 3 PM'
-          WHEN ${dc8} = 1 AND ${diversion_flat.dc8} = 1 THEN 'Abnormal Vitals'
-          WHEN ${dc9} = 1 AND ${diversion_flat.dc9} = 1 THEN 'Confusion or Altered Awareness'
-          WHEN ${dc10} = 1 AND ${diversion_flat.dc10} = 1 THEN 'Wheelchair/Homebound'
-          WHEN ${dc11} = 1 AND ${diversion_flat.dc11} = 1 THEN 'EKG Performed'
-          WHEN ${dc12} = 1 AND ${diversion_flat.dc12} = 1 THEN 'Nebulizer Treatment'
-          WHEN ${dc13} = 1 AND ${diversion_flat.dc13} = 1 THEN 'IV/Fluids Administered'
-          WHEN ${dc14} = 1 AND ${diversion_flat.dc14} = 1 THEN 'Blood Tests Performed'
-          WHEN ${dc15} = 1 AND ${diversion_flat.dc15} = 1 THEN 'Catheter Adjustment/Placement'
-          WHEN ${dc16} = 1 AND ${diversion_flat.dc16} = 1 THEN 'Laceration Repair'
-          WHEN ${dc17} = 1 AND ${diversion_flat.dc17} = 1 THEN 'Epistaxis'
-          WHEN ${dc18} = 1 AND ${diversion_flat.dc18} = 1 THEN 'Hernia/Rectal Prolapse Reduction'
-          WHEN ${dc19} = 1 AND ${diversion_flat.dc19} = 1 THEN 'Nursemaids Elbow/Other Joint Reduction'
-          WHEN ${dc20} = 1 AND ${diversion_flat.dc20} = 1 THEN 'Gastronomy Tube Replacement or Repair'
-          WHEN ${dc21} = 1 AND ${diversion_flat.dc21} = 1 THEN 'I&D of Abscess'
-          WHEN ${dc22} = 1 AND ${diversion_flat.dc22} = 1 THEN 'POS SNF AND (abnormal vital signs  OR altered mental status)'
-          WHEN ${dc23} = 1 AND ${diversion_flat.dc23} = 1 THEN 'POS SNF AND any procedures'
-          WHEN ${dc24} = 1 AND ${diversion_flat.dc24} = 1 THEN 'POS SNF AND referral'
-          WHEN ${dc25} = 1 AND ${diversion_flat.dc25} = 1 THEN 'POS SNF AND (abnormal vital signs OR altered mental status) AND any procedures'
-          WHEN ${dc26} = 1 AND ${diversion_flat.dc26} = 1 THEN 'POS SNF AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
-          WHEN ${dc27} = 1 AND ${diversion_flat.dc27} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status)'
-          WHEN ${dc28} = 1 AND ${diversion_flat.dc28} = 1 THEN 'POS AL AND procedures'
-          WHEN ${dc29} = 1 AND ${diversion_flat.dc29} = 1 THEN 'POS AL AND referral'
-          WHEN ${dc30} = 1 AND ${diversion_flat.dc30} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status) AND any procedures'
-          WHEN ${dc31} = 1 AND ${diversion_flat.dc31} = 1 THEN 'POS AL AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
-          WHEN ${dc32} = 1 AND ${diversion_flat.dc32} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status)'
-          WHEN ${dc33} = 1 AND ${diversion_flat.dc33} = 1 THEN 'POS HOME AND any procedures'
-          WHEN ${dc34} = 1 AND ${diversion_flat.dc34} = 1 THEN 'POS HOME AND referral'
-          WHEN ${dc35} = 1 AND ${diversion_flat.dc35} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status) AND any procedures'
-          WHEN ${dc36} = 1 AND ${diversion_flat.dc36} = 1 THEN 'POS HOME AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
-          WHEN ${dc37} = 1 AND ${diversion_flat.dc37} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status)'
-          WHEN ${dc38} = 1 AND ${diversion_flat.dc38} = 1 THEN 'POS HOME AND wheelchair/homebound AND any procedures'
-          WHEN ${dc39} = 1 AND ${diversion_flat.dc39} = 1 THEN 'POS HOME AND wheelchair/homebound AND referral'
-          WHEN ${dc40} = 1 AND ${diversion_flat.dc40} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status) AND any procedures'
-          WHEN ${dc41} = 1 AND ${diversion_flat.dc41} = 1 THEN 'POS HOME AND wheelchair/homebound AND (abnormal vital signs OR altered mental status OR any procedures OR referral) AND afterhours/weekend/holiday'
-          ELSE 'No Diversion Criteria Met'
-  END;;
-  }
-
-  measure: diversion_categories_met {
-    description: "A list of the diversion categories that have been met"
-    type: string
-    sql: array_to_string(array_agg(${diversion_category_first_met}), ' | ') ;;
-  }
-
-  dimension: diversion_cats_met {
-    description: "The number of diversion categories met"
-    type: number
-    sql: COALESCE(${dc1}, 0)*COALESCE(${diversion_flat.dc1}, 0) +
-    COALESCE(${dc2}, 0)*COALESCE(${diversion_flat.dc2}, 0) +
-    COALESCE(${dc3}, 0)*COALESCE(${diversion_flat.dc3}, 0) +
-    COALESCE(${dc4}, 0)*COALESCE(${diversion_flat.dc4}, 0) +
-    COALESCE(${dc5}, 0)*COALESCE(${diversion_flat.dc5}, 0) +
-    COALESCE(${dc6}, 0)*COALESCE(${diversion_flat.dc6}, 0) +
-    COALESCE(${dc7}, 0)*COALESCE(${diversion_flat.dc7}, 0) +
-    COALESCE(${dc8}, 0)*COALESCE(${diversion_flat.dc8}, 0) +
-    COALESCE(${dc9}, 0)*COALESCE(${diversion_flat.dc9}, 0) +
-    COALESCE(${dc10}, 0)*COALESCE(${diversion_flat.dc10}, 0) +
-    COALESCE(${dc11}, 0)*COALESCE(${diversion_flat.dc11}, 0) +
-    COALESCE(${dc12}, 0)*COALESCE(${diversion_flat.dc12}, 0) +
-    COALESCE(${dc13}, 0)*COALESCE(${diversion_flat.dc13}, 0) +
-    COALESCE(${dc14}, 0)*COALESCE(${diversion_flat.dc14}, 0) +
-    COALESCE(${dc15}, 0)*COALESCE(${diversion_flat.dc15}, 0) +
-    COALESCE(${dc16}, 0)*COALESCE(${diversion_flat.dc16}, 0) +
-    COALESCE(${dc17}, 0)*COALESCE(${diversion_flat.dc17}, 0) +
-    COALESCE(${dc18}, 0)*COALESCE(${diversion_flat.dc18}, 0) +
-    COALESCE(${dc19}, 0)*COALESCE(${diversion_flat.dc19}, 0) +
-    COALESCE(${dc20}, 0)*COALESCE(${diversion_flat.dc20}, 0) +
-    COALESCE(${dc21}, 0)*COALESCE(${diversion_flat.dc21}, 0) +
-    COALESCE(${dc22}, 0)*COALESCE(${diversion_flat.dc22}, 0) +
-    COALESCE(${dc23}, 0)*COALESCE(${diversion_flat.dc23}, 0) +
-    COALESCE(${dc24}, 0)*COALESCE(${diversion_flat.dc24}, 0) +
-    COALESCE(${dc25}, 0)*COALESCE(${diversion_flat.dc25}, 0) +
-    COALESCE(${dc26}, 0)*COALESCE(${diversion_flat.dc26}, 0) +
-    COALESCE(${dc27}, 0)*COALESCE(${diversion_flat.dc27}, 0) +
-    COALESCE(${dc28}, 0)*COALESCE(${diversion_flat.dc28}, 0) +
-    COALESCE(${dc29}, 0)*COALESCE(${diversion_flat.dc29}, 0) +
-    COALESCE(${dc30}, 0)*COALESCE(${diversion_flat.dc30}, 0) +
-    COALESCE(${dc31}, 0)*COALESCE(${diversion_flat.dc31}, 0) +
-    COALESCE(${dc32}, 0)*COALESCE(${diversion_flat.dc32}, 0) +
-    COALESCE(${dc33}, 0)*COALESCE(${diversion_flat.dc33}, 0) +
-    COALESCE(${dc34}, 0)*COALESCE(${diversion_flat.dc34}, 0) +
-    COALESCE(${dc35}, 0)*COALESCE(${diversion_flat.dc35}, 0) +
-    COALESCE(${dc36}, 0)*COALESCE(${diversion_flat.dc36}, 0) +
-    COALESCE(${dc37}, 0)*COALESCE(${diversion_flat.dc37}, 0) +
-    COALESCE(${dc38}, 0)*COALESCE(${diversion_flat.dc38}, 0) +
-    COALESCE(${dc39}, 0)*COALESCE(${diversion_flat.dc39}, 0) +
-    COALESCE(${dc40}, 0)*COALESCE(${diversion_flat.dc40}, 0) +
-    COALESCE(${dc41}, 0)*COALESCE(${diversion_flat.dc41}, 0);;
-  }
-
-  dimension: diversion_flag {
-    type: yesno
-    sql: ${diversion_cats_met} > 0;;
-  }
-
-  measure: count_er_diversions {
-    type: count_distinct
-    sql: ${care_request_id} ;;
-    filters: {
-      field: diversion_type.diversion_type_er
-      value: "yes"
-    }
-    filters: {
-      field:diversion_flag
-      value: "yes"
-    }
-    filters: {
-      field: escalated_on_scene
-      value: "no"
-    }
-    filters: {
-      field: care_requests.post_acute_follow_up
-      value: "no"
-    }
-  }
-
-  dimension: diversion_er {
-    type: number
-    sql: CASE WHEN ${diversion_type.diversion_type_er} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
-  }
-
-  measure: diversion_savings_er {
-    type: number
-    sql: ${count_er_diversions} *
-        MAX(CASE
-          WHEN ${insurance_plans.er_diversion} IS NOT NULL THEN ${insurance_plans.er_diversion}
-          WHEN ${population_health_channels.er_diversion} IS NOT NULL THEN ${population_health_channels.er_diversion}
-          WHEN ${channel_items.er_diversion} IS NOT NULL THEN ${channel_items.er_diversion}
-          ELSE 2000
-        END) ;;
-    value_format: "$#,##0"
-  }
-
-  measure: count_911_diversions {
-    type: count_distinct
-    sql: ${care_request_id} ;;
-    filters: {
-      field: diversion_type.diversion_type_911
-      value: "yes"
-    }
-    filters: {
-      field:diversion_flag
-      value: "yes"
-    }
-    filters: {
-      field: escalated_on_scene
-      value: "no"
-    }
-    filters: {
-      field: care_requests.post_acute_follow_up
-      value: "no"
-    }
-  }
-  dimension: diversion_911 {
-    type: number
-    sql: CASE WHEN ${diversion_type.diversion_type_911} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
-  }
-
-  measure: diversion_savings_911 {
-    type: number
-    sql: ${count_911_diversions} *
-        MAX(CASE
-          WHEN ${insurance_plans.nine_one_one_diversion} IS NOT NULL THEN ${insurance_plans.nine_one_one_diversion}
-          WHEN ${population_health_channels.nine_one_one_diversion} IS NOT NULL THEN ${population_health_channels.nine_one_one_diversion}
-          WHEN ${channel_items.nine_one_one_diversion} IS NOT NULL THEN ${channel_items.nine_one_one_diversion}
-          ELSE 750
-        END) ;;
-    value_format: "$#,##0"
-  }
-
-  measure: count_hospitalization_diversions {
-    type: count_distinct
-    sql: ${care_request_id} ;;
-    filters: {
-      field: diversion_type.diversion_type_hospitalization
-      value: "yes"
-    }
-    filters: {
-      field:diversion_flag
-      value: "yes"
-    }
-    filters: {
-      field: escalated_on_scene
-      value: "no"
-    }
-    filters: {
-      field: care_requests.post_acute_follow_up
-      value: "no"
-    }
-  }
-
-  measure: diversion_savings_hospitalization {
-    type: number
-    sql: ${count_hospitalization_diversions} *
-    MAX(CASE
-          WHEN ${insurance_plans.hospitalization_diversion} IS NOT NULL THEN ${insurance_plans.hospitalization_diversion}
-          WHEN ${population_health_channels.hospitalization_diversion} IS NOT NULL THEN ${population_health_channels.hospitalization_diversion}
-          WHEN ${channel_items.hospitalization_diversion} IS NOT NULL THEN ${channel_items.hospitalization_diversion}
-          ELSE 12000
-        END) ;;
-    value_format: "$#,##0"
-  }
-
-  dimension: diversion_hospitalization {
-    type: number
-    sql: CASE WHEN ${diversion_type.diversion_type_hospitalization} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
-  }
-
-  measure: count_observation_diversions {
-    type: count_distinct
-    sql: ${care_request_id} ;;
-    filters: {
-      field: diversion_type.diversion_type_observation
-      value: "yes"
-    }
-    filters: {
-      field:diversion_flag
-      value: "yes"
-    }
-    filters: {
-      field: escalated_on_scene
-      value: "no"
-    }
-    filters: {
-      field: care_requests.post_acute_follow_up
-      value: "no"
-    }
-  }
-
-  measure: diversion_savings_observation {
-    type: number
-    sql: ${count_observation_diversions} *
-    MAX(CASE
-          WHEN ${insurance_plans.observation_diversion} IS NOT NULL THEN ${insurance_plans.observation_diversion}
-          WHEN ${population_health_channels.observation_diversion} IS NOT NULL THEN ${population_health_channels.observation_diversion}
-          WHEN ${channel_items.observation_diversion} IS NOT NULL THEN ${channel_items.observation_diversion}
-          ELSE 4000
-        END) ;;
-    value_format: "$#,##0"
-  }
-
-  dimension: diversion_observation {
-    type: number
-    sql: CASE WHEN ${diversion_type.diversion_type_observation} AND ${diversion_flag} THEN 1 ELSE 0 END ;;
-  }
-
   dimension: high_acuity_visit {
     type: yesno
-    sql: ${diversion_flag} OR ${escalated_on_scene} OR ${care_requests.post_acute_follow_up};;
+    sql: ${diversions_by_care_request.diversion} OR ${care_request_flat.escalated_on_scene} OR ${care_requests.post_acute_follow_up};;
   }
 
   measure: count_high_acuity_visits {
@@ -3370,157 +4251,6 @@ end  ;;
     }
   }
 
-  dimension: diversion_category {
-    type: string
-    sql: CASE
-      WHEN ${complete_time} IS NULL THEN 'not completed'
-      WHEN ${escalated_on_scene} THEN 'escalated'
-      WHEN ${visit_facts_clone.day_30_followup_outcome} IN ( 'ed_same_complaint', 'hospitalization_same_complaint' )
-        OR
-        ${visit_facts_clone.day_14_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint' )
-        OR
-        ${visit_facts_clone.day_3_followup_outcome} IN( 'ed_same_complaint', 'hospitalization_same_complaint') THEN 'ed_same_complaint'
-      WHEN lower(${cars.name}) IN ('smfr_car', 'wmfr car')  THEN
-        'smfr/wmfr'
-      WHEN lower(${channel_items.type_name}) IN( 'home health',
-                          'snf',
-                          'provider group' ) THEN lower(${channel_items.type_name})
-      WHEN lower(${channel_items.type_name}) = 'senior care'
-        AND
-        ${on_scene_hour_of_day} < 15
-        AND
-       ${on_scene_day_of_week_index} NOT IN (5, 6) THEN 'senior care - weekdays before 3pm'
-      WHEN lower(${channel_items.type_name})  = 'senior care'
-        AND
-        (
-          ${on_scene_hour_of_day} > 15
-          OR
-            ${on_scene_day_of_week_index} IN (5, 6)
-        )
-        THEN 'senior care - weekdays after 3pm and weekends'
-      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} = 'Emergency Room' THEN 'survey responded emergency room'
-      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} != 'Emergency Room'
-        AND
-        ${ed_diversion_survey_response_clone.answer_selection_value} IS NOT NULL THEN 'survey responded not emergency room'
-      WHEN ${ed_diversion_survey_response_clone.answer_selection_value} IS NULL THEN
-        'no survey'
-      ELSE 'other'
-      END;;
-  }
-
-  dimension: ed_diversion {
-    label: "ED Diversion"
-    description: "The probability of an ED diversion based on the diversion category"
-    type: number
-    sql:  CASE
-      WHEN ${diversion_category} = 'ed_same_complaint' THEN  0.0
-      WHEN ${diversion_category} = 'not completed' THEN 0.0
-      WHEN ${diversion_category} = 'escalated' THEN  0
-      WHEN ${diversion_category} = 'smfr/wmfr' THEN  1.0
-      WHEN ${diversion_category} = 'home health' THEN  .9
-      WHEN ${diversion_category} = 'snf' THEN 1.0
-      WHEN ${diversion_category} = 'provider group' THEN .5
-      WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN .5
-      WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
-      WHEN ${diversion_category} = 'survey responded emergency room' THEN   1.0
-      WHEN ${diversion_category} = 'survey responded not emergency room' THEN  0.0
-      WHEN ${diversion_category} = 'no survey' THEN ROUND(CAST(${ed_diversion_survey_response_rate_clone.er_percent} AS numeric), 3)
-        ELSE 0.0
-      END ;;
-  }
-
-
-  #.89 comes from this report: https://dispatchhealth.looker.com/explore/dashboard/care_requests?qid=kYQK5B33hMS9mlBhfjwJJl&toggle=fil
-  dimension: ed_diversion_adj {
-    type: number
-    sql: case when ${followup_30day} then ${ed_diversion}
-         else ${ed_diversion}*0.89 end;;
-  }
-
-  dimension: 911_diversion {
-    type: number
-    description: "The probability of a 911 diversion based on the diversion category"
-    sql:  CASE
-      WHEN ${diversion_category} = 'ed_same_complaint' THEN  0
-      WHEN ${diversion_category} = 'escalated' THEN  0
-      WHEN ${diversion_category} = 'not completed' THEN 0
-      WHEN ${diversion_category} = 'smfr/wmfr' THEN 1.0
-      WHEN ${diversion_category} = 'home health' THEN .5
-      WHEN ${diversion_category} = 'snf' THEN 1.0
-      WHEN ${diversion_category} = 'senior care - weekdays before 3pm' THEN  .5
-      WHEN ${diversion_category} = 'senior care - weekdays after 3pm and weekends' THEN  1.0
-        ELSE 0.0
-      END;;
-  }
-
-  #.89 comes from this report: https://dispatchhealth.looker.com/explore/dashboard/care_requests?qid=kYQK5B33hMS9mlBhfjwJJl&toggle=fil
-  dimension: 911_diversion_adj {
-    type: number
-    sql: case when ${followup_30day} then ${911_diversion}
-              else ${911_diversion}*0.89 end;;
-  }
-
-  dimension: hospital_diversion {
-    type: number
-    sql: ${ed_diversion_adj} * 0.05;;
-  }
-
-
-  measure: est_vol_ed_diversion {
-    type: sum_distinct
-    sql_distinct_key:  concat(${care_request_id}, ${followup_30day}) ;;
-    value_format: "#,##0"
-    sql: ${ed_diversion_adj};;
-
-  }
-
-  measure: est_vol_hospital_diversion {
-    type: sum_distinct
-    sql_distinct_key:  concat(${care_request_id}, ${followup_30day}) ;;
-    value_format: "#,##0"
-    sql: ${hospital_diversion};;
-
-  }
-
-
-  measure: est_vol_911_diversion {
-    type: sum_distinct
-    sql_distinct_key:  concat(${care_request_id}, ${followup_30day}) ;;
-    value_format: "#,##0"
-    sql: ${911_diversion_adj};;
-
-  }
-
-  measure: est_ed_diversion_savings {
-    type: sum_distinct
-    sql_distinct_key:  concat(${care_request_id}, ${followup_30day});;
-    value_format: "$#,##0"
-    sql: ${ed_diversion_adj} * 2000;;
-
-  }
-
-  measure: est_911_diversion_savings {
-    type: sum_distinct
-    sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
-    value_format: "$#,##0"
-    sql: ${911_diversion_adj} * 750;;
-
-  }
-
-  measure: est_hospital_diversion_savings {
-    type: sum_distinct
-    sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
-    value_format: "$#,##0"
-    sql: ${hospital_diversion} * 12000;;
-  }
-
-  measure: est_diversion_savings {
-    type: sum_distinct
-    sql_distinct_key: concat(${care_request_id}, ${followup_30day}) ;;
-    value_format: "$#,##0"
-    sql: ${911_diversion_adj} * 750 + ${ed_diversion_adj} * 2000 + ${hospital_diversion} *12000;;
-
-  }
   dimension: patient_age_month {
     type: number
     sql:  extract(year from age(${care_requests.created_raw}, ${patients.created_raw}))*12 + extract(month from age(${care_requests.created_raw},  ${patients.created_raw})) ;;
@@ -3562,10 +4292,35 @@ end  ;;
       ((CAST(EXTRACT(MINUTE FROM ${now_mountain_raw} ) AS FLOAT)) / 60);;
   }
 
+  dimension: timezone_too_late {
+    type: number
+    value_format: "0.00"
+    sql:case when ${markets.name} in('Richmond', 'Olympia') then
+   (CAST(EXTRACT(HOUR FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    else
+        (CAST(EXTRACT(HOUR FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    end;;
+  }
+
+
   dimension: before_now {
     type: yesno
-    sql: ${created_mountain_decimal} <= ${now_mountain_decimal};;
+    sql:  ${created_mountain_decimal} <= ${now_mountain_decimal} OR ${created_mountain_decimal} >= ${timezone_too_late}  ;;
   }
+
+  dimension: too_late_for_overflow {
+    type: yesno
+    sql: ${created_mountain_decimal} >= case when ${markets.name} in('Richmond', 'Olympia') then
+    (CAST(EXTRACT(HOUR FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 18:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    else
+        (CAST(EXTRACT(HOUR FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz}) AS INT)) +
+    ((CAST(EXTRACT(MINUTE FROM '2099-12-01 19:30'::timestamp  AT TIME ZONE ${timezones.pg_tz} ) AS FLOAT)) / 60)
+    end;;
+  }
+
 
   dimension: max_time_mountain_predictions {
     type: number
@@ -3625,6 +4380,622 @@ end  ;;
 
   }
 
+  dimension: new_patient_first_visit {
+    description: "Flags a patient that had their first visit date occurr within the date range of the filtered population (patient may have 1+ visits in range)."
+    type: yesno
+    sql: ${first_visit_date} = ${on_scene_date};;
+  }
+
+  measure: count_new_patient_first_visits {
+    description: "Counts the number of distinct patients visited for the first time wihtin the date range of the fitered population (patient may have 1+ visits in range)"
+    type: count_distinct
+    sql: ${patient_id} ;;
+    filters: {
+      field: new_patient_first_visit
+      value: "yes"
+    }
+  }
+
+  dimension: return_patient {
+    description: "Determines a patient that has been visited more than one time on separate days"
+    type: yesno
+    sql: ${first_visit_date} != ${on_scene_date};;
+  }
+
+  measure: count_return_patients {
+    description: "Count of the number of distinct patients that have been visited more than one time by DH on separate days"
+    type: count_distinct
+    sql: ${patient_id} ;;
+    filters: {
+      field: return_patient
+      value: "yes"
+    }
+  }
+
+  measure: count_return_patient_visits {
+    description: "Counts the number visits associated with a repeat patient for spearate days"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: return_patient
+      value: "yes"
+    }
+  }
+
+  dimension: overflow_visit {
+    description: "Care Requests that were pushed to next day from their intended visit date. Excludes PAFU and only includes 'acute' service lines."
+    type: yesno
+    sql: (not ${pafu_or_follow_up}) and ${scheduled_visit} and lower(${service_lines.name}) like '%acute%'
+         AND
+        (
+          ${created_date} != ${on_scene_date}
+          OR
+         ${on_scene_date} is null
+        )
+        AND
+        (
+          ${created_date} != ${archive_date}
+        OR
+          ${archive_date} is NULL
+        )
+        AND
+        ${created_date} != ${scheduled_care_date}
+        AND
+        ${notes_aggregated.notes_aggregated} not like '%pushed pt: pt availability%'
+        and not ${too_late_for_overflow}
+        ;;
+  }
+
+  dimension: accepted_date_same_created_date {
+    type: yesno
+    sql: ${accept_initial_date} = ${created_date} ;;
+  }
+
+  dimension: archived {
+    type: yesno
+    sql: ${archive_date} is not null ;;
+  }
+
+  measure: count_distinct_bottom_funnel_care_requests {
+    description: "Count of distinct care requests w/o phone screened"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
+  measure: count_complete_same_day {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations (Same Day)"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
+  measure: count_complete_overflow {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations (Not Same Day)"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
+  measure: limbo_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: not_resolved_or_complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+
+  }
+
+  measure: limbo_non_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: not_resolved_or_complete
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
+    measure: count_overflow {
+    type: count_distinct
+    description: "Count of all Overflow visits"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+  }
+
+
+
+  measure: count_resolved_overflow {
+    type: count_distinct
+    description: "Count of completed care requests OR on-scene escalations (Not Same Day)"
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "no"
+    }
+    filters: {
+      field: archived
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+  }
+
+  measure: lwbs_minus_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: lwbs
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  measure: no_answer_no_show_count_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: resolved_no_answer_no_show
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: clinical_service_not_offered {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%clinical service not offered (scope)%' and not ${covid_resolved};;
+  }
+  measure: clinical_service_not_offered_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: clinical_service_not_offered
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: covid_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%covid%' or lower(${archive_comment}) LIKE '%corona%'  ;;
+  }
+
+  measure: covid_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: covid_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: insurance_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%no insurance / financial%' or lower(${archive_comment}) LIKE '%insurance not contracted (out of network)%'  ;;
+  }
+
+  measure: insurance_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: insurance_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: poa_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%unable to obtain consent from poa or patient%'  ;;
+  }
+
+  measure: poa_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: poa_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: zipcode_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%not in service area%'  ;;
+  }
+
+  measure: zipcode_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: zipcode_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: cancelled_by_patient_other_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%cancelled by patient%' and lower(${archive_comment}) LIKE '%other%' and not ${covid_resolved} and not ${booked_shaping_placeholder_resolved} ;;
+  }
+
+  measure: cancelled_by_patient_other_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: cancelled_by_patient_other_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  dimension: insufficient_information_resolved {
+    type: yesno
+    sql: lower(${archive_comment}) LIKE '%unable to fulfill request: insufficient information to create care request (referral)%' and not ${booked_shaping_placeholder_resolved}  ;;
+  }
+
+  measure: insufficient_information_resolved_minus_overflow{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: insufficient_information_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+  measure: lwbs_rate_bottom_funnel_minus_overflow
+  {
+    value_format: "0%"
+    type: number
+    sql: case when${count_distinct_bottom_funnel_care_requests} >0 then ${lwbs_minus_overflow}/${count_distinct_bottom_funnel_care_requests} else 0 end ;;
+  }
+
+  measure: lwbs_lost_raw
+  {
+    type: number
+    sql: (${lwbs_rate_bottom_funnel_minus_overflow}-(.08))*${count_distinct_bottom_funnel_care_requests}*(.63);;
+  }
+
+  measure: lwbs_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: case when ${lwbs_lost_raw} > 0 then ${lwbs_lost_raw} else 0 end  ;;
+  }
+
+  measure: overflow_complete_rate
+  {
+    value_format: "0%"
+    type: number
+    sql:
+    case when  (${count_resolved_overflow}::float+${count_complete_overflow}::float) > 0.0 then  ${count_complete_overflow}::float/(${count_resolved_overflow}::float+${count_complete_overflow}::float)
+    else 0.0
+    end
+    ;;
+  }
+
+  measure: overflow_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: case when (.93-${overflow_complete_rate})*(${count_resolved_overflow}+${count_complete_overflow}) >0 then (.93-${overflow_complete_rate})*(${count_resolved_overflow}+${count_complete_overflow})
+      else 0 end
+      ;;
+  }
+
+  measure: booked_shaping_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: .63*${booked_shaping_placeholder_resolved_count_minus_overflow}
+      ;;
+  }
+
+  measure: limbo_overflow_lost
+  {
+    type: number
+    value_format: "#,##0"
+    sql: ${care_request_flat.limbo_overflow}*(.3)
+      ;;
+  }
+
+  measure: total_lost
+  {
+    type: number
+    label: "Total Lost Due to Capacity Constraints"
+    value_format: "#,##0"
+    sql: case when ${booked_shaping_lost} is not null then ${booked_shaping_lost} else 0 end
+        +
+        case when ${lwbs_lost} is not null then ${lwbs_lost} else 0 end
+        +
+        case when ${overflow_lost} is not null then ${overflow_lost} else 0 end
+        +
+        case when ${limbo_overflow_lost} is not null then ${limbo_overflow_lost} else 0 end
+      ;;
+  }
+
+  measure: complete_plus_total_lost {
+    value_format: "0"
+    type: number
+    sql:  ${total_lost}+${complete_count};;
+  }
+
+  measure: total_lost_percent{
+    label: "Total Captured Percent (Bottom of Funnel)"
+    value_format: "0%"
+    type: number
+    sql:  case when ${complete_plus_total_lost}>0 then ${complete_count}::float/${complete_plus_total_lost}::float else 0 end;;
+  }
+
+  measure: total_lost_above_baseline
+  {
+    type: number
+    label: "Total Lost Due to Capacity Constraints Above Baseline (2.5%)"
+    value_format: "#,##0"
+    sql: case when ${total_lost}-(${count_distinct_bottom_funnel_care_requests}*.025) >0 then ${total_lost}-(${count_distinct_bottom_funnel_care_requests}*25/1000)
+    else 0 end
+      ;;
+  }
+
+
+  measure: booked_shaping_placeholder_resolved_count_minus_overflow {
+    description: "Care requests resolved for booked, shaping or placeholder"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: booked_shaping_placeholder_resolved
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "no"
+    }
+  }
+
+  measure: resolved_other_count_bottom_funnel {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "no"
+    }
+    filters: {
+      field: lwbs
+      value: "no"
+    }
+    filters: {
+      field: escalated_on_phone
+      value: "no"
+    }
+    filters: {
+      field: booked_shaping_placeholder_resolved
+      value: "no"
+    }
+    filters: {
+      field: resolved_no_answer_no_show
+      value: "no"
+    }
+
+    filters: {
+      field: complete
+      value: "no"
+    }
+
+    filters: {
+      field: not_resolved_or_complete
+      value: "no"
+    }
+    filters: {
+      field: overflow_visit
+      value: "no"
+    }
+    filters: {
+      field: clinical_service_not_offered
+      value: "no"
+    }
+
+    filters: {
+      field: covid_resolved
+      value: "no"
+    }
+
+    filters: {
+      field: insurance_resolved
+      value: "no"
+    }
+    filters: {
+      field: poa_resolved
+      value: "no"
+    }
+    filters: {
+      field: zipcode_resolved
+      value: "no"
+    }
+    filters: {
+      field: cancelled_by_patient_other_resolved
+      value: "no"
+    }
+    filters: {
+      field: insufficient_information_resolved
+      value: "no"
+    }
+  }
 
 
 }

@@ -26,8 +26,9 @@ view: primary_payer_dimensions_clone {
   dimension: custom_insurance_grouping {
     type: string
     order_by_field: insurance_sort_value
-    sql: case when ${insurance_package_id}::int in(22741, 47756, 54360, 75708) then '(MMCD)MANAGED MEDICAID'
-      else ${TABLE}.custom_insurance_grouping end;;
+    # sql: case when ${insurance_package_id}::int in(22741, 47756, 54360, 75708) then '(MMCD)MANAGED MEDICAID'
+    #   else ${TABLE}.custom_insurance_grouping end;;
+    sql: ${TABLE}.custom_insurance_grouping;;
   }
 
   dimension: medicare_advantage_flag {
@@ -69,6 +70,19 @@ view: primary_payer_dimensions_clone {
         ELSE 'Other'
         END;;
   }
+
+  dimension: custom_insurance_label_grouped {
+    type: string
+    sql: CASE
+            when ${custom_insurance_label} in('Corporate Billing', 'Patient Self Pay', 'Commercial', 'Medicare Advantage') then 'Commercial/Medicare Advantage/Self-Pay'
+            when ${custom_insurance_label} in('Managed Medicaid') then 'Managed Medicaid'
+            when ${custom_insurance_label} in('Medicare') then 'Medicare'
+            when ${custom_insurance_label} in('Medicaid', 'Tricare') then 'Medicaid/Tricare'
+            else 'Other'
+
+         END;;
+  }
+
 
   dimension: insurance_sort_value {
     type: number
@@ -233,7 +247,7 @@ measure: revenue_per_hour {
 
   dimension: kaiser_colorado {
     type: yesno
-    sql: ${insurance_package_id} in('58390', '12225', '23794') ;;
+    sql: ${insurance_package_id} in('58390', '12225', '23794', '261973') ;;
   }
 
   measure: count {

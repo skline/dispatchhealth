@@ -2,6 +2,8 @@ view: intraday_monitoring_agg {
     derived_table: {
       explore_source: intraday_monitoring {
         column: created_date {}
+        column: created_day_of_week {}
+
         column: created_hour {}
         column: market {}
         column: complete_est {}
@@ -12,11 +14,19 @@ view: intraday_monitoring_agg {
           field: intraday_monitoring.created_date
           value: "before 0 days ago"
         }
+        filters: {
+          field: cars.arm_car
+          value: "No"
+        }
       }
     }
     dimension: created_date {
       type: date
     }
+
+  dimension: created_day_of_week {
+    type: string
+  }
     dimension: created_hour {
       type: number
     }
@@ -41,12 +51,14 @@ view: intraday_monitoring_agg {
 
     dimension: percent_diff_to_actual {
       type: number
-      sql: ${diff_to_actual}::float/${complete_count}::float ;;
+      sql: case when ${complete_count}=0 then 0
+    else ${diff_to_actual}::float/${complete_count}::float end ;;
     }
 
   dimension: percent_abs_diff_to_actual {
     type: number
-    sql: ${abs_diff_to_actual}::float/${complete_count}::float ;;
+    sql: case when ${complete_count}=0 then 0
+    else ${abs_diff_to_actual}::float/${complete_count}::float end ;;
   }
 
     measure: avg_diff_to_actual {
@@ -63,11 +75,27 @@ view: intraday_monitoring_agg {
     sql: ${abs_diff_to_actual} ;;
   }
 
-  measure: avg_diff_to_actual_percent {
+  measure: avg_complete_count {
     type: average_distinct
-    value_format: "0.0%"
+    value_format: "0.0"
     sql_distinct_key: concat(${created_date}, ${created_hour}, ${market}) ;;
-    sql: ${percent_diff_to_actual} ;;
+    sql: ${complete_count} ;;
+  }
+
+  measure: avg_complete_est {
+    type: average_distinct
+    value_format: "0.0"
+    sql_distinct_key: concat(${created_date}, ${created_hour}, ${market}) ;;
+    sql: ${complete_est} ;;
+  }
+
+
+  measure: avg_diff_to_actual_percent {
+    type: number
+    value_format: "0.0%"
+    sql: case when ${avg_complete_count}=0 then 0
+    else ${avg_diff_to_actual}::float/${avg_complete_count}::float end
+ ;;
   }
 
   measure: avg_abs_diff_to_actual_percent {

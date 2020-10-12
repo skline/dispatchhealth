@@ -9,7 +9,7 @@ view: channel_items {
 
   dimension: address {
     type: string
-    sql: ${TABLE}.address ;;
+    sql: ${TABLE}.address_old ;;
   }
 
   dimension: agreement {
@@ -39,7 +39,7 @@ view: channel_items {
 
   dimension: city {
     type: string
-    sql: ${TABLE}.city ;;
+    sql: ${TABLE}.city_old ;;
   }
 
   dimension: contact_person {
@@ -87,7 +87,11 @@ view: channel_items {
 
   dimension: name {
     type: string
-    sql: TRIM(INITCAP(${TABLE}.name)) ;;
+    sql: CASE
+    WHEN INITCAP(${TABLE}.name) LIKE '%Google Or Other Search%' THEN 'Google or Other Search'
+    WHEN INITCAP(${TABLE}.name) LIKE '%911 Channel%' THEN '911 Channel'
+    ELSE INITCAP(regexp_replace(${TABLE}.name, '\s+$', ''))
+    END ;;
   }
 
   dimension: multicare_charity_patient {
@@ -117,7 +121,7 @@ view: channel_items {
           WHEN lower(${name}) LIKE 'hpn/shl ed education%' THEN 'EDED'
           WHEN lower(${name}) LIKE 'hpn/shl asthma education%' THEN 'ASTH'
           WHEN lower(${name}) LIKE 'hpn/shl hedis%' THEN 'HEDG'
-          WHEN lower(${name}) LIKE 'hpn/shl post acute follow up%' THEN 'PAFU'
+          WHEN lower(${name}) LIKE 'hpn/shl post acute follow up%' OR (${name} LIKE 'Bridge-%' AND ${name} LIKE '%Hpn') THEN 'PAFU'
           WHEN lower(${name}) LIKE 'hpn/shl opcm%' THEN 'OPCM'
           WHEN lower(${name}) LIKE 'hpn/shl tcm%' THEN 'TCM'
           ELSE ${name}
@@ -156,7 +160,7 @@ view: channel_items {
 
   dimension: state {
     type: string
-    sql: ${TABLE}.state ;;
+    sql: ${TABLE}.state_old ;;
   }
 
   dimension: type_name {
@@ -179,10 +183,12 @@ view: channel_items {
   dimension: sub_type {
     type: string
     sql: CASE
-          WHEN ${source_name} LIKE 'Emergency Medical Service%' THEN ${name}
-          WHEN ${source_name} = 'Direct Access' THEN ${source_name}
-          WHEN ${source_name} = 'Healthcare Partners' THEN ${type_name}
-          ELSE 'Undocumented'
+        WHEN lower(${channel_items.name}) LIKE 'healthcare provider' THEN 'Provider Group'
+        WHEN lower(${channel_items.name}) LIKE 'health insurance company' THEN 'Payer'
+        WHEN ${source_name} LIKE 'Emergency Medical Service%' THEN ${name}
+        WHEN ${source_name} = 'Direct Access' THEN ${source_name}
+        WHEN ${source_name} = 'Healthcare Partners' THEN ${type_name}
+        ELSE 'Undocumented'
         END ;;
   }
 
@@ -202,7 +208,7 @@ view: channel_items {
 
   dimension: zipcode {
     type: zipcode
-    sql: ${TABLE}.zipcode ;;
+    sql: ${TABLE}.zipcode_old ;;
   }
 
   dimension: zipcode_short {
@@ -225,11 +231,15 @@ view: channel_items {
   }
   dimension: channel_name_fixed {
     type: string
-    sql:  case when trim(lower(${name})) in('social media (facebook, linkedin, twitter, instagram)', 'social media(facebook, linkedin, twitter, instagram)') then 'Social Media (Facebook, LinkedIn, Twitter, Instagram)'
-          else ${name} end;;
+    sql:  regexp_replace(case when trim(lower(${name})) in('social media (facebook, linkedin, twitter, instagram)', 'social media(facebook, linkedin, twitter, instagram)') then 'Social Media (Facebook, LinkedIn, Twitter, Instagram)'
+          else ${name} end, '\s+$', '')
+
+;;
   }
   measure: count {
-    type: count
+    type: count_distinct
+    sql: ${id} ;;
+    sql_distinct_key: ${id} ;;
     drill_fields: [id, name, source_name, type_name]
   }
 
@@ -251,10 +261,9 @@ view: channel_items {
     type: string
     sql: case
           when ${name_no_tabs} is null then 'No Channel'
-          when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue'))  then 'Direct to Consumer'
-          when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf' , 'home health') or  lower(${name_no_tabs}) in('healthcare provider', 'healthcare provider')  then 'Senior Care'
-          when lower(${type_name}) in('health system', 'employer', 'payer', 'provider group', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue') then 'Strategic'          when ${digital_bool} then 'Direct to Consumer'
-          when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
+          when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue', 'ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind', 'presentation / meeting','event/in-service', 'bridgewater assisted living avondale', 'dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo', 'jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event', 'tacoma fire', 'business network group','humana at home'))  then 'Direct to Consumer'
+          when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf' , 'home health') or  lower(${name_no_tabs}) in('healthcare provider', 'healthcare provider', 'ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind','presentation / meeting', 'event/in-service', 'bridgewater assisted living avondale','dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo', 'jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event')  then 'Senior Care'
+          when lower(${type_name}) in('health system', 'employer', 'payer', 'provider group', 'injury finance') or lower(${name_no_tabs}) in('tacoma fire', 'business network group','humana at home', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Strategic'
           when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
@@ -264,19 +273,62 @@ view: channel_items {
     label: "High Level Category (HH+Provider)"
     sql: case
          when ${name_no_tabs} is null then 'No Channel'
-         when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue'))  then 'Direct to Consumer'
+         when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue', 'ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind', 'presentation / meeting','event/in-service', 'bridgewater assisted living avondale', 'dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo', 'jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event', 'tacoma fire', 'business network group','humana at home'))  then 'Direct to Consumer'
          when lower(${type_name}) in('home health') then 'Home Health'
-         when lower(${name_no_tabs}) in('healthcare provider', 'healthcare provider') or lower(${type_name}) in('provider group') then 'Provider'
-         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf')  then 'Senior Care'
-         when lower(${type_name}) in('health system', 'employer', 'payer', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue') then 'Strategic'          when ${digital_bool} then 'Direct to Consumer'
-         when ${dtc_ff_patients.patient_id} is not null then 'Direct to Consumer'
+         when lower(${name_no_tabs}) in('healthcare provider') then 'Provider (Generic)'
+         when lower(${type_name}) in('provider group') then 'Provider Group'
+         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf') or  lower(${name_no_tabs}) in('ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind','presentation / meeting', 'event/in-service', 'bridgewater assisted living avondale','dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo','jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event')  then 'Senior Care'
+         when lower(${type_name}) in('health system', 'employer', 'payer', 'injury finance') or lower(${name_no_tabs}) in('tacoma fire', 'business network group','humana at home', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Strategic'
          when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
   }
 
+  dimension: high_level_clinical_integration {
+    type: string
+    label: "High Level Category (Clinical Integration)"
+    sql: case
+         when ${name_no_tabs} is null then 'No Channel'
+         when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue', 'ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind', 'presentation / meeting','event/in-service', 'bridgewater assisted living avondale', 'dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo', 'jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event'))  then 'Direct to Consumer'
+         when lower(${name_no_tabs}) in('healthcare provider') then 'Provider (Generic)'
+         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'home health') or  lower(${name_no_tabs}) in('ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind','presentation / meeting', 'event/in-service', 'bridgewater assisted living avondale','dementia conference', 'harris county aging and disability resource center- care connection', 'fort bend senior event/expo','jcc/jewish community', 'senior event/tradeshow/expo', 'community fair/event','stafford center expo/event')  then 'Senior Care'
+         when lower(${type_name}) in('health system', 'snf', 'payer', 'provider group') or lower(${name_no_tabs}) in('health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Clinical Integration'
+         when lower(${type_name}) in('employer', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization') then 'Other'
+         when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
+        else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
+  }
+
+
+  dimension: high_level_category_new_percent {
+    type: number
+    sql: case when ${high_level_category_new} =  'Direct to Consumer' then .05
+    when ${high_level_category_new} =  'Home Health' then 1.0
+    when ${high_level_category_new} =  'Provider (Generic)' then .5
+    when ${high_level_category_new} =  'Provider Group' then .5
+    when ${high_level_category_new} =  'Senior Care' then 1.0
+    when ${high_level_category_new} =  'Strategic' then .05
+    else 0 end;;
+  }
+
+  dimension: high_level_dallas {
+    type: string
+    label: "High Level Dallas"
+    sql: case
+         when ${name_no_tabs} is null then 'No Channel'
+         when  (${type_name} is null and lower(${name_no_tabs}) not in('family or friend', 'healthcare provider', 'healthcare provider', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue', 'ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind', 'presentation / meeting','event/in-service', 'bridgewater assisted living avondale', 'dementia conference', 'harris county aging and disability resource center- care connection','fort bend senior event/expo', 'jcc/jewish community'))  then 'Direct to Consumer'
+         when lower(${type_name}) in('home health') then 'Home Health'
+         when lower(${type_name}) in('provider group') or  lower(${name_no_tabs}) in('healthcare provider') then 'Provider'
+         when lower(${name_no_tabs}) in('employer') then 'Employer'
+         when lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf') or  lower(${name_no_tabs}) in('ymca/jcc/rec center/community event', 'lighthouse of houston/council of the blind','presentation / meeting', 'event/in-service', 'bridgewater assisted living avondale','dementia conference', 'harris county aging and disability resource center- care connection','fort bend senior event/expo', 'jcc/jewish community')  then 'Senior Care'
+         when lower(${type_name}) in('health system', 'payer', 'injury finance') or lower(${name_no_tabs}) in('employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Strategic'
+         when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
+        else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
+  }
+
+
   dimension: uhc_care_request {
     type: yesno
-    sql: ${id} in(2851, 2849, 2850, 2852, 2848, 2890, 2900);;
+    sql: ${id} in(2851, 2849, 2850, 2852, 2848, 2890, 2900) OR
+         (${name} LIKE 'Bridge-%' AND ${name} LIKE '%Hpn');;
   }
 
   dimension: er_diversion {
@@ -303,6 +355,12 @@ view: channel_items {
     sql: ${TABLE}.hospitalization_diversion ;;
   }
 
+  dimension: ems_channel {
+    description: "Channel name contains 'Ems', 'Fire' or '911'"
+    type: yesno
+    sql: ${name} like '%Ems%' OR  ${name} LIKE '%Fire%' OR  ${name} like '%911%' ;;
+  }
+
   dimension: senior {
     type: yesno
     sql: lower(${type_name}) in('senior care', 'hospice & palliative care', 'snf')  ;;
@@ -310,7 +368,58 @@ view: channel_items {
 
   dimension: growth_target {
     type: yesno
-    sql: ${growth_update_channels.identifier_id} is not null ;;
+    sql: ${sf_accounts.priority_account_timestamp_raw} >=  date_trunc('month', now())::date - 30 ;;
+  }
+
+  dimension: generic_organization {
+    type: yesno
+    sql: ${name_no_tabs} in('Home Health Organization', 'Hospice & Palliative Care Organization',   'Provider Group Organization', 'Senior Care Organization', 'Snf Organization') ;;
+  }
+
+  dimension: senior_umbrella_org {
+    type: string
+    sql: case when lower(${name_no_tabs}) like '%bayada%' or lower(${preferred_partner_description}) like '%bayada%' then 'bayada'
+when lower(${name_no_tabs}) like '%encompass%' or lower(${preferred_partner_description}) like '%encompass%' then 'encompass'
+when lower(${name_no_tabs}) like '%team select%' or lower(${preferred_partner_description}) like '%team select%' then 'team select'
+when lower(${name_no_tabs}) like '%amedisys%' or lower(${preferred_partner_description}) like '%amedisys%' then 'amedisys'
+when lower(${name_no_tabs}) like '%kindred%' or lower(${preferred_partner_description}) like '%kindred%' then 'kindred'
+when lower(${name_no_tabs}) like '%brookdale%' or lower(${preferred_partner_description}) like '%brookdale%' then 'brookdale'
+when lower(${name_no_tabs}) like '%clc %' or lower(${preferred_partner_description}) like '%clc %' then 'christian living'
+when lower(${name_no_tabs}) like '%(rcm)%' or lower(${preferred_partner_description}) like '%(rcm)%' then '(rcm)'
+when lower(${name_no_tabs}) like '%sunrise%' or lower(${preferred_partner_description}) like '%sunrise%' then 'sunrise'
+when lower(${name_no_tabs}) like '%morningstar%' or lower(${preferred_partner_description}) like '%morningstar%' then 'morningstar'
+when lower(${name_no_tabs}) like '%holiday retirement%' or lower(${preferred_partner_description}) like '%holiday retirement%' then 'holiday retirement'
+when lower(${name_no_tabs}) like '%atria%' or lower(${preferred_partner_description}) like '%atria%' then 'atria'
+when lower(${name_no_tabs}) like '%life care center%' or lower(${preferred_partner_description}) like '%life care center%' then 'life care center'
+else null end;;
+  }
+
+  dimension: partner_pop_bon_secours {
+    type: yesno
+    sql: lower(${name}) LIKE '%bon secours%' OR
+    ${population_health_channels.name} = 'bon secours mssp' OR
+    (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') ;;
+  }
+
+  dimension: partner_population {
+    type: string
+    sql:  CASE WHEN  lower(${name}) LIKE '%bon secours%' OR
+          ${population_health_channels.name} = 'bon secours mssp' THEN 'Bon Secours'
+
+          WHEN substring(lower(${name}),1,3) = 'ou ' OR
+          lower(${name}) LIKE '%stephenson cancer center%' THEN 'OUMI & OU Physicians'
+
+          WHEN  lower(${name}) LIKE '%vcu%' OR
+          ((${athenadwh_referrals.clinical_order_type}) IS NOT NULL AND
+          lower(${athenadwh_referral_providers.name}) LIKE '%vcuhs%') THEN 'VCU Health'
+
+
+          WHEN (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') THEN 'Bon Secours'
+          WHEN lower(${provider_network.name}) = 'ou physicians' THEN 'OUMI & OU Physicians'
+          WHEN lower(${provider_network.name}) = 'virginia commonwealth university health system' THEN 'VCU Health'
+
+
+          ELSE NULL END ;;
   }
 
 }

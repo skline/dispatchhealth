@@ -3,12 +3,14 @@ view: power_of_attorneys {
 
   dimension: id {
     primary_key: yes
+    hidden: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension_group: created {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
@@ -27,14 +29,34 @@ view: power_of_attorneys {
     # hidden: yes
     sql: ${TABLE}.patient_id ;;
   }
+
+  dimension: name {
+    type: string
+    description: "Name of person designated as power of attorney"
+    sql: ${TABLE}.name ;;
+  }
+
+  dimension: patient_has_poa {
+    type: yesno
+    description: "A flag indicating that the patient has a power of attorney"
+    sql: ${patient_id} IS NOT NULL ;;
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}.phone ;;
   }
 
+  dimension: relationship {
+    type: string
+    description: "Power of attorney relationship to patient"
+    sql: ${TABLE}.relationship ;;
+  }
+
 
   dimension_group: updated {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,

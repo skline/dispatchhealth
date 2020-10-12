@@ -18,9 +18,22 @@ view: risk_assessments {
       WHEN ${TABLE}.protocol_name LIKE '%Vision/eye%' THEN 'Vision Problem'
       WHEN ${TABLE}.protocol_name LIKE '%Extremity Injury/Pain%' THEN 'Extremity Injury'
       WHEN ${TABLE}.protocol_name LIKE '%Upper Respiratory Infection%' THEN 'Cough/URI'
-      ELSE INITCAP(${TABLE}.protocol_name)
+      ELSE INITCAP(split_part(lower(${TABLE}.protocol_name),' (non covid-19)',1))
     END;;
   }
+
+  dimension: communicable_protocol{
+    type: yesno
+    sql: trim(lower(${protocol_name})) in('cough/upper respiratory infection', 'cough/upper respiratory symptoms', 'nausea/vomiting', 'fever', 'flu-like symptoms', 'sore throat', 'cough/uri', 'diarrhea', 'nausea/vomiting (non covid-19)', 'cough/upper respiratory symptoms  (non covid-19)') ;;
+  }
+
+  dimension: asymptomatic_covid_testing {
+    type: yesno
+    sql: lower(${protocol_name}) in('covid-19 testing request (for patients without symptoms)');;
+  }
+
+
+
 
   measure: protocol_count {
     type: count_distinct
@@ -88,8 +101,8 @@ view: risk_assessments {
     description: "0 - 5.4 = Green, 5.5 - 9.9 = Yellow, 10+ = Red"
     sql: CASE
           WHEN ${score} >= 0 AND ${score} < 5.5 THEN 'Green - Low Risk'
-          WHEN ${score} >= 5.5 AND ${score} < 10 THEN 'Yellow - Medium Risk'
-          WHEN ${score} >= 10 THEN 'Red - High Risk'
+          WHEN ${score} >= 5.5 AND ${score} <= 10 THEN 'Yellow - Medium Risk'
+          WHEN ${score} > 10 THEN 'Red - High Risk'
           ELSE 'Unknown'
         END ;;
   }

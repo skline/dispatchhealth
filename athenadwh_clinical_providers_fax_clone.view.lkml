@@ -2,7 +2,7 @@ view: athenadwh_clinical_providers_fax_clone {
   derived_table: {
     sql:
     select case
-  when fax is not null and fax not in('nan') then trim(replace(replace(replace(replace(fax, '(', ''), ')', ''), '-', ''), ' ', ''))::bigint
+  when fax is not null and fax not in('nan') and  fax not in('') then trim(replace(replace(replace(replace(replace(fax, '(', ''), ')', ''), '-', ''), ' ', ''), '.', ''))::bigint
   else null end
   as fax, clinical_provider_id
 from looker_scratch.athenadwh_clinical_providers_fax_clone

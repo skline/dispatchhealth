@@ -16,7 +16,7 @@ view: callers {
 
   dimension_group: created {
     type: time
-    hidden: yes
+    convert_tz: no
     timeframes: [
       raw,
       time,
@@ -26,7 +26,7 @@ view: callers {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at ;;
+    sql: ${TABLE}.created_at AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: dh_phone {
@@ -59,6 +59,12 @@ view: callers {
   dimension: relationship_to_patient {
     type: string
     sql: ${TABLE}.relationship_to_patient ;;
+  }
+
+  dimension: senior_target {
+    label: "Community or Home Health Caller"
+    type: yesno
+    sql: ${relationship_to_patient} in ('facility_staff', 'home_health_team') ;;
   }
 
   dimension: skill_name {

@@ -41,6 +41,41 @@ view: oversight_provider {
     sql: ${TABLE}.user_name ;;
   }
 
+  dimension: active {
+    type: string
+    sql: ${TABLE}.active ;;
+  }
+
+  dimension_group: activated_date {
+    type: time
+    hidden: no
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."activated_date" ;;
+  }
+
+  dimension_group: deactivated_date {
+    type: time
+    hidden: no
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}."deactivated_date" ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [detail*]

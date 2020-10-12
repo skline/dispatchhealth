@@ -12,6 +12,12 @@ view: athenadwh_clinical_encounters {
     sql: ${TABLE}.appointment_id ;;
   }
 
+  measure: count_appointments {
+    type: count_distinct
+    description: "Count of distinct appointment ID's"
+    sql: ${appointment_id} ;;
+  }
+
   dimension: chart_id {
     type: number
     sql: ${TABLE}.chart_id ;;
@@ -25,6 +31,12 @@ view: athenadwh_clinical_encounters {
   dimension: clinical_encounter_id {
     type: number
     sql: ${TABLE}.clinical_encounter_id ;;
+  }
+
+  measure: count_clinical_encounters {
+    type: count_distinct
+    description: "Count of distinct clinical encounter ID's"
+    sql: ${clinical_encounter_id} ;;
   }
 
   dimension: closed_datetime {

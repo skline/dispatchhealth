@@ -1,7 +1,100 @@
 connection: "bi"
 
-include: "*.view.lkml"         # include all views in this project
 include: "*.dashboard.lookml"  # include all dashboards in this project
+include: "location_dimensions.view.lkml"
+include: "survey_responses_flat.view.lkml"
+include: "survey_response_facts.view.lkml"
+include: "patient_facts.view.lkml"
+include: "thr_market_share.view.lkml"
+include: "car_dimensions.view.lkml"
+include: "nw_zipcodes.view.lkml"
+include: "athenadwh_procedure_codes.view.lkml"
+include: "market_start_date_bi.view.lkml"
+include: "tampa_combined.view.lkml"
+include: "icd_code_dimensions.view.lkml"
+include: "incontact.view.lkml"
+include: "mh_full_risk.view.lkml"
+include: "capacity_model_processed.view.lkml"
+include: "provider_letters.view.lkml"
+include: "phx_heatmap.view.lkml"
+include: "athenadwh_payers.view.lkml"
+include: "propensity_atl.view.lkml"
+include: "dallas_new_service.view.lkml"
+include: "az_zipcodes.view.lkml"
+include: "dates_hours_reference.view.lkml"
+include: "texas_childrens_hospital.view.lkml"
+include: "productivity_data.view.lkml"
+include: "mh_market_share.view.lkml"
+include: "ed_diversion_survey_response_rate.view.lkml"
+include: "optum_uhc_atl.view.lkml"
+include: "app_shift_summary_facts.view.lkml"
+include: "bcbs.view.lkml"
+include: "visit_facts.view.lkml"
+include: "channel_start_date.view.lkml"
+include: "athenadwh_patient_insurances.view.lkml"
+include: "athenadwh_documents.view.lkml"
+include: "csc_shift_planning_facts.view.lkml"
+include: "patient_dimensions.view.lkml"
+include: "diagnosis_rank.view.lkml"
+include: "facility_type_dimensions.view.lkml"
+include: "phx_expanded_zips.view.lkml"
+include: "athenadwh_clinical_providers.view.lkml"
+include: "risk_assessments_bi.view.lkml"
+include: "thr_hospitals_zip.view.lkml"
+include: "athenadwh_patients.view.lkml"
+include: "optumcare.view.lkml"
+include: "optum_zips.view.lkml"
+include: "ds_memeber_count.view.lkml"
+include: "cpt_em_references.view.lkml"
+include: "question_dimensions.view.lkml"
+include: "athenadwh_clinical_letters.view.lkml"
+include: "market_dimensions.view.lkml"
+include: "predicted_on_scene_time.view.lkml"
+include: "maricopa.view.lkml"
+include: "aetna_uhc_ma.view.lkml"
+include: "subtotal_over.view.lkml"
+include: "primary_payer_dimension_charge.view.lkml"
+include: "spr_zips.view.lkml"
+include: "respondent_dimensions.view.lkml"
+include: "mh_combined.view.lkml"
+include: "icd_visit_joins.view.lkml"
+include: "cpt_code_dimensions.view.lkml"
+include: "payer_dimensions.view.lkml"
+include: "visit_dimensions.view.lkml"
+include: "zip_to_zcta.view.lkml"
+include: "athena_encounter_claims.view.lkml"
+include: "letter_recipient_dimensions.view.lkml"
+include: "mh_partial_risk.view.lkml"
+include: "transaction_facts.view.lkml"
+include: "nc_dx_data.view.lkml"
+include: "thr_summarized.view.lkml"
+include: "njr_risk_new.view.lkml"
+include: "zipcodes_ed_average.view.lkml"
+include: "budget_projections_by_market.view.lkml"
+include: "tampa_wellmed_optum.view.lkml"
+include: "athenadwh_clinical_encounters.view.lkml"
+include: "primary_payer_dimensions.view.lkml"
+include: "invoca.view.lkml"
+include: "shift_planning_shifts.view.lkml"
+include: "southwire.view.lkml"
+include: "bgbsa.view.lkml"
+include: "optum_new.view.lkml"
+include: "risk_assessments.view.lkml"
+include: "provider_dimensions.view.lkml"
+include: "request_type_dimensions.view.lkml"
+include: "athenadwh_transactions.view.lkml"
+include: "pcp_dimensions.view.lkml"
+include: "bs_risk.view.lkml"
+include: "indianapolis_combined.view.lkml"
+include: "shift_planning_facts.view.lkml"
+include: "directmail_zipcode.view.lkml"
+include: "channel_dimensions.view.lkml"
+include: "tacoma_mssp.view.lkml"
+include: "ed_diversion_survey_response.view.lkml"
+include: "ut_membership.view.lkml"
+include: "uhc_hotspot.view.lkml"
+include: "hartford_zips.view.lkml"
+include: "uhc_member_data.view.lkml"
 
 explore: visit_facts {
 
@@ -154,44 +247,6 @@ explore: visit_facts {
     sql_on: ${athenadwh_patient_insurances.insurance_package_id} = ${athenadwh_payers.insurance_package_id} ;;
   }
 
-  join: centura_mssp_eligible {
-    relationship: one_to_one
-    sql_on: UPPER(CONCAT(${patient_facts.first_name},
-                         ${patient_facts.last_name},
-                        DATE_FORMAT(${patient_facts.dob}, '%m/%d/%y'),
-                        CASE
-                          WHEN ${patient_facts.gender} = 'Male' THEN 'M'
-                          WHEN ${patient_facts.gender} = 'Female' THEN 'F'
-                          ELSE 'X'
-                        END)) = ${centura_mssp_eligible.match_value};;
-  }
-
-# Add match criteria for the Bon Secours MSSP Report
-  join: bonsecours_mssp_eligible {
-    relationship: one_to_one
-    sql_on: UPPER(CONCAT(${patient_facts.first_name},
-                         ${patient_facts.last_name},
-                        DATE_FORMAT(${patient_facts.dob}, '%m/%d/%y'),
-                        CASE
-                          WHEN ${patient_facts.gender} = 'Male' THEN 'M'
-                          WHEN ${patient_facts.gender} = 'Female' THEN 'F'
-                          ELSE 'X'
-                        END)) = ${bonsecours_mssp_eligible.match_value};;
-  }
-
-# Add match criteria for the CCHA Report
-  join: ccha_eligible {
-    relationship: one_to_one
-    sql_on: UPPER(CONCAT(${patient_facts.first_name},
-                         ${patient_facts.last_name},
-                        DATE_FORMAT(${patient_facts.dob}, '%m/%d/%y'),
-                        CASE
-                          WHEN ${patient_facts.gender} = 'Male' THEN 'M'
-                          WHEN ${patient_facts.gender} = 'Female' THEN 'F'
-                          ELSE 'X'
-                        END)) = ${ccha_eligible.match_value};;
-  }
-
   join: pcp_dimensions {
     sql_on: ${patient_facts.pcp_dim_id} = ${pcp_dimensions.id}  ;;
   }
@@ -219,12 +274,6 @@ explore: visit_facts {
     ;;
     }
 
-  # join:  productivity_data {
-  #   relationship: one_to_many
-  #   sql_on: date(${productivity_data.date_date}) = date(${visit_dimensions.local_visit_date})
-  #           and ${productivity_data.market_dim_id} = ${visit_facts.market_dim_id}
-  #   ;;
-  # }
 
   join:  location_dimensions {
     sql_on: ${visit_facts.location_dim_id} =  ${location_dimensions.id}
@@ -389,9 +438,15 @@ explore: directmail_zipcode {
 
 explore: productivity_data {
   join: market_dimensions {
+    relationship: many_to_one
     sql_on: ${productivity_data.market_dim_id} = ${market_dimensions.id}
           ;;
     }
+  join: market_start_date_bi {
+    relationship: one_to_one
+    sql_on: ${market_start_date_bi.market_dim_id} = ${market_dimensions.id};;
+  }
+
   }
 
 explore: shift_planning_shifts {
@@ -511,3 +566,29 @@ explore: tacoma_mssp {
 explore: aetna_uhc_ma {}
 explore: bs_risk {}
 explore: nw_zipcodes {}
+explore: njr_risk_new {}
+explore: optum_uhc_atl {
+  join: zip_to_zcta {
+    sql_on: ${optum_uhc_atl.zipcode}=${zip_to_zcta.zip_code} ;;
+  }
+  join: propensity_atl {
+    sql_on:  ${optum_uhc_atl.zipcode}=${propensity_atl.zipcode} ;;
+  }
+
+}
+explore: propensity_atl {}
+explore: texas_childrens_hospital {}
+explore: zipcodes_ed_average {}
+explore: tampa_combined {
+  sql_always_where: ${zipcode}!=33630 ;;
+}
+
+explore: indianapolis_combined{
+
+}
+explore: uhc_hotspot {}
+explore: nc_dx_data {}
+explore: ut_membership {}
+explore: tampa_wellmed_optum {}
+explore: hartford_zips {}
+explore: uhc_member_data {}

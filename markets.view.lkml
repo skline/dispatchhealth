@@ -10,8 +10,9 @@ view: markets {
 
   dimension: id_adj {
     type: string
-    description: "Market ID where WMFR is included as part of Denver (159)"
-    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 159
+    description: "Market ID where WMFR or SMFR is included as part of Denver (159)"
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' OR
+        ${TABLE}.name = 'South Metro Fire Rescue' then 159
       else ${id} end;;
   }
 
@@ -23,6 +24,7 @@ view: markets {
 
   dimension: contact_phone {
     type: string
+    hidden: yes
     sql: ${TABLE}.contact_phone ;;
   }
 
@@ -41,6 +43,12 @@ view: markets {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension: breaks_enabled {
+    type: yesno
+    description: "A flag indicating that provider breaks have been enabled for the market"
+    sql: ${TABLE}.enable_breaks IS TRUE ;;
+  }
+
   dimension: enabled {
     type: yesno
     hidden: yes
@@ -54,8 +62,8 @@ view: markets {
   }
 
   dimension: humanity_id {
-    type: string
-    hidden: yes
+    type: number
+    hidden: no
     sql: ${TABLE}.humanity_id ;;
   }
 
@@ -116,24 +124,51 @@ view: markets {
 
   dimension: market_image {
     type: string
+    hidden: yes
     sql: ${TABLE}.market_image ;;
   }
 
   dimension: name {
     type: string
     sql: ${TABLE}.name ;;
+    drill_fields: [users.full_name]
   }
 
   dimension: name_adj {
     type: string
     description: "Market name where WMFR is included as part of Denver"
-    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue'
+      OR ${TABLE}.name = 'South Metro Fire Rescue' then 'Denver'
     else ${name} end;;
+
+  }
+
+  dimension: name_adj_dfw {
+    type: string
+    description: "Market name where WMFR is included as part of Denver and merges Dallas FTW"
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' then 'Denver'
+    when ${TABLE}.name in('Dallas', 'Fort Worth') then 'Dallas/Fort Worth'
+      else ${name} end;;
+
+  }
+
+
+  dimension: name_adj_productivity_url {
+    type: string
+    description: "ONLY USE for Productivty dashboard: Contains URL Link to Market Productivity Detail. Market name where WMFR is included as part of Denver"
+    sql: case when ${TABLE}.name = 'West Metro Fire Rescue' or ${TABLE}.name = 'South Metro Fire Rescue' then 'Denver'
+      else ${name} end;;
+      link: {
+        label: "Productivity Details by Market by Day"
+        url: "https://dispatchhealth.looker.com/looks/2248?&f[markets.name_adj_productivity_url]={{ value }}"
+      }
   }
 
   dimension: name_smfr {
     type: string
     sql: case when ${cars.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
+           when ${cars.name} = 'Denver_Advanced Care ' then 'Denver Advanced Care'
+          when trim(${cars.name}) = 'Virtual Visit' then 'Telemedicine'
          else ${name} end ;;
   }
 
@@ -216,6 +251,27 @@ view: markets {
     type: count
     drill_fields: [id, name, provider_group_name, short_name, care_requests.count]
   }
+
+  dimension: cpr_market {
+    label: "partner_revenue_market"
+    description: "Flag to identify CPR markets (hard-coded)"
+    type: yesno
+    sql: ${id} in(168, 169, 170, 171, 172, 173, 174, 175, 176, 178, 177, 179, 181);;
+  }
+
+  dimension: national_market {
+    description: "Market has been active for 90 Days or more."
+    type: yesno
+    sql: ((EXTRACT(EPOCH from now()) - EXTRACT(EPOCH from ${market_start_date.market_start_raw}))::FLOAT / 86400) > 90;;
+
+  }
+
+  dimension: market_active_22_months {
+    description: "Market has been active for 699.7 days or more (roughly 23 months considering an average month of 30.42 days)."
+    type: yesno
+    sql: ((EXTRACT(EPOCH from now()) - EXTRACT(EPOCH from ${market_start_date.market_start_raw}))::FLOAT / 86400) >= 669.24;;
+  }
+
   # measure: digital_adjusted {
   #   type: number
   #   sql: ${care_request_complete.count_distinct}+${incontact_spot_check_by_market.spot_check_care_requests} ;;

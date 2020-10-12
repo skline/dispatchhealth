@@ -53,12 +53,13 @@ view: care_requests {
   }
 
   dimension: post_acute_follow_up {
+    label: "Bridge Care Visit"
     type: yesno
     description: "Chief complaint, risk protocol name, channel name or service line is post acute follow-up"
     sql:  ${chief_complaint_trimmed} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
-          ${risk_assessments.protocol_name} = 'Post-Acute Patient' OR
-          ${channel_items.name} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
-          ${service_lines.name} LIKE 'Post Acute Follow Up%' ;;
+          lower(${risk_assessments.protocol_name}) LIKE 'post-acute patient%' OR
+          lower(${channel_items.name}) SIMILAR TO '%(pafu|post acute|post-acute|bridge-)%' OR
+          lower(${service_lines.name}) LIKE 'post acute follow up%' ;;
   }
 
   dimension: follow_up {
@@ -70,8 +71,8 @@ view: care_requests {
 
   dimension: DHFU_follow_up {
     type: yesno
-    description: "The string 'dhfu' occurs in Chief Complaint - Dispatch Health Follow Up (Does NOT included Post-Acute"
-    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' ;;
+    description: " - Dispatch Health Follow Up - The string 'dhfu' occurs in Chief Complaint OR Risk Assessment protocol_name = 'Dispatchhealth Acute Care - Follow Up Visit' (Does NOT include Post-Acute)"
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' OR  ${risk_assessments.protocol_name} = 'Dispatchhealth Acute Care - Follow Up Visit';;
   }
 
 
@@ -143,7 +144,11 @@ view: care_requests {
     timeframes: [
       raw,
       time,
+      time_of_day,
+      hour_of_day,
       date,
+      day_of_week,
+      day_of_week_index,
       week,
       month,
       quarter,
@@ -151,6 +156,22 @@ view: care_requests {
     ]
     sql: ${TABLE}.created_at ;;
   }
+
+
+  dimension: created_decimal_quarter_hour_increment {
+    description: "Care Request Created Time of Day as Decimal rounded to the nearest 1/4 hour increment"
+    type: number
+    sql: CASE
+      WHEN CAST(EXTRACT(MINUTE FROM ${created_raw}) AS FLOAT) < 7.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0
+      WHEN CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) >= 7.5 AND CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) < 22.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0.25
+      WHEN CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) >= 22.5 AND CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) < 37.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0.5
+            WHEN CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) >= 37.5 AND CAST(EXTRACT(MINUTE FROM ${created_raw} ) AS FLOAT) < 52.5 THEN FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 0.75
+      ELSE  FLOOR(CAST(EXTRACT(HOUR FROM ${created_raw}) AS INT)) + 1
+      END
+      ;;
+    value_format: "0.00"
+  }
+
 
   dimension_group: created_mountain {
     type: time
@@ -206,6 +227,12 @@ view: care_requests {
   dimension: ehr_id {
     type: string
     sql: ${TABLE}.ehr_id ;;
+  }
+
+  dimension: dashboard_athena_appt_id_match {
+    type: yesno
+    sql:  ${care_requests.ehr_id} = ${athenadwh_appointments_clone.appointment_id}::VARCHAR ;;
+    group_label: "Dashbaord Athena Reconciliation"
   }
 
   dimension: ehr_name {
@@ -270,7 +297,7 @@ view: care_requests {
       quarter,
       year
     ]
-    sql: ${TABLE}.on_route_eta ;;
+    sql: ${TABLE}.on_route_eta AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension_group: on_route_eta_mountain {
@@ -426,6 +453,7 @@ view: care_requests {
   }
 
   measure: count_visits_within_30_days_first_pafu_visit {
+    label: "Count Visits within 30 Days of First Bridge Care Visit"
     type: count
     description: "Count of patient visits within 30 days of the first post-acute visit"
     sql: ${patient_id} ;;
@@ -647,8 +675,8 @@ view: care_requests {
 
   dimension: request_type {
     type: string
-    sql:  case when ${request_type_id} = 0 then 'phone'
-               when ${request_type_id} = 1 then 'manual_911'
+    sql:  case when ${request_type_id} = 1 OR lower(${channel_items.name}) in('south metro fire rescue', 'smfr employee clinic', 'west metro fire rescue') then 'manual_911'
+               when ${request_type_id} = 0 then 'phone'
                when ${request_type_id} = 2 then 'mobile'
                when ${request_type_id} = 3 then 'web'
                when ${request_type_id} = 4 then 'mobile_android'
@@ -700,6 +728,11 @@ view: care_requests {
       field: request_type
       value: "mobile%"
     }
+  }
+
+  dimension: chart_signed {
+    type: yesno
+    sql: ${TABLE}.signed ;;
   }
 
 
@@ -770,7 +803,8 @@ view: care_requests {
       &f[markets.name_adj]={{ _filters['markets.name_adj'] | url_encode }}
       &f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}
       &f[care_request_flat.complete_resolved_date]={{ _filters['care_request_flat.complete_resolved_date'] | url_encode }}
-      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}"
+      &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}
+      &f[service_lines.name]={{ _filters['service_lines.name'] | url_encode }}"
     }
   }
 
@@ -792,10 +826,20 @@ view: care_requests {
     }
   }
 
+#   dimension:  complete_visit {
+#     type: yesno
+#     sql: ${care_request_flat.complete_date} is not null AND (${care_request_flat.primary_resolved_reason} IS NULL OR ${care_request_flat.escalated_on_scene});;
+#   }
+
 
   dimension:  complete_visit {
     type: yesno
-    sql: ${care_request_flat.complete_date} is not null;;
+    sql: ${care_request_flat.complete_date} is not null AND
+      (${care_request_flat.primary_resolved_reason} IS NULL OR
+      UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' OR
+      UPPER(${care_request_flat.primary_resolved_reason}) = 'REFERRED - POINT OF CARE' OR
+      UPPER(${care_request_flat.primary_resolved_reason}) = 'ESCALATED TO ADVANCED' OR
+      UPPER(${care_request_flat.other_resolved_reason}) LIKE '%ESCALATED%') ;;
   }
 
   dimension:  complete_non_escalated_visit {
@@ -818,7 +862,7 @@ view: care_requests {
     description: "The count of completed visits where the CPT code group is 'Procedure'"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_procedure_codes_clone.procedure_code_group
+      field: athena_procedurecode.procedure_code_group
       value: "Procedure"
     }
     filters: {
@@ -829,7 +873,7 @@ view: care_requests {
 
   dimension:  referred_point_of_care {
     type: yesno
-    sql: ${care_request_flat.complete_comment} like '%Referred - Point of Care%';;
+    sql: LOWER(${care_request_flat.complete_comment}) like '%referred - point of care%';;
   }
 
   dimension:  billable_est {
@@ -847,6 +891,50 @@ view: care_requests {
     sql: ${billable_est} AND ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL ;;
   }
 
+  # dimension: non_acute_ems_populations_cost_savings {
+  #   description: "Logic to idenitfy Non-AcuteCare and Non-EMS populations based on select service lines, visit types and risk protocols"
+  #   type: yesno
+  #   sql:
+  #   ${care_requests.post_acute_follow_up} OR
+  # lower(${service_lines.service_line_name_consolidated}) in(
+  #     'hedis (hpn)',
+  #     'covid-19 facility testing',
+  #     'ed education',
+  #     'post acute follow up') OR
+  # lower(${risk_assessments.protocol_name}) in(
+  #     'covid-19 facility testing',
+  #     'covid-19 testing request (for patients without symptoms)',
+  #     'dispatchhealth education program (emergency department use education, asthma education)',
+  #     'dispatchhealth education program (emergency department use education, asthma, diabetes education)',
+  #     'post-acute patient',
+  #     'post-acute patient (post hospital discharge patient)',
+  #     'post-acute patient (post hospital/skilled nursing facility/rehabilitation facility discharge patient)',
+  #     'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)');;
+  # }
+
+  dimension: acute_ems_population_cost_savings {
+    description: "Logic to idenitfy Acute Care and EMS populations based on select service lines, visit types and risk protocols"
+    type: string
+    sql: CASE
+    WHEN ${care_requests.post_acute_follow_up} THEN 'No'
+    WHEN lower(${risk_assessments.protocol_name}) in(
+      'covid-19 facility testing',
+      'covid-19 testing request (for patients without symptoms)',
+      'dispatchhealth education program (emergency department use education, asthma education)',
+      'dispatchhealth education program (emergency department use education, asthma, diabetes education)',
+      'post-acute patient',
+      'post-acute patient (post hospital discharge patient)',
+      'post-acute patient (post hospital/skilled nursing facility/rehabilitation facility discharge patient)',
+      'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)') THEN 'No'
+    WHEN lower(${service_lines.service_line_name_consolidated}) in(
+    '911 service',
+    'acute care',
+    'tele-presentation',
+    'virtual visit') THEN 'Yes'
+    ELSE 'No'
+    END;;
+  }
+
   measure: count_billable_est {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations"
@@ -862,10 +950,12 @@ view: care_requests {
       &f[care_request_flat.escalated_on_scene]={{ _filters['care_request_flat.escalated_on_scene'] | url_encode }}
       &f[care_request_flat.complete_resolved_date]={{ _filters['care_request_flat.complete_resolved_date'] | url_encode }}
       &f[care_request_flat.complete_date]={{ _filters['care_request_flat.complete_date'] | url_encode }}
+      &f[care_request_flat.complete_month]={{ _filters['care_request_flat.complete_month'] | url_encode }}
       &f[drg_to_icd10_crosswalk.drg_code]={{ _filters['drg_to_icd10_crosswalk.drg_code'] | url_encode }}
       &f[insurance_coalese_crosswalk.insurance_package_name]={{ _filters['insurance_coalese_crosswalk.insurance_package_name'] | url_encode }}
       &f[care_request_flat.lwbs]={{ _filters['care_request_flat.lwbs'] | url_encode }}
-      &f[primary_payer_dimensions_clone.insurance_reporting_category]={{ _filters['primary_payer_dimensions_clone.insurance_reporting_category'] | url_encode }}"
+      &f[primary_payer_dimensions_clone.insurance_reporting_category]={{ _filters['primary_payer_dimensions_clone.insurance_reporting_category'] | url_encode }}
+      &f[athenadwh_letter_recipient_provider.name]={{ _filters['athenadwh_letter_recipient_provider.name'] | url_encode }}"
     }
     drill_fields: [
       athenadwh_referral_providers.name,
@@ -874,7 +964,103 @@ view: care_requests {
     ]
   }
 
+  dimension: billable_est_numeric {
+    description: "Numeric representation of Billable Est to use in LookML to allow billable_Est to be summed"
+    hidden: yes
+    type: number
+    sql: CASE WHEN ${billable_est} = 'yes' THEN 1
+    ELSE 0
+    END;;
+  }
+
+  measure: sum_billable_est {
+    description: "Sum of billable Est to use in LookML calculations in place of count_billable_est (return the same results)"
+    hidden: yes
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${billable_est_numeric} ;;
+  }
+
+
+  measure: count_billable_est_acute_ems_cost_savings {
+    type: count_distinct
+    description: "Count of Acute Care and EMS completed care requests (excludes on-scene escalations)"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: acute_ems_population_cost_savings
+      value: "Yes"
+    }
+    # filters: {
+    #   field: escalated_on_scene
+    #   value: "no"
+    # }
+    }
+
+  measure: sum_billable_est_acute_ems_cost_savings {
+    description: "Sum of Acute Care and EMS billable Est to use in LookML calculations in place of count_billable_est (return the same results)"
+    hidden: yes
+    type: sum_distinct
+    sql_distinct_key: ${id} ;;
+    sql: ${billable_est_numeric} ;;
+    filters: {
+      field: acute_ems_population_cost_savings
+      value: "Yes"
+    }
+  }
+
+  measure: count_antibiotics_prescriptions {
+    type: count_distinct
+    description: "Count of completed care requests where antibiotics were prescribed"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: prescribed_medications.antibiotic_medication
+      value: "yes"
+    }
+  }
+
+
+  measure: count_board_optimizer_requests {
+    description: "A count of all care requests that were assigned by the board optimizers"
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.board_optimizer_assigned
+      value: "yes"
+    }
+  }
+
+  measure: count_visits_fluids_blood {
+    type: count_distinct
+    description: "Count of completed non-escalated visits where IV or blood work was done"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: cpt_code_dimensions_clone.blood_iv
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.escalated_on_scene
+      value: "no"
+    }
+  }
+
   measure: count_post_acute_followups {
+    label: "Count Bridge Care Visits"
     type: count_distinct
     description: "Count of post-acute follow-up visits"
     sql: ${id} ;;
@@ -884,6 +1070,20 @@ view: care_requests {
     }
     filters: {
       field: post_acute_follow_up
+      value: "yes"
+    }
+  }
+
+  measure: count_dhfu_followups {
+    type: count_distinct
+    description: "Count of post-acute follow-up visits"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: DHFU_follow_up
       value: "yes"
     }
   }
@@ -981,10 +1181,10 @@ view: care_requests {
       field: athenadwh_lab_imaging_providers.provider_category
       value: "Performed by Third Party"
     }
-    filters: {
-      field: athenadwh_lab_imaging_results.document_is_from_care_request
-      value: "yes"
-    }
+    # filters: {
+    #   field: athenadwh_clinical_results_clone.document_is_from_care_request
+    #   value: "yes"
+    # }
     filters: {
       field: athenadwh_clinical_results_clone.labs_flag
       value: "yes"
@@ -1067,7 +1267,7 @@ view: care_requests {
     description: "Count of completed care requests where imaging was ordered"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_lab_imaging_results.imaging_flag
+      field: athenadwh_documents_clone.imaging_flag
       value: "yes"
     }
     filters: {
@@ -1147,6 +1347,11 @@ view: care_requests {
     sql: ${cars.name} LIKE '%SMFR%' AND ${billable_est};;
   }
 
+  dimension: wmfr_billable {
+    type: yesno
+    sql: ${cars.name} LIKE '%WMFR%' AND ${billable_est};;
+  }
+
   measure: count_smfr_billable {
     type: count
     filters: {
@@ -1154,6 +1359,45 @@ view: care_requests {
       value: "yes"
     }
   }
+
+  measure: count_wmfr_billable {
+    type: count
+    filters: {
+      field: wmfr_billable
+      value: "yes"
+    }
+  }
+
+  measure: count_cpr_market_visits {
+    label: "count_partner_revenue_market_visits"
+    description: "Counts the number of visits for a partner revenue market"
+    type: count_distinct
+    sql: ${id} ;;
+    filters:  {
+      field: markets.cpr_market
+      value: "yes"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
+  measure: count_non_cpr_market_visits {
+    label: "count_non_partner_revenue_market_visits"
+    description: "Counts the number of visits for a Non-partner revenue market"
+    type: count_distinct
+    sql: ${id} ;;
+    filters:  {
+      field: markets.cpr_market
+      value: "no"
+    }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+  }
+
 
   dimension:  accepted_visit {
     type: yesno
@@ -1316,7 +1560,8 @@ measure: distinct_day_of_week {
   measure: shift_start_first_on_route_diff{
     label: "Hours Between Shift Start and First On Route"
     type: number
-    sql:  round(((EXTRACT(EPOCH FROM ${min_on_route_time}::timestamp - ${care_request_flat.shift_start_time}::timestamp))/3600)::decimal,2);;
+    sql:  round(((EXTRACT(EPOCH FROM ${min_on_route_time}::timestamp - MIN(${care_request_flat.shift_start_time})::timestamp))/3600)::decimal,2);;
+    value_format: "0.00"
   }
 
   measure: shift_end_last_cr_diff_adj{
@@ -1382,9 +1627,19 @@ measure: distinct_day_of_week {
     sql: coalesce(${care_request_flat.complete_comment}, ${care_request_flat.archive_comment}) ;;
   }
 
+#   dimension: primary_resolved_reason {
+#     type:  string
+#     sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
+#   }
+
   dimension: primary_resolved_reason {
     type:  string
-    sql: trim(split_part(${resolved_reason_full}, ':', 1)) ;;
+    sql: CASE
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'CANCELLED BY PATIENT'  THEN 'Cancelled by Patient or Partner'
+        WHEN UPPER(trim(split_part(${resolved_reason_full}, ':', 1))) LIKE 'REFERRED VIA PHONE' THEN 'Referred - Phone Triage'
+        ELSE  trim(split_part(${resolved_reason_full}, ':', 1))
+        END;;
+        drill_fields: [secondary_resolved_reason]
   }
 
   dimension: secondary_resolved_reason {
@@ -1409,10 +1664,21 @@ measure: distinct_day_of_week {
   }
 
 
+#   dimension: escalated_on_scene {
+#     type: yesno
+#     sql: UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
+#   }
+
   dimension: escalated_on_scene {
+    hidden: yes
     type: yesno
-    sql: UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE%' ;;
-  }
+    sql:UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE: EMERGENCY DEPARTMENT%' OR
+      UPPER(${care_request_flat.complete_comment}) LIKE '%REFERRED - POINT OF CARE: ED%' OR
+      (UPPER(${primary_resolved_reason}) = 'REFERRED - POINT OF CARE' AND
+      (UPPER(${secondary_resolved_reason}) LIKE '%EMERGENCY DEPARTMENT%' OR
+      SUBSTRING(UPPER(${secondary_resolved_reason}),1,2) = 'ED')) ;;
+
+    }
 
 # Removing these for now.  These should be calculated in care_request_flat, not duplicated here -- DE 01/17/2019
 #   dimension: lwbs_going_to_ed {
@@ -1452,6 +1718,7 @@ measure: distinct_day_of_week {
 #   }
 
   measure: escalated_on_scene_count {
+    label: "Escalated On-Scene to Ed"
     type: count_distinct
     sql: ${id} ;;
     filters: {
@@ -1463,7 +1730,8 @@ measure: distinct_day_of_week {
   dimension: escalated_on_scene_ed {
     type: yesno
     sql: ${care_request_flat.complete_comment} = 'Referred - Point of Care: ED'
-      OR ${care_request_flat.complete_comment} = 'Referred - Point of care: ED';;
+      OR ${care_request_flat.complete_comment} = 'Referred - Point of care: ED'
+      OR ${care_request_flat.complete_comment} = 'Referred - Point of Care: Emergency Department';;
   }
 
   dimension: escalated_on_phone {
@@ -1471,13 +1739,13 @@ measure: distinct_day_of_week {
     sql: ${care_request_flat.complete_comment} SIMILAR TO '(%Referred via Phone%|%Referred - Phone Triage%)' ;;
   }
 
-  dimension: escalated_on_phone_reason {
-    type: string
-    sql: CASE
-          WHEN ${escalated_on_phone} THEN split_part(${care_request_complete.comment}, ':', 2)
-          ELSE NULL
-        END ;;
-  }
+  # dimension: escalated_on_phone_reason {
+  #   type: string
+  #   sql: CASE
+  #         WHEN ${escalated_on_phone} THEN split_part(${care_request_complete.comment}, ':', 2)
+  #         ELSE NULL
+  #       END ;;
+  # }
 
   dimension: no_credit_card_reason {
     type: string
@@ -1515,6 +1783,17 @@ measure: distinct_day_of_week {
     type: number
     sql: ${TABLE}.service_line_id ;;
   }
+
+  dimension: smfr_eligible{
+    type: yesno
+    sql:  ${addresses.zipcode_short} in('80122', '80123', '80124', '80125', '80126', '80128', '80134', '80135', '80138', '80210', '80222', '80224', '80231', '80235', '80237', '80013', '80014', '80015', '80016', '80018', '80104', '80110', '80111', '80112', '80120', '80121');;
+  }
+
+  dimension: wmfr_eligble{
+    type: yesno
+    sql:  ${addresses.zipcode_short} in('80215', '80226', '80232', '80228', '80214');;
+  }
+
 
   measure: count_no_asnwer_secondary_resolved_reason  {
     type: count

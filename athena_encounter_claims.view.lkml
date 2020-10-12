@@ -4,7 +4,7 @@ view: athena_encounter_claims {
           FROM athenadwh_clinical_encounters ace
           JOIN athenadwh_claims ac ON ace.appointment_id = ac.claim_appointment_id
        ;;
-    sql_trigger_value: SELECT CURDATE() ;;
+    sql_trigger_value: SELECT COUNT(*) FROM athenadwh_claims_clone ;;
     indexes: ["appointment_id", "clinical_encounter_id", "claim_id"]
    }
 

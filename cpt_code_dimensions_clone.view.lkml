@@ -113,6 +113,11 @@ view: cpt_code_dimensions_clone {
     sql: ${cpt_code} IN ('80047', '36415', '36410', '85014', '83605', '85610', '34616') ;;
   }
 
+  dimension: blood_iv {
+    type: yesno
+    sql: ${iv_fluids} OR ${blood_tests} ;;
+  }
+
   dimension: catheter_placement {
     type: yesno
     sql: ${cpt_code} IN ('51702', '51701', '51703', '51705') ;;
@@ -179,6 +184,7 @@ view: cpt_code_dimensions_clone {
     label: "Average E&M Code Care Level"
     type: average
     sql: ${em_care_level};;
+    value_format: "0.00"
   }
 
   measure: em_care_level_concat {

@@ -1,12 +1,25 @@
 connection: "intraday"
 
-include: "*.view.lkml"                       # include all views in this project
+include: "target_staffing_intra.view.lkml"
+include: "channel_items_intra.view.lkml"
+include: "insurance_classifications_intra.view.lkml"
+include: "cars_intra.view.lkml"
+include: "intraday_shift_teams.view.lkml"
+include: "intraday_potential_care_requests.view.lkml"
+include: "last_care_request_etc_intra.view.lkml"
+include: "intraday_care_requests.view.lkml"
+include: "service_lines_intra.view.lkml"
+include: "primary_payer_dimensions_intra.view.lkml"
+include: "insurance_plans_intra.view.lkml"
+include: "markets_intra.view.lkml"
+include: "timezones_intra.view.lkml"
+
 explore:  intraday_shift_teams {
 
   join: intraday_care_requests {
     sql_on: ${intraday_care_requests.shift_team_id} = ${intraday_shift_teams.shift_team_id}
     and ${intraday_care_requests.accepted_date}=${intraday_shift_teams.start_date}
-    and ${intraday_care_requests.updated_raw} > current_date - interval '1 day';;
+    and ${intraday_care_requests.updated_raw} > current_date - interval '1 day' and ${intraday_care_requests.service_line_id} not in('15');;
   }
 
   join: intraday_potential_care_requests {
@@ -109,5 +122,20 @@ explore:  intraday_care_requests_full {
   }
   join: channel_items_intra {
     sql_on: ${intraday_care_requests_full.channel_item_id} =${channel_items_intra.id} ;;
+  }
+}
+
+explore: target_staffing_intra {
+  join: markets_intra {
+    sql_on: ${markets_intra.id}= ${target_staffing_intra.market_id} ;;
+  }
+  join: cars_intra {
+    sql_on: ${markets_intra.id} = ${cars_intra.market_id} ;;
+  }
+
+  join: intraday_shift_teams {
+    sql_on: ${cars_intra.id} = ${intraday_shift_teams.car_id}
+      and ${intraday_shift_teams.start_month}=${target_staffing_intra.month_month}
+      and  ${intraday_shift_teams.start_day_of_week} = ${target_staffing_intra.dow};;
   }
 }

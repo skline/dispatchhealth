@@ -63,6 +63,11 @@ view: intraday_care_requests {
     sql: (${TABLE}.meta_data ->> 'etos')::int ;;
   }
 
+  dimension: etos_interval {
+    type: number
+    sql: concat('''', (${TABLE}.meta_data ->> 'etos')::varchar, ' minute''') ;;
+  }
+
   dimension: channel_item_id {
     type: number
     sql: (${TABLE}.meta_data ->> 'channel_item_id')::int ;;
@@ -100,8 +105,8 @@ view: intraday_care_requests {
   }
 
   dimension: service_line_id {
-    type: number
-    sql: ${TABLE}.meta_data ->> 'service_line_id' ;;
+    type: string
+    sql: ${TABLE}.meta_data ->> 'service_line_id'::varchar ;;
   }
 
   dimension: zipcode {
@@ -113,6 +118,12 @@ view: intraday_care_requests {
     type: yesno
     sql:  ${zipcode} in('80122', '80123', '80124', '80125', '80126', '80128', '80134', '80135', '80138', '80210', '80222', '80224', '80231', '80235', '80237', '80013', '80014', '80015', '80016', '80018', '80104', '80110', '80111', '80112', '80120', '80121');;
   }
+
+  dimension: wmfr_care_request{
+    type: yesno
+    sql:  ${zipcode} in('80215', '80226', '80232', '80228', '80214');;
+  }
+
 
 
   dimension: care_request_location {
@@ -263,6 +274,32 @@ view: intraday_care_requests {
 
   }
 
+  measure: inqueue_crs_less_than_30_minutes {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: less_than_30_minutes_since_creation
+      value: "yes"
+    }
+    filters: {
+      field: stuck_inqueue
+      value: "no"
+    }
+
+  }
+
   measure: inqueue_smfr_elgible {
     type: count_distinct
     sql: ${care_request_id};;
@@ -280,6 +317,33 @@ view: intraday_care_requests {
     }
     filters: {
       field: smfr_care_request
+      value: "yes"
+    }
+    filters: {
+      field: stuck_inqueue
+      value: "no"
+    }
+
+
+  }
+
+  measure: inqueue_wmfr_elgible {
+    type: count_distinct
+    sql: ${care_request_id};;
+    filters: {
+      field: accepted
+      value: "no"
+    }
+    filters: {
+      field: resolved
+      value: "no"
+    }
+    filters: {
+      field: current_status
+      value: "requested"
+    }
+    filters: {
+      field: wmfr_care_request
       value: "yes"
     }
     filters: {
@@ -384,6 +448,7 @@ view: intraday_care_requests {
   }
 
   measure: inqueue_crs_pafu {
+    label: "Inqueue CRS Bridge Care Visits"
     type: count_distinct
     sql: ${care_request_id};;
     filters: {
@@ -447,7 +512,7 @@ view: intraday_care_requests {
   dimension_group: now_mountain{
     type: time
     convert_tz: no
-    timeframes: [day_of_week_index, week, month, day_of_month, time_of_day,raw]
+    timeframes: [day_of_week_index, week, month, day_of_month, time_of_day,raw, date]
     sql:  now() AT TIME ZONE 'US/Mountain' ;;
   }
 
@@ -474,6 +539,156 @@ view: intraday_care_requests {
     sql: ${complete_mountain_decimal} <= ${now_mountain_decimal};;
   }
 
+  dimension: created_to_now_diff_hours {
+    type: number
+    sql: EXTRACT(EPOCH FROM ${now_mountain_raw} - (${care_request_created_raw} AT TIME ZONE 'US/Mountain'))/3600 ;;
+  }
+
+  dimension: less_than_30_minutes_since_creation{
+    type: yesno
+    sql:  ${created_to_now_diff_hours} < .5;;
+
+  }
+
+  dimension: address {
+    type: string
+    sql:  (meta_data ->> 'street_address_1') ;;
+  }
+
+  dimension: patient_dob {
+    type: date
+    sql:  (meta_data ->> 'patient_dob') ;;
+  }
+
+  dimension: risk_protocol_name {
+    type: string
+    sql:  trim(lower((meta_data ->> 'risk_protocol_name'))) ;;
+  }
+
+  dimension: risk_score {
+    type: number
+    sql:  (meta_data ->> 'risk_score')::float ;;
+  }
+
+  dimension: risk_worst_case_score {
+    type: string
+    sql:  (meta_data ->> 'risk_worst_case_score') ;;
+  }
+
+  dimension: risk_protocol {
+    type: string
+    sql:  (meta_data ->> 'risk_protocol') ;;
+  }
+
+  dimension_group: on_accepted_eta {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: (meta_data->>'on_accepted_eta')::timestamp WITH TIME ZONE ;;
+  }
+
+  dimension_group: on_route_eta {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: (meta_data->>'on_route_eta')::timestamp WITH TIME ZONE ;;
+  }
+
+  dimension_group: estimated_eta {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: (${etc_raw} -${etos_interval}::interval)::timestamp WITH TIME ZONE ;;
+  }
+
+  dimension_group: eta_coalesce {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      hour_of_day,
+      day_of_week
+    ]
+    sql: coalesce(${estimated_eta_raw}, ${on_route_eta_raw}, ${on_accepted_eta_raw});;
+  }
+
+  dimension: risk_category {
+    type: string
+    description: "0 - 5.4 = Green, 5.5 - 9.9 = Yellow, 10+ = Red"
+    sql: CASE
+          WHEN ${risk_score} >= 0 AND ${risk_score} < 5.5 THEN 'Green - Low Risk'
+          WHEN ${risk_score} >= 5.5 AND ${risk_score} < 10 THEN 'Yellow - Medium Risk'
+          WHEN ${risk_score} >= 10 THEN 'Red - High Risk'
+          ELSE 'Unknown'
+        END ;;
+  }
+
+  dimension: age {
+    type: number
+    sql: CAST(EXTRACT(YEAR from AGE(${now_mountain_date}, ${patient_dob})) AS INT) ;;
+  }
+
+  dimension: telemedicine_eligible{
+    type: yesno
+    sql:
+    ${risk_category} = 'Green - Low Risk'
+    AND
+    ${risk_protocol_name} in('general complaint', 'sore throat', 'sore throat 2', 'headache', 'ear pain', 'rash', 'rash - pediatric', 'cough/upper respiratory symptoms', 'cough/upper respiratory infection', 'cough/uri', 'rash', 'rash - pediatric', 'sinus pain', 'flu-like symptoms')
+    AND
+    ${markets_intra.name} in ('Denver', 'Colorado Springs')
+    and
+    ${age} > 2
+    and ${primary_payer_dimensions_intra.custom_insurance_grouping} in('(MCARE)MEDICARE', '(MAID)MEDICAID')
+    ;;
+
+  }
+
+
+  dimension: now_to_on_scene {
+    label: "Time to On-scene Hours"
+    type: number
+    value_format: "0.0"
+    sql: EXTRACT(EPOCH FROM  (${eta_coalesce_raw} AT TIME ZONE 'US/Mountain') - ${now_mountain_raw})/3600 ;;
+  }
+
+
+
+ # dimension: inqueue_over_hour {
+#    type: yesno
+#    sql:  ;;
+#  }
 
 
 
