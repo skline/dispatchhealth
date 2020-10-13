@@ -312,6 +312,7 @@ include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
 include: "geneysis_evaluations.view.lkml"
 include: "high_overflow_days.view.lkml"
+include: "resolved_reasons_summary.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
