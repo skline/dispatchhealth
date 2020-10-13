@@ -3727,6 +3727,13 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
   }
+
+  dimension: tele_eligible {
+    type: yesno
+    sql: ${risk_assessments.tele_eligible_protocol} and ${patients.age} > 2 and ${risk_assessments.score} <5.5 and ${insurance_coalese_crosswalk.tele_packages};;
+  }
+
+
   measure: complete_count_kaiser{
     label: "Complete Count (Kaiser)"
     type: count_distinct
@@ -3740,6 +3747,28 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
   }
+
+
+  measure: complete_tele_eligible{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: tele_eligible
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+
+  measure: tele_eligible_percent{
+    type: number
+    value_format: "0%"
+    sql: case when ${complete_count}>0 then ${complete_tele_eligible}::float /${complete_count}::float else 0 end;;
+  }
+
 
 
 
