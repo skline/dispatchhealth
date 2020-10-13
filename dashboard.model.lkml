@@ -1684,6 +1684,7 @@ join: athena_procedurecode {
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
   }
 
+
 #   join: care_request_complete{
 #     relationship: one_to_many
 #     from: care_request_statuses
@@ -1734,6 +1735,9 @@ join: athena_procedurecode {
     sql_on: ${care_request_flat.on_scene_month_num}=${days_in_month_adj.month_number} ;;
   }
 
+join: resolved_reasons_summary {
+  sql_on: ${resolved_reasons_summary.resolved_employees}=${care_request_flat.resolved_employee_full_name} ;;
+}
 
   join: google_trend_data {
     sql_on: ${care_request_flat.on_scene_month_num} = ${google_trend_data.month}

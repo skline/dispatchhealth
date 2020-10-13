@@ -8,4 +8,4 @@ dimension: resolved_employees {
 dimension: department {
   label: "Department"
   sql: ${department} ;;
-}
+}}
