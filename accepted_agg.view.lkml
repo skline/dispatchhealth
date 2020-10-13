@@ -4,13 +4,13 @@ view: accepted_agg {
       column: first_accepted_date { field: care_request_flat.first_accepted_date }
       column: accepted_count { field: care_request_flat.accepted_count }
       column: complete_count { field: care_request_flat.complete_count }
-      column: market_id { field: markets.id }
+      column: market_id { field: markets.id_adj }
       filters: {
         field: care_request_flat.first_accepted_date
         value: "365 days ago for 365 days"
       }
       filters: {
-        field: risk_assessments.protocol_name
+        field: service_lines.name
         value: "-COVID-19 Facility Testing,-Advanced Care"
       }
       filters: {
