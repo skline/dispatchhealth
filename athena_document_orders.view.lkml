@@ -306,7 +306,7 @@ view: athena_document_orders {
     description: "Count of distinct orders where patient is part of a narrow network"
     group_label: "Order Counts"
     sql: ${document_id} ;;
-    filters: [is_narrow_network_order: "yes", status: "-DELETED", document_order_provider.provider_category: "Performed by Third Party"  ]
+    filters: [is_narrow_network_order: "yes", status: "-DELETED", document_order_fulfilling_provider.provider_category: "Performed by Third Party"  ]
   }
 
   measure: count_narrow_network_orders_default_provider {
@@ -314,7 +314,7 @@ view: athena_document_orders {
     description: "Count of distinct orders where default narrow network provider is chosen"
     group_label: "Order Counts"
     sql: ${document_id} ;;
-    filters: [is_narrow_network_default_provider: "yes", status: "-DELETED", document_order_provider.provider_category: "Performed by Third Party"  ]
+    filters: [is_narrow_network_default_provider: "yes", status: "-DELETED", document_order_fulfilling_provider.provider_category: "Performed by Third Party"  ]
   }
 
   dimension: document_results_document_id {
@@ -633,7 +633,7 @@ view: athena_document_orders {
     sql: upper(${clinical_order_type_group}) = 'LAB'
      AND upper(${status}) != 'DELETED'
      AND upper(${document_class}) = 'ORDER'
-     AND UPPER(${athena_document_order_provider.provider_category}) = 'PERFORMED BY THIRD PARTY'  ;;
+     AND UPPER(${document_order_fulfilling_provider.provider_category}) = 'PERFORMED BY THIRD PARTY'  ;;
   }
 
   measure: count_lab_orders_from_3rd_party {
@@ -668,7 +668,7 @@ view: athena_document_orders {
     description: "Imaging ordered from third party"
     type: yesno
     hidden: yes
-    sql: upper(${clinical_order_type_group}) = 'IMAGING' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER' AND UPPER(${document_order_provider.provider_category}) = 'PERFORMED BY THIRD PARTY';;
+    sql: upper(${clinical_order_type_group}) = 'IMAGING' AND upper(${status}) != 'DELETED' AND upper(${document_class}) = 'ORDER' AND UPPER(${document_order_fulfilling_provider.provider_category}) = 'PERFORMED BY THIRD PARTY';;
   }
 
   measure: count_imaging_orders_from_3rd_party {
