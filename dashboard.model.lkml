@@ -203,6 +203,7 @@ include: "athenadwh_patientaudit.view.lkml"
 include: "athenadwh_patients_clone.view.lkml"
 include: "budget_hours.view.lkml"
 include: "service_lines.view.lkml"
+include: "views/service_line_question_responses.view.lkml"
 include: "thpg_providers.view.lkml"
 include: "income_pop_by_zipcode_small.view.lkml"
 include: "icd_code_risk_assessment_crosswalk.view.lkml"
@@ -1733,7 +1734,13 @@ join: athena_procedurecode {
   }
 
   join: service_lines {
+    relationship: many_to_one
     sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+
+  join: service_line_question_responses {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${service_line_question_responses.care_request_id} ;;
   }
 
   join: seasonal_adj {
