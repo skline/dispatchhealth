@@ -3728,6 +3728,25 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: complete_count_no_arm_only{
+    label: "Complete Count (no arm, advanced)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.mfr_flex_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.advanced_care_car
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+
   dimension: tele_eligible {
     type: yesno
     sql: ${risk_assessments.tele_eligible_protocol} and ${patients.age} > 2 and ${risk_assessments.score} <5.5 and ${insurance_coalese_crosswalk.tele_packages};;

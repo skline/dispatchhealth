@@ -175,6 +175,26 @@ view: shift_teams {
     }
   }
 
+  measure: sum_shift_hours_no_arm_advanced_only {
+    label: "Sum Shift Hours (no arm, advanced)"
+    type: sum_distinct
+    value_format: "0.0"
+    sql_distinct_key: ${id} ;;
+    sql: ${shift_hours} ;;
+    filters:  {
+      field: cars.mfr_flex_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.advanced_care_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.test_car
+      value: "no"
+    }
+  }
+
   measure: productivity {
     type: number
     value_format: "0.00"
