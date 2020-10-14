@@ -86,7 +86,7 @@ dimension: ethnicity {
     sql: CASE WHEN ${race_raw} = 'A' OR ${race_raw} LIKE '%INDIAN%' THEN 'AMERICAN INDIAN'
           WHEN ${race_raw} = 'B' or ${race_raw} LIKE 'B.%' OR ${race_raw} LIKE '%AFRICAN/AMERICAN%' OR ${race_raw} LIKE '%BLACK%' THEN 'BLACK/AFRICAN AMERICAN'
           WHEN ${race_raw} = 'C' or ${race_raw} LIKE 'C.%' THEN 'NATIVE HAWAIIAN OR PACIFIC ISLANDER'
-          WHEN ${race_raw} LIKE 'D%' THEN 'ASIAN'
+          WHEN ${race_raw} LIKE 'D%' OR ${race_raw} LIKE '%ASIAN%' OR ${race_raw} LIKE '%ASAIN%' THEN 'ASIAN'
           WHEN ${race_raw} LIKE 'E%' OR ${race_raw} LIKE '%WHITE%' THEN 'WHITE'
           WHEN ${race_raw} LIKE 'F%' OR ${race_raw} LIKE '%OTHER%' THEN 'OTHER'
           WHEN ${race_raw} LIKE 'G%' THEN 'REFUSED'
