@@ -316,6 +316,8 @@ include: "geneysis_evaluations.view.lkml"
 include: "high_overflow_days.view.lkml"
 include: "billing_cities.view.lkml"
 include: "bulk_variable_shift_tracking.view.lkml"
+include: "genesys_queue_conversion_interval.view.lkml"
+
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -4561,6 +4563,21 @@ explore: genesys_queue_conversion {
   join: care_team_projected_volume {
     sql_on: ${genesys_queue_conversion.conversationstarttime_date} =${care_team_projected_volume.date_date}
       and ${genesys_queue_conversion.queuename}=${care_team_projected_volume.queue};;
+  }
+}
+
+explore: genesys_queue_conversion_interval {
+  join: markets {
+    sql_on: ${markets.id} =${genesys_queue_conversion_interval.market_id} ;;
+  }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
+  join: care_team_projected_volume {
+    sql_on: ${genesys_queue_conversion_interval.conversationstarttime_date} =${care_team_projected_volume.date_date}
+      and ${genesys_queue_conversion_interval.queuename}=${care_team_projected_volume.queue};;
   }
 }
 
