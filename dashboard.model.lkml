@@ -916,7 +916,7 @@ join: athena_order_created {
 join: athena_order_submitted {
   relationship: one_to_one
   sql_on: ${athena_document_orders.document_id} = ${athena_order_submitted.document_id} ;;
-  fields: []
+  # fields: []
 }
 
   join: athena_prescription_submitted {

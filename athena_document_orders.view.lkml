@@ -455,19 +455,19 @@ view: athena_document_orders {
     sql: ${TABLE}."provider_username" ;;
   }
 
-  dimension_group: received {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}."received_datetime" ;;
-  }
+  # dimension_group: received {
+  #   type: time
+  #   timeframes: [
+  #     raw,
+  #     time,
+  #     date,
+  #     week,
+  #     month,
+  #     quarter,
+  #     year
+  #   ]
+  #   sql: ${TABLE}."received_datetime" ;;
+  # }
 
   dimension: result_notes {
     type: string

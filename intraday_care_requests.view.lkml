@@ -166,13 +166,15 @@ view: intraday_care_requests {
     type: time
     timeframes: [
       raw,
+      minute15,
       time,
       date,
       week,
       month,
       quarter,
       year,
-      hour_of_day, day_of_week
+      hour_of_day,
+      day_of_week
     ]
     sql: (meta_data->>'accepted_at')::timestamp WITH TIME ZONE ;;
   }

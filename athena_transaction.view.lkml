@@ -287,6 +287,8 @@ view: athena_transaction {
     group_label: "RVU Measures"
     sql: ${total_rvu} ;;
     value_format: "0.0"
+    filters: [is_valid_claim: "yes"]
+
   }
 
   measure: average_total_rvu {
@@ -312,11 +314,6 @@ view: athena_transaction {
     type: yesno
     sql: ${voided_date} IS NULL AND
       ${expected_allowed_amount}::float = 0.0 ;;
-  }
-
-  measure: count_transactions {
-    type: count
-    sql: ${transaction_id} ;;
   }
 
   measure: count_valid_transactions {
