@@ -317,6 +317,7 @@ include: "high_overflow_days.view.lkml"
 include: "billing_cities.view.lkml"
 include: "bulk_variable_shift_tracking.view.lkml"
 include: "genesys_queue_conversion_interval.view.lkml"
+include: "most_recent_intraday.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -4611,5 +4612,13 @@ explore: geneysis_custom_conversation_attributes {
 explore: geneysis_evaluations {
   join: genesys_conversation_summary {
     sql_on: ${genesys_conversation_summary.conversationid} = ${geneysis_evaluations.conversationid} ;;
+  }
+}
+explore: adwords_campaigns_clone {
+  join: markets {
+    sql_on: ${adwords_campaigns_clone.market_id_new}=${markets.id} ;;
+  }
+  join: most_recent_intraday {
+    sql_on: ${markets.name} = ${most_recent_intraday.market} ;;
   }
 }

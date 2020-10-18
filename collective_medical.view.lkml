@@ -66,7 +66,7 @@ view: collective_medical {
 
   dimension: admitted_ip {
     type: yesno
-    description: "Admitted In-Patient"
+    description: "Admitted In-Patient - patient admitted directly to inpatient from preceding emergency admission"
     sql: ${TABLE}."admitted_ip" ;;
   }
 
@@ -185,6 +185,7 @@ view: collective_medical {
   # }
 
   dimension: 24_hour_first_admit_inpatient_emergency {
+    label: "24 Hour First Admit Hospitalization"
     description: "First Inpatient Emergency admittance recorded by Collective Medical within 24 hours of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 24 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' and ${admitted_ip};;
@@ -206,6 +207,7 @@ view: collective_medical {
   # }
 
   dimension: 3_day_first_admit_inpatient_emergency {
+    label: "3 Day First Admit Hospitalization"
     description: "First Inpatient Emergency admittance recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' and ${admitted_ip} = true;;
@@ -234,6 +236,7 @@ view: collective_medical {
   # }
 
   dimension: 14_day_first_admit_inpatient_emergency {
+    label: "14 Day First Admit Hospitalization"
     description: "First Inpatient Emergency admittance recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${major_class}) = 'emergency' and ${admitted_ip};;
@@ -262,6 +265,7 @@ view: collective_medical {
   # }
 
   dimension: 30_day_first_admit_inpatient_emergency {
+    label: "30 Day First Admit Hospitalization"
     description: "First Inpatient Emergency admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'emergency' and ${admitted_ip};;
@@ -276,14 +280,14 @@ view: collective_medical {
   }
 
   dimension: 30_day_cm_admit_emergency {
-    description: "Emergency admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
+        description: "Emergency admittance recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: yesno
     sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and  lower(${major_class}) = 'emergency';;
     group_label: "Emergency Admittance Intervals"
   }
 
   measure: count_24_hour_cm_admit_inpatient {
-    label: "Count 24 Hour CM Admit Inpatient Emergency"
+    label: "Count 24 Hour CM Admit Hospitalization"
     description: "Count Inpatient Emergency admittances recorded by Collective Medical within 24 hours of the DH care request on-scene date"
     type: count_distinct
     sql: ${care_request_flat.care_request_id} ;;
@@ -306,7 +310,7 @@ view: collective_medical {
   }
 
  measure: count_3_day_cm_admit_inpatient {
-    label: "Count 3 Day CM Admit Inpatient Emergency"
+    label: "Count 3 Day CM Admit  Hospitalization"
     description: "Count Inpatient Emergency admittances recorded by Collective Medical within 3 days of the DH care request on-scene date"
     type: count_distinct
     sql: ${care_request_flat.care_request_id} ;;
@@ -340,7 +344,7 @@ view: collective_medical {
   }
 
   measure: count_14_day_cm_admit_inpatient {
-    label: "Count 14 Day CM Admit Inpatient Emergency"
+    label: "Count 14 Day CM Admit  Hospitalization"
     description: "Count Inpatient Emergency admittances recorded by Collective Medical within 14 days of the DH care request on-scene date"
     type: count_distinct
     sql: ${care_request_flat.care_request_id}  ;;
@@ -374,7 +378,7 @@ view: collective_medical {
   }
 
   measure: count_30_day_cm_admit_inpatient {
-    label: "Count 30 Day CM Admit Inpatient Emergency"
+    label: "Count 30 Day CM Admit  Hospitalization"
     description: "Count Inpatient Emergency admittances recorded by Collective Medical within 30 days of the DH care request on-scene date"
     type: count_distinct
     sql: ${care_request_flat.care_request_id}  ;;
