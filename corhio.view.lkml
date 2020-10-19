@@ -47,7 +47,7 @@ view: corhio {
     sql: ${TABLE}."admissiontype" ;;
   }
 
-  dimension_group: admitdatetime {
+  dimension_group: admit {
     type: time
     timeframes: [
       raw,
@@ -58,7 +58,7 @@ view: corhio {
       quarter,
       year
     ]
-    sql: ${TABLE}."admitdatetime" ;;
+    sql: ${TABLE}."admitdatetime" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension_group: createddate {
@@ -101,7 +101,7 @@ view: corhio {
       quarter,
       year
     ]
-    sql: ${TABLE}."deathdatetime" ;;
+    sql: ${TABLE}."deathdatetime" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: diagnosis {
@@ -120,7 +120,7 @@ view: corhio {
       quarter,
       year
     ]
-    sql: ${TABLE}."dischargedatetime" ;;
+    sql: ${TABLE}."dischargedatetime" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: dischargedisposition {
@@ -199,7 +199,7 @@ view: corhio {
       quarter,
       year
     ]
-    sql: ${TABLE}."messagedate" ;;
+    sql: ${TABLE}."messagedate" AT TIME ZONE 'UTC' AT TIME ZONE ${timezones.pg_tz};;
   }
 
   dimension: messagetype {
@@ -266,6 +266,96 @@ view: corhio {
   measure: count {
     type: count
     drill_fields: [detail*]
+  }
+
+  dimension: 12_hour_corhio_admit_emergency {
+    description: "Emergency admittance recorded by CORHIO within 12 hours of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 12 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${admissiontype}) = 'e';;
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  dimension: 3_day_corhio_admit_emergency {
+    description: "Emergency admittance recorded by CORHIO within 3 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 72 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${admissiontype}) = 'e';;
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  dimension: 7_day_corhio_admit_emergency {
+    description: "Emergency admittance recorded by CORHIO within 7 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 168 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${admissiontype}) = 'e';;
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  dimension: 14_day_corhio_admit_emergency {
+    description: "Emergency admittance recorded by CORHIO within 14 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 336 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${admissiontype}) = 'e';;
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  dimension: 30_day_corhio_admit_emergency {
+    description: "Emergency admittance recorded by CORHIO within 30 days of the DH care request on-scene date"
+    type: yesno
+    sql: ((EXTRACT(EPOCH FROM ${admit_raw})-EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw})) / 3600) <= 720 and EXTRACT(EPOCH FROM ${admit_raw}) > EXTRACT(EPOCH FROM ${care_request_flat.on_scene_raw}) and lower(${admissiontype}) = 'e';;
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  measure: count_12_hour_corhio_admit_emergency {
+    description: "Count Emergency admittances recorded by CORHIO within 12 hours of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id}  ;;
+    filters: {
+      field: 12_hour_corhio_admit_emergency
+      value: "yes"
+    }
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  measure: count_3_day_corhio_admit_emergency {
+    description: "Count Emergency admittances recorded by CORHIO within 3 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id}  ;;
+    filters: {
+      field: 3_day_corhio_admit_emergency
+      value: "yes"
+    }
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  measure: count_7_day_corhio_admit_emergency {
+    description: "Count Emergency admittances recorded by CORHIO within 7 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id}  ;;
+    filters: {
+      field: 7_day_corhio_admit_emergency
+      value: "yes"
+    }
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  measure: count_14_day_corhio_admit_emergency {
+    description: "Count Emergency admittances recorded by CORHIO within 14 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id}  ;;
+    filters: {
+      field: 14_day_corhio_admit_emergency
+      value: "yes"
+    }
+    group_label: "Emergency Admittance Intervals"
+  }
+
+  measure: count_30_day_corhio_admit_emergency {
+    description: "Count Emergency admittances recorded by CORHIO within 30 days of the DH care request on-scene date"
+    type: count_distinct
+    sql: ${care_request_flat.care_request_id}  ;;
+    filters: {
+      field: 30_day_corhio_admit_emergency
+      value: "yes"
+    }
+    group_label: "Emergency Admittance Intervals"
   }
 
   # ----- Sets of fields for drilling ------
