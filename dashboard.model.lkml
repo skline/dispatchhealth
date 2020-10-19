@@ -59,6 +59,7 @@ include: "athenadwh_appointments_clone.view.lkml"
 include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
 include: "collective_medical_admit_emergency_and_inpatient_within_24_hours.view.lkml"
 include: "collective_medical_first_emergency_inpatient_admit_date_post_visit.view.lkml"
+include: "corhio.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -632,6 +633,11 @@ explore: care_requests {
   join: collective_medical {
     relationship: one_to_many
     sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
+  }
+
+  join: corhio {
+    relationship: one_to_many
+    sql_on: ${patients.id} = ${corhio.member_id} ;;
   }
 
   join: collective_medical_first_major_class_admit_date_post_visit {
