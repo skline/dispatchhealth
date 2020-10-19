@@ -1,6 +1,13 @@
 view: corhio {
   sql_table_name: corhio.corhio ;;
 
+  dimension: messageid {
+    primary_key: yes
+    type: number
+    value_format_name: id
+    sql: ${TABLE}."messageid" ;;
+  }
+
   dimension_group: __file {
     type: time
     timeframes: [
@@ -193,12 +200,6 @@ view: corhio {
       year
     ]
     sql: ${TABLE}."messagedate" ;;
-  }
-
-  dimension: messageid {
-    type: number
-    value_format_name: id
-    sql: ${TABLE}."messageid" ;;
   }
 
   dimension: messagetype {
