@@ -18,6 +18,7 @@ view: genesys_queue_conversion {
         column: care_request_count { field: care_request_flat_number.care_request_count }
         column: accepted_count { field: care_request_flat_number.accepted_count }
         column: complete_count { field: care_request_flat_number.complete_count }
+        column: sem_covid {field: number_to_market.sem_covid}
         filters: {
           field: genesys_conversation_summary.conversationstarttime_time
           value: "180 days ago for 180 days"
@@ -62,11 +63,15 @@ view: genesys_queue_conversion {
     type: number
   }
 
+  dimension: sem_covid {
+    label: "SEM Covid"
+  }
+
   measure: sum_distinct_sla {
     type: sum_distinct
     label: "Sum Distinct SLA (Inbound Demand)"
     sql: ${count_distinct_sla} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}) ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
     }
 
   measure: sla_percent {
@@ -104,26 +109,26 @@ view: genesys_queue_conversion {
   measure: sum_inbound_phone_calls {
     type: sum_distinct
     sql: ${inbound_phone_calls} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}) ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
   }
 
   measure: sum_inbound_answers {
     type: sum_distinct
     sql: ${count_answered} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}) ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
   }
 
 
   measure: sum_wait_time_minutes_x_inbound_demand {
     type: sum_distinct
     sql: ${wait_time_minutes_x_inbound_phone_calls} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}) ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
   }
 
   measure: sum_accepted_count {
     type: sum_distinct
     sql: ${accepted_count} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}) ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
   }
 
   measure: avg_wait_time_minutes {
