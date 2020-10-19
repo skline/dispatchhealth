@@ -190,6 +190,7 @@ view: channel_items {
         WHEN ${source_name} = 'Healthcare Partners' THEN ${type_name}
         ELSE 'Undocumented'
         END ;;
+    drill_fields: [name]
   }
 
   dimension_group: updated {
@@ -266,6 +267,7 @@ view: channel_items {
           when lower(${type_name}) in('health system', 'employer', 'payer', 'provider group', 'injury finance') or lower(${name_no_tabs}) in('tacoma fire', 'business network group','humana at home', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Strategic'
           when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
+    drill_fields: [sub_type, name]
   }
 
   dimension: high_level_category_new {
@@ -281,6 +283,7 @@ view: channel_items {
          when lower(${type_name}) in('health system', 'employer', 'payer', 'injury finance') or lower(${name_no_tabs}) in('tacoma fire', 'business network group','humana at home', 'employer', 'employer organization', 'health insurance company', '911 channel', 'west metro fire rescue', 'south metro fire rescue', 'central pierce fire & rescue') then 'Strategic'
          when lower(${name_no_tabs}) ='family or friend' then 'Family or Friends'
         else concat(coalesce(${type_name}, 'Direct'), ': ', ${name_no_tabs}) end;;
+    drill_fields: [sub_type, name]
   }
 
   dimension: high_level_clinical_integration {
