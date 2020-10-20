@@ -65,6 +65,7 @@ view: genesys_queue_conversion {
 
   dimension: sem_covid {
     label: "SEM Covid"
+    type: yesno
   }
 
   measure: sum_distinct_sla {
