@@ -2343,6 +2343,15 @@ WITH ort AS (
     group_label: "ETAs"
     description: "The number of minutes between the initial ETA end time and the on-scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw} - ${eta_range_end_raw})/60;;
+    value_format: "0.0"
+  }
+
+  dimension: initial_eta_start_to_on_scene_minutes  {
+    type: number
+    group_label: "ETAs"
+    description: "The number of minutes between the initial ETA start time and the on-scene time"
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw} - ${eta_range_start_raw})/60;;
+    value_format: "0.0"
   }
 
   dimension: initial_eta_window_to_on_scene_2_groups {
@@ -2367,6 +2376,32 @@ WITH ort AS (
           WHEN ${initial_eta_end_to_on_scene_minutes} > 15 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '(3) 16-60 Minutes Late'
           WHEN ${initial_eta_end_to_on_scene_minutes} > 60 AND ${initial_eta_end_to_on_scene_minutes} <= 240 THEN '(4) 61 Minutes to 4 Hours Late'
           WHEN ${initial_eta_end_to_on_scene_minutes} > 240 THEN '(5) Greater than 4 Hours Late'
+          ELSE NULL
+          END
+          ;;
+  }
+
+  dimension: initial_eta_window_to_on_scene_granular_groups {
+    type: string
+    group_label: "ETAs"
+    description: "On-scene time relative to initial ETA window grouping (5 bins)"
+    sql:  CASE
+
+          WHEN ${initial_eta_start_to_on_scene_minutes} < -60 THEN '(01) Greater than 60 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -60 AND ${initial_eta_start_to_on_scene_minutes} < -50 THEN '(02) 51 to 60 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -50 AND ${initial_eta_start_to_on_scene_minutes} < -40 THEN '(03) 41 to 50 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -40 AND ${initial_eta_start_to_on_scene_minutes} < -30 THEN '(04) 31 to 40 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -30 AND ${initial_eta_start_to_on_scene_minutes} < -20 THEN '(05) 21 to 30 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -20 AND ${initial_eta_start_to_on_scene_minutes} < -10 THEN '(06) 11 to 20 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -10 AND ${initial_eta_start_to_on_scene_minutes} < 0 THEN '(07) 1 to 10 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= 0 AND ${initial_eta_end_to_on_scene_minutes} <= 0 THEN '(08) On Time'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 0 AND ${initial_eta_end_to_on_scene_minutes} <= 10 THEN '(09) 1 to 10 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 10 AND ${initial_eta_end_to_on_scene_minutes} <= 20 THEN '(10) 11 to 20 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 20 AND ${initial_eta_end_to_on_scene_minutes} <= 30 THEN '(11) 21 to 30 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 30 AND ${initial_eta_end_to_on_scene_minutes} <= 40 THEN '(12) 31 to 40 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 40 AND ${initial_eta_end_to_on_scene_minutes} <= 50 THEN '(13) 41 to 50 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 50 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '(14) 51 to 60 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 60 THEN '(15) Greater than 60 Minutes Late'
           ELSE NULL
           END
           ;;
