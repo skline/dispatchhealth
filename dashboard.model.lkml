@@ -1761,7 +1761,7 @@ join: athena_procedurecode {
   }
 
 join: resolved_reasons_summary {
-  sql_on: ${resolved_reasons_summary.resolved_employees}=${care_request_flat.resolved_employee_full_name} ;;
+  sql_on: ${resolved_reasons_summary.resolved_employee}=${care_request_flat.resolved_employee_full_name} ;;
 }
 
   join: google_trend_data {
