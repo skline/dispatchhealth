@@ -2199,6 +2199,17 @@ WITH ort AS (
     sql: ${TABLE}.complete_date ;;
   }
 
+  dimension: month_to_date_last_complete_month_on_first {
+    description: "Designed to be used for reports that require month-to-date reporting daily where the 1st of every new month returns the last full complete month"
+    type: string
+    sql: CASE
+           WHEN extract(day FROM NOW() AT TIME ZONE ${timezones.pg_tz}) != 1 AND extract(month FROM NOW() AT TIME ZONE ${timezones.pg_tz}) != 1 AND extract(year FROM ${complete_raw}) = extract(year FROM NOW() AT TIME ZONE ${timezones.pg_tz}) AND extract(month FROM ${complete_raw}) = extract(month FROM NOW() AT TIME ZONE ${timezones.pg_tz}) AND (NOW() AT TIME ZONE ${timezones.pg_tz})::DATE != ${complete_raw}::DATE THEN extract(year FROM NOW() AT TIME ZONE ${timezones.pg_tz})::varchar || '-' ||  extract(month FROM NOW() AT TIME ZONE ${timezones.pg_tz})::varchar
+           WHEN extract(day FROM NOW() AT TIME ZONE ${timezones.pg_tz}) = 1 AND extract(month FROM ${complete_raw}) = extract(month FROM (NOW()  AT TIME ZONE ${timezones.pg_tz} - interval '1' month)) AND extract(year FROM ${complete_raw}) = extract(year FROM NOW() AT TIME ZONE ${timezones.pg_tz}) THEN extract(year FROM NOW() AT TIME ZONE ${timezones.pg_tz})::varchar || '-' || extract(month FROM (NOW() AT TIME ZONE ${timezones.pg_tz}  - interval '1' month)::date)::varchar
+           WHEN extract(day FROM NOW() AT TIME ZONE ${timezones.pg_tz}) = 1 AND extract(month FROM NOW() AT TIME ZONE ${timezones.pg_tz}) = 1 AND extract(year FROM ${complete_raw}) = extract(year FROM NOW() AT TIME ZONE ${timezones.pg_tz}) THEN  extract(year FROM (NOW()  AT TIME ZONE ${timezones.pg_tz} - interval '1' year)::date)::varchar || '-' || '12'
+           ELSE 'Exclude'
+           END;;
+  }
+
    parameter: care_request_complete_timeframe_picker {
     label: "Select care request Complete Date grouping "
     type: string
@@ -3716,6 +3727,32 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
   }
+
+  measure: complete_count_no_arm_only{
+    label: "Complete Count (no arm, advanced)"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: cars.mfr_flex_car
+      value: "no"
+    }
+    filters:  {
+      field: cars.advanced_care_car
+      value: "no"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+
+  dimension: tele_eligible {
+    type: yesno
+    sql: ${risk_assessments.tele_eligible_protocol} and ${patients.age} > 2 and ${risk_assessments.score} <5.5 and ${insurance_coalese_crosswalk.tele_packages};;
+  }
+
+
   measure: complete_count_kaiser{
     label: "Complete Count (Kaiser)"
     type: count_distinct
@@ -3729,6 +3766,28 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
   }
+
+
+  measure: complete_tele_eligible{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters:  {
+      field: tele_eligible
+      value: "yes"
+    }
+    filters: {
+      field: complete
+      value: "yes"
+    }
+  }
+
+
+  measure: tele_eligible_percent{
+    type: number
+    value_format: "0%"
+    sql: case when ${complete_count}>0 then ${complete_tele_eligible}::float /${complete_count}::float else 0 end;;
+  }
+
 
 
 

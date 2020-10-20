@@ -59,6 +59,7 @@ include: "athenadwh_appointments_clone.view.lkml"
 include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
 include: "collective_medical_admit_emergency_and_inpatient_within_24_hours.view.lkml"
 include: "collective_medical_first_emergency_inpatient_admit_date_post_visit.view.lkml"
+include: "corhio.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -203,6 +204,7 @@ include: "athenadwh_patientaudit.view.lkml"
 include: "athenadwh_patients_clone.view.lkml"
 include: "budget_hours.view.lkml"
 include: "service_lines.view.lkml"
+include: "views/service_line_question_responses.view.lkml"
 include: "thpg_providers.view.lkml"
 include: "income_pop_by_zipcode_small.view.lkml"
 include: "icd_code_risk_assessment_crosswalk.view.lkml"
@@ -316,6 +318,9 @@ include: "high_overflow_days.view.lkml"
 include: "resolved_reasons_summary.view.lkml"
 include: "billing_cities.view.lkml"
 include: "bulk_variable_shift_tracking.view.lkml"
+include: "genesys_queue_conversion_interval.view.lkml"
+include: "most_recent_intraday.view.lkml"
+
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -631,6 +636,11 @@ explore: care_requests {
     sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
   }
 
+  join: corhio {
+    relationship: one_to_many
+    sql_on: ${patients.id} = ${corhio.member_id} ;;
+  }
+
   join: collective_medical_first_major_class_admit_date_post_visit {
     relationship: many_to_one
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
@@ -914,7 +924,7 @@ join: athena_order_created {
 join: athena_order_submitted {
   relationship: one_to_one
   sql_on: ${athena_document_orders.document_id} = ${athena_order_submitted.document_id} ;;
-  fields: []
+  # fields: []
 }
 
   join: athena_prescription_submitted {
@@ -1733,7 +1743,13 @@ join: athena_procedurecode {
   }
 
   join: service_lines {
+    relationship: many_to_one
     sql_on: ${care_requests.service_line_id} =${service_lines.id} ;;
+  }
+
+  join: service_line_question_responses {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${service_line_question_responses.care_request_id} ;;
   }
 
   join: seasonal_adj {
@@ -4562,6 +4578,21 @@ explore: genesys_queue_conversion {
   }
 }
 
+explore: genesys_queue_conversion_interval {
+  join: markets {
+    sql_on: ${markets.id} =${genesys_queue_conversion_interval.market_id} ;;
+  }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
+  join: care_team_projected_volume {
+    sql_on: ${genesys_queue_conversion_interval.conversationstarttime_date} =${care_team_projected_volume.date_date}
+      and ${genesys_queue_conversion_interval.queuename}=${care_team_projected_volume.queue};;
+  }
+}
+
 explore: genesys_agent_conversion {
 
   join: markets {
@@ -4592,5 +4623,13 @@ explore: geneysis_custom_conversation_attributes {
 explore: geneysis_evaluations {
   join: genesys_conversation_summary {
     sql_on: ${genesys_conversation_summary.conversationid} = ${geneysis_evaluations.conversationid} ;;
+  }
+}
+explore: adwords_campaigns_clone {
+  join: markets {
+    sql_on: ${adwords_campaigns_clone.market_id_new}=${markets.id} ;;
+  }
+  join: most_recent_intraday {
+    sql_on: ${markets.name} = ${most_recent_intraday.market} ;;
   }
 }

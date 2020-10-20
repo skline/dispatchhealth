@@ -1,10 +1,22 @@
-view: intraday_monitoring {
-  sql_table_name: looker_scratch.intraday_monitoring ;;
+view: most_recent_intraday {
+  derived_table: {
+    sql:
+    select *
+from
+(select *, ROW_NUMBER() OVER(PARTITION BY market
+                                ORDER BY created_hour desc) as row_number
+from looker_scratch.intraday_monitoring
+where intraday_monitoring.created_date=current_date
+ORDER BY created_hour desc)lq
+where row_number=1
+    ;;
 
-  dimension: complete_est {
-    type: number
-    sql: ${TABLE}.complete_est ;;
-  }
+    }
+
+    dimension: market {
+      type: string
+      sql: ${TABLE}.market ;;
+    }
 
   dimension_group: created {
     type: time
@@ -26,28 +38,24 @@ view: intraday_monitoring {
     sql: ${TABLE}.created_hour ;;
   }
 
-  dimension: market {
-    type: string
-    sql: ${TABLE}.market ;;
-  }
-
   dimension: productivity_est {
     type: number
     sql: ${TABLE}.productivity_est ;;
   }
-
-  dimension: capacity {
+  dimension: complete_est {
     type: number
-    sql: ${TABLE}.capacity ;;
+    sql: ${TABLE}.complete_est ;;
   }
-
   dimension: expected_additional {
     type: number
     sql: ${TABLE}.expected_additional ;;
   }
-
+  dimension: capacity {
+    type: number
+    sql: ${TABLE}.capacity ;;
+  }
   dimension: total_hours {
-    type: string
+    type: number
     sql: ${TABLE}.total_hours ;;
   }
 
@@ -63,13 +71,6 @@ view: intraday_monitoring {
     sql:case when ${complete_est} >0 then ${expected_overflow}::float/${complete_est}::float else 0 end ;;
   }
 
-  measure: diff_to_actual {
-    type: number
-    sql: max(${complete_est}) - ${care_request_flat.complete_count} ;;
-  }
 
-  measure: count {
-    type: count
-    drill_fields: []
+
   }
-}

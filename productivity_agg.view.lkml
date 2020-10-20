@@ -9,9 +9,9 @@ view: productivity_agg {
 
     explore_source: shift_teams {
       column: start { field: shift_teams.start_date}
-      column: sum_shift_hours_no_arm_advanced {}
+      column: sum_shift_hours_no_arm_advanced { field:  shift_teams.sum_shift_hours_no_arm_advanced_only}
       column: complete_count { field: care_request_flat.complete_count }
-      column: complete_count_no_arm_advanced { field: care_request_flat.complete_count_no_arm_advanced }
+      column: complete_count_no_arm_advanced { field: care_request_flat.complete_count_no_arm_only }
       column: count_wmfr_billable { field: care_requests.count_wmfr_billable }
       column: count_smfr_billable { field: care_requests.count_smfr_billable }
       column: complete_count_advanced { field: care_request_flat.complete_count_advanced }

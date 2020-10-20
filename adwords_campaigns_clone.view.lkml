@@ -11,6 +11,16 @@ view: adwords_campaigns_clone {
     sql: ${TABLE}.campaign_name ;;
   }
 
+  dimension: status {
+    type: yesno
+    sql: ${TABLE}.status =1;;
+  }
+
+  dimension: variation_eligible {
+    type: yesno
+    sql: ${TABLE}.variation_eligible =1;;
+  }
+
   dimension: sem {
     type: yesno
     sql: ${campaign_name_lower} like '%search%' ;;
@@ -20,20 +30,16 @@ view: adwords_campaigns_clone {
     type: yesno
     sql: ${campaign_name_lower} like '%brand%' ;;
   }
+
+  dimension: covid {
+    type: yesno
+    sql: ${campaign_name_lower} like '%covid%' ;;
+  }
   dimension: campaign_name_lower {
     type: string
     sql: lower(${campaign_name}) ;;
   }
 
-  dimension: market_dim_id {
-    type: number
-    sql: ${TABLE}.market_dim_id ;;
-  }
-
-  dimension: market_id {
-    type: number
-    sql: ${TABLE}.market_id ;;
-  }
 
   dimension: market_id_new {
     type: number
