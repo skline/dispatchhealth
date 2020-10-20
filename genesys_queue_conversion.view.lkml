@@ -15,6 +15,8 @@ view: genesys_queue_conversion {
         column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
         column: count_answered {}
+        column: count_not_abandoned {}
+
         column: care_request_count { field: care_request_flat_number.care_request_count }
         column: accepted_count { field: care_request_flat_number.accepted_count }
         column: complete_count { field: care_request_flat_number.complete_count }
@@ -42,6 +44,17 @@ view: genesys_queue_conversion {
       label: "Genesys Conversation Summary Count Distinct (Inbound Demand Minus Market)"
       type: number
     }
+  dimension: count_not_abandoned {
+    label: "Count Not Abandoned (Inbound Demand)"
+    type: number
+  }
+
+  measure: sum_not_abanonded {
+    type: sum_distinct
+    sql: ${count_not_abandoned} ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id});;
+  }
+
     dimension: count_answered {
       label: "Genesys Conversation Summary Count Answered (Inbound Demand)"
       type: number
@@ -135,7 +148,7 @@ view: genesys_queue_conversion {
   measure: assigned_rate {
     type: number
     value_format: "0%"
-    sql: case when ${sum_inbound_answers} >0 then ${sum_accepted_count}::float/${sum_inbound_answers}::float else 0 end ;;
+    sql: case when ${sum_not_abanonded} >0 then ${sum_accepted_count}::float/${sum_not_abanonded}::float else 0 end ;;
   }
 
   measure: answer_rate {

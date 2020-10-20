@@ -6,6 +6,7 @@ view: genesys_agg {
         column: conversationstarttime {  field: genesys_conversation_summary.conversationstarttime_date}
         column: market_id { field: markets.id_adj }
         column: count_answered {}
+        column: count_not_abandoned {}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
         column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}
         column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
@@ -62,7 +63,7 @@ view: genesys_agg {
 
   dimension: inbound_demand{
     type: number
-    sql: ${count_answered} +case when ${non_phone_cr.care_request_count} is not null then ${non_phone_cr.care_request_count} else 0 end;;
+    sql: ${count_not_abandoned} +case when ${non_phone_cr.care_request_count} is not null then ${non_phone_cr.care_request_count} else 0 end;;
   }
 
   measure: sum_inbound_demand{
@@ -103,6 +104,11 @@ view: genesys_agg {
       label: "Count Answered (Inbound Demand)"
       type: number
     }
+
+  dimension: count_not_abandoned {
+    label: "Count Not Abandoned (Inbound Demand)"
+    type: number
+  }
   dimension: inbound_phone_calls {
     label: "Count Distinct Phone Calls (Inbound Demand)"
     type: number
@@ -113,6 +119,13 @@ view: genesys_agg {
       sql: ${count_answered} ;;
       sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
     }
+
+  measure: sum_not_abanonded {
+    type: sum_distinct
+    sql: ${count_not_abandoned} ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
+  }
+
 
   measure: sum_inbound_phone_calls {
     type: sum_distinct

@@ -12,6 +12,7 @@ view: genesys_queue_conversion_interval {
       column: market_id {field:markets.id}
       column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}
 
+      column: count_not_abandoned {}
 
       column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
       column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
@@ -115,12 +116,24 @@ view: genesys_queue_conversion_interval {
     sql_distinct_key: concat(${conversationid}, ${queuename});;
   }
 
+
+
   measure: sum_inbound_answers {
     type: sum_distinct
     sql: ${count_answered} ;;
     sql_distinct_key: concat(${conversationid}, ${queuename});;
   }
 
+  dimension: count_not_abandoned {
+    label: "Count Not Abandoned (Inbound Demand)"
+    type: number
+  }
+
+  measure: sum_not_abanonded {
+    type: sum_distinct
+    sql: ${count_not_abandoned} ;;
+    sql_distinct_key: concat(${conversationid}, ${queuename});;
+  }
 
   measure: sum_wait_time_minutes_x_inbound_demand {
     type: sum_distinct
@@ -143,7 +156,7 @@ view: genesys_queue_conversion_interval {
   measure: assigned_rate {
     type: number
     value_format: "0%"
-    sql: case when ${sum_inbound_answers} >0 then ${sum_accepted_count}::float/${sum_inbound_answers}::float else 0 end ;;
+    sql: case when ${sum_not_abanonded} >0 then ${sum_accepted_count}::float/${sum_not_abanonded}::float else 0 end ;;
   }
 
   measure: answer_rate {
