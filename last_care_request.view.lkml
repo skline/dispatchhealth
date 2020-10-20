@@ -25,7 +25,7 @@ view: last_care_request {
     (SELECT
       care_request_id,
       name,
-      MAX(updated_at) AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS updated_at
+      MIN(updated_at) AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS updated_at
     FROM care_request_statuses
     WHERE name = 'complete'
     GROUP BY 1,2) crs
@@ -67,5 +67,36 @@ view: last_care_request {
     type: yesno
     sql:  (((EXTRACT(EPOCH FROM ${complete_raw}::timestamp - ${care_request_flat.shift_end_time}::timestamp)))/3600)::decimal <= -1.50 ;;
   }
+
+  dimension: last_complete_to_last_updated_mins {
+    description: "The time between the the last completed care request time stamp and the last updated time stamp (arrived back at office)"
+    type: number
+    sql: (EXTRACT(EPOCH FROM ${shifts_end_of_shift_times.last_update_time_raw}) - EXTRACT(EPOCH FROM ${last_care_request.complete_raw}))/60 ;;
+    value_format: "0.0"
+  }
+
+  measure: avg_last_complete_to_last_updated_mins {
+    description: "The time between the the last completed care request time stamp and the last updated time stamp (arrived back at office)"
+    type: average_distinct
+    sql: ${last_complete_to_last_updated_mins} ;;
+    value_format: "0.0"
+  }
+
+  dimension: last_complete_to_shift_end_mins {
+    description: "The time between the the last completed care request time stamp and the last updated time stamp (arrived back at office)"
+    type: number
+    sql: (EXTRACT(EPOCH FROM ${care_request_flat.shift_end_raw}) - EXTRACT(EPOCH FROM ${last_care_request.complete_raw}))/60 ;;
+    value_format: "0.0"
+  }
+
+  measure: avg_last_complete_to_shift_end_mins {
+    description: "The time between the the last completed care request time stamp and the last updated time stamp (arrived back at office)"
+    type: average_distinct
+    sql: ${last_complete_to_shift_end_mins} ;;
+    value_format: "0.0"
+  }
+
+
+
 
 }
