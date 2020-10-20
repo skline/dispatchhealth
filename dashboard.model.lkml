@@ -315,6 +315,7 @@ include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
 include: "geneysis_evaluations.view.lkml"
 include: "high_overflow_days.view.lkml"
+include: "resolved_reasons_summary.view.lkml"
 include: "billing_cities.view.lkml"
 include: "bulk_variable_shift_tracking.view.lkml"
 include: "genesys_queue_conversion_interval.view.lkml"
@@ -1702,6 +1703,7 @@ join: athena_procedurecode {
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
   }
 
+
 #   join: care_request_complete{
 #     relationship: one_to_many
 #     from: care_request_statuses
@@ -1758,6 +1760,9 @@ join: athena_procedurecode {
     sql_on: ${care_request_flat.on_scene_month_num}=${days_in_month_adj.month_number} ;;
   }
 
+join: resolved_reasons_summary {
+  sql_on: ${resolved_reasons_summary.resolved_employees}=${care_request_flat.resolved_employee_full_name} ;;
+}
 
   join: google_trend_data {
     sql_on: ${care_request_flat.on_scene_month_num} = ${google_trend_data.month}
