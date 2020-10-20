@@ -36,7 +36,8 @@ WITH ort AS (
         fu3.updated_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS day3_followup_date,
         fu14.comment AS followup_14day_result,
         fu30.comment AS followup_30day_result,
-        accept1.initial_eta::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta,
+        --accept1.initial_eta::timestamptz AS initial_eta,
+        accept1.initial_eta::timestamptz AT TIME ZONE t.pg_tz AS initial_eta,
         accept1.auto_assigned AS auto_assigned_initial,
         accept1.reassignment_reason AS reassignment_reason_initial,
         accept1.reassignment_reason_other AS reassignment_reason_other_initial,
@@ -50,7 +51,8 @@ WITH ort AS (
         accept.first_name AS accept_employee_first_name,
         accept.last_name AS accept_employee_last_name,
         accept.user_id AS accept_employee_user_id,
-        accept.eta_time::timestamp AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS eta_date,
+        --accept.eta_time::timestamptz AS eta_date,
+        accept.eta_time::timestamptz AT TIME ZONE t.pg_tz AS eta_date,
         eta.starts_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta_start,
         eta.ends_at AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS initial_eta_end,
         resolved.first_name AS resolved_employee_first_name,
@@ -73,6 +75,7 @@ WITH ort AS (
         cr.patient_id as patient_id,
         foc.first_on_scene_time,
         onscene.mins_on_scene_predicted,
+        n_assign.count_assignments,
         max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
       FROM care_requests cr
       LEFT JOIN care_request_statuses AS request
@@ -130,6 +133,14 @@ WITH ort AS (
         ON crs.user_id = users.id
         WHERE name = 'accepted' AND crs.deleted_at IS NULL) AS accept
       ON cr.id = accept.care_request_id AND accept.rn = 1
+      LEFT JOIN (
+          SELECT
+              care_request_id,
+              COUNT(DISTINCT (meta_data::json ->> 'shift_team_id')) AS count_assignments
+          FROM public.care_request_statuses
+          WHERE name = 'accepted' AND deleted_at IS NULL
+          GROUP BY 1) AS n_assign
+      ON cr.id = n_assign.care_request_id
       LEFT JOIN (
           SELECT
               crs.care_request_id,
@@ -233,7 +244,7 @@ WITH ort AS (
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
       GROUP BY 1,2,3,4,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,
                insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
-               foc.first_on_scene_time,onscene.mins_on_scene_predicted;;
+               foc.first_on_scene_time,onscene.mins_on_scene_predicted, n_assign.count_assignments;;
 
     # Run trigger every 2 hours
     sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
@@ -322,6 +333,12 @@ WITH ort AS (
     hidden: yes
     description: "The number of seconds between accepted time and on-route time"
     sql: EXTRACT(EPOCH FROM ${on_route_raw})-EXTRACT(EPOCH FROM ${accept_raw}) ;;
+  }
+
+  dimension: num_assignments {
+    type: number
+    description: "The number of times the patient was assigned to a clinical team"
+    sql: ${TABLE}.count_assignments ;;
   }
 
   dimension: on_scene_time_minutes {
@@ -1594,6 +1611,7 @@ WITH ort AS (
     type: time
     description: "The first local date and time when the shift team was assigned a care request"
     convert_tz: no
+    hidden: yes
     timeframes: [
       raw,
       hour_of_day,
@@ -2345,9 +2363,18 @@ WITH ort AS (
 
   dimension: accepted_to_initial_eta_minutes  {
     type: number
+    view_label: "Accepted to ETA Minutes"
     group_label: "ETAs"
-    description: "The number of minutes between when the care request was created and the initial ETA"
+    description: "The number of minutes between when the care request was accepted and the ETA"
     sql: ROUND(CAST(EXTRACT(EPOCH FROM ${eta_raw} - ${accept_raw})/60 AS integer), 0) ;;
+    value_format: "0"
+  }
+
+  dimension: accepted_initial_to_eta_initial_minutes  {
+    type: number
+    group_label: "ETAs"
+    description: "The number of minutes between when the care request was first accepted and the initial ETA"
+    sql: ROUND(CAST(EXTRACT(EPOCH FROM ${initial_eta_raw} - ${accept_initial_raw})/60 AS integer), 0) ;;
     value_format: "0"
   }
 
@@ -3288,8 +3315,8 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
     filters: {
-      field: care_requests.non_acute_ems_populations_cost_savings
-      value: "no"
+      field: care_requests.acute_ems_population_cost_savings
+      value: "Yes"
     }
   }
 

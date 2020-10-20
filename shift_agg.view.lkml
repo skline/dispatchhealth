@@ -19,6 +19,9 @@ view: shift_agg {
       column: app_car_staff { field: cars.app_car_staff }
       column: count_billable_est {}
       column: name_adj { field: markets.name_adj }
+      column: id_adj { field:markets.id_adj}
+      column: provider_name {field:users.csc_name}
+      column: provider_position {field: provider_profiles.position}
       column: cpr_market { field: markets.cpr_market }
       column: emt_car_staff { field: cars.emt_car_staff }
       column: total_drive_time_minutes_coalesce { field: care_request_flat.total_drive_time_minutes_coalesce }
@@ -115,6 +118,16 @@ dimension: shift_end_time {
   dimension: name_adj {
     label: "Market Name"
     description: "Market name where WMFR is included as part of Denver"
+  }
+  dimension: id_adj {
+    type: number
+    description: "Market ID"
+  }
+  dimension: provider_name {
+    type: string
+  }
+  dimension: provider_position {
+    type: string
   }
   dimension: cpr_market {
     label: "Markets Cpr Market (Yes / No)"

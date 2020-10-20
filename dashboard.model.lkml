@@ -207,6 +207,7 @@ include: "thpg_providers.view.lkml"
 include: "income_pop_by_zipcode_small.view.lkml"
 include: "icd_code_risk_assessment_crosswalk.view.lkml"
 include: "markets.view.lkml"
+include: "views/market_regions.view.lkml"
 include: "athena_clinicalencounterdiagnosis.view.lkml"
 include: "shift_teams.view.lkml"
 include: "market_start_date.view.lkml"
@@ -313,6 +314,8 @@ include: "athena_medication_details.view.lkml"
 include: "geneysis_evaluations.view.lkml"
 include: "high_overflow_days.view.lkml"
 include: "resolved_reasons_summary.view.lkml"
+include: "billing_cities.view.lkml"
+include: "bulk_variable_shift_tracking.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -1590,6 +1593,11 @@ join: athena_procedurecode {
   join: regional_markets {
     relationship: one_to_one
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
   }
 
   join: market_start_date{
@@ -2934,8 +2942,12 @@ explore: ga_pageviews_clone {
         }
 
   explore: zipcodes {
+    sql_always_where: ${zipcodes.deleted_at_raw} is null ;;
+    join: billing_cities {
+      sql_on: ${zipcodes.billing_city_id} = ${billing_cities.id} ;;
+    }
     join: markets {
-      sql_on: ${zipcodes.market_id} = ${markets.id} ;;
+      sql_on: ${billing_cities.market_id} = ${markets.id} ;;
     }
     join: regional_markets {
       sql_on: ${markets.id} = ${regional_markets.market_id} ;;
@@ -3837,6 +3849,11 @@ explore: shift_teams
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
   join: market_start_date{
     sql_on: ${markets.id}=${market_start_date.market_id} ;;
   }
@@ -3889,6 +3906,10 @@ explore: budget_projections_by_market_clone {
   }
   join: regional_markets {
     sql_on: ${markets.id} = ${regional_markets.market_id} ;;
+  }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
   }
 }
 
@@ -4379,6 +4400,40 @@ explore: mailchimp_sends {
 
 explore: day_of_week_variation {}
 
+explore: bulk_variable_shift_tracking {
+  join: cars {
+    sql_on: ${cars.market_id} = ${bulk_variable_shift_tracking.market_id} ;;
+  }
+  join: shift_teams {
+    sql_on: ${shift_teams.start_date} = ${bulk_variable_shift_tracking.date_date}
+    and ${cars.id} = ${shift_teams.car_id} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id}=${bulk_variable_shift_tracking.market_id} ;;
+  }
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+  join: users {
+    relationship: one_to_one
+    sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+  join: shift_team_members {
+    relationship: one_to_many
+    sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
+  }
+
+  join: zizzl_detailed_shift_hours {
+    relationship: one_to_many
+    sql_on: ${users.id} = ${zizzl_detailed_shift_hours.employee_id} AND
+          ${zizzl_detailed_shift_hours.counter_date} = ${shift_teams.start_date} AND
+          ${zizzl_detailed_shift_hours.counter_name} IN ('Regular','Salary Plus')
+               AND (${zizzl_detailed_shift_hours.shift_name} != 'Administration' OR ${zizzl_detailed_shift_hours.shift_name} IS NULL)
+               AND ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%' ;;
+  }
+}
 explore: variable_shift_tracking {
   sql_always_where: ${variable_shift_tracking.date_date} < current_date ;;
   join: cars {
@@ -4472,6 +4527,11 @@ explore: productivity_agg {
     sql_on:  ${shift_agg.shift_start_date}=${productivity_agg.start_date} and ${shift_agg.name_adj} =${productivity_agg.name_adj};;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${productivity_agg.id_adj} = ${market_regions.market_id} ;;
+  }
+
   #join: markets {
   #  sql_on: ${markets.name_adj} = ${productivity_agg.name_adj} ;;
   #}
@@ -4480,11 +4540,20 @@ explore: productivity_agg {
   #}
 
 }
-explore: shift_agg {}
+explore: shift_agg {
+  join: market_regions {
+    relationship: many_to_one
+    sql_on: ${shift_agg.id_adj} = ${market_regions.market_id} ;;
+  }
+}
 explore: genesys_queue_conversion {
 
   join: markets {
     sql_on: ${markets.id} =${genesys_queue_conversion.market_id} ;;
+  }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
   }
 
   join: care_team_projected_volume {

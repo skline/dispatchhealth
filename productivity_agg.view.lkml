@@ -17,6 +17,7 @@ view: productivity_agg {
       column: complete_count_advanced { field: care_request_flat.complete_count_advanced }
       column: productivity {}
       column: sum_goal_volume {}
+      column: id_adj { field: markets.id_adj }
       column: name_adj { field: markets.name_adj }
       column: cpr_market { field: markets.cpr_market }
       column: count_complete_overflow { field: care_request_flat.count_complete_overflow }
@@ -109,6 +110,10 @@ view: productivity_agg {
   }
   dimension: name_adj {
     description: "Market name where WMFR is included as part of Denver"
+  }
+  dimension: id_adj {
+    type: number
+    description: "Market ID"
   }
   dimension: cpr_market {
     label: "Markets Cpr Market (Yes / No)"
