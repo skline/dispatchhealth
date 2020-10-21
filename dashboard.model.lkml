@@ -320,6 +320,7 @@ include: "billing_cities.view.lkml"
 include: "bulk_variable_shift_tracking.view.lkml"
 include: "genesys_queue_conversion_interval.view.lkml"
 include: "most_recent_intraday.view.lkml"
+include: "views/granular_shift_tracking.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -4631,5 +4632,13 @@ explore: adwords_campaigns_clone {
   }
   join: most_recent_intraday {
     sql_on: ${markets.name} = ${most_recent_intraday.market} ;;
+  }
+}
+explore: granular_shift_tracking {
+  join: cars {
+    sql_on: ${cars.id} =${granular_shift_tracking.car_id} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id} =${cars.market_id} ;;
   }
 }
