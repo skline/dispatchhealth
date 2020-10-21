@@ -704,6 +704,8 @@ ORDER BY base.chart_id  ;;
   }
 
   measure: count_one_or_more_10_SDOH_asked {
+    label: "Count Distinct Charts Where One or More SDOH Questions Asked"
+    description: "Counts the number of distinct patient charts where one or more of the primary SDOH questions were asked"
     type: count_distinct
     sql: ${chart_id} ;;
     value_format: "0"
