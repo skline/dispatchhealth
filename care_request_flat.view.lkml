@@ -2,18 +2,23 @@ view: care_request_flat {
   derived_table: {
     sql:
 WITH ort AS (
-    SELECT
+    SELECT DISTINCT
         st.id AS shift_team_id,
         st.start_time,
-        cr.id AS care_request_id,
-        MAX(crs.started_at) AS on_route
-        FROM public.shift_teams st
-        LEFT JOIN public.care_requests cr
-            ON st.id = cr.shift_team_id
-        INNER JOIN public.care_request_statuses crs
-            ON cr.id = crs.care_request_id AND crs.name = 'on_route' AND crs.deleted_at IS NULL
-        WHERE LOWER(cr.chief_complaint) <> 'test'
-        GROUP BY 1,2,3)
+        crst.care_request_id,
+        crs.on_route
+        FROM (
+            SELECT
+                care_request_id,
+                MAX(started_at) AS on_route
+            FROM public.care_request_statuses
+            WHERE name = 'on_route' AND deleted_at IS NULL
+            GROUP BY 1) AS crs
+        LEFT JOIN public.care_requests_shift_teams crst
+            ON crs.care_request_id = crst.care_request_id AND crst.is_dispatched
+        LEFT JOIN public.shift_teams st
+            ON crst.shift_team_id = st.id
+        GROUP BY 1,2,3,4)
     SELECT
         markets.id AS market_id,
         cr.id as care_request_id,
@@ -67,7 +72,7 @@ WITH ort AS (
         case when array_to_string(array_agg(distinct notes.note), ':') = '' then null
         else array_to_string(array_agg(distinct notes.note), ':')end
         as reorder_reason,
-        cr.shift_team_id,
+        crst.shift_team_id,
         min(to_date(schedule.comment, 'DD Mon YYYY')) as scheduled_care_date,
         insurances.package_id,
         callers.origin_phone,
@@ -78,6 +83,8 @@ WITH ort AS (
         n_assign.count_assignments,
         max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
       FROM care_requests cr
+      LEFT JOIN care_requests_shift_teams crst
+        ON cr.id = crst.care_request_id --AND crst.is_dispatched
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
       LEFT JOIN care_request_statuses schedule
@@ -174,7 +181,7 @@ WITH ort AS (
                 MIN(on_route) AS on_route
             FROM ort
             GROUP BY shift_team_id) AS fst_or
-        ON cr.shift_team_id = fst_or.shift_team_id
+        ON crst.shift_team_id = fst_or.shift_team_id
       LEFT JOIN (
             SELECT
                 CAST(meta_data::json->> 'shift_team_id' AS INT) AS shift_team_id,
@@ -185,7 +192,7 @@ WITH ort AS (
             WHERE crs.name = 'accepted' AND crs.deleted_at IS NULL AND meta_data::json->> 'shift_team_id' IS NOT NULL AND
                   LOWER(cr.chief_complaint) <> 'test'
             GROUP BY 1) AS fst_cra
-        ON cr.shift_team_id = fst_cra.shift_team_id
+        ON crst.shift_team_id = fst_cra.shift_team_id
       LEFT JOIN (
           SELECT
               care_request_id,
@@ -219,7 +226,7 @@ WITH ort AS (
       LEFT JOIN care_request_statuses fu30
       ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30' and fu30.deleted_at is null
       LEFT JOIN public.shift_teams
-      ON shift_teams.id = cr.shift_team_id
+      ON crst.shift_team_id = shift_teams.id
       LEFT JOIN public.shift_teams st_init
       ON st_init.id::int = accept1.shift_team_id_initial::int
       LEFT JOIN cars
@@ -243,7 +250,7 @@ WITH ort AS (
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
       GROUP BY 1,2,3,4,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,
-               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
+               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,crst.shift_team_id,
                foc.first_on_scene_time,onscene.mins_on_scene_predicted, n_assign.count_assignments;;
 
     # Run trigger every 2 hours
