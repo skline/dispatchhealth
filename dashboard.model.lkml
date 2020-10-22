@@ -644,7 +644,7 @@ explore: care_requests {
   }
 
   join: collective_medical_first_major_class_admit_date_post_visit {
-    relationship: many_to_one
+    relationship: one_to_many
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
   }
 
