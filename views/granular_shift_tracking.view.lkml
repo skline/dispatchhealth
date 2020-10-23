@@ -27,8 +27,8 @@ view: granular_shift_tracking {
   }
 
   dimension: complete_bool {
-    type: number
-    sql: ${TABLE}."complete_bool" ;;
+    type: yesno
+    sql: ${TABLE}."complete_bool"=1 ;;
   }
 
   dimension: complete_time_of_day {
@@ -41,9 +41,9 @@ view: granular_shift_tracking {
     sql: ${TABLE}."diff_on_route_to_last_action" ;;
   }
 
-  dimension: drive_time_minutes {
+  dimension: drive_time{
     type: number
-    sql: ${TABLE}."drive_time_minutes" ;;
+    sql: ${TABLE}."drive_time_minutes"::float/60.0 ;;
   }
 
   dimension: emt_car_staff {
@@ -52,13 +52,13 @@ view: granular_shift_tracking {
   }
 
   dimension: first_accepted_bool {
-    type: number
-    sql: ${TABLE}."first_accepted_bool" ;;
+    type: yesno
+    sql: ${TABLE}."first_accepted_bool"=1 ;;
   }
 
   dimension: last_care_request_bool {
-    type: number
-    sql: ${TABLE}."last_care_request_bool" ;;
+    type: yesno
+    sql: ${TABLE}."last_care_request_bool"=1 ;;
   }
 
   dimension: last_update_time_time_of_day {
@@ -66,14 +66,30 @@ view: granular_shift_tracking {
     sql: ${TABLE}."last_update_time_time_of_day" ;;
   }
 
+  dimension: diff_between_last_update_shift_end {
+    type: number
+    sql: ${shift_end_time_of_day}-${last_update_time_time_of_day} ;;
+  }
+
+  dimension: diff_between_complete_shift_end {
+    type: number
+    sql: ${shift_end_time_of_day}-${complete_time_of_day} ;;
+  }
+
+  dimension: diff_between_complete_last_action {
+    type: number
+    sql: ${last_update_time_time_of_day}-${complete_time_of_day} ;;
+  }
+
+
   dimension: on_route_time_of_day {
     type: number
     sql: ${TABLE}."on_route_time_of_day" ;;
   }
 
-  dimension: on_scene_minutes {
+  dimension: on_scene_time {
     type: number
-    sql: ${TABLE}."on_scene_minutes" ;;
+    sql: ${TABLE}."on_scene_minutes"::float/60.0 ;;
   }
 
   dimension: on_scene_time_of_day {
@@ -82,8 +98,13 @@ view: granular_shift_tracking {
   }
 
   dimension: patient_assigned_bool {
-    type: number
-    sql: ${TABLE}."patient_assigned_bool" ;;
+    type: yesno
+    sql: ${TABLE}."patient_assigned_bool"=1;;
+  }
+
+  dimension: patient_assigned_at_start_bool {
+    type: yesno
+    sql: ${TABLE}."patient_assigned_bool"=1 and ${TABLE}."first_accepted_bool"=1;;
   }
 
   dimension: prior_complete_time {
@@ -126,8 +147,237 @@ view: granular_shift_tracking {
     sql: ${TABLE}."shift_team_id" ;;
   }
 
-  measure: count {
-    type: count
-    drill_fields: [car_name]
+  dimension: primary_key {
+    type: number
+    sql: concat(${shift_date}, ${shift_team_id}, ${care_request_id});;
   }
+
+  dimension: primary_key_shift {
+    type: number
+    sql: concat(${shift_date}, ${shift_team_id});;
+  }
+
+  dimension: shift_time {
+    type: number
+    sql: ${shift_end_time_of_day}-${shift_start_time_of_day} ;;
+  }
+
+  measure: avg_drive_time_minutes {
+    type: average_distinct
+    value_format: "0"
+    sql: ${drive_time}*60 ;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+  measure: avg_on_scene_time_minutes {
+    type: average_distinct
+    value_format: "0"
+    sql: ${on_scene_time} *60;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+  measure: sum_drive_time_minutes {
+    type: sum_distinct
+    value_format: "0"
+    sql: ${drive_time}*60 ;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+  measure: sum_on_scene_time_minutes {
+    type: sum_distinct
+    value_format: "0"
+    sql: ${on_scene_time} *60;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+
+
+
+  measure: sum_shift_time{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${shift_time} ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+  }
+
+  measure: sum_time_since_last_action{
+    type: sum_distinct
+    value_format: "0.00"
+    sql: ${diff_on_route_to_last_action} ;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+
+  measure: count_distinct_shifts {
+    type: count_distinct
+    value_format: "0"
+    sql: ${primary_key_shift} ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+  }
+
+  measure: count_distinct_care_requests {
+    type: count_distinct
+    value_format: "0"
+    sql: ${primary_key} ;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+  measure: count_distinct_care_requests_w_assigned {
+    type: count_distinct
+    value_format: "0"
+    sql: ${primary_key} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: patient_assigned_bool
+      value: "yes"
+    }
+  }
+
+
+  measure: count_distinct_shifts_w_assigned {
+    type: count_distinct
+    value_format: "0"
+    sql: ${primary_key_shift} ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+    filters: {
+      field: patient_assigned_at_start_bool
+      value: "yes"
+    }
+  }
+
+
+
+
+  measure:  sum_dead_time_proxy_minutes{
+    value_format: "0"
+    type: number
+    sql: ${sum_shift_time}*60 -${sum_drive_time_minutes}-${sum_on_scene_time_minutes} ;;
+  }
+
+  measure: avg_dead_time_proxy_minutes {
+    value_format: "0"
+    type: number
+    sql: ${sum_dead_time_proxy_minutes}/${count_distinct_shifts} ;;
+  }
+
+  measure:  sum_dead_time{
+    type: number
+    sql: ${sum_diff_on_route_to_last_action}+${sum_diff_between_last_update_shift_end}+${sum_drive_time_home} ;;
+  }
+
+
+  measure: sum_diff_on_route_to_last_action{
+    type: sum_distinct
+    value_format: "0.00"
+    sql: ${diff_on_route_to_last_action} ;;
+    sql_distinct_key: ${primary_key} ;;
+
+  }
+
+  measure: sum_deadtime_start_of_shift_minutes{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_on_route_to_last_action}*60 ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: first_accepted_bool
+      value: "yes"
+    }
+
+  }
+
+  measure: sum_deadtime_end_of_shift_minutes{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_between_complete_shift_end}*60 ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+    filters: {
+      field: last_care_request_bool
+      value: "yes"
+    }
+
+  }
+
+  measure: avg_deadtime_end_of_shift_minutes{
+    value_format: "0"
+    type: number
+    sql: ${sum_deadtime_end_of_shift_minutes}/${count_distinct_shifts} ;;
+  }
+
+  measure: sum_dead_time_at_office_after_shift{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_between_last_update_shift_end}*60 ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+
+  }
+
+  measure: avg_dead_time_at_office_after_shift{
+    value_format: "0"
+    type: number
+    sql: ${sum_dead_time_at_office_after_shift}/${count_distinct_shifts} ;;
+  }
+
+  measure: sum_drive_back_to_office{
+    type: number
+    value_format: "0"
+    sql: ${sum_deadtime_end_of_shift_minutes}-${sum_dead_time_at_office_after_shift};;
+
+  }
+
+  measure: avg_drive_back_to_office{
+    value_format: "0"
+    type: number
+    sql: ${sum_drive_back_to_office}/${count_distinct_shifts} ;;
+  }
+
+
+
+
+  measure: avg_deadtime_start_of_shift_minutes{
+    value_format: "0"
+    type: number
+    sql: ${sum_deadtime_start_of_shift_minutes}/${count_distinct_shifts} ;;
+}
+
+  measure: sum_deadtime_start_of_shift_minutes_w_assigned{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_on_route_to_last_action}*60 ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: patient_assigned_at_start_bool
+      value: "yes"
+    }
+  }
+
+  measure: avg_deadtime_start_of_shift_minutes_w_assigned{
+    value_format: "0"
+    type: number
+    sql: ${sum_deadtime_start_of_shift_minutes_w_assigned}/${count_distinct_shifts_w_assigned} ;;
+  }
+
+
+  measure: sum_dead_time_intra_minutes{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_on_route_to_last_action}*60;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: last_care_request_bool
+      value: "no"
+    }
+    filters: {
+      field: first_accepted_bool
+      value: "no"
+    }
+  }
+
+  measure: avg_dead_time_intra_minutes{
+    value_format: "0"
+    type: number
+    sql: ${sum_dead_time_intra_minutes}/${count_distinct_shifts} ;;
+  }
+
+
 }
