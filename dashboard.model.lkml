@@ -321,6 +321,7 @@ include: "bulk_variable_shift_tracking.view.lkml"
 include: "genesys_queue_conversion_interval.view.lkml"
 include: "most_recent_intraday.view.lkml"
 include: "views/granular_shift_tracking.view.lkml"
+include: "views/care_requests_shift_teams.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -643,7 +644,7 @@ explore: care_requests {
   }
 
   join: collective_medical_first_major_class_admit_date_post_visit {
-    relationship: many_to_one
+    relationship: one_to_many
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
   }
 
@@ -1417,9 +1418,16 @@ join: athena_procedurecode {
     sql_on: ${care_requests.id} = ${credit_card_errors.care_request_id} ;;
   }
 
+  join: care_requests_shift_teams {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${care_requests_shift_teams.care_request_id}
+    AND ${care_requests_shift_teams.is_dispatched};;
+    fields: []
+  }
+
   join: shift_teams {
     relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+    sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
   }
 
   join: shift_team_stops {
@@ -3791,9 +3799,16 @@ explore: shift_teams
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL)
   AND (${patients.last_name} NOT LIKE '%Test%' OR ${patients.last_name} IS NULL) ;;
 
+  join: care_requests_shift_teams {
+    relationship: many_to_one
+    sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
+    fields: []
+  }
+
   join: care_requests {
-    relationship: one_to_many
-    sql_on: ${shift_teams.id} = ${care_requests.shift_team_id} ;;
+    relationship: one_to_one
+    sql_on: ${care_requests_shift_teams.care_request_id} = ${care_requests.id} ;;
+    # AND ${care_requests_shift_teams.is_dispatched};;
   }
 
   join: care_request_flat {
