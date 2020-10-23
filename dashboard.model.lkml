@@ -1437,7 +1437,7 @@ join: athena_procedurecode {
 
   join: shifts_end_of_shift_times {
     relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
+    sql_on: ${care_request_flat.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
   }
 
   join: shift_team_market_assignment_logs {
