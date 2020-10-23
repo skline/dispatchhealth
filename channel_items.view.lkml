@@ -416,10 +416,14 @@ else null end;;
           ((${athenadwh_referrals.clinical_order_type}) IS NOT NULL AND
           lower(${athenadwh_referral_providers.name}) LIKE '%vcuhs%') THEN 'VCU Health'
 
+          WHEN lower(${name}) LIKE '%renown%' OR
+          ${population_health_channels.name} = 'bon secours mssp' THEN 'Renown Medical Group'
+
 
           WHEN (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') THEN 'Bon Secours'
           WHEN lower(${provider_network.name}) = 'ou physicians' THEN 'OUMI & OU Physicians'
           WHEN lower(${provider_network.name}) = 'virginia commonwealth university health system' THEN 'VCU Health'
+          WHEN lower(${provider_network.name}) = 'renown medical group' THEN 'Renown Medical Group'
 
 
           ELSE NULL END ;;
