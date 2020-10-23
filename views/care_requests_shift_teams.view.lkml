@@ -1,6 +1,6 @@
 view: care_requests_shift_teams {
-  sql_table_name: SELECT * FROM public.care_requests_shift_teams
-  WHERE ${is_dispatched} IS TRUE;;
+  sql_table_name: (SELECT * FROM public.care_requests_shift_teams
+  WHERE ${is_dispatched} IS TRUE);;
 
   drill_fields: [id]
 
