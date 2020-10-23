@@ -303,7 +303,7 @@ dimension: shift_end_time {
   measure: sum_total_on_scene_time_minutes {
     label: "Sum of All Of Scene Time"
     type: sum_distinct
-    value_format: "0.00"
+    value_format: "0"
     sql: ${total_on_scene_time_minutes} ;;
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
@@ -311,7 +311,7 @@ dimension: shift_end_time {
   measure: sum_total_drivetime_minutes {
     label: "Sum of All Of Drive Time"
     type: sum_distinct
-    value_format: "0.00"
+    value_format: "0"
     sql: ${total_drive_time_minutes_coalesce} ;;
     sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
   }
