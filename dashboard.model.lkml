@@ -3487,6 +3487,11 @@ explore: incontact_aggregated_clone  {
     sql_on: ${markets.id} = ${incontact_aggregated_clone.market_id} ;;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
 
   join: goal_inbound_calls_dec {
     sql_on:  ${goal_inbound_calls_dec.date_date} =${incontact_aggregated_clone.date_date}
@@ -3667,6 +3672,11 @@ explore: genesys_conversation_summary {
   join: regional_markets {
     relationship: one_to_one
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
+  }
+
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
   }
 
   join: care_request_flat {
