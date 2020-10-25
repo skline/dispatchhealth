@@ -322,6 +322,7 @@ include: "genesys_queue_conversion_interval.view.lkml"
 include: "most_recent_intraday.view.lkml"
 include: "views/granular_shift_tracking.view.lkml"
 include: "views/care_requests_shift_teams.view.lkml"
+include: "granular_shift_tracking_agg.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -4657,3 +4658,4 @@ explore: granular_shift_tracking {
     sql_on: ${markets.id} =${cars.market_id} ;;
   }
 }
+explore: granular_shift_tracking_agg {}

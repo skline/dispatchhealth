@@ -26,6 +26,12 @@ view: granular_shift_tracking {
     sql: ${TABLE}."care_request_id" ;;
   }
 
+  measure: care_request_id_agg {
+    type: string
+    sql: ARRAY_AGG(${care_request_id}) ;;
+
+  }
+
   dimension: complete_bool {
     type: yesno
     sql: ${TABLE}."complete_bool"=1 ;;
@@ -36,15 +42,53 @@ view: granular_shift_tracking {
     sql: ${TABLE}."complete_time_of_day" ;;
   }
 
+  measure: max_complete_time_of_day {
+    type: number
+    sql: max(${complete_time_of_day}) ;;
+  }
+
+  measure: min_complete_time_of_day {
+    type: number
+    sql: min(${complete_time_of_day}) ;;
+  }
+
   dimension: diff_on_route_to_last_action {
     type: number
     sql: ${TABLE}."diff_on_route_to_last_action" ;;
   }
 
+  measure: max_diff_on_route_to_last_action {
+    type: number
+    sql: max(${diff_on_route_to_last_action}) ;;
+  }
+
+  measure: min_diff_on_route_to_last_action {
+    type: number
+    sql: min(${diff_on_route_to_last_action}) ;;
+  }
+
+
   dimension: drive_time{
     type: number
+    value_format: "0.00"
+
     sql: ${TABLE}."drive_time_minutes"::float/60.0 ;;
   }
+
+  measure: max_drive_time {
+    value_format: "0.00"
+
+    type: number
+    sql: max(${drive_time}) ;;
+  }
+
+  measure: min_drive_time {
+    value_format: "0.00"
+
+    type: number
+    sql: min(${drive_time}) ;;
+  }
+
 
   dimension: emt_car_staff {
     type: string
@@ -55,10 +99,21 @@ view: granular_shift_tracking {
     type: yesno
     sql: ${TABLE}."first_accepted_bool"=1 ;;
   }
+  measure: max_first_accepted_bool{
+    type: number
+    sql: max(${TABLE}."first_accepted_bool") ;;
+
+  }
 
   dimension: last_care_request_bool {
     type: yesno
     sql: ${TABLE}."last_care_request_bool"=1 ;;
+  }
+
+  measure: max_last_care_request_bool{
+    type: number
+    sql: max(${TABLE}."last_care_request_bool") ;;
+
   }
 
   dimension: last_update_time_time_of_day {
@@ -66,19 +121,63 @@ view: granular_shift_tracking {
     sql: ${TABLE}."last_update_time_time_of_day" ;;
   }
 
+  measure: max_last_update_time_time_of_day{
+    type: number
+    sql: max(${last_update_time_time_of_day}) ;;
+  }
+
+  measure: min_last_update_time_time_of_day {
+    type: number
+    sql: min(${last_update_time_time_of_day}) ;;
+  }
+
+
   dimension: diff_between_last_update_shift_end {
     type: number
     sql: ${shift_end_time_of_day}-${last_update_time_time_of_day} ;;
   }
+
+  measure: max_diff_between_last_update_shift_end{
+    type: number
+    sql: max(${diff_between_last_update_shift_end}) ;;
+  }
+
+  measure: min_diff_between_last_update_shift_end {
+    type: number
+    sql: min(${diff_between_last_update_shift_end}) ;;
+  }
+
 
   dimension: diff_between_complete_shift_end {
     type: number
     sql: ${shift_end_time_of_day}-${complete_time_of_day} ;;
   }
 
+  measure: max_diff_between_complete_shift_end{
+    type: number
+    sql: max(${diff_between_complete_shift_end}) ;;
+  }
+
+  measure: min_diff_between_complete_shift_end {
+    type: number
+    sql: min(${diff_between_complete_shift_end}) ;;
+  }
+
+
+
   dimension: diff_between_complete_last_action {
     type: number
     sql: ${last_update_time_time_of_day}-${complete_time_of_day} ;;
+  }
+
+  measure: max_diff_between_complete_last_action{
+    type: number
+    sql: max(${diff_between_complete_last_action}) ;;
+  }
+
+  measure: min_diff_between_complete_last_action {
+    type: number
+    sql: min(${diff_between_complete_last_action}) ;;
   }
 
 
@@ -87,14 +186,50 @@ view: granular_shift_tracking {
     sql: ${TABLE}."on_route_time_of_day" ;;
   }
 
+
+  measure: max_on_route_time_of_day{
+    type: number
+    sql: max(${on_route_time_of_day}) ;;
+  }
+
+  measure: min_on_route_time_of_day {
+    type: number
+    sql: min(${on_route_time_of_day}) ;;
+  }
+
+
   dimension: on_scene_time {
     type: number
     sql: ${TABLE}."on_scene_minutes"::float/60.0 ;;
   }
 
+  measure: max_on_scene_time{
+    type: number
+    value_format: "0.00"
+    sql: max(${on_scene_time}) ;;
+  }
+
+  measure: min_on_scene_time {
+    type: number
+    value_format: "0.00"
+
+    sql: min(${on_scene_time}) ;;
+  }
+
+
   dimension: on_scene_time_of_day {
     type: number
     sql: ${TABLE}."on_scene_time_of_day" ;;
+  }
+
+  measure: max_on_scene_time_of_day{
+    type: number
+    sql: max(${on_scene_time_of_day}) ;;
+  }
+
+  measure: min_on_scene_time_of_day {
+    type: number
+    sql: min(${on_scene_time_of_day}) ;;
   }
 
   dimension: patient_assigned_bool {
@@ -102,9 +237,21 @@ view: granular_shift_tracking {
     sql: ${TABLE}."patient_assigned_bool"=1;;
   }
 
+  measure: max_patient_assigned_bool{
+    type: number
+    sql: max(${TABLE}."patient_assigned_bool") ;;
+
+  }
+
   dimension: patient_assigned_at_start_bool {
     type: yesno
     sql: ${TABLE}."patient_assigned_bool"=1 and ${TABLE}."first_accepted_bool"=1;;
+  }
+
+  measure: max_patient_assigned_at_start_bool{
+    type: number
+    sql: max(case when ( ${TABLE}."patient_assigned_bool"=1 and ${TABLE}."first_accepted_bool"=1) then 1 else 0 end) ;;
+
   }
 
   dimension: prior_complete_time {
@@ -112,9 +259,24 @@ view: granular_shift_tracking {
     sql: ${TABLE}."prior_complete_time" ;;
   }
 
+  measure: max_prior_complete_time{
+    type: number
+    sql: max(${prior_complete_time}) ;;
+  }
+
+  measure: min_prior_complete_time {
+    type: number
+    sql: min(${prior_complete_time}) ;;
+  }
+
   dimension: resolved_reason_full {
     type: string
     sql: ${TABLE}."resolved_reason_full" ;;
+  }
+
+  dimension: address_lat {
+    type: string
+    sql: ${TABLE}."address_lat" ;;
   }
 
   dimension_group: shift {
@@ -137,9 +299,29 @@ view: granular_shift_tracking {
     sql: ${TABLE}."shift_end_time_of_day" ;;
   }
 
+  measure: max_shift_end_time_of_day{
+    type: number
+    sql: max(${shift_end_time_of_day}) ;;
+  }
+
+  measure: min_shift_end_time_of_day {
+    type: number
+    sql: min(${shift_end_time_of_day}) ;;
+  }
+
   dimension: shift_start_time_of_day {
     type: number
     sql: ${TABLE}."shift_start_time_of_day" ;;
+  }
+
+  measure: max_shift_start_time_of_day{
+    type: number
+    sql: max(${shift_start_time_of_day}) ;;
+  }
+
+  measure: min_shift_start_time_of_day {
+    type: number
+    sql: min(${shift_start_time_of_day}) ;;
   }
 
   dimension: shift_team_id {
@@ -160,6 +342,16 @@ view: granular_shift_tracking {
   dimension: shift_time {
     type: number
     sql: ${shift_end_time_of_day}-${shift_start_time_of_day} ;;
+  }
+
+  measure: max_shift_time{
+    type: number
+    sql: max(${shift_end_time_of_day}) ;;
+  }
+
+  measure: min_shift_time {
+    type: number
+    sql: min(${shift_end_time_of_day}) ;;
   }
 
   measure: avg_drive_time_minutes {
@@ -283,7 +475,6 @@ view: granular_shift_tracking {
       field: first_accepted_bool
       value: "yes"
     }
-
   }
 
   measure: sum_deadtime_end_of_shift_minutes{
@@ -377,6 +568,11 @@ view: granular_shift_tracking {
     value_format: "0"
     type: number
     sql: ${sum_dead_time_intra_minutes}/${count_distinct_shifts} ;;
+  }
+  measure: complete_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    sql_distinct_key: ${care_request_id} ;;
   }
 
 

@@ -49,6 +49,11 @@ view: addresses {
     sql_longitude:${longitude} ;;
   }
 
+  dimension: care_request_location_string {
+    type: string
+    sql: concat(${latitude}, ${longitude});;
+  }
+
   dimension: state {
     type: string
     group_label: "Description"
