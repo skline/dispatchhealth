@@ -32,6 +32,13 @@ view: granular_shift_tracking {
 
   }
 
+  measure: address_name_agg {
+    type: string
+    sql: ARRAY_AGG(${address_name}) ;;
+
+  }
+
+
   dimension: complete_bool {
     type: yesno
     sql: ${TABLE}."complete_bool"=1 ;;
@@ -277,6 +284,10 @@ view: granular_shift_tracking {
   dimension: address_lat {
     type: string
     sql: ${TABLE}."address_lat" ;;
+  }
+  dimension: address_name {
+    type: string
+    sql: ${TABLE}."address_name" ;;
   }
 
   dimension_group: shift {

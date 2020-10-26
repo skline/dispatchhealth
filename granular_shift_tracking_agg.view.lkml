@@ -10,39 +10,19 @@ view: granular_shift_tracking_agg {
         column: emt_car_staff {}
         column: complete_count {}
         column: care_request_id_agg {}
-        column: max_patient_assigned_at_start_bool {}
-        column: max_last_care_request_bool {}
-        column: max_patient_assigned_bool {}
-        column: max_first_accepted_bool {}
-        column: max_complete_time_of_day {}
-        column: max_diff_between_complete_last_action {}
-        column: max_diff_between_complete_shift_end {}
-        column: max_diff_between_last_update_shift_end {}
-        column: max_diff_on_route_to_last_action {}
-        column: max_last_update_time_time_of_day {}
-        column: max_on_route_time_of_day {}
-        column: max_on_scene_time {}
-        column: max_on_scene_time_of_day {}
-        column: max_prior_complete_time {}
-        column: max_shift_end_time_of_day {}
-        column: max_shift_start_time_of_day {}
-        column: max_shift_time {}
-        column: min_complete_time_of_day {}
-        column: min_diff_between_complete_last_action {}
-        column: min_diff_between_complete_shift_end {}
-        column: min_diff_between_last_update_shift_end {}
-        column: min_diff_on_route_to_last_action {}
-        column: min_last_update_time_time_of_day {}
-        column: min_on_route_time_of_day {}
-        column: min_on_scene_time {}
-        column: min_on_scene_time_of_day {}
-        column: min_prior_complete_time {}
-        column: min_shift_end_time_of_day {}
-        column: min_shift_start_time_of_day {}
-        column: min_shift_time {}
-        column: min_drive_time {}
-        column: max_drive_time {}
-        column: mareket_id { field: markets.id }
+        column: patient_assigned_at_start_bool {field: granular_shift_tracking.max_patient_assigned_at_start_bool}
+        column: last_care_request_bool {field: granular_shift_tracking.max_last_care_request_bool}
+        column: patient_assigned_bool {field: granular_shift_tracking.max_patient_assigned_bool}
+        column: first_accepted_bool {field: granular_shift_tracking.max_first_accepted_bool}
+        column: complete_time_of_day {field: granular_shift_tracking.max_complete_time_of_day}
+        column: last_update_time_time_of_day {field: granular_shift_tracking.max_last_update_time_time_of_day}
+        column: prior_complete_time {field: granular_shift_tracking.max_prior_complete_time}
+        column: shift_end_time_of_day {field: granular_shift_tracking.max_shift_end_time_of_day}
+        column: shift_start_time_of_day {field: granular_shift_tracking.max_shift_start_time_of_day}
+        column: on_route_time_of_day {field: granular_shift_tracking.min_on_route_time_of_day}
+        column: on_scene_time_of_day {field: granular_shift_tracking.min_on_scene_time_of_day}
+        column: address_name_agg {}
+        column: market_id { field: markets.id }
         column: market_name_adj { field: markets.name_adj }
       }
     }
@@ -78,134 +58,81 @@ view: granular_shift_tracking_agg {
     dimension: care_request_id_agg {
       type: string
     }
-    dimension: max_patient_assigned_at_start_bool {
+
+    dimension: address_name_agg {
+      type: string
+    }
+
+    dimension: patient_assigned_at_start_bool {
       type: number
     }
-    dimension: max_last_care_request_bool {
+    dimension: last_care_request_bool {
       type: number
     }
-    dimension: max_patient_assigned_bool {
+    dimension: patient_assigned_bool {
       type: number
     }
-    dimension: max_first_accepted_bool {
+    dimension: first_accepted_bool {
       type: number
     }
-    dimension: max_complete_time_of_day {
-      type: number
-    }
-    dimension: max_diff_between_complete_last_action {
-      type: number
-    }
-    dimension: max_diff_between_complete_shift_end {
-      type: number
-    }
-    dimension: max_diff_between_last_update_shift_end {
-      type: number
-    }
-    dimension: max_diff_on_route_to_last_action {
-      type: number
-    }
-    dimension: max_last_update_time_time_of_day {
-      type: number
-    }
-    dimension: max_on_route_time_of_day {
-      type: number
-    }
-    dimension: max_on_scene_time {
-      value_format: "0.00"
-      type: number
-    }
-    dimension: max_on_scene_time_of_day {
-      type: number
-    }
-    dimension: max_prior_complete_time {
-      type: number
-    }
-    dimension: max_shift_end_time_of_day {
-      type: number
-    }
-    dimension: max_shift_start_time_of_day {
-      type: number
-    }
-    dimension: max_shift_time {
-      type: number
-    }
-    dimension: min_complete_time_of_day {
-      type: number
-    }
-    dimension: min_diff_between_complete_last_action {
-      type: number
-    }
-    dimension: min_diff_between_complete_shift_end {
-      type: number
-    }
-    dimension: min_diff_between_last_update_shift_end {
-      type: number
-    }
-    dimension: min_diff_on_route_to_last_action {
-      type: number
-    }
-    dimension: min_last_update_time_time_of_day {
-      type: number
-    }
-    dimension: min_on_route_time_of_day {
-      type: number
-    }
-    dimension: min_on_scene_time {
-      value_format: "0.00"
-      type: number
-    }
-    dimension: min_on_scene_time_of_day {
-      type: number
-    }
-    dimension: min_prior_complete_time {
-      type: number
-    }
-    dimension: min_shift_end_time_of_day {
-      type: number
-    }
-    dimension: min_shift_start_time_of_day {
-      type: number
-    }
-    dimension: min_shift_time {
-      type: number
-    }
-    dimension: min_drive_time {
-      value_format: "0.00"
-      type: number
-    }
-    dimension: max_drive_time {
-      value_format: "0.00"
+    dimension: complete_time_of_day {
       type: number
     }
 
+    dimension: last_update_time_time_of_day {
+      type: number
+    }
+
+    dimension: prior_complete_time {
+      type: number
+    }
+    dimension: shift_end_time_of_day {
+      type: number
+    }
+    dimension: shift_start_time_of_day {
+      type: number
+    }
+
+    dimension: on_route_time_of_day {
+      type: number
+    }
+
+    dimension: on_scene_time_of_day {
+      type: number
+    }
+
+
   dimension: market_id {
     type: number
+  }
+
+  dimension: address_name {
+    type: string
   }
   dimension: market_name_adj {
     description: "Market name where WMFR is included as part of Denver"
   }
   dimension: primary_key {
-    sql: concat(${address_lat}, ${shift_team_id}, ${min_on_scene_time_of_day}) ;;
+    sql: concat(${address_lat}, ${shift_team_id}, ${on_scene_time_of_day}) ;;
   }
   dimension: primary_key_shift {
     sql:  ${shift_team_id} ;;
   }
   dimension: on_scene_time {
-    sql:${max_complete_time_of_day}- ${min_on_scene_time_of_day} ;;
+    sql:${complete_time_of_day}- ${on_scene_time_of_day} ;;
 
   }
   dimension: drive_time {
-    sql:${min_on_scene_time_of_day}- ${min_on_route_time_of_day} ;;
+    sql:${on_scene_time_of_day}- ${on_route_time_of_day} ;;
   }
 
   dimension: diff_on_route_to_complete {
     type: number
-    sql:${min_on_route_time_of_day}- ${max_prior_complete_time};;
+    sql:${on_route_time_of_day}- ${prior_complete_time};;
   }
   dimension: diff_on_route_to_shift_start{
     type: number
-    sql:${min_on_route_time_of_day}- ${max_shift_start_time_of_day};;
+    sql:${on_route_time_of_day}- ${shift_start_time_of_day};;
   }
 
 
@@ -237,21 +164,21 @@ view: granular_shift_tracking_agg {
   }
   dimension: shift_time {
     type: number
-    sql: ${max_shift_end_time_of_day}-${max_shift_start_time_of_day} ;;
+    sql: ${shift_end_time_of_day}-${shift_start_time_of_day} ;;
   }
   dimension: diff_between_complete_shift_end {
     type: number
-    sql: ${max_shift_end_time_of_day}-${max_complete_time_of_day} ;;
+    sql: ${shift_end_time_of_day}-${complete_time_of_day} ;;
   }
 
   dimension: diff_between_last_update_shift_end {
     type: number
-    sql: ${max_shift_end_time_of_day}-${max_last_update_time_time_of_day};;
+    sql: ${shift_end_time_of_day}-${last_update_time_time_of_day};;
   }
 
   dimension: diff_between_complete_last_update {
     type: number
-    sql: ${max_last_update_time_time_of_day}-${max_complete_time_of_day};;
+    sql: ${last_update_time_time_of_day}-${complete_time_of_day};;
   }
   measure: sum_shift_time_minutes{
     type: sum_distinct
@@ -283,7 +210,7 @@ view: granular_shift_tracking_agg {
     sql: ${diff_on_route_to_shift_start}*60 ;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
-      field: max_first_accepted_bool
+      field: first_accepted_bool
       value: "1"
     }
   }
@@ -325,7 +252,7 @@ view: granular_shift_tracking_agg {
     sql: ${diff_on_route_to_shift_start}*60 ;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
-      field: max_patient_assigned_at_start_bool
+      field: patient_assigned_at_start_bool
       value: "1"
     }
   }
@@ -336,10 +263,23 @@ view: granular_shift_tracking_agg {
     sql: ${primary_key_shift} ;;
     sql_distinct_key: ${primary_key_shift} ;;
     filters: {
-      field: max_patient_assigned_at_start_bool
+      field: patient_assigned_at_start_bool
       value: "1"
     }
   }
+
+  measure: count_distinct_w_assigned {
+    type: count_distinct
+    value_format: "0"
+    sql: ${primary_key} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: patient_assigned_bool
+      value: "1"
+    }
+  }
+
+
 
   measure: avg_deadtime_start_of_shift_minutes_w_assigned{
     value_format: "0"
@@ -352,7 +292,7 @@ view: granular_shift_tracking_agg {
     sql: ${diff_between_complete_shift_end}*60 ;;
     sql_distinct_key: ${primary_key_shift} ;;
     filters: {
-      field: max_last_care_request_bool
+      field: last_care_request_bool
       value: "1"
     }
   }
@@ -388,7 +328,7 @@ view: granular_shift_tracking_agg {
     sql: ${diff_between_complete_last_update}*60;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
-      field: max_last_care_request_bool
+      field: last_care_request_bool
       value: "1"
     }
   }
@@ -405,15 +345,38 @@ view: granular_shift_tracking_agg {
     sql: ${diff_on_route_to_complete}*60;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
-      field: max_first_accepted_bool
+      field: first_accepted_bool
       value: "0"
     }
   }
 
+  measure: sum_dead_time_intra_minutes_w_assigned{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_on_route_to_complete}*60;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: first_accepted_bool
+      value: "0"
+    }
+    filters: {
+      field: patient_assigned_bool
+      value: "1"
+    }
+  }
+
+  measure: avg_dead_time_intra_minutes_w_assigned{
+    value_format: "0"
+    type: number
+    sql: case when ${count_distinct_w_assigned}> 0 then ${sum_dead_time_intra_minutes_w_assigned}/${count_distinct_w_assigned} else 0 end ;;
+  }
+
+
+
   measure: avg_dead_time_intra_minutes{
     value_format: "0"
     type: number
-    sql: ${sum_dead_time_intra_minutes}/${count_distinct_shifts} ;;
+    sql: case when ${count_distinct_shifts}> 0 then ${sum_dead_time_intra_minutes}/${count_distinct_shifts} else 0 end ;;
   }
 
 }
