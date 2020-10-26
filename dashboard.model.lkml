@@ -322,6 +322,7 @@ include: "genesys_queue_conversion_interval.view.lkml"
 include: "most_recent_intraday.view.lkml"
 include: "views/granular_shift_tracking.view.lkml"
 include: "views/care_requests_shift_teams.view.lkml"
+include: "granular_shift_tracking_agg.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -4390,6 +4391,11 @@ explore: genesys_agg {
     sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}
       ;;
   }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
 }
 
 explore: mailchimp_sends {
@@ -4667,3 +4673,4 @@ explore: granular_shift_tracking {
     sql_on: ${markets.id} =${cars.market_id} ;;
   }
 }
+explore: granular_shift_tracking_agg {}
