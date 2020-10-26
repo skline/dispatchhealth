@@ -29,6 +29,7 @@ view: primary_payer_dimensions_clone {
     # sql: case when ${insurance_package_id}::int in(22741, 47756, 54360, 75708) then '(MMCD)MANAGED MEDICAID'
     #   else ${TABLE}.custom_insurance_grouping end;;
     sql: ${TABLE}.custom_insurance_grouping;;
+    drill_fields: [insurance_package_type, insurance_reporting_category, insurance_package_name]
   }
 
   dimension: medicare_advantage_flag {
@@ -57,6 +58,7 @@ view: primary_payer_dimensions_clone {
 
   dimension: custom_insurance_label {
     type: string
+    description: "The custom insurance grouping, printed nicely for reporting"
     sql: CASE ${custom_insurance_grouping}
          WHEN '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
         WHEN '(MA)MEDICARE ADVANTAGE' THEN 'Medicare Advantage'
@@ -69,18 +71,20 @@ view: primary_payer_dimensions_clone {
         WHEN '(TC)TRICARE' THEN 'Tricare'
         ELSE 'Other'
         END;;
+    drill_fields: [insurance_package_type, insurance_reporting_category, insurance_package_name]
   }
 
   dimension: custom_insurance_label_grouped {
     type: string
+    description: "Custom insurance grouping where Commercial/MA and Medicaid/Tricare are grouped"
     sql: CASE
             when ${custom_insurance_label} in('Corporate Billing', 'Patient Self Pay', 'Commercial', 'Medicare Advantage') then 'Commercial/Medicare Advantage/Self-Pay'
             when ${custom_insurance_label} in('Managed Medicaid') then 'Managed Medicaid'
             when ${custom_insurance_label} in('Medicare') then 'Medicare'
             when ${custom_insurance_label} in('Medicaid', 'Tricare') then 'Medicaid/Tricare'
             else 'Other'
-
          END;;
+    drill_fields: [custom_insurance_grouping, insurance_package_type, insurance_reporting_category, insurance_package_name]
   }
 
 
@@ -111,6 +115,7 @@ view: primary_payer_dimensions_clone {
           WHEN ${custom_insurance_grouping} = '(CB)CORPORATE BILLING' THEN 'Corporate Billing'
           ELSE 'Other'
           END;;
+    drill_fields: [custom_insurance_grouping, insurance_package_type, insurance_reporting_category, insurance_package_name]
   }
 
   dimension: insurance_package_id {
@@ -123,6 +128,7 @@ view: primary_payer_dimensions_clone {
   dimension: insurance_package_name {
     type: string
     sql: ${TABLE}.insurance_package_name ;;
+    drill_fields: [insurance_package_type, insurance_reporting_category]
   }
 
   dimension: insurance_package_name_consolidated {
@@ -132,6 +138,7 @@ view: primary_payer_dimensions_clone {
           WHEN when UPPER(${insurance_package_name}) LIKE '%CULINARY%' THEN 'Culinary'
           ELSE ${insurance_package_name}
         END ;;
+    drill_fields: [insurance_package_type, insurance_reporting_category]
   }
 
   dimension: united_healthcare_category {
@@ -165,11 +172,13 @@ view: primary_payer_dimensions_clone {
   dimension: insurance_package_type {
     type: string
     sql: ${TABLE}.insurance_package_type ;;
+    drill_fields: [insurance_reporting_category, insurance_package_name]
   }
 
   dimension: insurance_reporting_category {
     type: string
     sql: ${TABLE}.insurance_reporting_category ;;
+    drill_fields: [insurance_package_name]
   }
 
   dimension: irc_group {
