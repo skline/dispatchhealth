@@ -5,6 +5,15 @@ view: granular_shift_tracking {
     type: number
     sql: ${TABLE}."accept_time_of_day" ;;
   }
+  measure: max_accept_time_of_day {
+    type: number
+    sql: max(${accept_time_of_day}) ;;
+  }
+
+  measure: min_accept_time_of_day {
+    type: number
+    sql: min(${accept_time_of_day}) ;;
+  }
 
   dimension: app_car_staff {
     type: string

@@ -21,6 +21,8 @@ view: granular_shift_tracking_agg {
         column: shift_start_time_of_day {field: granular_shift_tracking.max_shift_start_time_of_day}
         column: on_route_time_of_day {field: granular_shift_tracking.min_on_route_time_of_day}
         column: on_scene_time_of_day {field: granular_shift_tracking.min_on_scene_time_of_day}
+        column: accept_time_of_day {field: granular_shift_tracking.min_accept_time_of_day}
+
         column: address_name_agg {}
         column: market_id { field: markets.id }
         column: market_name_adj { field: markets.name_adj }
@@ -79,6 +81,11 @@ view: granular_shift_tracking_agg {
       type: number
     }
 
+  dimension: accept_time_of_day {
+    type: number
+  }
+
+
     dimension: last_update_time_time_of_day {
       type: number
     }
@@ -106,9 +113,7 @@ view: granular_shift_tracking_agg {
     type: number
   }
 
-  dimension: address_name {
-    type: string
-  }
+
   dimension: market_name_adj {
     description: "Market name where WMFR is included as part of Denver"
   }
@@ -126,13 +131,13 @@ view: granular_shift_tracking_agg {
     sql:${on_scene_time_of_day}- ${on_route_time_of_day} ;;
   }
 
-  dimension: diff_on_route_to_complete {
+  dimension: diff_on_route_to_prior_complete {
     type: number
     sql:${on_route_time_of_day}- ${prior_complete_time};;
   }
-  dimension: diff_on_route_to_shift_start{
+  dimension: diff_first_on_route_to_shift_start{
     type: number
-    sql:${on_route_time_of_day}- ${shift_start_time_of_day};;
+    sql:case when ${first_accepted_bool} = 1 then ${on_route_time_of_day}- ${shift_start_time_of_day} else null end;;
   }
 
 
@@ -166,19 +171,19 @@ view: granular_shift_tracking_agg {
     type: number
     sql: ${shift_end_time_of_day}-${shift_start_time_of_day} ;;
   }
-  dimension: diff_between_complete_shift_end {
+  dimension: diff_between_last_complete_shift_end {
     type: number
-    sql: ${shift_end_time_of_day}-${complete_time_of_day} ;;
+    sql: case when ${last_care_request_bool} =1 then ${shift_end_time_of_day}-${complete_time_of_day} else null end ;;
   }
 
   dimension: diff_between_last_update_shift_end {
     type: number
-    sql: ${shift_end_time_of_day}-${last_update_time_time_of_day};;
+    sql: case when ${last_care_request_bool}=1 then ${shift_end_time_of_day}-${last_update_time_time_of_day} else null end;;
   }
 
-  dimension: diff_between_complete_last_update {
+  dimension: diff_between_last_complete_last_update {
     type: number
-    sql: ${last_update_time_time_of_day}-${complete_time_of_day};;
+    sql: case when ${last_care_request_bool}=1 then ${last_update_time_time_of_day}-${complete_time_of_day} else null end;;
   }
   measure: sum_shift_time_minutes{
     type: sum_distinct
@@ -207,7 +212,7 @@ view: granular_shift_tracking_agg {
   measure: sum_deadtime_start_of_shift_minutes{
     type: sum_distinct
     value_format: "0"
-    sql: ${diff_on_route_to_shift_start}*60 ;;
+    sql: ${diff_first_on_route_to_shift_start}*60 ;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
       field: first_accepted_bool
@@ -289,7 +294,7 @@ view: granular_shift_tracking_agg {
   measure: sum_deadtime_end_of_shift_minutes{
     type: sum_distinct
     value_format: "0"
-    sql: ${diff_between_complete_shift_end}*60 ;;
+    sql: ${diff_between_last_complete_shift_end}*60 ;;
     sql_distinct_key: ${primary_key_shift} ;;
     filters: {
       field: last_care_request_bool
@@ -325,7 +330,7 @@ view: granular_shift_tracking_agg {
   measure: sum_drive_back_to_office_minutes{
     type: sum_distinct
     value_format: "0"
-    sql: ${diff_between_complete_last_update}*60;;
+    sql: ${diff_between_last_complete_last_update}*60;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
       field: last_care_request_bool
@@ -342,7 +347,7 @@ view: granular_shift_tracking_agg {
   measure: sum_dead_time_intra_minutes{
     type: sum_distinct
     value_format: "0"
-    sql: ${diff_on_route_to_complete}*60;;
+    sql: ${diff_on_route_to_prior_complete}*60;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
       field: first_accepted_bool
@@ -353,7 +358,7 @@ view: granular_shift_tracking_agg {
   measure: sum_dead_time_intra_minutes_w_assigned{
     type: sum_distinct
     value_format: "0"
-    sql: ${diff_on_route_to_complete}*60;;
+    sql: ${diff_on_route_to_prior_complete}*60;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
       field: first_accepted_bool
