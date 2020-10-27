@@ -3718,6 +3718,17 @@ measure: avg_first_on_route_mins {
     sql: ${dx_conversions.patient_id} is not null ;;
   }
 
+  dimension: dx_or_self_report_dtc_visit {
+    type: yesno
+    sql: ${dx_visit} or ${self_report_dtc_visit};;
+  }
+
+  dimension: self_report_dtc_visit{
+    type: yesno
+    sql: ${channel_items.high_level_category_new} = 'Direct to Consumer';;
+  }
+
+
 
   measure: complete_count {
     type: count_distinct
@@ -3741,11 +3752,52 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: complete_count_dx_or_self_report_dtc {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: dx_or_self_report_dtc_visit
+      value: "yes"
+    }
+  }
+
+  measure: complete_count_self_report_dtc {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: self_report_dtc_visit
+      value: "yes"
+    }
+  }
+
+
   measure: dx_percent {
     type: number
     value_format: "0%"
     sql: case when  ${complete_count}>0 then  ${complete_count_dx}::float/ ${complete_count}::float else 0 end;;
     }
+
+  measure: dx_or_self_report_dtc_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_dx_or_self_report_dtc}::float/ ${complete_count}::float else 0 end;;
+  }
+
+  measure: self_report_dtc_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_self_report_dtc}::float/ ${complete_count}::float else 0 end;;
+  }
+
+
 
 
   measure: complete_count_no_arm_advanced{
