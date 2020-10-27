@@ -4391,6 +4391,11 @@ explore: genesys_agg {
     sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}
       ;;
   }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
 }
 
 explore: mailchimp_sends {
