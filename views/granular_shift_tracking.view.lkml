@@ -43,7 +43,7 @@ view: granular_shift_tracking {
 
   measure: address_name_agg {
     type: string
-    sql: ARRAY_AGG(${address_name}) ;;
+    sql: ARRAY_AGG(distinct ${address_name}) ;;
 
   }
 

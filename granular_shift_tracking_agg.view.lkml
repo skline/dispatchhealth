@@ -254,7 +254,7 @@ view: granular_shift_tracking_agg {
   measure: sum_deadtime_start_of_shift_minutes_w_assigned{
     type: sum_distinct
     value_format: "0"
-    sql: ${diff_on_route_to_shift_start}*60 ;;
+    sql: ${diff_first_on_route_to_shift_start}*60 ;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
       field: patient_assigned_at_start_bool
@@ -320,12 +320,6 @@ view: granular_shift_tracking_agg {
     sql: ${sum_dead_time_at_office_after_shift}/${count_distinct_shifts} ;;
   }
 
-  measure: sum_drive_back_to_office{
-    type: number
-    value_format: "0"
-    sql: ${sum_deadtime_end_of_shift_minutes}-${sum_dead_time_at_office_after_shift};;
-
-  }
 
   measure: sum_drive_back_to_office_minutes{
     type: sum_distinct
@@ -338,10 +332,10 @@ view: granular_shift_tracking_agg {
     }
   }
 
-  measure: avg_drive_back_to_office{
+  measure: avg_drive_back_to_office_minutes{
     value_format: "0"
     type: number
-    sql: ${sum_drive_back_to_office}/${count_distinct_shifts} ;;
+    sql: ${sum_drive_back_to_office_minutes}/${count_distinct_shifts} ;;
   }
 
   measure: sum_dead_time_intra_minutes{
