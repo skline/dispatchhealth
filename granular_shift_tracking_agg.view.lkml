@@ -312,7 +312,7 @@ view: granular_shift_tracking_agg {
     type: sum_distinct
     value_format: "0"
     sql: ${diff_between_last_update_shift_end}*60 ;;
-    sql_distinct_key: ${primary_key_shift} ;;
+    sql_distinct_key: ${primary_key} ;;
   }
   measure: avg_dead_time_at_office_after_shift{
     value_format: "0"
