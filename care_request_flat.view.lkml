@@ -3726,13 +3726,13 @@ measure: avg_first_on_route_mins {
 
   dimension: phone_sem_visit {
     type: yesno
-    sql:  trim(lower(${genesys_conversation_summary.queuename})) = 'dtc pilot' ;;
+    sql:  ${genesys_conversation_summary_sem.queuename} is not null ;;
   }
 
 
   dimension: dx_or_self_report_or_phone_dtc_visit {
     type: yesno
-    sql: ${dx_visit} or ${self_report_dtc_visit} or ${phone_sem_visit} ;;
+    sql: ${dx_visit} or ${self_report_dtc_visit} or ${self_report_dtc_visit_no_sem} or ${self_report_sem_visit} ;;
   }
 
   dimension: self_report_dtc_visit{

@@ -1920,6 +1920,12 @@ join: ga_pageviews_clone {
       ;;
   }
 
+  join: genesys_conversation_summary_sem {
+    from: genesys_conversation_summary
+    sql_on: ${genesys_conversation_summary_sem.conversationid} =${care_request_flat.contact_id} and trim(lower(${genesys_conversation_summary_sem.queuename})) = 'dtc pilot'
+     ;;
+  }
+
   join: number_to_market {
     sql_on: ${number_to_market.number} = ${genesys_conversation_summary.dnis} ;;
   }

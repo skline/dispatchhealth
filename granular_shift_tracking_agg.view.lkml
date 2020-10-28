@@ -26,6 +26,10 @@ view: granular_shift_tracking_agg {
         column: address_name_agg {}
         column: market_id { field: markets.id }
         column: market_name_adj { field: markets.name_adj }
+        filters: {
+          field: granular_shift_tracking.shift_team_id
+          value: "37821,34306,34790,42828,36961,43881,35109,30390,39859,31480,39126,35205,44160,31620,35445,35968,37615,33353,30370,44389"
+        }
       }
     }
 
