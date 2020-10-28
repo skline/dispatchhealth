@@ -240,7 +240,7 @@ view: granular_shift_tracking_agg {
   measure: sum_deadtime_diff_minutes {
     value_format: "0"
     type: number
-    sql: ${sum_dead_time_proxy_minutes} -${sum_deadtime_total_minutes};;
+    sql: abs(${sum_dead_time_proxy_minutes} -${sum_deadtime_total_minutes});;
   }
 
   measure: avg_deadtime_diff_minutes {
