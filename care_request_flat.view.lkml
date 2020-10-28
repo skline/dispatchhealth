@@ -3732,7 +3732,7 @@ measure: avg_first_on_route_mins {
 
   dimension: dx_or_self_report_or_phone_dtc_visit {
     type: yesno
-    sql: ${dx_visit} or ${self_report_dtc_visit} or ${self_report_dtc_visit_no_sem} or ${self_report_sem_visit} ;;
+    sql: ${dx_visit} or ${phone_sem_visit} or ${self_report_dtc_visit_no_sem} or ${self_report_sem_visit} ;;
   }
 
   dimension: self_report_dtc_visit{
@@ -3857,6 +3857,11 @@ measure: avg_first_on_route_mins {
       field: phone_sem_visit
       value: "no"
     }
+  }
+
+  measure: dtc_check {
+    type: number
+    sql: ${complete_dt_self_report_no_sem}+${complete_count_dx_exclude}+${complete_count_self_report_sem}+${complete_count_phone_sem} ;;
   }
 
 
