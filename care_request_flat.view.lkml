@@ -3718,14 +3718,31 @@ measure: avg_first_on_route_mins {
     sql: ${dx_conversions.patient_id} is not null ;;
   }
 
-  dimension: dx_or_self_report_dtc_visit {
+  dimension: self_report_sem_visit {
     type: yesno
-    sql: ${dx_visit} or ${self_report_dtc_visit};;
+    sql:  trim(lower(${channel_items.name})) = 'google or other search' ;;
+  }
+
+
+  dimension: phone_sem_visit {
+    type: yesno
+    sql:  trim(lower(${genesys_conversation_summary.queuename})) = 'dtc pilot' ;;
+  }
+
+
+  dimension: dx_or_self_report_or_phone_dtc_visit {
+    type: yesno
+    sql: ${dx_visit} or ${self_report_dtc_visit} or ${phone_sem_visit} ;;
   }
 
   dimension: self_report_dtc_visit{
     type: yesno
     sql: ${channel_items.high_level_category_new} = 'Direct to Consumer';;
+  }
+
+  dimension: self_report_dtc_visit_no_sem{
+    type: yesno
+    sql: ${channel_items.high_level_category_new} = 'Direct to Consumer' and not ${self_report_sem_visit};;
   }
 
 
@@ -3752,7 +3769,7 @@ measure: avg_first_on_route_mins {
     }
   }
 
-  measure: complete_count_dx_or_self_report_dtc {
+  measure: complete_count_dx_or_self_report_or_phone_dtc{
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
@@ -3760,12 +3777,12 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
     filters: {
-      field: dx_or_self_report_dtc_visit
+      field: dx_or_self_report_or_phone_dtc_visit
       value: "yes"
     }
   }
 
-  measure: complete_count_self_report_dtc {
+  measure: complete_count_phone_sem {
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
@@ -3773,8 +3790,72 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
     filters: {
-      field: self_report_dtc_visit
+      field: phone_sem_visit
       value: "yes"
+    }
+  }
+
+
+  measure: complete_count_self_report_sem {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: self_report_sem_visit
+      value: "yes"
+    }
+    filters: {
+      field: phone_sem_visit
+      value: "no"
+    }
+  }
+
+  measure: complete_count_dx_exclude{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: dx_visit
+      value: "yes"
+    }
+    filters: {
+      field: self_report_sem_visit
+      value: "no"
+    }
+    filters: {
+      field: phone_sem_visit
+      value: "no"
+    }
+  }
+
+  measure: complete_dt_self_report_no_sem{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: self_report_dtc_visit_no_sem
+      value: "yes"
+    }
+    filters: {
+      field: dx_visit
+      value: "no"
+    }
+    filters: {
+      field: self_report_sem_visit
+      value: "no"
+    }
+    filters: {
+      field: phone_sem_visit
+      value: "no"
     }
   }
 
@@ -3785,17 +3866,45 @@ measure: avg_first_on_route_mins {
     sql: case when  ${complete_count}>0 then  ${complete_count_dx}::float/ ${complete_count}::float else 0 end;;
     }
 
-  measure: dx_or_self_report_dtc_percent {
+  measure: dx_or_self_report_or_phone_percent {
     type: number
     value_format: "0%"
-    sql: case when  ${complete_count}>0 then  ${complete_count_dx_or_self_report_dtc}::float/ ${complete_count}::float else 0 end;;
+    sql: case when  ${complete_count}>0 then  ${complete_count_dx_or_self_report_or_phone_dtc}::float/ ${complete_count}::float else 0 end;;
   }
 
-  measure: self_report_dtc_percent {
+  measure: phone_sem_percent {
     type: number
     value_format: "0%"
-    sql: case when  ${complete_count}>0 then  ${complete_count_self_report_dtc}::float/ ${complete_count}::float else 0 end;;
+    sql: case when  ${complete_count}>0 then  ${complete_count_phone_sem}::float/ ${complete_count}::float else 0 end;;
   }
+
+  measure: report_sem_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_self_report_sem}::float/ ${complete_count}::float else 0 end;;
+  }
+
+  measure: dx_exclude_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_dx_exclude}::float/ ${complete_count}::float else 0 end;;
+  }
+
+
+  measure: dt_self_report_no_sem_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_dt_self_report_no_sem}::float/ ${complete_count}::float else 0 end;;
+  }
+
+
+
+
+
+
+
+
+
 
 
 
