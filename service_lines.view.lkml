@@ -44,7 +44,7 @@ view: service_lines {
   dimension: name {
     type: string
     sql: CASE
-      WHEN lower(TRIM(BOTH ' ' FROM ${TABLE}.name)) = 'tele-presentation' THEN 'Tele-Presentation'
+      WHEN lower(TRIM(BOTH ' ' FROM ${TABLE}.name)) in('tele-presentation', 'do not use -- old telepres') THEN 'Tele-Presentation'
       ELSE TRIM(BOTH ' ' FROM ${TABLE}.name)
       END;;
   }
