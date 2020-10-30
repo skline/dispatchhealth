@@ -29,7 +29,7 @@ view: shift_agg {
       }
       filters: {
         field: care_request_flat.shift_start_date
-        value: "7 days ago for 7 days"
+        value: "365 days ago for 365 days"
       }
       filters: {
         field: service_lines.name
