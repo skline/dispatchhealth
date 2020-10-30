@@ -165,6 +165,12 @@ view: granular_shift_tracking_agg {
     sql_distinct_key: ${primary_key} ;;
   }
 
+  measure: avg_drive_time_minutes_shift {
+    type: number
+    value_format: "0"
+    sql: ${sum_drive_time_minutes}/${count_distinct_shifts} ;;
+  }
+
   measure: sum_on_scene_time_minutes {
     type: sum_distinct
     value_format: "0"
@@ -177,6 +183,14 @@ view: granular_shift_tracking_agg {
     sql: ${on_scene_time} *60;;
     sql_distinct_key: ${primary_key} ;;
   }
+  measure: avg_on_scene_time_minutes_shift {
+    type: number
+    value_format: "0"
+    sql: ${sum_on_scene_time_minutes}/${count_distinct_shifts} ;;
+  }
+
+
+
   dimension: shift_time {
     type: number
     sql: ${shift_end_time_of_day}-${shift_start_time_of_day} ;;
@@ -283,16 +297,6 @@ view: granular_shift_tracking_agg {
     }
   }
 
-  measure: count_distinct_w_assigned {
-    type: count_distinct
-    value_format: "0"
-    sql: ${primary_key} ;;
-    sql_distinct_key: ${primary_key} ;;
-    filters: {
-      field: patient_assigned_bool
-      value: "1"
-    }
-  }
 
 
 
@@ -377,7 +381,7 @@ view: granular_shift_tracking_agg {
   measure: avg_dead_time_intra_minutes_w_assigned{
     value_format: "0"
     type: number
-    sql: case when ${count_distinct_w_assigned}> 0 then ${sum_dead_time_intra_minutes_w_assigned}/${count_distinct_w_assigned} else 0 end ;;
+    sql: case when ${count_distinct_shifts}> 0 then ${sum_dead_time_intra_minutes_w_assigned}/${count_distinct_shifts} else 0 end ;;
   }
 
 
