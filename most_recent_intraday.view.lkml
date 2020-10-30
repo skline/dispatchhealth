@@ -71,6 +71,16 @@ where row_number=1
     sql:case when ${complete_est} >0 then ${expected_overflow}::float/${complete_est}::float else 0 end ;;
   }
 
+  dimension: turn_off {
+    type: yesno
+    sql: (${most_recent_intraday.capacity} <= 1 OR ${most_recent_intraday.expected_overflow_percent} > (.2) OR ${most_recent_intraday.expected_overflow} > 30) AND (${most_recent_intraday.expected_overflow}>3 OR ${most_recent_intraday.capacity}=0 OR ${most_recent_intraday.capacity}=1) ;;
+  }
+
+  dimension: action_needed{
+    type: yesno
+    sql: (${adwords_campaigns_clone.status} and  ${turn_off}) or (not ${adwords_campaigns_clone.status} and  not ${turn_off}) ;;
+  }
+
 
 
   }

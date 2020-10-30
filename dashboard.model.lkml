@@ -320,6 +320,9 @@ include: "billing_cities.view.lkml"
 include: "bulk_variable_shift_tracking.view.lkml"
 include: "genesys_queue_conversion_interval.view.lkml"
 include: "most_recent_intraday.view.lkml"
+include: "views/granular_shift_tracking.view.lkml"
+include: "views/care_requests_shift_teams.view.lkml"
+include: "granular_shift_tracking_agg.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -642,7 +645,7 @@ explore: care_requests {
   }
 
   join: collective_medical_first_major_class_admit_date_post_visit {
-    relationship: many_to_one
+    relationship: one_to_many
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
   }
 
@@ -1416,9 +1419,16 @@ join: athena_procedurecode {
     sql_on: ${care_requests.id} = ${credit_card_errors.care_request_id} ;;
   }
 
+  join: care_requests_shift_teams {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${care_requests_shift_teams.care_request_id}
+    AND ${care_requests_shift_teams.is_dispatched};;
+    fields: []
+  }
+
   join: shift_teams {
     relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+    sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
   }
 
   join: shift_team_stops {
@@ -1428,7 +1438,7 @@ join: athena_procedurecode {
 
   join: shifts_end_of_shift_times {
     relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
+    sql_on: ${care_request_flat.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
   }
 
   join: shift_team_market_assignment_logs {
@@ -1908,6 +1918,12 @@ join: ga_pageviews_clone {
     sql_on: (${patients.mobile_number} = ${genesys_conversation_summary.ani}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.ani})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000
       ;;
+  }
+
+  join: genesys_conversation_summary_sem {
+    from: genesys_conversation_summary
+    sql_on: ${genesys_conversation_summary_sem.conversationid} =${care_request_flat.contact_id} and trim(lower(${genesys_conversation_summary_sem.queuename})) = 'dtc pilot'
+     ;;
   }
 
   join: number_to_market {
@@ -3477,6 +3493,11 @@ explore: incontact_aggregated_clone  {
     sql_on: ${markets.id} = ${incontact_aggregated_clone.market_id} ;;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
 
   join: goal_inbound_calls_dec {
     sql_on:  ${goal_inbound_calls_dec.date_date} =${incontact_aggregated_clone.date_date}
@@ -3659,6 +3680,11 @@ explore: genesys_conversation_summary {
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
   join: care_request_flat {
     sql_on: ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id};;
   }
@@ -3790,9 +3816,16 @@ explore: shift_teams
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL)
   AND (${patients.last_name} NOT LIKE '%Test%' OR ${patients.last_name} IS NULL) ;;
 
+  join: care_requests_shift_teams {
+    relationship: many_to_one
+    sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
+    fields: []
+  }
+
   join: care_requests {
-    relationship: one_to_many
-    sql_on: ${shift_teams.id} = ${care_requests.shift_team_id} ;;
+    relationship: one_to_one
+    sql_on: ${care_requests_shift_teams.care_request_id} = ${care_requests.id} ;;
+    # AND ${care_requests_shift_teams.is_dispatched};;
   }
 
   join: care_request_flat {
@@ -4277,7 +4310,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50', '3b429a5238');;
   }
 
   join: senior_mailchimp_audiences_clone {
@@ -4364,6 +4397,11 @@ explore: genesys_agg {
     sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}
       ;;
   }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
 }
 
 explore: mailchimp_sends {
@@ -4633,3 +4671,12 @@ explore: adwords_campaigns_clone {
     sql_on: ${markets.name} = ${most_recent_intraday.market} ;;
   }
 }
+explore: granular_shift_tracking {
+  join: cars {
+    sql_on: ${cars.id} =${granular_shift_tracking.car_id} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id} =${cars.market_id} ;;
+  }
+}
+explore: granular_shift_tracking_agg {}
