@@ -254,7 +254,8 @@ WITH ort AS (
                foc.first_on_scene_time,onscene.mins_on_scene_predicted, n_assign.count_assignments;;
 
     # Run trigger every 2 hours
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    sql_trigger_value: SELECT MAX(id) FROM public.care_requests ;;
+    # SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date", "first_accepted_date"]
   }
 
@@ -2068,6 +2069,7 @@ WITH ort AS (
     timeframes: [
       raw,
       hour_of_day,
+      minute,
       time_of_day,
       date,
       time,
@@ -2126,6 +2128,12 @@ WITH ort AS (
       ((CAST(EXTRACT(MINUTE FROM ${requested_raw} ) AS FLOAT)) / 60)) ;;
       value_format: "0"
   }
+
+  # dimension: accepted_15_min_groups {
+  #   type: number
+  #   sql: date_trunc('hour', ${accept_raw}) +
+  #       date_part('minute', ${accept_raw})::int / 15 * interval '15 min' ;;
+  # }
 
 
   dimension: on_scene_decimal {
