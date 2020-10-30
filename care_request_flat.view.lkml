@@ -254,7 +254,7 @@ WITH ort AS (
                foc.first_on_scene_time,onscene.mins_on_scene_predicted, n_assign.count_assignments;;
 
     # Run trigger every 2 hours
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    sql_trigger_value:  SELECT MAX(id) FROM public.care_requests  where care_requests.created_at > current_date - interval '2 day';;
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date", "first_accepted_date"]
   }
 
@@ -2515,6 +2515,10 @@ WITH ort AS (
       day_of_month
     ]
     sql: ${TABLE}.shift_end_time ;;
+  }
+
+  measure: max_shift_end_time{
+    sql: max(${shift_end_raw}) ;;
   }
 
   dimension: shift_hours  {
