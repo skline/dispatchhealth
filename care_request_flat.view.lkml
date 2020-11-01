@@ -4173,6 +4173,23 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: complete_count_asymptomatic_covid_testing_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: risk_assessments.asymptomatic_covid_testing
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
+      value: "yes"
+    }
+  }
+
 
 
   measure: flu_percent {
