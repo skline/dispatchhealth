@@ -1,6 +1,11 @@
 view: geneysis_evaluations {
   sql_table_name: looker_scratch.geneysis_evaluations ;;
 
+  dimension: primary_key {
+    type: string
+    sql: concat(${questiongroupid},${agentid},${conversationid},${queuename},${answerid},${evaluatorid},${evaluationformid},${evaluationid},${questionid}) ;;
+  }
+
   dimension: agenthasread {
     type: string
     sql: ${TABLE}."agenthasread"::text='1' ;;
@@ -246,7 +251,7 @@ view: geneysis_evaluations {
   measure: total_number_of_failed_kill_questions {
     type: count_distinct
     sql: ${conversationid} ;;
-    sql_distinct_key: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: failedkillquestion
       value: "yes"
@@ -257,7 +262,7 @@ view: geneysis_evaluations {
   measure: total_number_marked_na {
     type: count_distinct
     sql: ${conversationid} ;;
-    sql_distinct_key: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: markedna
       value: "yes"
@@ -269,7 +274,7 @@ view: geneysis_evaluations {
     type: average_distinct
     value_format: "0.00"
     sql: ${questionscore} ;;
-    sql_distinct_key: concat(${questionid},${conversationid}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: number_complete_evaluations {
@@ -293,29 +298,23 @@ view: geneysis_evaluations {
   }
 
 
-  measure: average_total_group_score {
-    type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: ${conversationid} ;;
-  }
-
   measure: avg_total_evaluation_score {
     type: average_distinct
     sql: ${totalevaluationscore} ;;
-    sql_distinct_key: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
 
   measure: avg_total_evaluation_critical {
     type: average_distinct
     sql: ${totalevaluationcriticalscore} ;;
-    sql_distinct_key: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: count_agent_read {
     type: count_distinct
     sql: ${conversationid} ;;
-    sql_distinct_key: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: agenthasread
       value: "yes"
@@ -324,8 +323,9 @@ view: geneysis_evaluations {
 
   measure: introduction_avg_total_evaluation_score {
     type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: concat(${questiongroupid},${agentid}) ;;
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: questiongroupname
       value: "Introduction"
@@ -334,8 +334,9 @@ view: geneysis_evaluations {
 
   measure: body_avg_total_evaluation_score {
     type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: concat(${questiongroupid},${agentid}) ;;
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: questiongroupname
       value: "Body"
@@ -344,8 +345,9 @@ view: geneysis_evaluations {
 
   measure: risk_avg_total_evaluation_score {
     type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: concat(${questiongroupid},${agentid}) ;;
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: questiongroupname
       value: "Risk Stratification"
@@ -354,8 +356,9 @@ view: geneysis_evaluations {
 
   measure: transfers_avg_total_evaluation_score {
     type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: concat(${questiongroupid},${agentid}) ;;
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: questiongroupname
       value: "Transfers and External Communication"
@@ -364,18 +367,20 @@ view: geneysis_evaluations {
 
   measure: close_avg_total_evaluation_score {
     type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: concat(${questiongroupid},${agentid}) ;;
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: questiongroupname
       value: "Call Close (Based on Result)"
     }
   }
 
-  measure: experience_avg_total_evaluation_score {
+  measure: caller_experience_avg_total_evaluation_score {
     type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: concat(${questiongroupid},${agentid}) ;;
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: questiongroupname
       value: "Caller Experience"
@@ -384,8 +389,9 @@ view: geneysis_evaluations {
 
   measure: adherence_avg_total_evaluation_score {
     type: average_distinct
-    sql: ${totalevaluationscore} ;;
-    sql_distinct_key: concat(${questiongroupid},${agentid}) ;;
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
       field: questiongroupname
       value: "Adherence and Unique Features"
