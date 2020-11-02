@@ -8,8 +8,7 @@ view: shift_agg {
     explore_source: care_requests {
       column: shift_start { field: care_request_flat.shift_start_raw }
       column: name { field: cars.name }
-      column: shift_end_time { field: care_request_flat.shift_end_time }
-      column: shift_end_time_of_day { field: care_request_flat.shift_end_time_of_day }
+      column: shift_end_time { field: care_request_flat.max_shift_end_time }
       column: last_update_time_time { field: shifts_end_of_shift_times.last_update_time_time }
       column: max_on_scene_time {}
       column: shift_start_first_on_route_diff {}
@@ -20,8 +19,6 @@ view: shift_agg {
       column: count_billable_est {}
       column: name_adj { field: markets.name_adj }
       column: id_adj { field:markets.id_adj}
-      column: provider_name {field:users.csc_name}
-      column: provider_position {field: provider_profiles.position}
       column: cpr_market { field: markets.cpr_market }
       column: emt_car_staff { field: cars.emt_car_staff }
       column: total_drive_time_minutes_coalesce { field: care_request_flat.total_drive_time_minutes_coalesce }
@@ -66,14 +63,11 @@ view: shift_agg {
     label: "Car Name"
   }
 
-dimension: shift_end_time {
+  dimension: shift_end_time {
     description: "The local date/time of a shift end"
     type: date_time
   }
-  dimension: shift_end_time_of_day {
-    description: "The local date/time of a shift end"
-    type: date_time_of_day
-  }
+
   dimension: last_update_time_time {
     description: "The local date and time when the care request team is back at the office"
     type: date_time
@@ -123,12 +117,7 @@ dimension: shift_end_time {
     type: number
     description: "Market ID"
   }
-  dimension: provider_name {
-    type: string
-  }
-  dimension: provider_position {
-    type: string
-  }
+
   dimension: cpr_market {
     label: "Markets Cpr Market (Yes / No)"
     description: "Flag to identify CPR markets (hard-coded)"
@@ -158,7 +147,7 @@ dimension: shift_end_time {
   dimension: shift_productivity {
     type: number
     sql:case when ${shift_hours} >0 then
-    ${count_billable_est}::float / ${shift_hours}::float else 0 end;;
+      ${count_billable_est}::float / ${shift_hours}::float else 0 end;;
   }
 
   dimension: productive_shift_hours {
@@ -171,6 +160,11 @@ dimension: shift_end_time {
     sql:
     case when (${shift_hours} + ${shift_end_last_cr_diff_adj} - ${shift_start_first_on_route_diff}) >0
     ${count_billable_est} / (${shift_hours} + ${shift_end_last_cr_diff_adj} - ${shift_start_first_on_route_diff}) else 0 end;;
+  }
+
+  dimension: primary_key {
+    type: string
+    sql: concat(${shift_start_time}, ${name}, ${name_adj}, ${shift_end_time}) ;;
   }
 
 
@@ -206,21 +200,21 @@ dimension: shift_end_time {
     type: number
     value_format: "0%"
     sql: case when ${shift_hours} >0 then
-    ${dead_time}::float/(${shift_hours}*60)::float else 0 end ;;
-    }
+      ${dead_time}::float/(${shift_hours}*60)::float else 0 end ;;
+  }
 
   measure: sum_visits{
     type: sum_distinct
     value_format: "0"
     sql: ${count_billable_est} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_hours{
     type: sum_distinct
     value_format: "0"
     sql: ${shift_hours} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
 
@@ -236,14 +230,14 @@ dimension: shift_end_time {
     type: average_distinct
     value_format: "0"
     sql: ${dead_time} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: avg_dead_time_percent{
     type: average_distinct
     value_format: "0%"
     sql: ${dead_time_percent} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: avg_shift_start_first_on_route_diff{
@@ -251,7 +245,7 @@ dimension: shift_end_time {
     type: average_distinct
     value_format: "0"
     sql: ${shift_start_first_on_route_diff}*60 ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: avg_shift_start_first_on_route_diff_w_patient{
@@ -259,18 +253,18 @@ dimension: shift_end_time {
     type: average_distinct
     value_format: "0"
     sql: ${shift_start_first_on_route_diff}*60 ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
     filters: {
-              field: care_request_assigned_at_shift_start
-                value: "yes"
-            }
+      field: care_request_assigned_at_shift_start
+      value: "yes"
+    }
   }
 
   measure: count_distinct_shifts_w_assigned{
     type: count_distinct
     value_format: "0"
-    sql: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj});;
+    sql: ${primary_key} ;;
+    sql_distinct_key: ${primary_key};;
     filters: {
       field: care_request_assigned_at_shift_start
       value: "yes"
@@ -289,7 +283,7 @@ dimension: shift_end_time {
     type: average_distinct
     value_format: "0"
     sql: ${shift_end_last_cr_diff_positive}::float*60 ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: avg_dead_time_intra_shift{
@@ -297,7 +291,7 @@ dimension: shift_end_time {
     type: average_distinct
     value_format: "0"
     sql: ${dead_time_intra_shift} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_total_on_scene_time_minutes {
@@ -305,7 +299,7 @@ dimension: shift_end_time {
     type: sum_distinct
     value_format: "0"
     sql: ${total_on_scene_time_minutes} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_total_drivetime_minutes {
@@ -313,14 +307,14 @@ dimension: shift_end_time {
     type: sum_distinct
     value_format: "0"
     sql: ${total_drive_time_minutes_coalesce} ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: count_distinct_shifts {
     type: count_distinct
     value_format: "0"
-    sql: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
-    sql_distinct_key: concat(${shift_start_time}, ${name}, ${name_adj}) ;;
+    sql: ${primary_key} ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: avg_on_scene_hours{
@@ -328,7 +322,7 @@ dimension: shift_end_time {
     type: number
     value_format: "0"
     sql: case when ${productivity_agg.total_complete_count_no_arm_advanced} >0 then
-    ${sum_total_on_scene_time_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced}::float else 0 end ;;
+      ${sum_total_on_scene_time_minutes}::float/${productivity_agg.total_complete_count_no_arm_advanced}::float else 0 end ;;
   }
 
   measure: avg_drivetime_hours{

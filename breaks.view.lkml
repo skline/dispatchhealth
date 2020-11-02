@@ -116,6 +116,7 @@ view: breaks {
     value_format: "0.00"
   }
 
+
   measure: count_distinct_shifts_with_break {
     type: count_distinct
     description: "Count of the distinct number of shifts where a break occurred"
