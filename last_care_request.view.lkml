@@ -5,7 +5,7 @@ view: last_care_request {
     cr.id AS last_care_request_id,
     cr.market_id,
     crord.shift_team_id,
-    crord.complete_time AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz
+    crord.complete_time AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz AS complete_time
     FROM public.care_requests cr
     INNER JOIN (
         SELECT
