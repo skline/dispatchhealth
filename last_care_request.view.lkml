@@ -1,37 +1,66 @@
 view: last_care_request {
   derived_table: {
     sql:
-  SELECT
-  cr.market_id,
-  cr.last_care_request_id,
-  cr.shift_team_id,
-  crs.updated_at AS complete_time
-  FROM
-    (SELECT
-      cr.id AS last_care_request_id,
-      cr.market_id,
-      cr.shift_team_id,
-      crs.updated_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz AS complete_time,
-      ROW_NUMBER() OVER(PARTITION BY cr.market_id, DATE(crs.updated_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz),
-      cr.shift_team_id ORDER BY cr.market_id, cr.shift_team_id, crs.updated_at DESC) AS rn
-    FROM care_requests cr
-    LEFT JOIN care_request_statuses crs
-      ON cr.id = crs.care_request_id AND crs.name = 'complete'
-    LEFT JOIN markets m
-      ON cr.market_id = m.id
-    LEFT JOIN looker_scratch.timezones tz
-      ON m.sa_time_zone = tz.rails_tz) AS cr
-  JOIN
-    (SELECT
-      care_request_id,
-      name,
-      MIN(updated_at) AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS updated_at
-    FROM care_request_statuses
-    WHERE name = 'complete'
-    GROUP BY 1,2) crs
-    ON cr.last_care_request_id = crs.care_request_id AND cr.rn = 1 ;;
+    SELECT
+    cr.id AS last_care_request_id,
+    cr.market_id,
+    crord.shift_team_id,
+    crord.complete_time AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz AS complete_time
+    FROM public.care_requests cr
+    INNER JOIN (
+        SELECT
+            crst.shift_team_id,
+            crst.care_request_id,
+            comp.complete_time,
+            ROW_NUMBER() OVER (PARTITION BY crst.shift_team_id ORDER BY comp.complete_time DESC) AS rn
+            FROM public.care_requests_shift_teams crst
+            INNER JOIN (
+                SELECT
+                    crs.care_request_id,
+                    MIN(crs.started_at) AS complete_time
+                FROM public.care_request_statuses crs
+                LEFT JOIN public.users u
+                    ON crs.user_id = u.id
+                WHERE crs.name = 'complete' AND u.last_name <> 'DispatchHealth'
+                GROUP BY 1
+            ) AS comp
+                ON crst.care_request_id = comp.care_request_id) AS crord
+            ON cr.id = crord.care_request_id AND crord.rn = 1
+        LEFT JOIN public.markets mkt
+            ON cr.market_id = mkt.id
+        LEFT JOIN looker_scratch.timezones tz
+            ON mkt.sa_time_zone = tz.rails_tz ;;
+  # SELECT
+  # cr.market_id,
+  # cr.last_care_request_id,
+  # cr.shift_team_id,
+  # crs.updated_at AS complete_time
+  # FROM
+  #   (SELECT
+  #     cr.id AS last_care_request_id,
+  #     cr.market_id,
+  #     cr.shift_team_id,
+  #     crs.updated_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz AS complete_time,
+  #     ROW_NUMBER() OVER(PARTITION BY cr.market_id, DATE(crs.updated_at AT TIME ZONE 'UTC' AT TIME ZONE tz.pg_tz),
+  #     cr.shift_team_id ORDER BY cr.market_id, cr.shift_team_id, crs.updated_at DESC) AS rn
+  #   FROM care_requests cr
+  #   LEFT JOIN care_request_statuses crs
+  #     ON cr.id = crs.care_request_id AND crs.name = 'complete'
+  #   LEFT JOIN markets m
+  #     ON cr.market_id = m.id
+  #   LEFT JOIN looker_scratch.timezones tz
+  #     ON m.sa_time_zone = tz.rails_tz) AS cr
+  # JOIN
+  #   (SELECT
+  #     care_request_id,
+  #     name,
+  #     MIN(updated_at) AT TIME ZONE 'UTC' AT TIME ZONE 'US/Mountain' AS updated_at
+  #   FROM care_request_statuses
+  #   WHERE name = 'complete'
+  #   GROUP BY 1,2) crs
+  #   ON cr.last_care_request_id = crs.care_request_id AND cr.rn = 1 ;;
 
-      sql_trigger_value: SELECT MAX(id) FROM care_requests ;;
+  #     sql_trigger_value: SELECT MAX(id) FROM care_requests ;;
       indexes: ["last_care_request_id"]
     }
 
