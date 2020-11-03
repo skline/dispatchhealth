@@ -6,12 +6,12 @@ view: markets_intra {
     type: number
     sql: ${TABLE}.id ;;
   }
+#         when trim(${cars_intra.name}) = 'Virtual Visit' then 'Telemedicine'
 
   dimension: name {
     type: string
     sql: case when ${cars_intra.name} = 'SMFR_Car' then 'South Metro Fire Rescue'
              when ${cars_intra.name} = 'Denver_Advanced Care ' then 'Denver Advanced Care'
-            when trim(${cars_intra.name}) = 'Virtual Visit' then 'Telemedicine'
 
          else ${TABLE}.name end ;;
   }

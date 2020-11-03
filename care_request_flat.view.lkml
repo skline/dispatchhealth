@@ -2571,7 +2571,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
 }
 
 measure: avg_first_on_route_mins {
-  type: average_distinct
+  type: average
   description: "The average minutes between shift start and first on-route"
   sql: ${shift_start_to_first_onroute} ;;
   value_format: "0.0"
