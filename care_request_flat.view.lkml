@@ -3406,6 +3406,15 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: lwbs_ed_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs_going_to_ed
+      value: "yes"
+    }
+  }
+
   dimension: booked_shaping_placeholder_resolved {
     type: yesno
     sql:  lower(${archive_comment}) SIMILAR TO '%( cap|book|medicaid|tricare)%' and lower(${archive_comment}) not like '%capability%';;
