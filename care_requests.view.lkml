@@ -52,13 +52,15 @@ view: care_requests {
     sql: ${TABLE}.caller_id ;;
   }
 
+  # Logic removed from post_acute_followup flag on 11/3/2020: lower(${channel_items.name}) SIMILAR TO '%(pafu|post acute|post-acute|bridge-)%' OR
+
   dimension: post_acute_follow_up {
     label: "Bridge Care Visit"
     type: yesno
     description: "Chief complaint, risk protocol name, channel name or service line is post acute follow-up"
     sql:  ${chief_complaint_trimmed} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
           lower(${risk_assessments.protocol_name}) LIKE 'post-acute patient%' OR
-          lower(${channel_items.name}) SIMILAR TO '%(pafu|post acute|post-acute|bridge-)%' OR
+
           lower(${service_lines.name}) LIKE 'post acute follow up%' ;;
   }
 
@@ -69,10 +71,17 @@ view: care_requests {
   }
 
 
+  # dimension: DHFU_follow_up {
+  #   type: yesno
+  #   description: " - Dispatch Health Follow Up - The string 'dhfu' occurs in Chief Complaint OR Risk Assessment protocol_name = 'Dispatchhealth Acute Care - Follow Up Visit' (Does NOT include Post-Acute)"
+  #   sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' OR  ${risk_assessments.protocol_name} = 'Dispatchhealth Acute Care - Follow Up Visit';;
+  # }
+
   dimension: DHFU_follow_up {
     type: yesno
     description: " - Dispatch Health Follow Up - The string 'dhfu' occurs in Chief Complaint OR Risk Assessment protocol_name = 'Dispatchhealth Acute Care - Follow Up Visit' (Does NOT include Post-Acute)"
-    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu)%' OR  ${risk_assessments.protocol_name} = 'Dispatchhealth Acute Care - Follow Up Visit';;
+    sql:  ${chief_complaint_trimmed} SIMILAR TO '%(dhfu|dh followup|dh follow up|dh follow-up|dh f/u|dispatchhealth followup|dispatchhealth follow up|dispatchhealth follow-up)%' OR
+          ${risk_assessments.protocol_name} = 'Dispatchhealth Acute Care - Follow Up Visit';;
   }
 
 
@@ -999,6 +1008,24 @@ view: care_requests {
     #   value: "no"
     # }
     }
+
+  measure: count_test_billable_est_acute_ems_cost_savings {
+    type: count_distinct
+    description: "Count of Acute Care and EMS completed care requests (excludes on-scene escalations)"
+    sql: ${id} ;;
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
+    filters: {
+      field: care_request_flat.pafu_or_follow_up
+      value: "No"
+    }
+    # filters: {
+    #   field: escalated_on_scene
+    #   value: "no"
+    # }
+  }
 
   measure: sum_billable_est_acute_ems_cost_savings {
     description: "Sum of Acute Care and EMS billable Est to use in LookML calculations in place of count_billable_est (return the same results)"
