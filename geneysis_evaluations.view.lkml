@@ -300,6 +300,7 @@ view: geneysis_evaluations {
 
   measure: avg_total_evaluation_score {
     type: average_distinct
+    value_format: "0.00"
     sql: ${totalevaluationscore} ;;
     sql_distinct_key: ${primary_key} ;;
   }
@@ -307,6 +308,7 @@ view: geneysis_evaluations {
 
   measure: avg_total_evaluation_critical {
     type: average_distinct
+    value_format: "0.00"
     sql: ${totalevaluationcriticalscore} ;;
     sql_distinct_key: ${primary_key} ;;
   }
