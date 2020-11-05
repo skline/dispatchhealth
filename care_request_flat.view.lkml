@@ -3181,11 +3181,18 @@ measure: avg_first_on_route_mins {
 
   }
 
+  # dimension: pafu_or_follow_up {
+  #   label: "Bridge Care Visit OR DH Follow Up"
+  #   description: "DH Followup AND Post Acute Followups are counted. Use the 'Post Acute Followups' flag in the 'Care Request' view to report on PAFU only"
+  #   type: yesno
+  #   sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} or lower(${service_lines.name}) like '%post acute%' or lower(${service_lines.name}) like '%post-acute%' ;;
+  # }
+
   dimension: pafu_or_follow_up {
     label: "Bridge Care Visit OR DH Follow Up"
     description: "DH Followup AND Post Acute Followups are counted. Use the 'Post Acute Followups' flag in the 'Care Request' view to report on PAFU only"
     type: yesno
-    sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} or lower(${service_lines.name}) like '%post acute%' or lower(${service_lines.name}) like '%post-acute%' ;;
+    sql: ${care_requests.post_acute_follow_up} or ${care_requests.DHFU_follow_up} ;;
   }
 
   measure: follow_up_limbo_count {
@@ -3402,6 +3409,15 @@ measure: avg_first_on_route_mins {
     sql: ${care_request_id} ;;
     filters: {
       field: escalated_on_phone
+      value: "yes"
+    }
+  }
+
+  measure: lwbs_ed_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs_going_to_ed
       value: "yes"
     }
   }
