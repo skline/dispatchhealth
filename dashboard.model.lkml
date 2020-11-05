@@ -45,7 +45,6 @@ include: "min_patient_complete_visit.view.lkml"
 include: "athenadwh_payers_clone.view.lkml"
 include: "non_phone_crs.view.lkml"
 include: "covid_testing_results.view.lkml"
-include: "shift_team_stops.view.lkml"
 include: "last_documentaction.view.lkml"
 include: "athena_document_results.view.lkml"
 include: "athena_claim.view.lkml"
@@ -176,7 +175,6 @@ include: "ga_zips_clone.view.lkml"
 include: "operational_excellence_metrics.view.lkml"
 include: "athena_document_prescriptions.view.lkml"
 include: "survey_responses_flat_clone.view.lkml"
-include: "stop_times_by_care_request.view.lkml"
 include: "drg_to_icd10_crosswalk.view.lkml"
 include: "sf_activities.view.lkml"
 include: "user_roles.view.lkml"
@@ -1078,11 +1076,6 @@ join: athena_procedurecode {
     sql_on: ${cpt_code_types_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
   }
 
-  join: stop_times_by_care_request {
-    relationship: one_to_one
-    sql_on: ${care_requests.id} = ${stop_times_by_care_request.care_request_id} ;;
-  }
-
   join: icd_visit_joins_clone {
     relationship: many_to_one
     sql_on: ${transaction_facts_clone.visit_dim_number} = ${icd_visit_joins_clone.visit_dim_number} ;;
@@ -1429,11 +1422,6 @@ join: athena_procedurecode {
   join: shift_teams {
     relationship: many_to_one
     sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
-  }
-
-  join: shift_team_stops {
-    relationship: one_to_many
-    sql_on: ${shift_teams.id} = ${shift_team_stops.shift_team_id} ;;
   }
 
   join: shifts_end_of_shift_times {
@@ -2080,42 +2068,42 @@ explore: zizzl_detailed_shift_hours {
   }
 }
 
-explore: shift_team_stops {
-  join: shift_teams {
-    relationship: many_to_one
-    sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
-  }
+# explore: shift_team_stops {
+#   join: shift_teams {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
+#   }
 
-  join: shift_team_members {
-    relationship: many_to_one
-    sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
-  }
+#   join: shift_team_members {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
+#   }
 
-  join: users {
-    relationship: many_to_one
-    sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
-  }
+#   join: users {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
+#   }
 
-  join: provider_profiles {
-    relationship: one_to_one
-    sql_on: ${users.id} = ${provider_profiles.user_id} ;;
-  }
+#   join: provider_profiles {
+#     relationship: one_to_one
+#     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
+#   }
 
-  join: cars {
-    relationship: many_to_one
-    sql_on: ${shift_teams.car_id} = ${cars.id} ;;
-  }
+#   join: cars {
+#     relationship: many_to_one
+#     sql_on: ${shift_teams.car_id} = ${cars.id} ;;
+#   }
 
-  join: markets {
-    relationship: many_to_one
-    sql_on: ${cars.market_id} = ${markets.id_adj} ;;
-  }
+#   join: markets {
+#     relationship: many_to_one
+#     sql_on: ${cars.market_id} = ${markets.id_adj} ;;
+#   }
 
-  join: timezones {
-    relationship: one_to_one
-    sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
-  }
-}
+#   join: timezones {
+#     relationship: one_to_one
+#     sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
+#   }
+# }
 
 explore: shift_details {
   join: markets {

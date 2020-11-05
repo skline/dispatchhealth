@@ -15,7 +15,7 @@ view: last_documentaction {
         ORDER BY 1 DESC) AS dacurr
         ON da.document_action_id = dacurr.document_action_id;;
 
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    sql_trigger_value:  SELECT MAX(document_id) FROM athena.documentaction;;
     indexes: ["document_id"]
   }
 
