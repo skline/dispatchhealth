@@ -120,7 +120,7 @@ view: last_care_request {
 
   measure: avg_last_complete_to_shift_end_mins {
     description: "The time between the the last completed care request time stamp and the last updated time stamp (arrived back at office)"
-    type: average_distinct
+    type: average
     sql: ${last_complete_to_shift_end_mins} ;;
     value_format: "0.0"
   }
