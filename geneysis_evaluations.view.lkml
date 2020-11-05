@@ -238,10 +238,32 @@ view: geneysis_evaluations {
     sql: ${TABLE}."totalgroupcriticalscore" ;;
   }
 
+  dimension: sykes {
+    type: yesno
+    sql: lower(${agentname}) like '%(sykes)%' ;;
+  }
+
+  dimension: covid {
+    type: yesno
+    sql: lower(${agentname}) like '%(covid)%' ;;
+  }
+
+  dimension: MA {
+    type: yesno
+    sql: ${agentname} like '%(MA)%' ;;
+  }
+
+  dimension: optum {
+    type: yesno
+    sql: lower(${agentname}) like '%(optum care)%' ;;
+  }
+
+
   dimension: totalgroupcriticalscoreunweighted {
     type: number
     sql: ${TABLE}."totalgroupcriticalscoreunweighted" ;;
   }
+
 
   measure: count {
     type: count
