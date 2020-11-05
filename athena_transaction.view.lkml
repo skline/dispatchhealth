@@ -317,7 +317,7 @@ view: athena_transaction {
   }
 
   measure: count_valid_transactions {
-    type: count
+    type: count_distinct
     sql: ${transaction_id} ;;
     filters: [voided_date: "NULL"]
   }
