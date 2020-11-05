@@ -72,7 +72,7 @@ view: insurance_coalese {
           ON COALESCE(athena.insurance_package_id, sri.package_id) = cig.insurance_package_id
       GROUP BY 1,2,3,4,5,6;;
 
-      sql_trigger_value:  select sum(timevalue)
+      sql_trigger_value:  SELECT MAX(id) FROM public.care_requests  where care_requests.created_at > current_date - interval '2 day'
 from
 (select count(*) as timevalue
 from public.care_requests
