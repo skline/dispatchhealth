@@ -321,6 +321,7 @@ include: "most_recent_intraday.view.lkml"
 include: "views/granular_shift_tracking.view.lkml"
 include: "views/care_requests_shift_teams.view.lkml"
 include: "granular_shift_tracking_agg.view.lkml"
+include: "athenadwh_letters_encounters.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -490,13 +491,18 @@ explore: care_requests {
   }
 
   join: athenadwh_letters_encounters {
-    from:  athenadwh_documents_clone
     relationship:  one_to_many
-    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
-            ${athenadwh_letters_encounters.document_class}  = 'LETTER' AND
-            (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
-            (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} ;;
   }
+
+  # join: athenadwh_letters_encounters {
+  #   from:  athenadwh_documents_clone
+  #   relationship:  one_to_many
+  #   sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
+  #           ${athenadwh_letters_encounters.document_class}  = 'LETTER' AND
+  #           (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
+  #           (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
+  # }
 
   join: athenadwh_prescriptions {
     from:  athenadwh_documents_clone
@@ -614,10 +620,10 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_results_clone.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
   }
 
-  join: athenadwh_clinical_letters_clone {
-    relationship:  one_to_one
-    sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
-  }
+  # join: athenadwh_clinical_letters_clone {
+  #   relationship:  one_to_one
+  #   sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
+  # }
 
   join: athenadwh_clinical_providers_fax_clone {
     sql_on: ${athenadwh_clinical_providers_fax_clone.clinical_provider_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
@@ -629,7 +635,7 @@ explore: care_requests {
   join: athenadwh_letter_recipient_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
+    sql_on: ${athenadwh_letters_encounters.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
   join: collective_medical {
@@ -686,8 +692,8 @@ explore: care_requests {
   join: athenadwh_primary_care_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
-            ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
+    sql_on: ${athenadwh_letters_encounters.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
+            ${athenadwh_letters_encounters.role} = 'Primary Care Provider' ;;
   }
 
   # join: athenadwh_patients_clone {
@@ -4236,7 +4242,7 @@ explore: sf_contacts {
   }
 
   join: athenadwh_letters_encounters {
-    from:  athenadwh_documents_clone
+    # from:  athenadwh_documents_clone
     sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
   }
 
