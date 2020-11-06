@@ -602,6 +602,21 @@ measure: percent_repeat_callers {
     }
   }
 
+  measure: count_answered_non_inbound {
+    label: "Count Answered (non-Inbound Demand)"
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: answered
+      value: "1"
+    }
+    filters: {
+      field: inbound_demand
+      value: "no"
+    }
+  }
+
   dimension:  inqueue_time_greater_30{
     type: yesno
     sql: ${firstacdwaitduration}>30000 ;;

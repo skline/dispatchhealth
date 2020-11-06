@@ -45,7 +45,6 @@ include: "min_patient_complete_visit.view.lkml"
 include: "athenadwh_payers_clone.view.lkml"
 include: "non_phone_crs.view.lkml"
 include: "covid_testing_results.view.lkml"
-include: "shift_team_stops.view.lkml"
 include: "last_documentaction.view.lkml"
 include: "athena_document_results.view.lkml"
 include: "athena_claim.view.lkml"
@@ -176,7 +175,6 @@ include: "ga_zips_clone.view.lkml"
 include: "operational_excellence_metrics.view.lkml"
 include: "athena_document_prescriptions.view.lkml"
 include: "survey_responses_flat_clone.view.lkml"
-include: "stop_times_by_care_request.view.lkml"
 include: "drg_to_icd10_crosswalk.view.lkml"
 include: "sf_activities.view.lkml"
 include: "user_roles.view.lkml"
@@ -323,6 +321,7 @@ include: "most_recent_intraday.view.lkml"
 include: "views/granular_shift_tracking.view.lkml"
 include: "views/care_requests_shift_teams.view.lkml"
 include: "granular_shift_tracking_agg.view.lkml"
+include: "athenadwh_letters_encounters.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -492,13 +491,18 @@ explore: care_requests {
   }
 
   join: athenadwh_letters_encounters {
-    from:  athenadwh_documents_clone
     relationship:  one_to_many
-    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
-            ${athenadwh_letters_encounters.document_class}  = 'LETTER' AND
-            (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
-            (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} ;;
   }
+
+  # join: athenadwh_letters_encounters {
+  #   from:  athenadwh_documents_clone
+  #   relationship:  one_to_many
+  #   sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
+  #           ${athenadwh_letters_encounters.document_class}  = 'LETTER' AND
+  #           (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
+  #           (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
+  # }
 
   join: athenadwh_prescriptions {
     from:  athenadwh_documents_clone
@@ -616,10 +620,10 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_results_clone.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
   }
 
-  join: athenadwh_clinical_letters_clone {
-    relationship:  one_to_one
-    sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
-  }
+  # join: athenadwh_clinical_letters_clone {
+  #   relationship:  one_to_one
+  #   sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
+  # }
 
   join: athenadwh_clinical_providers_fax_clone {
     sql_on: ${athenadwh_clinical_providers_fax_clone.clinical_provider_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
@@ -631,7 +635,7 @@ explore: care_requests {
   join: athenadwh_letter_recipient_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
+    sql_on: ${athenadwh_letters_encounters.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
   join: collective_medical {
@@ -688,8 +692,8 @@ explore: care_requests {
   join: athenadwh_primary_care_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
-            ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
+    sql_on: ${athenadwh_letters_encounters.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
+            ${athenadwh_letters_encounters.role} = 'Primary Care Provider' ;;
   }
 
   # join: athenadwh_patients_clone {
@@ -1078,11 +1082,6 @@ join: athena_procedurecode {
     sql_on: ${cpt_code_types_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
   }
 
-  join: stop_times_by_care_request {
-    relationship: one_to_one
-    sql_on: ${care_requests.id} = ${stop_times_by_care_request.care_request_id} ;;
-  }
-
   join: icd_visit_joins_clone {
     relationship: many_to_one
     sql_on: ${transaction_facts_clone.visit_dim_number} = ${icd_visit_joins_clone.visit_dim_number} ;;
@@ -1429,11 +1428,6 @@ join: athena_procedurecode {
   join: shift_teams {
     relationship: many_to_one
     sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
-  }
-
-  join: shift_team_stops {
-    relationship: one_to_many
-    sql_on: ${shift_teams.id} = ${shift_team_stops.shift_team_id} ;;
   }
 
   join: shifts_end_of_shift_times {
@@ -2080,42 +2074,42 @@ explore: zizzl_detailed_shift_hours {
   }
 }
 
-explore: shift_team_stops {
-  join: shift_teams {
-    relationship: many_to_one
-    sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
-  }
+# explore: shift_team_stops {
+#   join: shift_teams {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
+#   }
 
-  join: shift_team_members {
-    relationship: many_to_one
-    sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
-  }
+#   join: shift_team_members {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
+#   }
 
-  join: users {
-    relationship: many_to_one
-    sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
-  }
+#   join: users {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
+#   }
 
-  join: provider_profiles {
-    relationship: one_to_one
-    sql_on: ${users.id} = ${provider_profiles.user_id} ;;
-  }
+#   join: provider_profiles {
+#     relationship: one_to_one
+#     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
+#   }
 
-  join: cars {
-    relationship: many_to_one
-    sql_on: ${shift_teams.car_id} = ${cars.id} ;;
-  }
+#   join: cars {
+#     relationship: many_to_one
+#     sql_on: ${shift_teams.car_id} = ${cars.id} ;;
+#   }
 
-  join: markets {
-    relationship: many_to_one
-    sql_on: ${cars.market_id} = ${markets.id_adj} ;;
-  }
+#   join: markets {
+#     relationship: many_to_one
+#     sql_on: ${cars.market_id} = ${markets.id_adj} ;;
+#   }
 
-  join: timezones {
-    relationship: one_to_one
-    sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
-  }
-}
+#   join: timezones {
+#     relationship: one_to_one
+#     sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
+#   }
+# }
 
 explore: shift_details {
   join: markets {
@@ -4248,7 +4242,7 @@ explore: sf_contacts {
   }
 
   join: athenadwh_letters_encounters {
-    from:  athenadwh_documents_clone
+    # from:  athenadwh_documents_clone
     sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
   }
 
@@ -4581,6 +4575,15 @@ explore: productivity_agg {
     sql_on:  ${shift_agg.shift_start_date}=${productivity_agg.start_date} and ${shift_agg.name_adj} =${productivity_agg.name_adj};;
   }
 
+  join:granular_shift_tracking_agg  {
+    sql_on:  ${granular_shift_tracking_agg.shift_date}=${productivity_agg.start_date} and ${granular_shift_tracking_agg.market_name_adj} =${productivity_agg.name_adj};;
+  }
+
+  join: high_overflow_days {
+    sql_on: ${productivity_agg.start_date}=${high_overflow_days.start_date} and ${productivity_agg.name_adj}=${high_overflow_days.name_adj} ;;
+  }
+
+
   join: market_regions {
     relationship: one_to_one
     sql_on: ${productivity_agg.id_adj} = ${market_regions.market_id} ;;
@@ -4679,4 +4682,8 @@ explore: granular_shift_tracking {
     sql_on: ${markets.id} =${cars.market_id} ;;
   }
 }
-explore: granular_shift_tracking_agg {}
+explore: granular_shift_tracking_agg {
+  join: high_overflow_days {
+    sql_on: ${granular_shift_tracking_agg.shift_date}=${high_overflow_days.start_date} and ${granular_shift_tracking_agg.market_name_adj}=${high_overflow_days.name_adj} ;;
+  }
+}
