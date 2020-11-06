@@ -625,7 +625,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: CASE
     WHEN ${care_requests.DHFU_follow_up} THEN 'No'
     WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
-    WHEN ${care_requests.acute_ems_population_cost_savings} ='Yes' AND ${TABLE}.diversion_911::INT = 1 THEN 'Yes'
+    WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_911::INT = 1 THEN 'Yes'
     ELSE NULL
     END;;
   }
@@ -672,7 +672,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: CASE
           WHEN ${care_requests.DHFU_follow_up} THEN 'No'
           WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
-          WHEN ${care_requests.acute_ems_population_cost_savings} ='Yes' AND ${TABLE}.diversion_er::INT = 1 THEN 'Yes'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_er::INT = 1 THEN 'Yes'
           ELSE NULL
           END;;
   }
@@ -720,7 +720,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
           WHEN ${care_requests.DHFU_follow_up} THEN 'No'
           WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
           WHEN ${diversion_hosp} THEN 'No'
-          WHEN ${care_requests.acute_ems_population_cost_savings} ='Yes' AND ${TABLE}.diversion_obs::INT = 1 THEN 'Yes'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_obs::INT = 1 THEN 'Yes'
           ELSE NULL
           END;;
   }
@@ -766,7 +766,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: CASE
           WHEN ${care_requests.DHFU_follow_up} THEN 'No'
           WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
-          WHEN ${care_requests.acute_ems_population_cost_savings}  ='Yes' AND ${TABLE}.diversion_hosp::INT = 1 THEN 'Yes'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups}  ='Yes' AND ${TABLE}.diversion_hosp::INT = 1 THEN 'Yes'
           ELSE NULL
           END;;
   }
@@ -855,7 +855,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
 
@@ -880,7 +880,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
 
@@ -903,7 +903,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
     # filters: {
@@ -927,7 +927,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "No"
     }
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
     # filters: {
@@ -955,7 +955,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: ${bounceback_14_day_case_rate_adjustment} ;;
     sql_distinct_key: ${care_request_id} ;;
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
   }
@@ -965,7 +965,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql: ${bounceback_multiplier} ;;
     sql_distinct_key: ${care_request_id} ;;
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
   }

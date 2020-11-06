@@ -3380,6 +3380,7 @@ measure: avg_first_on_route_mins {
   }
 
   measure: escalated_on_scene_to_ed_acute_ems_cost_savings_count {
+    label: "Escalated On-Scene to ED Excluding Bridge Care and DH Followups"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
@@ -3387,7 +3388,7 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
   }

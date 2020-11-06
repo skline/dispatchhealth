@@ -57,7 +57,7 @@ view: care_requests {
   dimension: post_acute_follow_up {
     label: "Bridge Care Visit"
     type: yesno
-    description: "Chief complaint, risk protocol name, channel name or service line is post acute follow-up"
+    description: "Chief complaint, risk protocol name, or service line is post acute follow-up"
     sql:  ${chief_complaint_trimmed} SIMILAR TO '%(pafu|post acute|post-acute)%' OR
           lower(${risk_assessments.protocol_name}) LIKE 'post-acute patient%' OR
 
@@ -900,17 +900,12 @@ view: care_requests {
     sql: ${billable_est} AND ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL ;;
   }
 
-  # dimension: non_acute_ems_populations_cost_savings {
-  #   description: "Logic to idenitfy Non-AcuteCare and Non-EMS populations based on select service lines, visit types and risk protocols"
-  #   type: yesno
-  #   sql:
-  #   ${care_requests.post_acute_follow_up} OR
-  # lower(${service_lines.service_line_name_consolidated}) in(
-  #     'hedis (hpn)',
-  #     'covid-19 facility testing',
-  #     'ed education',
-  #     'post acute follow up') OR
-  # lower(${risk_assessments.protocol_name}) in(
+  # dimension: acute_ems_population_cost_savings {
+  #   description: "Logic to idenitfy Acute Care and EMS populations based on select service lines, visit types and risk protocols"
+  #   type: string
+  #   sql: CASE
+  #   WHEN ${care_requests.post_acute_follow_up} THEN 'No'
+  #   WHEN lower(${risk_assessments.protocol_name}) in(
   #     'covid-19 facility testing',
   #     'covid-19 testing request (for patients without symptoms)',
   #     'dispatchhealth education program (emergency department use education, asthma education)',
@@ -918,31 +913,21 @@ view: care_requests {
   #     'post-acute patient',
   #     'post-acute patient (post hospital discharge patient)',
   #     'post-acute patient (post hospital/skilled nursing facility/rehabilitation facility discharge patient)',
-  #     'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)');;
+  #     'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)') THEN 'No'
+  #   WHEN lower(${service_lines.service_line_name_consolidated}) in(
+  #   '911 service',
+  #   'acute care',
+  #   'tele-presentation',
+  #   'virtual visit') THEN 'Yes'
+  #   ELSE 'No'
+  #   END;;
   # }
 
-  dimension: acute_ems_population_cost_savings {
-    description: "Logic to idenitfy Acute Care and EMS populations based on select service lines, visit types and risk protocols"
-    type: string
-    sql: CASE
-    WHEN ${care_requests.post_acute_follow_up} THEN 'No'
-    WHEN lower(${risk_assessments.protocol_name}) in(
-      'covid-19 facility testing',
-      'covid-19 testing request (for patients without symptoms)',
-      'dispatchhealth education program (emergency department use education, asthma education)',
-      'dispatchhealth education program (emergency department use education, asthma, diabetes education)',
-      'post-acute patient',
-      'post-acute patient (post hospital discharge patient)',
-      'post-acute patient (post hospital/skilled nursing facility/rehabilitation facility discharge patient)',
-      'post-acute patient follow up (post hospital/skilled nursing facility/rehabilitation facility discharge patient)') THEN 'No'
-    WHEN lower(${service_lines.service_line_name_consolidated}) in(
-    '911 service',
-    'acute care',
-    'tele-presentation',
-    'virtual visit') THEN 'Yes'
-    ELSE 'No'
-    END;;
-  }
+  dimension: billable_est_excluding_bridge_care_and_dh_followups {
+      description: "Logic to idenitfy Billable Est excluding Bridge Care and DH Followups for Cost Savings (field retained to allow us to easily change the Cost Savings population moving forward (numerator and Denominator)"
+      type: string
+      sql: ${billable_est} AND NOT ${care_request_flat.pafu_or_follow_up} ;;
+    }
 
   measure: count_billable_est {
     type: count_distinct
@@ -992,15 +977,13 @@ view: care_requests {
 
 
   measure: count_billable_est_acute_ems_cost_savings {
+    label: "Count Billable Est Excluding Bridge Care and DH Followups"
     type: count_distinct
-    description: "Count of Acute Care and EMS completed care requests (excludes on-scene escalations)"
+    description: "Count of Billable Est excluding Bridge Care and DH Followups"
     sql: ${id} ;;
+
     filters: {
-      field: billable_est
-      value: "yes"
-    }
-    filters: {
-      field: acute_ems_population_cost_savings
+      field: billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
     # filters: {
@@ -1009,32 +992,14 @@ view: care_requests {
     # }
     }
 
-  measure: count_test_billable_est_acute_ems_cost_savings {
-    type: count_distinct
-    description: "Count of Acute Care and EMS completed care requests (excludes on-scene escalations)"
-    sql: ${id} ;;
-    filters: {
-      field: billable_est
-      value: "yes"
-    }
-    filters: {
-      field: care_request_flat.pafu_or_follow_up
-      value: "No"
-    }
-    # filters: {
-    #   field: escalated_on_scene
-    #   value: "no"
-    # }
-  }
-
-  measure: sum_billable_est_acute_ems_cost_savings {
-    description: "Sum of Acute Care and EMS billable Est to use in LookML calculations in place of count_billable_est (return the same results)"
+  measure: sum_billable_est_excluding_bridge_care_and_dh_followups {
+    description: "Sum of Billable Est excluding Bridge Care and DH Followups"
     hidden: yes
     type: sum_distinct
     sql_distinct_key: ${id} ;;
     sql: ${billable_est_numeric} ;;
     filters: {
-      field: acute_ems_population_cost_savings
+      field: billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
   }
