@@ -440,6 +440,13 @@ view: granular_shift_tracking_agg {
     }
   }
 
+  measure: sum_complete_count{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${complete_count};;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
   measure: sum_dead_time_intra_minutes_w_assigned{
     type: sum_distinct
     value_format: "0"
