@@ -2,7 +2,10 @@ view: high_overflow_days {
 # If necessary, uncomment the line below to include explore_source.
 # include: "dashboard.model.lkml"
     derived_table: {
+      sql_trigger_value:  SELECT MAX(care_request_id) FROM ${care_request_flat.SQL_TABLE_NAME} where created_date > current_date - interval '2 days';;
+      indexes: ["start_date", "name_adj"]
       explore_source: productivity_agg {
+
         column: start_date {}
         column: inefficiency_index { field: funnel_agg.inefficiency_index }
         column: overflow_percent { field: funnel_agg.overflow_percent }
@@ -58,5 +61,9 @@ view: high_overflow_days {
     }
     dimension: name_adj {
       description: "Market name where WMFR is included as part of Denver"
+    }
+    dimension: high_overflow_bool {
+      type: yesno
+      sql:  ${start_date} is not null;;
     }
   }

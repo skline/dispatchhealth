@@ -4575,6 +4575,15 @@ explore: productivity_agg {
     sql_on:  ${shift_agg.shift_start_date}=${productivity_agg.start_date} and ${shift_agg.name_adj} =${productivity_agg.name_adj};;
   }
 
+  join:granular_shift_tracking_agg  {
+    sql_on:  ${granular_shift_tracking_agg.shift_date}=${productivity_agg.start_date} and ${granular_shift_tracking_agg.market_name_adj} =${productivity_agg.name_adj};;
+  }
+
+  join: high_overflow_days {
+    sql_on: ${productivity_agg.start_date}=${high_overflow_days.start_date} and ${productivity_agg.name_adj}=${high_overflow_days.name_adj} ;;
+  }
+
+
   join: market_regions {
     relationship: one_to_one
     sql_on: ${productivity_agg.id_adj} = ${market_regions.market_id} ;;
@@ -4673,4 +4682,8 @@ explore: granular_shift_tracking {
     sql_on: ${markets.id} =${cars.market_id} ;;
   }
 }
-explore: granular_shift_tracking_agg {}
+explore: granular_shift_tracking_agg {
+  join: high_overflow_days {
+    sql_on: ${granular_shift_tracking_agg.shift_date}=${high_overflow_days.start_date} and ${granular_shift_tracking_agg.market_name_adj}=${high_overflow_days.name_adj} ;;
+  }
+}
