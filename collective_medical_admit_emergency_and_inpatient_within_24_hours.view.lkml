@@ -42,7 +42,7 @@ where ((EXTRACT(EPOCH FROM ip.admit_date)-EXTRACT(EPOCH FROM em.admit_date)) / 3
 order by cros.care_request_id, em.patient_id ;;
 
     # Run trigger every 2 hours
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    sql_trigger_value:  SELECT MAX(id) FROM collective_medical.collective_medical;;
     indexes: ["care_request_id", "patient_id"]
   }
 

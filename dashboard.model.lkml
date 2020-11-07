@@ -1825,7 +1825,7 @@ join: resolved_reasons_summary {
   }
 
   join: eligible_patients {
-    relationship: one_to_one
+    relationship: one_to_many
     sql_on: ${patients.id} = ${eligible_patients.patient_id} ;;
   }
 
