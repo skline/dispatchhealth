@@ -1,5 +1,10 @@
 view: eligible_patients {
-  sql_table_name: public.eligible_patients ;;
+  # sql_table_name: public.eligible_patients ;;
+  derived_table: {
+    sql: SELECT *
+          FROM public.eligible_patients
+          WHERE deleted_at IS NULL AND patient_id IS NOT NULL;;
+  }
 
   dimension: id {
     primary_key: yes
