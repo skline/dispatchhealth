@@ -1,7 +1,7 @@
 view: granular_shift_tracking_agg {
     derived_table: {
       sql_trigger_value:  SELECT count(*) FROM looker_scratch.granular_shift_tracking where shift_date > current_date - interval '10 days';;
-      indexes: ["shift_date", "shift_team_id", "car_name", "market_id"]
+      indexes: ["shift_date", "shift_team_id", "car_name", "market_id", "market_name_adj"]
       explore_source: granular_shift_tracking {
         column: shift_date {}
         column: shift_team_id {}
@@ -131,7 +131,7 @@ view: granular_shift_tracking_agg {
     sql: concat(${address_lat}, ${shift_team_id}, ${on_scene_time_of_day}) ;;
   }
   dimension: primary_key_shift {
-    sql:  ${shift_team_id} ;;
+    sql:  concat(${shift_team_id}, ${car_name}) ;;
   }
   dimension: on_scene_time {
     sql:${complete_time_of_day}- ${on_scene_time_of_day} ;;
@@ -297,6 +297,18 @@ view: granular_shift_tracking_agg {
     }
   }
 
+  measure: count_distinct_shifts_w_high_overflow {
+    type: count_distinct
+    value_format: "0"
+    sql: ${primary_key_shift} ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+    filters: {
+      field: high_overflow_days.high_overflow_bool
+      value: "yes"
+    }
+  }
+
+
 
 
 
@@ -316,10 +328,33 @@ view: granular_shift_tracking_agg {
     }
   }
 
+  measure: sum_deadtime_end_of_shift_minutes_high_overflow{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_between_last_complete_shift_end}*60 ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+    filters: {
+      field: last_care_request_bool
+      value: "1"
+    }
+    filters: {
+      field: high_overflow_days.high_overflow_bool
+      value: "yes"
+    }
+  }
+
+
+
   measure: avg_deadtime_end_of_shift_minutes{
     value_format: "0"
     type: number
     sql: ${sum_deadtime_end_of_shift_minutes}/${count_distinct_shifts} ;;
+  }
+
+  measure: avg_deadtime_end_of_shift_minutes_high_overflow{
+    value_format: "0"
+    type: number
+    sql: case when ${count_distinct_shifts_w_high_overflow}>0  then ${sum_deadtime_end_of_shift_minutes_high_overflow}/${count_distinct_shifts_w_high_overflow} else 0 end;;
   }
 
   measure: sum_dead_time_at_office_after_shift{
@@ -328,11 +363,31 @@ view: granular_shift_tracking_agg {
     sql: ${diff_between_last_update_shift_end}*60 ;;
     sql_distinct_key: ${primary_key} ;;
   }
+
+  measure: sum_dead_time_at_office_after_shift_high_overflow{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_between_last_update_shift_end}*60 ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: high_overflow_days.high_overflow_bool
+      value: "yes"
+    }
+  }
+
+
   measure: avg_dead_time_at_office_after_shift{
     value_format: "0"
     type: number
     sql: ${sum_dead_time_at_office_after_shift}/${count_distinct_shifts} ;;
   }
+
+  measure: avg_dead_time_at_office_after_shift_high_overflow{
+    value_format: "0"
+    type: number
+    sql: case when ${count_distinct_shifts_w_high_overflow}>0  then ${sum_dead_time_at_office_after_shift_high_overflow}/${count_distinct_shifts_w_high_overflow} else 0 end ;;
+  }
+
 
 
   measure: sum_drive_back_to_office_minutes{
@@ -346,11 +401,33 @@ view: granular_shift_tracking_agg {
     }
   }
 
+  measure: sum_drive_back_to_office_minutes_high_overflow{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${diff_between_last_complete_last_update}*60;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: last_care_request_bool
+      value: "1"
+    }
+    filters: {
+      field: high_overflow_days.high_overflow_bool
+      value: "yes"
+    }
+  }
+
   measure: avg_drive_back_to_office_minutes{
     value_format: "0"
     type: number
     sql: ${sum_drive_back_to_office_minutes}/${count_distinct_shifts} ;;
   }
+
+  measure: avg_drive_back_to_office_minutes_high_overflow{
+    value_format: "0"
+    type: number
+    sql: case when ${count_distinct_shifts_w_high_overflow}>0  then ${sum_drive_back_to_office_minutes_high_overflow}/${count_distinct_shifts_w_high_overflow} else 0 end;;
+  }
+
 
   measure: sum_dead_time_intra_minutes{
     type: sum_distinct
@@ -361,6 +438,13 @@ view: granular_shift_tracking_agg {
       field: first_accepted_bool
       value: "0"
     }
+  }
+
+  measure: sum_complete_count{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${complete_count};;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_dead_time_intra_minutes_w_assigned{
