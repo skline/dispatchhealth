@@ -258,6 +258,15 @@ view: geneysis_evaluations {
     sql: lower(${agentname}) like '%(optum care)%' ;;
   }
 
+  dimension: QA {
+    type: yesno
+    sql: ${agentname} like '%(QA)%' ;;
+}
+  dimension: chat_agent {
+    type: yesno
+    sql: lower(${agentname}) like '%(chat)%' ;;
+  }
+
 
   dimension: totalgroupcriticalscoreunweighted {
     type: number
