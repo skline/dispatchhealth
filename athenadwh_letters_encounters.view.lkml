@@ -9,7 +9,7 @@ view: athenadwh_letters_encounters {
       LEFT JOIN looker_scratch.athenadwh_clinical_letters_clone cl
         ON dl.document_id = cl.document_id
       WHERE dl.document_class = 'LETTER'
-      AND dl.document_subclass <> 'LETTER_PATIENTCORRESPONDENCE'
+      AND (dl.document_subclass <> 'LETTER_PATIENTCORRESPONDENCE' OR dl.document_subclass IS NULL)
       AND dl.status <> 'DELETED'
       ;;
     sql_trigger_value: SELECT MAX(document_id) FROM looker_scratch.athenadwh_documents_clone

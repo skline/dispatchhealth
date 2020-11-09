@@ -322,6 +322,7 @@ include: "views/granular_shift_tracking.view.lkml"
 include: "views/care_requests_shift_teams.view.lkml"
 include: "granular_shift_tracking_agg.view.lkml"
 include: "athenadwh_letters_encounters.view.lkml"
+include: "athena_transaction_summary.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -821,6 +822,11 @@ join: athena_claim {
   join: athena_valid_claims {
     relationship: one_to_one
     sql_on: ${athena_claim.claim_id} = ${athena_valid_claims.claim_id} ;;
+  }
+
+  join: athena_transaction_summary {
+    relationship: one_to_one
+    sql_on: ${athena_claim.claim_id} = ${athena_transaction_summary.claim_id} ;;
   }
 
 # join: athena_claimdiagnosis {
