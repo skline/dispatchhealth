@@ -8,10 +8,9 @@ view: genesys_queue_conversion {
       explore_source: genesys_conversation_summary {
         column: conversationstarttime {field: genesys_conversation_summary.conversationstarttime_date}
         column: queuename {}
+        column: direction {}
         column: market_id {field:markets.id}
         column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}
-
-
         column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
         column: count_answered {}
@@ -31,13 +30,14 @@ view: genesys_queue_conversion {
           field: markets.id
           value: "NOT NULL"
         }
-
       }
     }
 
     dimension: queuename {}
 
     dimension: market_id {}
+    dimension: direction {}
+
 
     dimension: inbound_phone_calls {
       label: "Genesys Conversation Summary Count Distinct (Inbound Demand Minus Market)"
@@ -67,12 +67,16 @@ view: genesys_queue_conversion {
     label: "SEM Covid"
     type: yesno
   }
+  dimension: primary_key {
+    type: string
+    sql: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}, ${direction}) ;;
+  }
 
   measure: sum_distinct_sla {
     type: sum_distinct
     label: "Sum Distinct SLA (Inbound Demand)"
     sql: ${count_distinct_sla} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
+    sql_distinct_key: ${primary_key} ;;
     }
 
   measure: sla_percent {
@@ -110,26 +114,26 @@ view: genesys_queue_conversion {
   measure: sum_inbound_phone_calls {
     type: sum_distinct
     sql: ${inbound_phone_calls} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_inbound_answers {
     type: sum_distinct
     sql: ${count_answered} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
 
   measure: sum_wait_time_minutes_x_inbound_demand {
     type: sum_distinct
     sql: ${wait_time_minutes_x_inbound_phone_calls} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_accepted_count {
     type: sum_distinct
     sql: ${accepted_count} ;;
-    sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${sem_covid}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: avg_wait_time_minutes {

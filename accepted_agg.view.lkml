@@ -9,14 +9,6 @@ view: accepted_agg {
         field: care_request_flat.first_accepted_date
         value: "365 days ago for 365 days"
       }
-      filters: {
-        field: service_lines.name
-        value: "-COVID-19 Facility Testing,-Advanced Care"
-      }
-      filters: {
-        field: care_request_flat.pafu_or_follow_up
-        value: "No"
-      }
     }
     sql_trigger_value:  SELECT MAX(care_request_id) FROM ${care_request_flat.SQL_TABLE_NAME} where created_date > current_date - interval '2 days';;
     indexes: ["first_accepted_date", "market_id"]

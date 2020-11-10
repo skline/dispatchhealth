@@ -3,12 +3,13 @@ view: genesys_conversation_summary {
 
   dimension: inbound_demand {
     type: yesno
-    sql:${inbound_demand_minus_market} and ${markets.id} is not null;;
+    sql:${inbound_demand_minus_market} and (${markets.id} is not null);;
   }
 
   dimension: inbound_demand_minus_market {
     type: yesno
-    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill', 'testing', 'initial follow up', 'rn1', 'rn2', 'rn3', 'rn4', 'rn5', 'rn6', 'rn7', 'rn8', 'rn9', 'ivr fail safe', 'covid testing results', 'ebony testing', 'ma/nurse', 'dispatchhealth help desk vendor', 'do not use ma/nurse');;
+    sql:
+    ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%after hours%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('mobile requests','ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill', 'testing', 'initial follow up', 'rn1', 'rn2', 'rn3', 'rn4', 'rn5', 'rn6', 'rn7', 'rn8', 'rn9', 'ivr fail safe', 'covid testing results', 'ebony testing', 'ma/nurse', 'dispatchhealth help desk vendor', 'do not use ma/nurse');;
   }
 
   dimension: abandoned {
@@ -23,9 +24,16 @@ view: genesys_conversation_summary {
     sql: ${TABLE}."ani" ;;
   }
 
+  dimension: patient_number {
+    type: number
+    sql: case when  ${direction} ='inbound' then ${ani}
+              when ${direction} = 'outbound' then ${dnis}
+              else null end;;
+  }
+
   dimension: answered {
     type: number
-    sql: ${TABLE}."answered" ;;
+    sql: case when ${totalagenttalkduration} >0 or  ${TABLE}."answered" >0 then 1 else 0 end ;;
   }
 
   dimension: campaignname {
@@ -77,7 +85,32 @@ view: genesys_conversation_summary {
 
   dimension: dnis {
     type: string
-    sql: ${TABLE}."dnis" ;;
+    sql: case when  ${direction} ='inbound' then ${TABLE}."dnis"
+              when ${direction} = 'outbound' then  ${inbound_not_answered_or_abandoned.dnis}
+              else null end
+    ;;
+  }
+
+  dimension: market_id {
+    type: string
+    sql: case when ${number_to_market.market_id} is not null then  ${number_to_market.market_id}
+     when trim(lower(${queuename})) in ('las pafu callback') then 162
+    when trim(lower(${queuename})) in ('tac pafu callback') then 170
+    when trim(lower(${queuename})) in ('phx pafu callback', 'phx') then 161
+    when trim(lower(${queuename})) in ('hrt care') then 186
+     when trim(lower(${queuename})) in ('boi regence') then 176
+    when trim(lower(${queuename})) in ('atl optum care') then 177
+    when trim(lower(${queuename})) in ('spo regence','spo post acute') then 173
+     when trim(lower(${queuename})) in ('dfw home health dallas') then 169
+     when trim(lower(${queuename})) in ('den php', 'kaiser') then 159
+    when trim(lower(${queuename})) in ('rno post acute') then 179
+    when trim(lower(${queuename})) in ('sea regence') then 174
+     when trim(lower(${queuename})) in ('por regence', 'por legacy health charity care') then 175
+     when trim(lower(${queuename})) in ('fort worth home health') then 178
+     when trim(lower(${queuename})) in ('general care', 'partner direct', 'pafu callback', 'sweeper callback', 'dtc', 'dtc pilot', 'care web chat', 'aoc premier', 'sms dcm campaign', 'national pafu callback', 'uhc partner direct', 'humana partner direct') then 167
+
+
+    else null end;;
   }
 
   dimension: firstacdwaitduration {

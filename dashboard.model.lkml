@@ -324,7 +324,7 @@ include: "granular_shift_tracking_agg.view.lkml"
 include: "athenadwh_letters_encounters.view.lkml"
 include: "athena_transaction_summary.view.lkml"
 include: "partner_population.view.lkml"
-
+include: "inbound_not_answered_or_abandoned.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -1922,7 +1922,7 @@ join: ga_pageviews_clone {
   }
 
   join: genesys_conversation_summary {
-    sql_on: (${patients.mobile_number} = ${genesys_conversation_summary.ani}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.ani})
+    sql_on: (${patients.mobile_number} = ${genesys_conversation_summary.patient_number}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.patient_number})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000
       ;;
   }
@@ -3668,9 +3668,12 @@ explore: expected_allowables_market_budget {
 
 
 explore: genesys_conversation_summary {
+  join: inbound_not_answered_or_abandoned  {
+    sql_on: ${genesys_conversation_summary.conversationid}=${inbound_not_answered_or_abandoned.conversationid} ;;
+  }
   join: number_to_market {
     relationship: one_to_one
-    sql_on: ${number_to_market.number}=${genesys_conversation_summary.dnis} ;;
+    sql_on: (${number_to_market.number}=${genesys_conversation_summary.dnis})  ;;
   }
 
   join: genesys_conversation_wrapup {
@@ -3679,7 +3682,7 @@ explore: genesys_conversation_summary {
 
   join: markets {
     relationship: one_to_one
-    sql_on: ${markets.id}=${number_to_market.market_id} ;;
+    sql_on: (${markets.id}=${genesys_conversation_summary.market_id}) ;;
   }
 
   join: regional_markets {
@@ -3717,7 +3720,7 @@ explore: genesys_conversation_summary {
 
   join: patients_mobile {
     sql_on:   (
-                ${patients_mobile.mobile_number} = ${genesys_conversation_summary.ani}
+                ${patients_mobile.mobile_number} = ${genesys_conversation_summary.patient_number}
               )
                ;;
   }
@@ -3734,7 +3737,7 @@ explore: genesys_conversation_summary {
 
   join: care_request_flat_number{
     from: care_request_flat
-    sql_on: (${patients_mobile.patient_id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.ani})
+    sql_on: (${patients_mobile.patient_id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.patient_number})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
   }
   join: diversions_by_care_request {
