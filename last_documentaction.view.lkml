@@ -4,18 +4,7 @@ view: last_documentaction {
     sql:
     SELECT
     da.*,
-    prv.provider_first_name,
-    prv.provider_last_name,
-    prv.provider_type,
-    prv.provider_type_name,
-    CASE
-        WHEN UPPER(prv.provider_type_name) = 'MEDICAL ASSISTANT (MA)' THEN 'Medical Assistant'
-        WHEN UPPER(prv.provider_type_name) IN ('ADVANCED PRACTICE REGISTERED NURSE', 'CERTIFIED PHYSICIAN ASSISTANT',
-                                               'NURSE PRACTITIONER SUPERVISING(NP S)','PHYSICIAN ASSISTANT (PA)',
-                                               'PHYSICIAN ASSISTANT SUPERVISING','REGISTERED NURSE (RN)') THEN 'Advanced Practice Provider'
-        WHEN UPPER(prv.provider_type_name) IN ('DOCTOR OF OSTEOPATHY (DO)', 'MD') THEN 'Medical Doctor'
-        WHEN UPPER(prv.provider_type_name) = 'EQUIPMENT' THEN 'Equipment'
-        ELSE NULL END AS provider_category
+    usr.user_position
     FROM athena.documentaction da
     INNER JOIN (
         SELECT
@@ -26,8 +15,8 @@ view: last_documentaction {
         GROUP BY 1
         ORDER BY 1 DESC) AS dacurr
         ON da.document_action_id = dacurr.document_action_id
-    LEFT JOIN athena.provider prv
-        ON UPPER(da.created_by) = UPPER(prv.scheduling_name) ;;
+    LEFT JOIN athena.userprofile usr
+        ON UPPER(da.created_by) = UPPER(usr.username) ;;
 
     sql_trigger_value:  SELECT MAX(document_id) FROM athena.documentaction where created_at > current_date - interval '2 day';;
     indexes: ["document_id"]
@@ -186,17 +175,12 @@ view: last_documentaction {
     sql: ${TABLE}."note" ;;
   }
 
-  dimension: provider_type_name {
+  dimension: user_position {
     type: string
-    description: "The provider type by whom the record was closed"
-    sql: ${TABLE}.provider_type_name ;;
+    description: "The position of the user who created the last document's action"
+    sql: ${TABLE}.user_position ;;
   }
 
-  dimension: provider_category {
-    type: string
-    description: "The category (MA, APP, MD) of the provider by whom the record was closed"
-    sql: ${TABLE}.provider_category ;;
-  }
 
   dimension_group: patient_notified_datetime {
     type: time
