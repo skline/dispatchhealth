@@ -468,30 +468,36 @@ else null end;;
     (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') ;;
   }
 
+  # dimension: partner_population_old {
+  #   type: string
+  #   group_label: "Partner Specific Descriptions"
+  #   sql:  CASE WHEN  lower(${name}) LIKE '%bon secours%' OR
+  #         ${population_health_channels.name} = 'bon secours mssp' THEN 'Bon Secours'
+
+  #         WHEN substring(lower(${name}),1,3) = 'ou ' OR
+  #         lower(${name}) LIKE '%stephenson cancer center%' THEN 'OUMI & OU Physicians'
+
+  #         WHEN  lower(${name}) LIKE '%vcu%' OR
+  #         ((${athenadwh_referrals.clinical_order_type}) IS NOT NULL AND
+  #         lower(${athenadwh_referral_providers.name}) LIKE '%vcuhs%') THEN 'VCU Health'
+
+  #         WHEN lower(${name}) LIKE '%renown%' OR
+  #         ${population_health_channels.name} = 'bon secours mssp' THEN 'Renown Medical Group'
+
+
+  #         WHEN (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') THEN 'Bon Secours'
+  #         WHEN lower(${provider_network.name}) = 'ou physicians' THEN 'OUMI & OU Physicians'
+  #         WHEN lower(${provider_network.name}) = 'virginia commonwealth university health system' THEN 'VCU Health'
+  #         WHEN lower(${provider_network.name}) = 'renown medical group' THEN 'Renown Medical Group'
+
+
+  #         ELSE NULL END ;;
+  # }
+
   dimension: partner_population {
     type: string
     group_label: "Partner Specific Descriptions"
-    sql:  CASE WHEN  lower(${name}) LIKE '%bon secours%' OR
-          ${population_health_channels.name} = 'bon secours mssp' THEN 'Bon Secours'
-
-          WHEN substring(lower(${name}),1,3) = 'ou ' OR
-          lower(${name}) LIKE '%stephenson cancer center%' THEN 'OUMI & OU Physicians'
-
-          WHEN  lower(${name}) LIKE '%vcu%' OR
-          ((${athenadwh_referrals.clinical_order_type}) IS NOT NULL AND
-          lower(${athenadwh_referral_providers.name}) LIKE '%vcuhs%') THEN 'VCU Health'
-
-          WHEN lower(${name}) LIKE '%renown%' OR
-          ${population_health_channels.name} = 'bon secours mssp' THEN 'Renown Medical Group'
-
-
-          WHEN (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') THEN 'Bon Secours'
-          WHEN lower(${provider_network.name}) = 'ou physicians' THEN 'OUMI & OU Physicians'
-          WHEN lower(${provider_network.name}) = 'virginia commonwealth university health system' THEN 'VCU Health'
-          WHEN lower(${provider_network.name}) = 'renown medical group' THEN 'Renown Medical Group'
-
-
-          ELSE NULL END ;;
+    sql: ${partner_population.partner_population} ;;
   }
 
 }
