@@ -283,6 +283,23 @@ view: athena_document_orders {
     sql: ${document_id} ;;
   }
 
+  measure: count_positive_poc_covid_tests {
+    type: count_distinct
+    description: "Count of DH rapid POC COVID tests that were positive"
+    group_label: "COVID Counts"
+    sql: ${document_id} ;;
+    filters: [clinical_order_type: "RAPID SARS COV + SARS COV 2 AG QL IA RESPIRATORY SPECIMEN",
+      athena_clinicalresultobservation.result: "positive"]
+  }
+
+  measure: count_poc_covid_tests {
+    type: count_distinct
+    description: "Count of DH rapid POC COVID tests administered"
+    group_label: "COVID Counts"
+    sql: ${document_id} ;;
+    filters: [clinical_order_type: "RAPID SARS COV + SARS COV 2 AG QL IA RESPIRATORY SPECIMEN"]
+  }
+
   dimension: is_narrow_network_order {
     type: yesno
     hidden: no
@@ -455,19 +472,19 @@ view: athena_document_orders {
     sql: ${TABLE}."provider_username" ;;
   }
 
-  dimension_group: received {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    sql: ${TABLE}."received_datetime" ;;
-  }
+  # dimension_group: received {
+  #   type: time
+  #   timeframes: [
+  #     raw,
+  #     time,
+  #     date,
+  #     week,
+  #     month,
+  #     quarter,
+  #     year
+  #   ]
+  #   sql: ${TABLE}."received_datetime" ;;
+  # }
 
   dimension: result_notes {
     type: string

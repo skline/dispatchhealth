@@ -301,10 +301,6 @@ view: athena_document_letters {
     sql: ${care_request_flat.care_request_id} ;;
     sql_distinct_key: ${care_request_flat.care_request_id} ;;
     filters: [clinical_letters_sent_all: "yes", care_requests.complete_visit: "yes"]
-    filters: {
-      field: clinical_letters_sent_all
-      value: "yes"
-    }
     group_label: "Counts"
   }
 
@@ -319,28 +315,24 @@ view: athena_document_letters {
     description: "Count appointments where the clinical letter was sent to the patient's primary care provider"
     type: count_distinct
 
-    sql: ${care_request_flat.care_request_id} ;;
-    sql_distinct_key: ${care_request_flat.care_request_id} ;;
-    filters: {
-      field: clinical_letters_sent_pcp
-      value: "yes"
-    }
+    sql: ${care_requests.id} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: [care_requests.billable_est: "yes", clinical_letters_sent_pcp: "yes"]
     group_label: "Counts"
   }
 
   measure: count_letters {
     type: count_distinct
     group_label: "Counts"
-    sql: ${care_request_flat.care_request_id} ;;
-    sql_distinct_key: ${care_request_flat.care_request_id} ;;
-    filters: {
-      field: clinical_letters_sent_all
-      value: "yes"
-    }
-    filters: {
-      field: care_requests.billable_est
-      value: "yes"
-    }
+    sql: ${care_requests.id} ;;
+    sql_distinct_key: ${care_requests.id} ;;
+    filters: [clinical_letters_sent_all: "yes", care_requests.billable_est: "yes"]
+  }
+
+  measure: clinical_notes_boolean {
+    type: yesno
+    description: "A flag indicating that any clinical note was sent to a provider or specialist"
+    sql: ${count_letters} > 0 ;;
   }
 
   # ----- Sets of fields for drilling ------

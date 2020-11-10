@@ -54,6 +54,7 @@ view: market_regions {
 
   dimension: market {
     type: string
+    description: "The market short name (e.g. DEN)"
     sql: ${TABLE}."market" ;;
   }
 

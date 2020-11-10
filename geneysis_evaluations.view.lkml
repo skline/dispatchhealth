@@ -1,9 +1,14 @@
 view: geneysis_evaluations {
   sql_table_name: looker_scratch.geneysis_evaluations ;;
 
+  dimension: primary_key {
+    type: string
+    sql: concat(${questiongroupid},${agentid},${conversationid},${queuename},${answerid},${evaluatorid},${evaluationformid},${evaluationid},${questionid}) ;;
+  }
+
   dimension: agenthasread {
     type: string
-    sql: ${TABLE}."agenthasread" ;;
+    sql: ${TABLE}."agenthasread"::text='1' ;;
   }
 
   dimension: agentid {
@@ -114,13 +119,14 @@ view: geneysis_evaluations {
   }
 
   dimension: failedkillquestion {
-    type: string
-    sql: ${TABLE}."failedkillquestion" ;;
+    type: yesno
+    sql: ${TABLE}."failedkillquestion"::text='1';;
   }
+
 
   dimension: markedna {
     type: string
-    sql: ${TABLE}."markedna" ;;
+    sql: ${TABLE}."markedna"::text='1' ;;
   }
 
   dimension: maxgrouptotalcriticalscore {
@@ -232,13 +238,206 @@ view: geneysis_evaluations {
     sql: ${TABLE}."totalgroupcriticalscore" ;;
   }
 
+  dimension: sykes {
+    type: yesno
+    sql: lower(${agentname}) like '%(sykes)%' ;;
+  }
+
+  dimension: covid {
+    type: yesno
+    sql: lower(${agentname}) like '%(covid)%' ;;
+  }
+
+  dimension: MA {
+    type: yesno
+    sql: ${agentname} like '%(MA)%' ;;
+  }
+
+  dimension: optum {
+    type: yesno
+    sql: lower(${agentname}) like '%(optum care)%' ;;
+  }
+
+  dimension: QA {
+    type: yesno
+    sql: ${agentname} like '%(QA)%' ;;
+}
+  dimension: chat_agent {
+    type: yesno
+    sql: lower(${agentname}) like '%(chat)%' ;;
+  }
+
+
   dimension: totalgroupcriticalscoreunweighted {
     type: number
     sql: ${TABLE}."totalgroupcriticalscoreunweighted" ;;
   }
 
+
   measure: count {
     type: count
     drill_fields: [agentname, evaluationformname, evaluatorname, questiongroupname, queuename]
   }
+
+  measure: total_number_of_failed_kill_questions {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: failedkillquestion
+      value: "yes"
+    }
+
+  }
+
+  measure: total_number_marked_na {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: markedna
+      value: "yes"
+    }
+  }
+
+
+  measure: avg_question_score {
+    type: average_distinct
+    value_format: "0.00"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+  measure: number_complete_evaluations {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid} ;;
+    filters: {
+      field: evaluationformname
+      value: "Complete Ambassador Evaluation Form"
+    }
+  }
+
+  measure: number_short_calls {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid} ;;
+    filters: {
+      field: evaluationformname
+      value: "Short Call Monitoring Assessment"
+    }
+  }
+
+
+  measure: avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0.00"
+    sql: ${totalevaluationscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+
+  measure: avg_total_evaluation_critical {
+    type: average_distinct
+    value_format: "0.00"
+    sql: ${totalevaluationcriticalscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+  }
+
+  measure: count_agent_read {
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: agenthasread
+      value: "yes"
+    }
+  }
+
+  measure: introduction_avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: questiongroupname
+      value: "Introduction"
+    }
+  }
+
+  measure: body_avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: questiongroupname
+      value: "Body"
+    }
+  }
+
+  measure: risk_avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: questiongroupname
+      value: "Risk Stratification"
+    }
+  }
+
+  measure: transfers_avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: questiongroupname
+      value: "Transfers and External Communication"
+    }
+  }
+
+  measure: close_avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: questiongroupname
+      value: "Call Close (Based on Result)"
+    }
+  }
+
+  measure: caller_experience_avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: questiongroupname
+      value: "Caller Experience"
+    }
+  }
+
+  measure: adherence_avg_total_evaluation_score {
+    type: average_distinct
+    value_format: "0%"
+    sql: ${questionscore} ;;
+    sql_distinct_key: ${primary_key} ;;
+    filters: {
+      field: questiongroupname
+      value: "Adherence and Unique Features"
+    }
+  }
+
+
+
+
+
+
+
+
+
+
 }

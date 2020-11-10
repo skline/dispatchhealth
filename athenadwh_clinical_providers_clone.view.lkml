@@ -72,7 +72,9 @@ view: athenadwh_clinical_providers_clone {
     sql:
       CASE
         WHEN ${name} IS NULL THEN 'Provider Unknown'
-        WHEN ${name} LIKE '%'|| TRIM(${markets.short_name}) ||' -%' OR ${name}  = 'SOUTH METRO FIRE AND RESCUE' THEN 'Performed On-Scene'
+        WHEN ${name} LIKE '%'|| TRIM(${markets.short_name}) ||'%'
+          OR ${name}  = 'SOUTH METRO FIRE AND RESCUE'
+          OR ${name} LIKE 'DISPATCHHEALTH' THEN 'Performed On-Scene'
         ELSE 'Performed by Third Party'
     END;;
     drill_fields: [

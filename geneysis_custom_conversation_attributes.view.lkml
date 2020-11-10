@@ -25,6 +25,7 @@ view: geneysis_custom_conversation_attributes {
     sql: ${TABLE}."conversationendtime" ;;
   }
 
+
   dimension: conversationid {
     type: string
     sql: ${TABLE}."conversationid" ;;
@@ -193,4 +194,29 @@ view: geneysis_custom_conversation_attributes {
     type: count
     drill_fields: [participantname]
   }
+
+
+measure: number_of_abandons {
+  type: count
+  sql: ${TABLE}."customstring02" ;;
+  filters: {
+    field: customstring02
+    value: "abandon"
+  }
+}
+
+measure: number_of_queued{
+  type: count
+  sql: ${TABLE}."customstring02" ;;
+  filters: {
+    field: customstring02
+    value: "Queue"
+  }
+}
+
+measure: exit_type_count {
+  type: count
+  sql: ${TABLE}."customstring03" ;;
+}
+
 }

@@ -4,7 +4,6 @@ view: addresses {
 
   dimension: id {
     primary_key: yes
-    hidden: yes
     type: number
     sql: ${TABLE}.id ;;
   }
@@ -48,6 +47,11 @@ view: addresses {
     group_label: "Description"
     sql_latitude:${latitude} ;;
     sql_longitude:${longitude} ;;
+  }
+
+  dimension: care_request_location_string {
+    type: string
+    sql: concat(${latitude}, ${longitude});;
   }
 
   dimension: state {

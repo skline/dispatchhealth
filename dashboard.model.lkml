@@ -45,7 +45,6 @@ include: "min_patient_complete_visit.view.lkml"
 include: "athenadwh_payers_clone.view.lkml"
 include: "non_phone_crs.view.lkml"
 include: "covid_testing_results.view.lkml"
-include: "shift_team_stops.view.lkml"
 include: "last_documentaction.view.lkml"
 include: "athena_document_results.view.lkml"
 include: "athena_claim.view.lkml"
@@ -59,6 +58,7 @@ include: "athenadwh_appointments_clone.view.lkml"
 include: "collective_medical_first_major_class_admit_date_post_visit.view.lkml"
 include: "collective_medical_admit_emergency_and_inpatient_within_24_hours.view.lkml"
 include: "collective_medical_first_emergency_inpatient_admit_date_post_visit.view.lkml"
+include: "corhio.view.lkml"
 include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
@@ -175,7 +175,6 @@ include: "ga_zips_clone.view.lkml"
 include: "operational_excellence_metrics.view.lkml"
 include: "athena_document_prescriptions.view.lkml"
 include: "survey_responses_flat_clone.view.lkml"
-include: "stop_times_by_care_request.view.lkml"
 include: "drg_to_icd10_crosswalk.view.lkml"
 include: "sf_activities.view.lkml"
 include: "user_roles.view.lkml"
@@ -314,10 +313,17 @@ include: "geneysis_custom_conversation_attributes.view.lkml"
 include: "athena_medication_details.view.lkml"
 include: "geneysis_evaluations.view.lkml"
 include: "high_overflow_days.view.lkml"
+include: "resolved_reasons_summary.view.lkml"
 include: "billing_cities.view.lkml"
 include: "bulk_variable_shift_tracking.view.lkml"
 include: "genesys_queue_conversion_interval.view.lkml"
 include: "most_recent_intraday.view.lkml"
+include: "views/granular_shift_tracking.view.lkml"
+include: "views/care_requests_shift_teams.view.lkml"
+include: "granular_shift_tracking_agg.view.lkml"
+include: "athenadwh_letters_encounters.view.lkml"
+include: "athena_transaction_summary.view.lkml"
+include: "partner_population.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -487,13 +493,18 @@ explore: care_requests {
   }
 
   join: athenadwh_letters_encounters {
-    from:  athenadwh_documents_clone
     relationship:  one_to_many
-    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
-            ${athenadwh_letters_encounters.document_class}  = 'LETTER' AND
-            (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
-            (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
+    sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} ;;
   }
+
+  # join: athenadwh_letters_encounters {
+  #   from:  athenadwh_documents_clone
+  #   relationship:  one_to_many
+  #   sql_on: ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_letters_encounters.clinical_encounter_id} AND
+  #           ${athenadwh_letters_encounters.document_class}  = 'LETTER' AND
+  #           (${athenadwh_letters_encounters.document_subclass} != 'LETTER_PATIENTCORRESPONDENCE' OR ${athenadwh_letters_encounters.document_subclass} IS NULL) AND
+  #           (${athenadwh_letters_encounters.status} != 'DELETED' OR ${athenadwh_letters_encounters.status} IS NULL);;
+  # }
 
   join: athenadwh_prescriptions {
     from:  athenadwh_documents_clone
@@ -611,10 +622,10 @@ explore: care_requests {
     sql_on: ${athenadwh_clinical_results_clone.clinical_result_id} = ${athenadwh_clinicalresultobservation.clinical_result_id} ;;
   }
 
-  join: athenadwh_clinical_letters_clone {
-    relationship:  one_to_one
-    sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
-  }
+  # join: athenadwh_clinical_letters_clone {
+  #   relationship:  one_to_one
+  #   sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
+  # }
 
   join: athenadwh_clinical_providers_fax_clone {
     sql_on: ${athenadwh_clinical_providers_fax_clone.clinical_provider_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
@@ -626,7 +637,7 @@ explore: care_requests {
   join: athenadwh_letter_recipient_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
+    sql_on: ${athenadwh_letters_encounters.clinical_provider_recipient_id} = ${athenadwh_letter_recipient_provider.clinical_provider_id} ;;
   }
 
   join: collective_medical {
@@ -634,8 +645,13 @@ explore: care_requests {
     sql_on: ${patients.id} = ${collective_medical.patient_id} ;;
   }
 
+  join: corhio {
+    relationship: one_to_many
+    sql_on: ${patients.id} = ${corhio.member_id} ;;
+  }
+
   join: collective_medical_first_major_class_admit_date_post_visit {
-    relationship: many_to_one
+    relationship: one_to_many
     sql_on: ${care_requests.id} = ${collective_medical_first_major_class_admit_date_post_visit.care_request_id};;
   }
 
@@ -678,8 +694,8 @@ explore: care_requests {
   join: athenadwh_primary_care_provider {
     from: athenadwh_clinical_providers_clone
     relationship:  many_to_one
-    sql_on: ${athenadwh_clinical_letters_clone.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
-            ${athenadwh_clinical_letters_clone.role} = 'Primary Care Provider' ;;
+    sql_on: ${athenadwh_letters_encounters.clinical_provider_recipient_id} = ${athenadwh_primary_care_provider.clinical_provider_id} AND
+            ${athenadwh_letters_encounters.role} = 'Primary Care Provider' ;;
   }
 
   # join: athenadwh_patients_clone {
@@ -809,6 +825,11 @@ join: athena_claim {
     sql_on: ${athena_claim.claim_id} = ${athena_valid_claims.claim_id} ;;
   }
 
+  join: athena_transaction_summary {
+    relationship: one_to_one
+    sql_on: ${athena_claim.claim_id} = ${athena_transaction_summary.claim_id} ;;
+  }
+
 # join: athena_claimdiagnosis {
 #   relationship: one_to_many
 #   sql_on: ${athena_claim.claim_id} = ${athena_claimdiagnosis.claim_id} AND ${athena_claimdiagnosis.deleted_raw} IS NULL ;;
@@ -917,7 +938,7 @@ join: athena_order_created {
 join: athena_order_submitted {
   relationship: one_to_one
   sql_on: ${athena_document_orders.document_id} = ${athena_order_submitted.document_id} ;;
-  fields: []
+  # fields: []
 }
 
   join: athena_prescription_submitted {
@@ -1066,11 +1087,6 @@ join: athena_procedurecode {
   join: cpt_code_types_clone {
     relationship: one_to_one
     sql_on: ${cpt_code_types_clone.cpt_code} = ${cpt_code_dimensions_clone.cpt_code} ;;
-  }
-
-  join: stop_times_by_care_request {
-    relationship: one_to_one
-    sql_on: ${care_requests.id} = ${stop_times_by_care_request.care_request_id} ;;
   }
 
   join: icd_visit_joins_clone {
@@ -1409,19 +1425,21 @@ join: athena_procedurecode {
     sql_on: ${care_requests.id} = ${credit_card_errors.care_request_id} ;;
   }
 
-  join: shift_teams {
-    relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+  join: care_requests_shift_teams {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${care_requests_shift_teams.care_request_id}
+    AND ${care_requests_shift_teams.is_dispatched};;
+    fields: []
   }
 
-  join: shift_team_stops {
-    relationship: one_to_many
-    sql_on: ${shift_teams.id} = ${shift_team_stops.shift_team_id} ;;
+  join: shift_teams {
+    relationship: many_to_one
+    sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
   }
 
   join: shifts_end_of_shift_times {
     relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
+    sql_on: ${care_request_flat.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
   }
 
   join: shift_team_market_assignment_logs {
@@ -1696,6 +1714,7 @@ join: athena_procedurecode {
     sql_on: ${insurance_plans.insurance_classification_id} = ${insurance_classifications.id} ;;
   }
 
+
 #   join: care_request_complete{
 #     relationship: one_to_many
 #     from: care_request_statuses
@@ -1752,6 +1771,9 @@ join: athena_procedurecode {
     sql_on: ${care_request_flat.on_scene_month_num}=${days_in_month_adj.month_number} ;;
   }
 
+join: resolved_reasons_summary {
+  sql_on: ${resolved_reasons_summary.resolved_employee}=${care_request_flat.resolved_employee_full_name} ;;
+}
 
   join: google_trend_data {
     sql_on: ${care_request_flat.on_scene_month_num} = ${google_trend_data.month}
@@ -1810,7 +1832,7 @@ join: athena_procedurecode {
   }
 
   join: eligible_patients {
-    relationship: one_to_one
+    relationship: one_to_many
     sql_on: ${patients.id} = ${eligible_patients.patient_id} ;;
   }
 
@@ -1826,6 +1848,12 @@ join: athena_procedurecode {
   join: channel_items {
     relationship: many_to_one
     sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: partner_population {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${partner_population.care_request_id} ;;
+    fields: []
   }
 
   join: growth_update_channels {
@@ -1897,6 +1925,12 @@ join: ga_pageviews_clone {
     sql_on: (${patients.mobile_number} = ${genesys_conversation_summary.ani}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.ani})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000
       ;;
+  }
+
+  join: genesys_conversation_summary_sem {
+    from: genesys_conversation_summary
+    sql_on: ${genesys_conversation_summary_sem.conversationid} =${care_request_flat.contact_id} and trim(lower(${genesys_conversation_summary_sem.queuename})) = 'dtc pilot'
+     ;;
   }
 
   join: number_to_market {
@@ -2053,42 +2087,42 @@ explore: zizzl_detailed_shift_hours {
   }
 }
 
-explore: shift_team_stops {
-  join: shift_teams {
-    relationship: many_to_one
-    sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
-  }
+# explore: shift_team_stops {
+#   join: shift_teams {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
+#   }
 
-  join: shift_team_members {
-    relationship: many_to_one
-    sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
-  }
+#   join: shift_team_members {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
+#   }
 
-  join: users {
-    relationship: many_to_one
-    sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
-  }
+#   join: users {
+#     relationship: many_to_one
+#     sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
+#   }
 
-  join: provider_profiles {
-    relationship: one_to_one
-    sql_on: ${users.id} = ${provider_profiles.user_id} ;;
-  }
+#   join: provider_profiles {
+#     relationship: one_to_one
+#     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
+#   }
 
-  join: cars {
-    relationship: many_to_one
-    sql_on: ${shift_teams.car_id} = ${cars.id} ;;
-  }
+#   join: cars {
+#     relationship: many_to_one
+#     sql_on: ${shift_teams.car_id} = ${cars.id} ;;
+#   }
 
-  join: markets {
-    relationship: many_to_one
-    sql_on: ${cars.market_id} = ${markets.id_adj} ;;
-  }
+#   join: markets {
+#     relationship: many_to_one
+#     sql_on: ${cars.market_id} = ${markets.id_adj} ;;
+#   }
 
-  join: timezones {
-    relationship: one_to_one
-    sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
-  }
-}
+#   join: timezones {
+#     relationship: one_to_one
+#     sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
+#   }
+# }
 
 explore: shift_details {
   join: markets {
@@ -3466,6 +3500,11 @@ explore: incontact_aggregated_clone  {
     sql_on: ${markets.id} = ${incontact_aggregated_clone.market_id} ;;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
 
   join: goal_inbound_calls_dec {
     sql_on:  ${goal_inbound_calls_dec.date_date} =${incontact_aggregated_clone.date_date}
@@ -3648,6 +3687,11 @@ explore: genesys_conversation_summary {
     sql_on: ${regional_markets.market_id} = ${markets.id_adj} ;;
   }
 
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
   join: care_request_flat {
     sql_on: ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id};;
   }
@@ -3779,9 +3823,16 @@ explore: shift_teams
   (${care_request_flat.secondary_resolved_reason} NOT IN ('Test Case', 'Duplicate', 'Test') OR ${care_request_flat.secondary_resolved_reason} IS NULL)
   AND (${patients.last_name} NOT LIKE '%Test%' OR ${patients.last_name} IS NULL) ;;
 
+  join: care_requests_shift_teams {
+    relationship: many_to_one
+    sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
+    fields: []
+  }
+
   join: care_requests {
-    relationship: one_to_many
-    sql_on: ${shift_teams.id} = ${care_requests.shift_team_id} ;;
+    relationship: one_to_one
+    sql_on: ${care_requests_shift_teams.care_request_id} = ${care_requests.id} ;;
+    # AND ${care_requests_shift_teams.is_dispatched};;
   }
 
   join: care_request_flat {
@@ -4204,7 +4255,7 @@ explore: sf_contacts {
   }
 
   join: athenadwh_letters_encounters {
-    from:  athenadwh_documents_clone
+    # from:  athenadwh_documents_clone
     sql_on: ${athenadwh_letters_encounters.document_id} = ${athenadwh_clinical_letters_clone.document_id} ;;
   }
 
@@ -4266,7 +4317,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50', '3b429a5238');;
   }
 
   join: senior_mailchimp_audiences_clone {
@@ -4353,6 +4404,11 @@ explore: genesys_agg {
     sql_on: ${genesys_agg.conversationstarttime_date} =${care_team_projected_volume.date_date}
       ;;
   }
+  join: market_regions {
+    relationship: one_to_one
+    sql_on: ${markets.id_adj} = ${market_regions.market_id} ;;
+  }
+
 }
 
 explore: mailchimp_sends {
@@ -4532,6 +4588,15 @@ explore: productivity_agg {
     sql_on:  ${shift_agg.shift_start_date}=${productivity_agg.start_date} and ${shift_agg.name_adj} =${productivity_agg.name_adj};;
   }
 
+  join:granular_shift_tracking_agg  {
+    sql_on:  ${granular_shift_tracking_agg.shift_date}=${productivity_agg.start_date} and ${granular_shift_tracking_agg.market_name_adj} =${productivity_agg.name_adj};;
+  }
+
+  join: high_overflow_days {
+    sql_on: ${productivity_agg.start_date}=${high_overflow_days.start_date} and ${productivity_agg.name_adj}=${high_overflow_days.name_adj} ;;
+  }
+
+
   join: market_regions {
     relationship: one_to_one
     sql_on: ${productivity_agg.id_adj} = ${market_regions.market_id} ;;
@@ -4620,5 +4685,18 @@ explore: adwords_campaigns_clone {
   }
   join: most_recent_intraday {
     sql_on: ${markets.name} = ${most_recent_intraday.market} ;;
+  }
+}
+explore: granular_shift_tracking {
+  join: cars {
+    sql_on: ${cars.id} =${granular_shift_tracking.car_id} ;;
+  }
+  join: markets {
+    sql_on: ${markets.id} =${cars.market_id} ;;
+  }
+}
+explore: granular_shift_tracking_agg {
+  join: high_overflow_days {
+    sql_on: ${granular_shift_tracking_agg.shift_date}=${high_overflow_days.start_date} and ${granular_shift_tracking_agg.market_name_adj}=${high_overflow_days.name_adj} ;;
   }
 }

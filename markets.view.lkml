@@ -218,7 +218,7 @@ view: markets {
   dimension: short_name_adj {
     type: string
     description: "Market short name where WMFR is included in Denver"
-    sql: case when ${short_name} = 'WMFR' then 'DEN'
+    sql: case when ${short_name} in('WMFR', 'SMFR') then 'DEN'
       else ${short_name} end;;
   }
 
@@ -270,6 +270,39 @@ view: markets {
     description: "Market has been active for 699.7 days or more (roughly 23 months considering an average month of 30.42 days)."
     type: yesno
     sql: ((EXTRACT(EPOCH from now()) - EXTRACT(EPOCH from ${market_start_date.market_start_raw}))::FLOAT / 86400) >= 669.24;;
+  }
+
+  dimension: finance_market_id {
+    type: number
+    sql: case when ${short_name} in('DEN', 'SMFR', 'WMFR') then 1
+when ${short_name} = 'COS' then 2
+when ${short_name} = 'PHX' then 3
+when ${short_name} = 'RIC' then 4
+when ${short_name} = 'LAS' then 5
+when ${short_name} = 'HOU' then 6
+when ${short_name} = 'OKC' then 7
+when ${short_name} = 'DAL' then 8
+when ${short_name} = 'SPR' then 9
+when ${short_name} = 'TAC' then 10
+when ${short_name} = 'NJR' then 11
+when ${short_name} = 'OLY' then 12
+when ${short_name} = 'SPO' then 13
+when ${short_name} = 'SEA' then 14
+when ${short_name} = 'FTW' then 15
+when ${short_name} = 'POR' then 16
+when ${short_name} = 'BOI' then 17
+when ${short_name} = 'ATL' then 18
+when ${short_name} = 'RNO' then 19
+when ${short_name} = 'TPA' then 20
+when ${short_name} = 'MOR' then 21
+when ${short_name} = 'HRT' then 22
+when ${short_name} = 'IND' then 23
+when ${short_name} = 'RDU' then 24
+when ${short_name} = 'CLE' then 25
+when ${short_name} = 'NSH' then 26
+when ${short_name} = 'KNX' then 27
+when ${short_name} = 'MIA' then 28
+    else null end ;;
   }
 
   # measure: digital_adjusted {

@@ -62,14 +62,16 @@ view: adwords_campaigns_clone {
           when ${campaign_name_lower}  like '%-ric%' then 164
           when ${campaign_name_lower}  like '%-oly%' then 172
           when ${campaign_name_lower}  like '%-ftw%' then 178
-          when ${campaign_name_lower}  like '%-ftw%' then 178
           when ${campaign_name_lower}  like '%-rno%' then 179
           when ${campaign_name_lower}  like '%-tpa%' then 181
           when ${campaign_name_lower}  like '%-hrt%' then 186
           when ${campaign_name_lower}  like '%-mor%' then 185
           when ${campaign_name_lower}  like '%-ind%' then 188
-
-
+          when ${campaign_name_lower}  like '%-rdu%' then 189
+          when ${campaign_name_lower}  like '%-cle%' then 190
+          when ${campaign_name_lower}  like '%-nsh%' then 191
+          when ${campaign_name_lower}  like '%-knx%' then 192
+          when ${campaign_name_lower}  like '%-mia%' then 193
           else null end;;
   }
 

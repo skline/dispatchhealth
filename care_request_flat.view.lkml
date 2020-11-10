@@ -2,18 +2,23 @@ view: care_request_flat {
   derived_table: {
     sql:
 WITH ort AS (
-    SELECT
+    SELECT DISTINCT
         st.id AS shift_team_id,
         st.start_time,
-        cr.id AS care_request_id,
-        MAX(crs.started_at) AS on_route
-        FROM public.shift_teams st
-        LEFT JOIN public.care_requests cr
-            ON st.id = cr.shift_team_id
-        INNER JOIN public.care_request_statuses crs
-            ON cr.id = crs.care_request_id AND crs.name = 'on_route' AND crs.deleted_at IS NULL
-        WHERE LOWER(cr.chief_complaint) <> 'test'
-        GROUP BY 1,2,3)
+        crst.care_request_id,
+        crs.on_route
+        FROM (
+            SELECT
+                care_request_id,
+                MAX(started_at) AS on_route
+            FROM public.care_request_statuses
+            WHERE name = 'on_route' AND deleted_at IS NULL
+            GROUP BY 1) AS crs
+        LEFT JOIN public.care_requests_shift_teams crst
+            ON crs.care_request_id = crst.care_request_id AND crst.is_dispatched
+        LEFT JOIN public.shift_teams st
+            ON crst.shift_team_id = st.id
+        GROUP BY 1,2,3,4)
     SELECT
         markets.id AS market_id,
         cr.id as care_request_id,
@@ -67,7 +72,7 @@ WITH ort AS (
         case when array_to_string(array_agg(distinct notes.note), ':') = '' then null
         else array_to_string(array_agg(distinct notes.note), ':')end
         as reorder_reason,
-        cr.shift_team_id,
+        crst.shift_team_id,
         min(to_date(schedule.comment, 'DD Mon YYYY')) as scheduled_care_date,
         insurances.package_id,
         callers.origin_phone,
@@ -78,6 +83,8 @@ WITH ort AS (
         n_assign.count_assignments,
         max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
       FROM care_requests cr
+      LEFT JOIN care_requests_shift_teams crst
+        ON cr.id = crst.care_request_id --AND crst.is_dispatched
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
       LEFT JOIN care_request_statuses schedule
@@ -174,7 +181,7 @@ WITH ort AS (
                 MIN(on_route) AS on_route
             FROM ort
             GROUP BY shift_team_id) AS fst_or
-        ON cr.shift_team_id = fst_or.shift_team_id
+        ON crst.shift_team_id = fst_or.shift_team_id
       LEFT JOIN (
             SELECT
                 CAST(meta_data::json->> 'shift_team_id' AS INT) AS shift_team_id,
@@ -185,7 +192,7 @@ WITH ort AS (
             WHERE crs.name = 'accepted' AND crs.deleted_at IS NULL AND meta_data::json->> 'shift_team_id' IS NOT NULL AND
                   LOWER(cr.chief_complaint) <> 'test'
             GROUP BY 1) AS fst_cra
-        ON cr.shift_team_id = fst_cra.shift_team_id
+        ON crst.shift_team_id = fst_cra.shift_team_id
       LEFT JOIN (
           SELECT
               care_request_id,
@@ -219,7 +226,7 @@ WITH ort AS (
       LEFT JOIN care_request_statuses fu30
       ON cr.id = fu30.care_request_id AND fu30.name = 'followup_30' and fu30.deleted_at is null
       LEFT JOIN public.shift_teams
-      ON shift_teams.id = cr.shift_team_id
+      ON crst.shift_team_id = shift_teams.id
       LEFT JOIN public.shift_teams st_init
       ON st_init.id::int = accept1.shift_team_id_initial::int
       LEFT JOIN cars
@@ -243,11 +250,12 @@ WITH ort AS (
         and trim(insurances.package_id)!='') as insurances
         ON cr.id = insurances.care_request_id AND insurances.rn = 1
       GROUP BY 1,2,3,4,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,
-               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,
+               insurances.package_id, callers.origin_phone, callers.contact_id,cr.patient_id,crst.shift_team_id,
                foc.first_on_scene_time,onscene.mins_on_scene_predicted, n_assign.count_assignments;;
 
     # Run trigger every 2 hours
-    sql_trigger_value:  SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    sql_trigger_value:  SELECT MAX(id) FROM public.care_requests  where care_requests.created_at > current_date - interval '2 day';;
+
     indexes: ["care_request_id", "patient_id", "origin_phone", "created_date", "on_scene_date", "complete_date", "first_accepted_date"]
   }
 
@@ -2061,6 +2069,7 @@ WITH ort AS (
     timeframes: [
       raw,
       hour_of_day,
+      minute,
       time_of_day,
       date,
       time,
@@ -2119,6 +2128,12 @@ WITH ort AS (
       ((CAST(EXTRACT(MINUTE FROM ${requested_raw} ) AS FLOAT)) / 60)) ;;
       value_format: "0"
   }
+
+  # dimension: accepted_15_min_groups {
+  #   type: number
+  #   sql: date_trunc('hour', ${accept_raw}) +
+  #       date_part('minute', ${accept_raw})::int / 15 * interval '15 min' ;;
+  # }
 
 
   dimension: on_scene_decimal {
@@ -2343,6 +2358,15 @@ WITH ort AS (
     group_label: "ETAs"
     description: "The number of minutes between the initial ETA end time and the on-scene time"
     sql: EXTRACT(EPOCH FROM ${on_scene_raw} - ${eta_range_end_raw})/60;;
+    value_format: "0.0"
+  }
+
+  dimension: initial_eta_start_to_on_scene_minutes  {
+    type: number
+    group_label: "ETAs"
+    description: "The number of minutes between the initial ETA start time and the on-scene time"
+    sql: EXTRACT(EPOCH FROM ${on_scene_raw} - ${eta_range_start_raw})/60;;
+    value_format: "0.0"
   }
 
   dimension: initial_eta_window_to_on_scene_2_groups {
@@ -2367,6 +2391,32 @@ WITH ort AS (
           WHEN ${initial_eta_end_to_on_scene_minutes} > 15 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '(3) 16-60 Minutes Late'
           WHEN ${initial_eta_end_to_on_scene_minutes} > 60 AND ${initial_eta_end_to_on_scene_minutes} <= 240 THEN '(4) 61 Minutes to 4 Hours Late'
           WHEN ${initial_eta_end_to_on_scene_minutes} > 240 THEN '(5) Greater than 4 Hours Late'
+          ELSE NULL
+          END
+          ;;
+  }
+
+  dimension: initial_eta_window_to_on_scene_granular_groups {
+    type: string
+    group_label: "ETAs"
+    description: "On-scene time relative to initial ETA window grouping (5 bins)"
+    sql:  CASE
+
+          WHEN ${initial_eta_start_to_on_scene_minutes} < -60 THEN '(01) Greater than 60 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -60 AND ${initial_eta_start_to_on_scene_minutes} < -50 THEN '(02) 51 to 60 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -50 AND ${initial_eta_start_to_on_scene_minutes} < -40 THEN '(03) 41 to 50 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -40 AND ${initial_eta_start_to_on_scene_minutes} < -30 THEN '(04) 31 to 40 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -30 AND ${initial_eta_start_to_on_scene_minutes} < -20 THEN '(05) 21 to 30 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -20 AND ${initial_eta_start_to_on_scene_minutes} < -10 THEN '(06) 11 to 20 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= -10 AND ${initial_eta_start_to_on_scene_minutes} < 0 THEN '(07) 1 to 10 Minutes Early'
+          WHEN ${initial_eta_start_to_on_scene_minutes} >= 0 AND ${initial_eta_end_to_on_scene_minutes} <= 0 THEN '(08) On Time'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 0 AND ${initial_eta_end_to_on_scene_minutes} <= 10 THEN '(09) 1 to 10 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 10 AND ${initial_eta_end_to_on_scene_minutes} <= 20 THEN '(10) 11 to 20 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 20 AND ${initial_eta_end_to_on_scene_minutes} <= 30 THEN '(11) 21 to 30 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 30 AND ${initial_eta_end_to_on_scene_minutes} <= 40 THEN '(12) 31 to 40 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 40 AND ${initial_eta_end_to_on_scene_minutes} <= 50 THEN '(13) 41 to 50 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 50 AND ${initial_eta_end_to_on_scene_minutes} <= 60 THEN '(14) 51 to 60 Minutes Late'
+          WHEN ${initial_eta_end_to_on_scene_minutes} > 60 THEN '(15) Greater than 60 Minutes Late'
           ELSE NULL
           END
           ;;
@@ -2475,6 +2525,10 @@ WITH ort AS (
     sql: ${TABLE}.shift_end_time ;;
   }
 
+  measure: max_shift_end_time{
+    sql: max(${shift_end_raw}) ;;
+  }
+
   dimension: shift_hours  {
     type: number
     sql: EXTRACT(EPOCH FROM ${shift_end_raw} - ${shift_start_raw})/3600 ;;
@@ -2517,7 +2571,7 @@ measure:  count_end_of_shift_dead_time_45_mins {
 }
 
 measure: avg_first_on_route_mins {
-  type: average_distinct
+  type: average
   description: "The average minutes between shift start and first on-route"
   sql: ${shift_start_to_first_onroute} ;;
   value_format: "0.0"
@@ -3127,11 +3181,18 @@ measure: avg_first_on_route_mins {
 
   }
 
+  # dimension: pafu_or_follow_up {
+  #   label: "Bridge Care Visit OR DH Follow Up"
+  #   description: "DH Followup AND Post Acute Followups are counted. Use the 'Post Acute Followups' flag in the 'Care Request' view to report on PAFU only"
+  #   type: yesno
+  #   sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} or lower(${service_lines.name}) like '%post acute%' or lower(${service_lines.name}) like '%post-acute%' ;;
+  # }
+
   dimension: pafu_or_follow_up {
     label: "Bridge Care Visit OR DH Follow Up"
     description: "DH Followup AND Post Acute Followups are counted. Use the 'Post Acute Followups' flag in the 'Care Request' view to report on PAFU only"
     type: yesno
-    sql: ${care_requests.follow_up} or ${care_requests.post_acute_follow_up} or lower(${service_lines.name}) like '%post acute%' or lower(${service_lines.name}) like '%post-acute%' ;;
+    sql: ${care_requests.post_acute_follow_up} or ${care_requests.DHFU_follow_up} ;;
   }
 
   measure: follow_up_limbo_count {
@@ -3319,6 +3380,7 @@ measure: avg_first_on_route_mins {
   }
 
   measure: escalated_on_scene_to_ed_acute_ems_cost_savings_count {
+    label: "Escalated On-Scene to ED Excluding Bridge Care and DH Followups"
     type: count_distinct
     sql: ${care_request_id} ;;
     filters: {
@@ -3326,7 +3388,7 @@ measure: avg_first_on_route_mins {
       value: "yes"
     }
     filters: {
-      field: care_requests.acute_ems_population_cost_savings
+      field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
   }
@@ -3348,6 +3410,15 @@ measure: avg_first_on_route_mins {
     sql: ${care_request_id} ;;
     filters: {
       field: escalated_on_phone
+      value: "yes"
+    }
+  }
+
+  measure: lwbs_ed_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: lwbs_going_to_ed
       value: "yes"
     }
   }
@@ -3676,6 +3747,34 @@ measure: avg_first_on_route_mins {
     sql: ${dx_conversions.patient_id} is not null ;;
   }
 
+  dimension: self_report_sem_visit {
+    type: yesno
+    sql:  trim(lower(${channel_items.name})) = 'google or other search' ;;
+  }
+
+
+  dimension: phone_sem_visit {
+    type: yesno
+    sql:  ${genesys_conversation_summary_sem.queuename} is not null ;;
+  }
+
+
+  dimension: dx_or_self_report_or_phone_dtc_visit {
+    type: yesno
+    sql: ${dx_visit} or ${phone_sem_visit} or ${self_report_dtc_visit_no_sem} or ${self_report_sem_visit} ;;
+  }
+
+  dimension: self_report_dtc_visit{
+    type: yesno
+    sql: ${channel_items.high_level_category_new} = 'Direct to Consumer';;
+  }
+
+  dimension: self_report_dtc_visit_no_sem{
+    type: yesno
+    sql: ${channel_items.high_level_category_new} = 'Direct to Consumer' and not ${self_report_sem_visit};;
+  }
+
+
 
   measure: complete_count {
     type: count_distinct
@@ -3699,11 +3798,149 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: complete_count_dx_or_self_report_or_phone_dtc{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: dx_or_self_report_or_phone_dtc_visit
+      value: "yes"
+    }
+  }
+
+  measure: complete_count_phone_sem {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: phone_sem_visit
+      value: "yes"
+    }
+  }
+
+
+  measure: complete_count_self_report_sem {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: self_report_sem_visit
+      value: "yes"
+    }
+    filters: {
+      field: phone_sem_visit
+      value: "no"
+    }
+  }
+
+  measure: complete_count_dx_exclude{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: dx_visit
+      value: "yes"
+    }
+    filters: {
+      field: self_report_sem_visit
+      value: "no"
+    }
+    filters: {
+      field: phone_sem_visit
+      value: "no"
+    }
+  }
+
+  measure: complete_dt_self_report_no_sem{
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: self_report_dtc_visit_no_sem
+      value: "yes"
+    }
+    filters: {
+      field: dx_visit
+      value: "no"
+    }
+    filters: {
+      field: self_report_sem_visit
+      value: "no"
+    }
+    filters: {
+      field: phone_sem_visit
+      value: "no"
+    }
+  }
+
+  measure: dtc_check {
+    type: number
+    sql: ${complete_dt_self_report_no_sem}+${complete_count_dx_exclude}+${complete_count_self_report_sem}+${complete_count_phone_sem} ;;
+  }
+
+
   measure: dx_percent {
     type: number
     value_format: "0%"
     sql: case when  ${complete_count}>0 then  ${complete_count_dx}::float/ ${complete_count}::float else 0 end;;
     }
+
+  measure: dx_or_self_report_or_phone_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_dx_or_self_report_or_phone_dtc}::float/ ${complete_count}::float else 0 end;;
+  }
+
+  measure: phone_sem_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_phone_sem}::float/ ${complete_count}::float else 0 end;;
+  }
+
+  measure: report_sem_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_self_report_sem}::float/ ${complete_count}::float else 0 end;;
+  }
+
+  measure: dx_exclude_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_count_dx_exclude}::float/ ${complete_count}::float else 0 end;;
+  }
+
+
+  measure: dt_self_report_no_sem_percent {
+    type: number
+    value_format: "0%"
+    sql: case when  ${complete_count}>0 then  ${complete_dt_self_report_no_sem}::float/ ${complete_count}::float else 0 end;;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 
   measure: complete_count_no_arm_advanced{
@@ -3949,6 +4186,23 @@ measure: avg_first_on_route_mins {
     }
     filters: {
       field: risk_assessments.asymptomatic_covid_testing
+      value: "yes"
+    }
+  }
+
+  measure: complete_count_asymptomatic_covid_testing_overflow {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: complete
+      value: "yes"
+    }
+    filters: {
+      field: risk_assessments.asymptomatic_covid_testing
+      value: "yes"
+    }
+    filters: {
+      field: overflow_visit
       value: "yes"
     }
   }

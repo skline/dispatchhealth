@@ -287,6 +287,16 @@ view: athena_transaction {
     group_label: "RVU Measures"
     sql: ${total_rvu} ;;
     value_format: "0.0"
+    filters: [is_valid_claim: "yes"]
+  }
+
+  measure: sum_work_rvu {
+    description: "Sum Work RVU's"
+    type: sum
+    group_label: "RVU Measures"
+    sql: ${work_rvu} ;;
+    value_format: "0.0"
+    filters: [is_valid_claim: "yes"]
   }
 
   measure: average_total_rvu {
@@ -294,6 +304,15 @@ view: athena_transaction {
     description: "Average total RVU's"
     group_label: "RVU Measures"
     sql: ${sum_total_rvu} / ${count_claims} ;;
+    value_format: "0.00"
+  }
+
+  measure: average_work_rvu {
+    type: number
+    description: "Average work RVU's"
+    group_label: "RVU Measures"
+    sql: CASE WHEN ${count_claims} > 0 THEN ${sum_work_rvu} / ${count_claims}
+         ELSE NULL END ;;
     value_format: "0.00"
   }
 
@@ -314,20 +333,16 @@ view: athena_transaction {
       ${expected_allowed_amount}::float = 0.0 ;;
   }
 
-  measure: count_transactions {
-    type: count
-    sql: ${transaction_id} ;;
-  }
-
   measure: count_valid_transactions {
-    type: count
+    type: count_distinct
     sql: ${transaction_id} ;;
     filters: [voided_date: "NULL"]
   }
 
   measure: count_claims {
     type: count_distinct
-    description: "Count of claims where expected allowable > $0.01"
+    description: "Count of claims where expected allowable > $0.01,
+                  no charge entry reason is null and < 100% of claims have been voided"
     sql: ${claim_id} ;;
     filters: {
       field: is_valid_claim

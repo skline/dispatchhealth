@@ -32,8 +32,7 @@ SELECT
     LEFT JOIN athena.provider prv
         ON rc.created_by = prv.scheduling_name
     WHERE dr.chart_id IS NOT NULL; ;;
-#     sql_trigger_value: SELECT MAX(created_datetime) FROM document_results ;;
-    sql_trigger_value: SELECT FLOOR(EXTRACT(epoch from NOW()) / (2*60*60));;
+    sql_trigger_value: SELECT MAX(document_id) FROM document_results ;;
     indexes: ["document_id", "created_by"]
   }
 

@@ -8,7 +8,7 @@ view: genesys_conversation_summary {
 
   dimension: inbound_demand_minus_market {
     type: yesno
-    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill', 'testing', 'initial follow up', 'rn1', 'rn2', 'rn3', 'rn4', 'rn5', 'rn6', 'rn7', 'rn8', 'covid testing results', 'ebony testing', 'ma/nurse', 'dispatchhealth help desk vendor', 'do not use ma/nurse');;
+    sql: ${direction} ='inbound' and ${mediatype}='voice' and trim(lower(${queuename})) not like '%outbound%' and trim(lower(${queuename})) not like '%optimizer%' and trim(lower(${queuename})) not in('ma', 'rcm / billing', 'backline', 'development', 'secondary screening', 'dispatchhealth help desk', 'dispatch health nurse line', 'zzavtextest', 'pay bill', 'testing', 'initial follow up', 'rn1', 'rn2', 'rn3', 'rn4', 'rn5', 'rn6', 'rn7', 'rn8', 'rn9', 'ivr fail safe', 'covid testing results', 'ebony testing', 'ma/nurse', 'dispatchhealth help desk vendor', 'do not use ma/nurse');;
   }
 
   dimension: abandoned {
@@ -614,6 +614,21 @@ measure: percent_repeat_callers {
     filters: {
       field: inbound_demand
       value: "yes"
+    }
+  }
+
+  measure: count_answered_non_inbound {
+    label: "Count Answered (non-Inbound Demand)"
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key: ${conversationid}  ;;
+    filters: {
+      field: answered
+      value: "1"
+    }
+    filters: {
+      field: inbound_demand
+      value: "no"
     }
   }
 
