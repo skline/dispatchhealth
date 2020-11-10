@@ -476,4 +476,10 @@ view: granular_shift_tracking_agg {
     sql: case when ${count_distinct_shifts}> 0 then ${sum_dead_time_intra_minutes}/${count_distinct_shifts} else 0 end ;;
   }
 
+  measure: percent_assigned_at_start {
+    value_format: "0%"
+    type: number
+    sql: case when ${count_distinct_shifts}>0 then ${count_distinct_shifts_w_assigned}/${count_distinct_shifts} else 0 end ;;
+  }
+
 }
