@@ -25,8 +25,10 @@ SELECT
     lr.npi,
     pn.name AS provider_network
     FROM athena.document_letters dl
+    LEFT JOIN athena.clinicalletter cl
+        ON dl.document_id = cl.document_id
     LEFT JOIN athena.clinicalprovider lr
-        ON dl.clinical_provider_id = lr.clinical_provider_id
+        ON cl.clinical_provider_recipient_id = lr.clinical_provider_id
     LEFT JOIN looker_scratch.provider_roster pr
         ON lr.npi = pr.npi::varchar
     INNER JOIN looker_scratch.provider_network pn
