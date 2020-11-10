@@ -468,7 +468,7 @@ else null end;;
     (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') ;;
   }
 
-  dimension: partner_population {
+  dimension: partner_population_old {
     type: string
     group_label: "Partner Specific Descriptions"
     sql:  CASE WHEN  lower(${name}) LIKE '%bon secours%' OR
@@ -492,6 +492,12 @@ else null end;;
 
 
           ELSE NULL END ;;
+  }
+
+  dimension: partner_population {
+    type: string
+    group_label: "Partner Specific Descriptions"
+    sql: ${partner_population.partner_population} ;;
   }
 
 }

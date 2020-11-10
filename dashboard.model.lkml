@@ -323,6 +323,7 @@ include: "views/care_requests_shift_teams.view.lkml"
 include: "granular_shift_tracking_agg.view.lkml"
 include: "athenadwh_letters_encounters.view.lkml"
 include: "athena_transaction_summary.view.lkml"
+include: "partner_population.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -1847,6 +1848,12 @@ join: resolved_reasons_summary {
   join: channel_items {
     relationship: many_to_one
     sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: partner_population {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${partner_population.care_request_id} ;;
+    fields: []
   }
 
   join: growth_update_channels {
