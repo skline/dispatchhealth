@@ -80,6 +80,13 @@ view: athena_transaction_summary {
     sql: ${patient_responsibility} ;;
   }
 
+  measure: average_patient_responsibility {
+    type: average_distinct
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${patient_responsibility} ;;
+  }
+
   dimension: patient_responsibility_copay {
     type: number
     value_format: "$#,##0.00"
@@ -88,6 +95,13 @@ view: athena_transaction_summary {
 
   measure: total_patient_responsibility_copay {
     type: sum_distinct
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${patient_responsibility_copay} ;;
+  }
+
+  measure: average_patient_responsibility_copay {
+    type: average_distinct
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_copay} ;;
@@ -106,6 +120,27 @@ view: athena_transaction_summary {
     sql: ${patient_responsibility_coinsurance} ;;
   }
 
+  measure: average_patient_responsibility_coinsurance {
+    type: average_distinct
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${patient_responsibility_coinsurance} ;;
+  }
+
+  ########## PLACEHOLDER FOR SETTING UP NEW DATA FROM TRANSACTIONS - DE ##########
+  measure: total_patient_responsibility_deductible {
+    type: sum_distinct
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${patient_responsibility_coinsurance} ;;
+  }
+  measure: average_patient_responsibility_deductible {
+    type: average_distinct
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${patient_responsibility_coinsurance} ;;
+  }
+
   dimension: patient_responsibility_without_secondary {
     type: number
     value_format: "$#,##0.00"
@@ -114,6 +149,13 @@ view: athena_transaction_summary {
 
   measure: total_patient_responsibility_without_secondary {
     type: sum_distinct
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${patient_responsibility_without_secondary} ;;
+  }
+
+  measure: average_patient_responsibility_without_secondary {
+    type: average_distinct
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_without_secondary} ;;
