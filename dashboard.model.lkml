@@ -1922,8 +1922,7 @@ join: ga_pageviews_clone {
   }
 
   join: genesys_conversation_summary {
-    sql_on: (${patients.mobile_number} = ${genesys_conversation_summary.patient_number}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.patient_number})
-      and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000
+    sql_on:  ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id}
       ;;
   }
 

@@ -107,7 +107,7 @@ view: genesys_conversation_summary {
     when trim(lower(${queuename})) in ('sea regence') then 174
      when trim(lower(${queuename})) in ('por regence', 'por legacy health charity care') then 175
      when trim(lower(${queuename})) in ('fort worth home health') then 178
-     when trim(lower(${queuename})) in ('general care', 'partner direct', 'pafu callback', 'sweeper callback', 'dtc', 'dtc pilot', 'care web chat', 'aoc premier', 'sms dcm campaign', 'national pafu callback', 'uhc partner direct', 'humana partner direct') then 167
+     when ${direction} = 'outbound' and trim(lower(${queuename})) in ('general care', 'partner direct', 'pafu callback', 'sweeper callback', 'dtc', 'dtc pilot', 'care web chat', 'aoc premier', 'sms dcm campaign', 'national pafu callback', 'uhc partner direct', 'humana partner direct') then 167
 
 
     else null end;;
@@ -188,7 +188,7 @@ view: genesys_conversation_summary {
 
   dimension: service_level {
     type: yesno
-    sql: ${service_level_target} is not null and ${firstacdwaitduration} < ${service_level_target} ;;
+    sql: ${service_level_target} is not null and (${firstacdwaitduration} < ${service_level_target} or ${firstacdwaitduration} is null) ;;
   }
 
   measure: count {
@@ -204,6 +204,21 @@ view: genesys_conversation_summary {
     filters: {
       field: inbound_demand
       value: "yes"
+    }
+  }
+
+  measure: count_distinct_first {
+    label: "Count Distinct (Inbound Demand First)"
+    type: count_distinct
+    sql: ${conversationid} ;;
+    sql_distinct_key:  ${conversationid};;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+    filters: {
+      field: direction
+      value: "inbound"
     }
   }
 
@@ -235,6 +250,10 @@ view: genesys_conversation_summary {
       field: service_level
       value: "yes"
     }
+    filters: {
+      field: direction
+      value: "inbound"
+    }
   }
 
   measure: answer_rate {
@@ -246,7 +265,7 @@ view: genesys_conversation_summary {
   measure: sla_percent {
     type: number
     value_format: "0%"
-    sql: ${count_distinct_sla}::float/(nullif(${count_distinct},0))::float;;
+    sql: ${count_distinct_sla}::float/(nullif(${count_distinct_first},0))::float;;
   }
 
 

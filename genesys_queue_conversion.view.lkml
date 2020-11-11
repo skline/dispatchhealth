@@ -14,9 +14,9 @@ view: genesys_queue_conversion {
         column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
         column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
         column: count_answered {}
-        column: care_request_count { field: care_request_flat_number.care_request_count }
-        column: accepted_count { field: care_request_flat_number.accepted_count }
-        column: complete_count { field: care_request_flat_number.complete_count }
+        column: care_request_count { field: care_request_flat.care_request_count }
+        column: accepted_count { field: care_request_flat.accepted_count }
+        column: complete_count { field: care_request_flat.complete_count }
         column: sem_covid {field: number_to_market.sem_covid}
         filters: {
           field: genesys_conversation_summary.conversationstarttime_time
