@@ -324,6 +324,7 @@ include: "granular_shift_tracking_agg.view.lkml"
 include: "athenadwh_letters_encounters.view.lkml"
 include: "athena_transaction_summary.view.lkml"
 include: "partner_population.view.lkml"
+include: "views/athena_payers.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -1689,17 +1690,22 @@ join: athena_procedurecode {
   }
 
   join: insurance_coalese {
-    relationship: many_to_one
-    sql_on: ${insurance_coalese.care_request_id} = ${care_requests.id} ;;
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${insurance_coalese.care_request_id} ;;
   }
-
 
   join: insurance_coalese_crosswalk {
-    from: primary_payer_dimensions_clone
+    from: athena_payers
     relationship: many_to_one
-    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
-            AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
+    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id} ;;
   }
+
+  # join: insurance_coalese_crosswalk {
+  #   from: primary_payer_dimensions_clone
+  #   relationship: many_to_one
+  #   sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
+  #           AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
+  # }
 
   join: expected_allowable_corporate {
     relationship: many_to_one
