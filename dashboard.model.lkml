@@ -4323,7 +4323,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50', '3b429a5238');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50', '3b429a5238', 'b0e9260577');;
   }
 
   join: senior_mailchimp_audiences_clone {
