@@ -734,6 +734,12 @@ view: athena_document_orders {
     group_label: "Order Counts"
   }
 
+  measure: order_type_concat {
+    label: "Description Of Items Ordered"
+    type: string
+    sql: string_agg(DISTINCT ${clinical_order_type}, ' | ') ;;
+  }
+
 
   # ----- Sets of fields for drilling ------
   set: detail {
