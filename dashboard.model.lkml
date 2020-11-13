@@ -576,9 +576,9 @@ explore: care_requests {
   }
 
   join: athenadwh_referrals {
-    from:  athenadwh_documents_clone
+    from: athena_document_orders
     relationship:  one_to_many
-    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
+    sql_on:  ${athena_clinicalencounter.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
       ${athenadwh_referrals.clinical_order_type} LIKE '%REFERRAL%' AND
       ${athenadwh_referrals.status} != 'DELETED' ;;
   }
@@ -973,6 +973,13 @@ join: document_order_fulfilling_provider {
   relationship: many_to_one
   sql_on: ${athena_document_orders.clinical_provider_id} = ${document_order_fulfilling_provider.clinical_provider_id} ;;
 }
+
+  join: athena_letter_recipient_provider {
+    from: athena_clinicalprovider
+    view_label: "Athena Letter Recipient Provider"
+    relationship: many_to_one
+    sql_on: ${athena_clinicalletter.clinical_provider_recipient_id} = ${athena_letter_recipient_provider.clinical_provider_id} ;;
+  }
 
 join: athena_order_documentaction {
   from: athena_documentaction

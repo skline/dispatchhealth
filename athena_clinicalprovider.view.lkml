@@ -188,6 +188,17 @@ view: athena_clinicalprovider {
     END;;
   }
 
+  dimension: provider_role {
+    type: string
+    sql: ${athena_clinicalletter.role} ;;
+  }
+
+
+  measure: names_aggregated {
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${name}), ' | ') ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [name, first_name, middle_name, last_name]
