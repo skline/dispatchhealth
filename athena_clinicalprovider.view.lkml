@@ -193,6 +193,15 @@ view: athena_clinicalprovider {
     sql: ${athena_clinicalletter.role} ;;
   }
 
+  measure: first_names_aggregated {
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${first_name}), ' | ') ;;
+  }
+
+  measure: last_names_aggregated {
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${last_name}), ' | ') ;;
+  }
 
   measure: names_aggregated {
     type: string
