@@ -1246,7 +1246,7 @@ view: care_requests {
     description: "Count of completed care requests where 1 or more labs were ordered"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_clinical_results_clone.labs_flag
+      field: athena_document_orders.labs_flag
       value: "yes"
     }
     filters: {
@@ -1257,10 +1257,10 @@ view: care_requests {
 
   measure: count_visits_imaging {
     type: count_distinct
-    description: "Count of completed care requests where imaging was ordered"
+    description: "Count of completed care requests where one or more ultrasound/imaging orders were made"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_documents_clone.imaging_flag
+      field: athena_document_orders.imaging_flag
       value: "yes"
     }
     filters: {
@@ -1271,10 +1271,10 @@ view: care_requests {
 
   measure: count_visits_dme {
     type: count_distinct
-    description: "Count of completed care requests where durable medical equipment was ordered"
+    description: "Count of completed care requests where one or more durable medical equipment orders was placed"
     sql: ${id} ;;
     filters: {
-      field: athenadwh_dme.dme_flag
+      field: athena_document_orders.dme_flag
       value: "yes"
     }
     filters: {
