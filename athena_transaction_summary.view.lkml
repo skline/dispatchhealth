@@ -61,6 +61,42 @@ ELSE NULL END ;;
 value_format: "0.0000"
   }
 
+  dimension: gpci_malpractice_multiplier {
+    type: number
+    description: "The GPCI malpractice multiplier for Medicare reimbursement"
+    sql: CASE
+WHEN ${markets.short_name_adj} = 'IND' THEN 0.422
+WHEN ${markets.short_name_adj} = 'BOI' THEN 0.464
+WHEN ${markets.short_name_adj} = 'KNX' THEN 0.509
+WHEN ${markets.short_name_adj} = 'NSH' THEN 0.509
+WHEN ${markets.short_name_adj} = 'FTW' THEN 0.643
+WHEN ${markets.short_name_adj} = 'DAL' THEN 0.657
+WHEN ${markets.short_name_adj} = 'POR' THEN 0.659
+WHEN ${markets.short_name_adj} = 'RDU' THEN 0.757
+WHEN ${markets.short_name_adj} = 'OLY' THEN 0.823
+WHEN ${markets.short_name_adj} = 'SPO' THEN 0.823
+WHEN ${markets.short_name_adj} = 'TAC' THEN 0.823
+WHEN ${markets.short_name_adj} = 'PHX' THEN 0.846
+WHEN ${markets.short_name_adj} = 'SEA' THEN 0.854
+WHEN ${markets.short_name_adj} = 'OKC' THEN 0.868
+WHEN ${markets.short_name_adj} = 'RIC' THEN 0.903
+WHEN ${markets.short_name_adj} = 'COS' THEN 0.905
+WHEN ${markets.short_name_adj} = 'DEN' THEN 0.905
+WHEN ${markets.short_name_adj} = 'HOU' THEN 0.918
+WHEN ${markets.short_name_adj} = 'MOR' THEN 0.949
+WHEN ${markets.short_name_adj} = 'NJR' THEN 0.949
+WHEN ${markets.short_name_adj} = 'SPR' THEN 0.952
+WHEN ${markets.short_name_adj} = 'ATL' THEN 0.989
+WHEN ${markets.short_name_adj} = 'CLE' THEN 1.049
+WHEN ${markets.short_name_adj} = 'HRT' THEN 1.094
+WHEN ${markets.short_name_adj} = 'LAS' THEN 1.130
+WHEN ${markets.short_name_adj} = 'RNO' THEN 1.130
+WHEN ${markets.short_name_adj} = 'TPA' THEN 1.396
+WHEN ${markets.short_name_adj} = 'MIA' THEN 2.598
+ELSE NULL END ;;
+    value_format: "0.0000"
+  }
+
   dimension: is_valid_claim {
     type: yesno
     sql: ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL AND
