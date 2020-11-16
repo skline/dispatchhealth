@@ -223,7 +223,7 @@ view: athena_diagnosis_codes {
   measure: diagnosis_descriptions_concatenated {
     description: "Concatenated ICD-10 Diagnosis Descriptions"
     type: string
-    sql: array_to_string(array_agg(DISTINCT COALESCE(${diagnosis_description},${icd_code_dimensions_clone.diagnosis_description})), ' | ') ;;
+    sql: array_to_string(array_agg(DISTINCT ${diagnosis_description}), ' | ') ;;
     group_label: "Diagnosis Descriptions"
   }
 
