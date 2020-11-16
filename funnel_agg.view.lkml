@@ -267,6 +267,13 @@ view: funnel_agg {
     sql: ${booked_shaping_percent}+${overflow_percent} ;;
   }
 
+
+  measure: asymptomatic_to_overflow_booked_ratio {
+    type: number
+    sql: ${productivity_agg.asymptomatic_protocol_percent}/${overflow_plus_booked_shaping_percent} ;;
+  }
+
+
   measure: same_day_lwbs_percent {
     type: number
     value_format: "0%"
