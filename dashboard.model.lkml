@@ -296,7 +296,6 @@ include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
 include: "athena_patient_medical_history.view.lkml"
-include: "athena_patient_social_history.view.lkml"
 include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
@@ -325,7 +324,7 @@ include: "athenadwh_letters_encounters.view.lkml"
 include: "athena_transaction_summary.view.lkml"
 include: "partner_population.view.lkml"
 include: "views/athena_payers.view.lkml"
-include: "athena_social_determinants.view.lkml"
+include: "athena_patient_social_history.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -774,20 +773,16 @@ join: athena_clinicalencounter {
   sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
 }
 
-join: athena_social_determinants {
+join: athena_patient_social_history {
   relationship: one_to_one
-  sql_on: ${athena_clinicalencounter.chart_id} = ${athena_social_determinants.chart_id};;
+  sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id};;
 }
 
-# join: athena_patient_medical_history {
-#   relationship: one_to_one
-#   sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
-# }
+join: athena_patient_medical_history {
+  relationship: one_to_one
+  sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
+}
 
-# join: athena_patient_social_history {
-#     relationship: one_to_one
-#     sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id} ;;
-#   }
 
   join: athena_patient_current_medications {
     relationship: one_to_many
