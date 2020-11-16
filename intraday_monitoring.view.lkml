@@ -57,6 +57,18 @@ view: intraday_monitoring {
     sql: ${expected_additional} - ${capacity} ;;
   }
 
+
+  dimension: created_hour_timezone {
+    type: number
+    sql: case when ${markets.sa_time_zone} = 'Eastern Time (US & Canada)' then ${created_hour}+2
+     when ${markets.sa_time_zone} = 'Pacific Time (US & Canada)' then ${created_hour}-1
+    when ${markets.sa_time_zone} = 'Central Time (US & Canada)' then ${created_hour}+1
+    when ${markets.sa_time_zone} = 'Arizona' and ${created_month}::int >=3 and ${created_month}::int<11 then ${created_hour}+1
+    else ${created_hour} end
+    ;;
+
+  }
+
   dimension: expected_overflow_percent {
     type: number
     value_format: "0%"
@@ -67,6 +79,8 @@ view: intraday_monitoring {
     type: number
     sql: max(${complete_est}) - ${care_request_flat.complete_count} ;;
   }
+
+
 
   measure: count {
     type: count

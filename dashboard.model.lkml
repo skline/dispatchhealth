@@ -325,7 +325,8 @@ include: "athena_transaction_summary.view.lkml"
 include: "partner_population.view.lkml"
 include: "views/athena_payers.view.lkml"
 include: "athena_patient_social_history.view.lkml"
-
+include: "on_call_tracking.view.lkml"
+include: "intraday_monitoring.view.lkml"
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
 
@@ -4713,4 +4714,29 @@ explore: granular_shift_tracking_agg {
   join: high_overflow_days {
     sql_on: ${granular_shift_tracking_agg.shift_date}=${high_overflow_days.start_date} and ${granular_shift_tracking_agg.market_name_adj}=${high_overflow_days.name_adj} ;;
   }
+}
+
+explore:  on_call_tracking
+{
+  join: markets {
+    sql_on: ${on_call_tracking.market_id}=${markets.id} ;;
+  }
+
+
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+  join: intraday_monitoring_prior {
+    from: intraday_monitoring
+    sql_on: ${intraday_monitoring_prior.market} = ${markets.name} and ${intraday_monitoring_prior.created_date}=${on_call_tracking.date_date} and
+    ${intraday_monitoring_prior.created_hour_timezone} = 10;;
+  }
+
+  join: intraday_monitoring_after {
+    from: intraday_monitoring
+    sql_on: ${intraday_monitoring_after.market} = ${markets.name} and ${intraday_monitoring_after.created_date}=${on_call_tracking.date_date} and
+      ${intraday_monitoring_after.created_hour_timezone} = 13;;
+  }
+
 }
