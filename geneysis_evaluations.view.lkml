@@ -411,7 +411,7 @@ view: geneysis_evaluations {
 
   measure: caller_experience_avg_total_evaluation_score {
     type: average_distinct
-    value_format: "0%"
+    value_format: "#0%"
     sql: ${questionscore} ;;
     sql_distinct_key: ${primary_key} ;;
     filters: {
@@ -429,6 +429,12 @@ view: geneysis_evaluations {
       field: questiongroupname
       value: "Adherence and Unique Features"
     }
+  }
+
+  measure: number_of_evaluations {
+    type: count_distinct
+    sql: ${evaluationformid} ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
 

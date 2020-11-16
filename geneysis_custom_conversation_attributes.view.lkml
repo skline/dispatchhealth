@@ -190,6 +190,11 @@ view: geneysis_custom_conversation_attributes {
     sql: ${TABLE}."purpose" ;;
   }
 
+  dimension: ivrexit {
+    type: string
+    sql: reverse(split_part(reverse(${customstring04}), '|', 1));;
+  }
+
   measure: count {
     type: count
     drill_fields: [participantname]
