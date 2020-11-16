@@ -108,7 +108,7 @@ view: funnel_agg {
   measure: total_lwbs_minus_overflow {
     type: sum_distinct
     sql: ${lwbs_minus_overflow} ;;
-    sql_distinct_key: c${primary_key}  ;;
+    sql_distinct_key: ${primary_key}  ;;
   }
 
 
