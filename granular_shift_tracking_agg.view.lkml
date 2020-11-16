@@ -216,6 +216,13 @@ view: granular_shift_tracking_agg {
     sql_distinct_key: ${primary_key_shift} ;;
   }
 
+  measure: sum_shift_time_hours{
+    type: sum_distinct
+    value_format: "0"
+    sql: ${shift_time} ;;
+    sql_distinct_key: ${primary_key_shift} ;;
+  }
+
   measure:  sum_dead_time_proxy_minutes{
     value_format: "0"
     type: number
@@ -468,6 +475,12 @@ view: granular_shift_tracking_agg {
     sql: case when ${count_distinct_shifts}> 0 then ${sum_dead_time_intra_minutes_w_assigned}/${count_distinct_shifts} else 0 end ;;
   }
 
+  measure: shift_productivity{
+    value_format: "0.00"
+    type: number
+    sql: case when ${sum_shift_time_hours} >0 then ${sum_complete_count}::float/(${sum_shift_time_hours}::float) else 0 end ;;
+  }
+
 
 
   measure: avg_dead_time_intra_minutes{
@@ -479,7 +492,7 @@ view: granular_shift_tracking_agg {
   measure: percent_assigned_at_start {
     value_format: "0%"
     type: number
-    sql: case when ${count_distinct_shifts}>0 then ${count_distinct_shifts_w_assigned}/${count_distinct_shifts} else 0 end ;;
+    sql: case when ${count_distinct_shifts}>0 then ${count_distinct_shifts_w_assigned}::float/${count_distinct_shifts}::float else 0 end ;;
   }
 
 }

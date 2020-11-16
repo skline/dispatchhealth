@@ -261,6 +261,19 @@ view: funnel_agg {
     ${total_booked_shaping_placeholder_resolved_count_minus_overflow}::float/${productivity_agg.total_complete_count_no_arm_advanced} else 0 end;;
   }
 
+  measure: overflow_plus_booked_shaping_percent {
+    type: number
+    value_format: "0%"
+    sql: ${booked_shaping_percent}+${overflow_percent} ;;
+  }
+
+
+  measure: asymptomatic_to_overflow_booked_ratio {
+    type: number
+    sql: ${productivity_agg.asymptomatic_protocol_percent}/${overflow_plus_booked_shaping_percent} ;;
+  }
+
+
   measure: same_day_lwbs_percent {
     type: number
     value_format: "0%"

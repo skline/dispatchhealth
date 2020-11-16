@@ -22,6 +22,8 @@ view: productivity_agg {
       column: cpr_market { field: markets.cpr_market }
       column: count_complete_overflow { field: care_request_flat.count_complete_overflow }
       column: escalated_on_scene_count { field: care_request_flat.escalated_on_scene_count }
+      column: complete_count_asymptomatic_covid_testing { field: care_request_flat.complete_count_asymptomatic_covid_testing }
+      column: complete_count_communicable_protocol { field: care_request_flat.complete_count_communicable_protocol }
       filters: {
         field: shift_teams.start_date
         value: "365 days ago for 365 days"
@@ -30,6 +32,7 @@ view: productivity_agg {
         field: service_lines.name
         value: "-COVID-19 Facility Testing,-Advanced Care"
       }
+
     }
   }
 
@@ -50,6 +53,14 @@ view: productivity_agg {
     ]
   }
 
+  dimension: complete_count_asymptomatic_covid_testing {
+    type: number
+  }
+
+  dimension: complete_count_communicable_protocol {
+    type: number
+  }
+
 
   dimension: sum_shift_hours_no_arm_advanced {
     label: "Shift Teams Sum Shift Hours (no arm, advanced or tele)"
@@ -64,7 +75,7 @@ view: productivity_agg {
 
   measure: total_shift_hours_no_arm_advanced {
     type: sum_distinct
-    value_format: "0.0"
+    value_format: "0"
     sql: ${sum_shift_hours_no_arm_advanced} ;;
     sql_distinct_key: concat(${start_date}, ${name_adj}) ;;
   }
@@ -78,6 +89,47 @@ view: productivity_agg {
   measure: total_complete_count_no_arm_advanced {
     type: sum_distinct
     sql: ${complete_count_no_arm_advanced} ;;
+    sql_distinct_key: concat(${start_date}, ${name_adj}) ;;
+  }
+
+  measure: total_complete_count_asymptomatic {
+    type: sum_distinct
+    sql: ${complete_count_asymptomatic_covid_testing} ;;
+    sql_distinct_key: concat(${start_date}, ${name_adj}) ;;
+  }
+
+  measure: total_complete_count_communicable_protocol {
+    type: sum_distinct
+    sql: ${complete_count_communicable_protocol} ;;
+    sql_distinct_key: concat(${start_date}, ${name_adj}) ;;
+  }
+
+  measure: total_complete_count_communicable_asymptomatic_protocol {
+    type: number
+    sql: ${total_complete_count_communicable_protocol}+${total_complete_count_asymptomatic} ;;
+  }
+
+  measure: communicable_asymptomatic_protocol_percent {
+    type: number
+    value_format: "0%"
+    sql:case when ${total_complete_count}>0 then${total_complete_count_communicable_asymptomatic_protocol}::float/${total_complete_count}::float else 0 end;;
+  }
+
+  measure: asymptomatic_protocol_percent {
+    type: number
+    value_format: "0%"
+    sql:case when ${total_complete_count}>0 then${total_complete_count_asymptomatic}::float/${total_complete_count}::float else 0 end;;
+  }
+
+  measure: communicable_protocol_percent {
+    type: number
+    value_format: "0%"
+    sql:case when ${total_complete_count}>0 then${total_complete_count_communicable_protocol}::float/${total_complete_count}::float else 0 end;;
+  }
+
+  measure: total_complete_count {
+    type: sum_distinct
+    sql: ${complete_count} ;;
     sql_distinct_key: concat(${start_date}, ${name_adj}) ;;
   }
 

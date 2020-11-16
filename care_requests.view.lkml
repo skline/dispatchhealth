@@ -692,6 +692,7 @@ view: care_requests {
                when ${request_type_id} = 5 then 'centura_connect'
                when ${request_type_id} = 6 then 'centura_care_coordinator'
                when ${request_type_id} = 7 then 'orderly'
+               when ${request_type_id} = 9 then 'dispatchhealth express'
             else 'other' end;;
   }
 

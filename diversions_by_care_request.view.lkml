@@ -613,28 +613,24 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     type: number
     sql: ${TABLE}.care_request_id ;;
   }
-
   # dimension: diversion_911 {
   #   type: yesno
   #   sql: ${TABLE}.diversion_911 = 1 ;;
   # }
-
   dimension: adjust_diversion_911 {
     type:  string
     hidden: yes
     sql: CASE
-    WHEN ${care_requests.DHFU_follow_up} THEN 'No'
-    WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
-    WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_911::INT = 1 THEN 'Yes'
-    ELSE NULL
-    END;;
+          WHEN ${care_requests.DHFU_follow_up} THEN 'No'
+          WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_911::INT = 1 THEN 'Yes'
+          ELSE NULL
+          END;;
   }
-
-    dimension: diversion_911 {
+  dimension: diversion_911 {
     type: yesno
     sql: ${adjust_diversion_911} = 'Yes' ;;
   }
-
   measure: count_911_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -643,12 +639,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   dimension: savings_911 {
     type: number
     sql: ${TABLE}.diversion_svgs_911 ;;
   }
-
   measure: diversion_savings_911 {
     type: sum_distinct
     sql: ${savings_911} ;;
@@ -659,13 +653,11 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   # dimension: diversion_er {
   #   type: yesno
   #   sql: ${TABLE}.diversion_er::int = 1;;
   #   # AND NOT ${diversion_hosp} AND NOT ${diversion_observation};;
   # }
-
   dimension: adjust_diversion_er {
     type:  string
     hidden: yes
@@ -676,13 +668,11 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
           ELSE NULL
           END;;
   }
-
   dimension: diversion_er {
     type: yesno
     sql: ${adjust_diversion_er} = 'Yes';;
     # AND NOT ${diversion_hosp} AND NOT ${diversion_observation};;
   }
-
   measure: count_er_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -691,12 +681,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   dimension: savings_er {
     type: number
     sql:${TABLE}.diversion_svgs_er;;
   }
-
   measure: diversion_savings_er {
     type: sum_distinct
     sql: ${savings_er} ;;
@@ -707,12 +695,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   # dimension: diversion_observation {
   #   type: yesno
   #   sql: ${TABLE}.diversion_obs = 1 AND NOT ${diversion_hosp};;
   # }
-
   dimension: adjust_diversion_observation {
     type:  string
     hidden: yes
@@ -724,12 +710,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
           ELSE NULL
           END;;
   }
-
-    dimension: diversion_observation {
+  dimension: diversion_observation {
     type: yesno
     sql: ${adjust_diversion_observation} = 'Yes';;
   }
-
   measure: count_observation_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -738,12 +722,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   dimension: savings_observation {
     type: number
     sql: ${TABLE}.diversion_svgs_observation ;;
   }
-
   measure: diversion_savings_obs {
     type: sum_distinct
     sql: ${savings_observation} ;;
@@ -754,12 +736,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   # dimension: diversion_hosp {
   #   type: yesno
   #   sql: ${TABLE}.diversion_hosp = 1;;
   # }
-
   dimension: adjust_diversion_hosp {
     type:  string
     hidden: yes
@@ -770,12 +750,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
           ELSE NULL
           END;;
   }
-
-    dimension: diversion_hosp {
+  dimension: diversion_hosp {
     type: yesno
     sql: ${adjust_diversion_hosp} = 'Yes';;
   }
-
   measure: count_hospitalization_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -784,12 +762,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   dimension: savings_hospitalization {
     type: number
     sql: ${TABLE}.diversion_svgs_hospitalization ;;
   }
-
   measure: diversion_savings_hospitalization {
     type: sum_distinct
     sql: ${savings_hospitalization} ;;
@@ -800,37 +776,31 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   dimension: case_rate_less_copay {
     type: number
     sql: ${TABLE}.case_rate_plug_less_co_pay;;
   }
-
   measure: sum_case_rate {
     type: sum_distinct
     sql: ${case_rate_less_copay} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
   }
-
-   dimension: incremental_visit_cost {
+  dimension: incremental_visit_cost {
     type: number
     sql: ${TABLE}.incremental_visit_cost ;;
   }
-
   measure: sum_incremental_visit_cost {
     type: sum_distinct
     sql: ${incremental_visit_cost} ;;
     sql_distinct_key: ${care_request_id} ;;
     value_format: "$#,##0"
   }
-
-     dimension: diversion {
+  dimension: diversion {
     description: "A flag indicating that any diversion criteria was met"
     type: yesno
     sql: ${diversion_911} OR ${diversion_er} OR ${diversion_observation} OR ${diversion_hosp} ;;
   }
-
   measure: count_any_diversions {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -840,13 +810,11 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
   }
 
-
   dimension: diversion_or_escalated_on_scene {
     description: "A flag indicating that any diversion criteria was met"
     type: yesno
     sql: ${diversion} OR  ${care_request_flat.escalated_on_scene};;
   }
-
   measure: count_high_acuity_visits_cost_saving {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -858,7 +826,6 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
-
     # filters: {
     #   field: care_requests.post_acute_follow_up
     #   value: "No"
@@ -867,14 +834,11 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     #   field: care_requests.DHFU_follow_up
     #   value: "No"
     # }
-
   }
-
   measure: sum_case_rate_high_acuity {
     type: sum_distinct
     sql: ${case_rate_less_copay} ;;
     sql_distinct_key: ${care_request_id} ;;
-
     filters: {
       field: diversion_or_escalated_on_scene
       value: "Yes"
@@ -883,7 +847,6 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
       value: "Yes"
     }
-
     # filters: {
     #   field: care_requests.post_acute_follow_up
     #   value: "No"
@@ -892,9 +855,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     #   field: care_requests.DHFU_follow_up
     #   value: "No"
     # }
-
   }
-
   measure: count_low_acuity_visits_cost_saving {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -914,14 +875,11 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     #   field: care_requests.DHFU_follow_up
     #   value: "No"
     # }
-
   }
-
   measure: sum_incremental_visit_cost_low_acuity {
     type: sum_distinct
     sql: ${incremental_visit_cost} ;;
     sql_distinct_key: ${care_request_id} ;;
-
     filters: {
       field: diversion_or_escalated_on_scene
       value: "No"
@@ -939,17 +897,14 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     #   value: "No"
     # }
   }
-
   dimension: bounceback_14_day_case_rate_adjustment {
     type: number
     sql: ${TABLE}.bounceback_14_day_case_rate_adjustment ;;
   }
-
   dimension: bounceback_multiplier {
     type: number
     sql: ${TABLE}.bounceback_multiplier ;;
   }
-
   measure: sum_bounceback_14_day_case_rate_adjustment {
     type: sum_distinct
     sql: ${bounceback_14_day_case_rate_adjustment} ;;
@@ -959,7 +914,6 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
   measure: count_bounceback_14_day_calc {
     type: sum_distinct
     sql: ${bounceback_multiplier} ;;
@@ -969,7 +923,6 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
       value: "Yes"
     }
   }
-
 #   dimension: 14_day_bounceback_case_rate_calculated {
 #     type: number
 #     sql: ${care_requests.count_billable_est}*${bounceback_multiplier} ;;

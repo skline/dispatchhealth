@@ -468,6 +468,12 @@ else null end;;
     (lower(${name}) = 'healthcare provider' AND lower(${provider_network.name}) = 'bon secours medical group') ;;
   }
 
+  dimension: express_channel{
+    type: string
+    sql: case when ${id} in(9,83,1842, 504,10, 4633) then ${name}
+      else 'Express Not Implented' end;;
+  }
+
   # dimension: partner_population_old {
   #   type: string
   #   group_label: "Partner Specific Descriptions"
