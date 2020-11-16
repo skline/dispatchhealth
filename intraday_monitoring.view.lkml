@@ -14,7 +14,7 @@ view: intraday_monitoring {
       week,
       month,
       quarter,
-      year, day_of_week
+      year, day_of_week, month_num
     ]
     convert_tz: no
     datatype: date
@@ -63,7 +63,7 @@ view: intraday_monitoring {
     sql: case when ${markets.sa_time_zone} = 'Eastern Time (US & Canada)' then ${created_hour}+2
      when ${markets.sa_time_zone} = 'Pacific Time (US & Canada)' then ${created_hour}-1
     when ${markets.sa_time_zone} = 'Central Time (US & Canada)' then ${created_hour}+1
-    when ${markets.sa_time_zone} = 'Arizona' and ${created_month}::int >=3 and ${created_month}::int<11 then ${created_hour}+1
+    when ${markets.sa_time_zone} = 'Arizona' and ${created_month_num}::int >=3 and ${created_month_num}::int<11 then ${created_hour}+1
     else ${created_hour} end
     ;;
 
