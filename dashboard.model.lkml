@@ -284,7 +284,7 @@ include: "crt.view.lkml"
 include: "fres.view.lkml"
 include: "sbm.view.lkml"
 include: "res_crt.view.lkml"
-include: "res_close.view.lkml"
+include: "athena_result_closed.view.lkml"
 include: "athena_patientmedication_prescriptions.view.lkml"
 include: "athena_clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
@@ -296,7 +296,6 @@ include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
 include: "athena_patient_medical_history.view.lkml"
-include: "athena_patient_social_history.view.lkml"
 include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
@@ -323,6 +322,9 @@ include: "views/care_requests_shift_teams.view.lkml"
 include: "granular_shift_tracking_agg.view.lkml"
 include: "athenadwh_letters_encounters.view.lkml"
 include: "athena_transaction_summary.view.lkml"
+include: "partner_population.view.lkml"
+include: "views/athena_payers.view.lkml"
+include: "athena_patient_social_history.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -574,9 +576,9 @@ explore: care_requests {
   }
 
   join: athenadwh_referrals {
-    from:  athenadwh_documents_clone
+    from: athena_document_orders
     relationship:  one_to_many
-    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
+    sql_on:  ${athena_clinicalencounter.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
       ${athenadwh_referrals.clinical_order_type} LIKE '%REFERRAL%' AND
       ${athenadwh_referrals.status} != 'DELETED' ;;
   }
@@ -771,15 +773,16 @@ join: athena_clinicalencounter {
   sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
 }
 
+join: athena_patient_social_history {
+  relationship: one_to_one
+  sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id};;
+}
+
 join: athena_patient_medical_history {
   relationship: one_to_one
   sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
 }
 
-join: athena_patient_social_history {
-    relationship: one_to_one
-    sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id} ;;
-  }
 
   join: athena_patient_current_medications {
     relationship: one_to_many
@@ -971,6 +974,13 @@ join: document_order_fulfilling_provider {
   relationship: many_to_one
   sql_on: ${athena_document_orders.clinical_provider_id} = ${document_order_fulfilling_provider.clinical_provider_id} ;;
 }
+
+  join: athena_letter_recipient_provider {
+    from: athena_clinicalprovider
+    view_label: "Athena Letter Recipient Provider"
+    relationship: many_to_one
+    sql_on: ${athena_clinicalletter.clinical_provider_recipient_id} = ${athena_letter_recipient_provider.clinical_provider_id} ;;
+  }
 
 join: athena_order_documentaction {
   from: athena_documentaction
@@ -1688,17 +1698,22 @@ join: athena_procedurecode {
   }
 
   join: insurance_coalese {
-    relationship: many_to_one
-    sql_on: ${insurance_coalese.care_request_id} = ${care_requests.id} ;;
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${insurance_coalese.care_request_id} ;;
   }
-
 
   join: insurance_coalese_crosswalk {
-    from: primary_payer_dimensions_clone
+    from: athena_payers
     relationship: many_to_one
-    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
-            AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
+    sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id} ;;
   }
+
+  # join: insurance_coalese_crosswalk {
+  #   from: primary_payer_dimensions_clone
+  #   relationship: many_to_one
+  #   sql_on: ${insurance_coalese.package_id_coalese} = ${insurance_coalese_crosswalk.insurance_package_id}
+  #           AND ${insurance_coalese_crosswalk.custom_insurance_grouping} IS NOT NULL;;
+  # }
 
   join: expected_allowable_corporate {
     relationship: many_to_one
@@ -1847,6 +1862,12 @@ join: resolved_reasons_summary {
   join: channel_items {
     relationship: many_to_one
     sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: partner_population {
+    relationship: one_to_many
+    sql_on: ${care_requests.id} = ${partner_population.care_request_id} ;;
+    fields: []
   }
 
   join: growth_update_channels {
@@ -4310,7 +4331,7 @@ explore: sf_contacts {
 
   join: sf_mailchimp_audiences_clone {
     from: mailchimp_audiences_clone
-    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50', '3b429a5238');;
+    sql_on: ${sf_mailchimp_audiences_clone.email} = ${sf_contacts.email} and ${sf_mailchimp_audiences_clone.list_id} in('08f503ca35', 'd2d35689f3', 'c72570cb2e', '495c077092', '6181b333dd', '91510a27e3', 'c271f77a7d', 'ddc3665531', '61b3648256', '05ed225c96', '2f6240d04e', '359b4df3c9', '7cb28f6e1f', '1a504d3204', 'fc950cb88d', 'c254664a41', 'fe16ea8819', '10c4662004', 'cdf0cae0e1', 'a3c4c2ea42', '5c52aabce9', '303b2a6b98', 'ef94166f50', '3b429a5238', 'b0e9260577');;
   }
 
   join: senior_mailchimp_audiences_clone {

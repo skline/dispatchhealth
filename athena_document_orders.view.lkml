@@ -103,6 +103,31 @@ view: athena_document_orders {
     sql: ${TABLE}."clinical_order_genus" ;;
   }
 
+  dimension: labs_flag {
+    description: "A flag indicating labs were ordered (Athena clinical order type group = 'LAB')"
+    type: yesno
+    sql: ${clinical_order_type_group} = 'LAB' ;;
+  }
+
+  dimension: imaging_flag {
+    description: "A flag indicating all non-deleted imaging and ultrasound orders (Athena clinical order genus = 'US' or 'XR')"
+    type: yesno
+    sql: ${clinical_order_genus} IN ('US','XR') AND ${status} <> 'DELETED' ;;
+  }
+
+  measure: count_imaging_us_orders {
+    description: "Count of all imaging and ultrasound orders"
+    type: count_distinct
+    sql: ${document_id} ;;
+    filters: [clinical_order_genus: "US, XR", status: "-DELETED"]
+  }
+
+  dimension: dme_flag {
+    type: yesno
+    description: "A flag indicating durable medical equipment was ordered (Athena document class = 'DME')"
+    sql: ${document_class} = 'DME' ;;
+  }
+
   dimension: clinical_order_type {
     type: string
     description: "The detailed description of the order e.g. 'URINALYSIS DIPSTICK', etc."
@@ -732,6 +757,12 @@ view: athena_document_orders {
       value: "yes"
     }
     group_label: "Order Counts"
+  }
+
+  measure: order_type_concat {
+    label: "Description Of Items Ordered"
+    type: string
+    sql: string_agg(DISTINCT ${clinical_order_type}, ' | ') ;;
   }
 
 

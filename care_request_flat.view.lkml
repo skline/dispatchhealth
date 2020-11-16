@@ -1092,6 +1092,20 @@ WITH ort AS (
     }
   }
 
+  measure: count_complete_visits_weekends_or_after_hours {
+    description: "Count of billable est on weekends or after 3 PM"
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: weekend_after_3pm
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.billable_est
+      value: "yes"
+    }
+  }
+
   dimension: complete_comment {
     type: string
     sql: ${TABLE}.complete_comment ;;
@@ -4799,6 +4813,8 @@ end  ;;
     }
   }
 
+
+
   measure: count_complete_overflow {
     type: count_distinct
     description: "Count of completed care requests OR on-scene escalations (Not Same Day)"
@@ -4817,6 +4833,8 @@ end  ;;
       value: "no"
     }
   }
+
+
 
   measure: limbo_overflow {
     type: count_distinct
