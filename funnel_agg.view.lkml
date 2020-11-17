@@ -291,10 +291,10 @@ view: funnel_agg {
   measure: inefficiency_index{
     type: number
     value_format: "0.00"
-    sql:case when ${productivity_agg.total_productivity} > .7 and ${overflow_percent}<.2 then
-    (${overflow_percent}-.2)*(${productivity_agg.total_productivity}-.7)*100
+    sql:case when ${productivity_agg.total_productivity} > .7 and ${overflow_plus_booked_shaping_percent}<.25 then
+    (${overflow_plus_booked_shaping_percent}-.25)*(${productivity_agg.total_productivity}-.7)*100
     else
-    (${overflow_percent}-.2)*(.7-${productivity_agg.total_productivity})*100  end;;
+    (${overflow_plus_booked_shaping_percent}-.25)*(.7-${productivity_agg.total_productivity})*100  end;;
   }
 
 }
