@@ -276,7 +276,7 @@ view: funnel_agg {
   measure: ratio_overflow_booked_to_asymptomatic {
     type: number
     value_format: "0.00"
-    sql: case when${overflow_plus_booked_shaping_percent}>0 then  ${overflow_plus_booked_shaping_percent}/${productivity_agg.asymptomatic_protocol_percent} else 0 end;;
+    sql: case when${productivity_agg.asymptomatic_protocol_percent}>0 then  ${overflow_plus_booked_shaping_percent}/${productivity_agg.asymptomatic_protocol_percent} else 0 end;;
   }
 
 
