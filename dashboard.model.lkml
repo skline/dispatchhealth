@@ -3655,7 +3655,7 @@ explore: intraday_monitoring {
   }
   join: shift_teams {
     relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+    sql_on: ${care_request_flat.shift_team_id} = ${shift_teams.id} ;;
   }
 
   join: shifts{
