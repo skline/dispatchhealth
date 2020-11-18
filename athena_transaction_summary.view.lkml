@@ -1,5 +1,98 @@
 view: athena_transaction_summary {
-  sql_table_name: athena.transactions_summary ;;
+  # sql_table_name: athena.transactions_summary ;;
+  derived_table: {
+    sql:
+    WITH valid_claims AS (
+    SELECT DISTINCT
+      claim_id
+      FROM athena.transaction
+      GROUP BY claim_id
+      HAVING COUNT(transaction_id) > COUNT(CASE WHEN voided_date IS NOT NULL THEN transaction_id ELSE NULL END))
+SELECT
+    t.claim_id,
+    array_agg(DISTINCT t.procedure_code) AS procedure_codes,
+    COUNT(DISTINCT transaction_id) AS transactions,
+    SUM(CASE
+            WHEN transaction_type = 'PAYMENT' AND voided_date IS NULL THEN amount::float * -1.0
+            ELSE 0
+        END) AS payments,
+    SUM(work_rvu) AS work_rvu,
+    SUM(practice_expense_rvu) AS practice_expense_rvu,
+    SUM(malpractice_rvu) AS malpractice_rvu,
+    SUM(total_rvu) AS total_rvu,
+    SUM(CASE
+            WHEN voided_date IS NULL AND transaction_type = 'CHARGE' AND
+            (transaction_transfer_type = 'Primary' OR ip.insurance_package_id IN (0, -100)) AND
+            (work_rvu > 0)
+            THEN expected_allowed_amount::float
+            ELSE 0.0
+        END) +
+    SUM(CASE
+            WHEN voided_date IS NULL AND reversal_flag AND transaction_type = 'CHARGE' AND
+            (transaction_transfer_type = 'Primary' OR ip.insurance_package_id IN (0, -100)) AND
+            (work_rvu > 0)
+            THEN (expected_allowed_amount::float) * -1.0
+            ELSE 0.0
+        END) AS work_expected_allowable,
+    SUM(CASE
+            WHEN voided_date IS NULL AND transaction_type = 'CHARGE' AND
+            (transaction_transfer_type = 'Primary' OR ip.insurance_package_id IN (0, -100))
+            THEN expected_allowed_amount::float
+            ELSE 0.0
+        END) +
+    SUM(CASE
+            WHEN voided_date IS NULL AND reversal_flag AND transaction_type = 'CHARGE' AND
+            (transaction_transfer_type = 'Primary' OR ip.insurance_package_id IN (0, -100))
+            THEN (expected_allowed_amount::float) * -1.0
+            ELSE 0.0
+        END) AS expected_allowable,
+    SUM(CASE
+            WHEN transaction_transfer_type = 'Patient' AND transaction_type = 'TRANSFERIN' THEN amount::numeric
+            ELSE 0.0
+        END) AS patient_responsibility,
+    SUM(CASE
+            WHEN transaction_transfer_type = 'Patient' AND transaction_type = 'TRANSFERIN'
+            AND transaction_reason = 'COPAY' THEN amount::numeric
+            ELSE 0.0
+        END) AS patient_responsibility_copay,
+    SUM(CASE
+            WHEN transaction_transfer_type = 'Patient' AND transaction_type = 'TRANSFERIN'
+            AND transaction_reason = 'DEDUCTIBLE' THEN amount::numeric
+            ELSE 0.0
+        END) AS patient_responsibility_deductible,
+    SUM(CASE
+            WHEN transaction_transfer_type = 'Patient' AND transaction_type = 'TRANSFERIN'
+            AND transaction_reason = 'COINSURANCE' THEN amount::numeric
+            ELSE 0.0
+        END) AS patient_responsibility_coinsurance,
+    SUM(CASE
+            WHEN transaction_transfer_type = 'Patient' AND transaction_type = 'TRANSFERIN'
+            OR (transaction_transfer_type = 'Secondary' AND
+            (transaction_type IN ('TRANSFERIN','TRANSFEROUT'))) THEN amount::numeric
+            ELSE 0.0
+        END) AS patient_responsibility_without_secondary,
+    MAX(CASE WHEN transaction_reason = 'COPAY' THEN 1 ELSE 0 END) AS copay_claim,
+    MAX(CASE WHEN transaction_reason = 'DEDUCTIBLE' THEN 1 ELSE 0 END) AS deductible_claim,
+    MAX(CASE WHEN transaction_reason = 'COINSURANCE' THEN 1 ELSE 0 END) AS coinsurance_claim
+    FROM athena.transaction t
+    INNER JOIN valid_claims vc
+        ON t.claim_id = vc.claim_id
+    LEFT JOIN athena.claim c
+        ON t.claim_id = c.claim_id
+    LEFT JOIN (
+        SELECT DISTINCT
+            patient_insurance_id,
+            insurance_package_id
+            FROM athena.patientinsurance
+            WHERE cancellation_date IS NULL
+            GROUP BY 1,2) AS ip
+        ON c.claim_primary_patient_ins_id = ip.patient_insurance_id
+    WHERE t.voided_date IS NULL AND c.claim_service_date >= '2020-03-01' AND c.claim_service_date <= '2020-09-01'
+    GROUP BY 1;;
+
+    indexes: ["claim_id"]
+    sql_trigger_value: SELECT MAX(claim_id) FROM athena.claim ;;
+  }
 
   dimension: claim_id {
     primary_key: yes
@@ -128,7 +221,51 @@ ELSE NULL END ;;
     value_format: "0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${work_rvu} ;;
+    filters: [is_valid_claim: "yes"]
   }
+
+  measure: average_work_rvus {
+    type: average_distinct
+    group_label: "RVUs"
+    value_format: "0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${work_rvu} ;;
+    filters: [is_valid_claim: "yes"]
+  }
+
+  dimension: practice_expense_rvu {
+    type: number
+    hidden: yes
+    group_label: "RVUs"
+    value_format: "0.00"
+    sql: ${TABLE}.practice_expense_rvu ;;
+  }
+
+  dimension: malpractice_rvu {
+    type: number
+    hidden: yes
+    group_label: "RVUs"
+    value_format: "0.00"
+    sql: ${TABLE}.malpractice_rvu ;;
+  }
+
+  # measure: sum_practice_expense_rvu {
+  #   type: sum_distinct
+  #   group_label: "RVUs"
+  #   value_format: "0.00"
+  #   sql_distinct_key: ${claim_id} ;;
+  #   sql: ${practice_expense_rvu} ;;
+  #   filters: [is_valid_claim: "yes"]
+  # }
+
+  # measure: average_practice_expense_rvus {
+  #   type: average_distinct
+  #   group_label: "RVUs"
+  #   value_format: "0.00"
+  #   sql_distinct_key: ${claim_id} ;;
+  #   sql: ${work_rvu} ;;
+  #   filters: [is_valid_claim: "yes"]
+  # }
 
   dimension: total_rvu {
     type: number
@@ -144,6 +281,7 @@ ELSE NULL END ;;
     value_format: "0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${total_rvu} ;;
+    filters: [is_valid_claim: "yes"]
   }
 
   measure: average_total_rvus {
@@ -155,9 +293,40 @@ ELSE NULL END ;;
     filters: [is_valid_claim: "yes"]
   }
 
+  dimension: allowed_amount {
+    type: number
+    group_label: "Expected Allowable"
+    description: "The allowed amount for Medicare reimbursement (RVU's x GPCI Multipliers x $36.09 x 17% discount)"
+    value_format: "$#,##0.00"
+    sql: ((${work_rvu} * ${gpci_work_multiplier}) +
+          (${practice_expense_rvu} * ${gpci_facility_multiplier}) +
+          (${malpractice_rvu} * ${gpci_malpractice_multiplier})) * 36.09 * 0.83 ;;
+  }
+
+  measure: total_allowed_amount {
+    type: sum_distinct
+    group_label: "Expected Allowable"
+    description: "The total allowed amount for Medicare reimbursement"
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${allowed_amount} ;;
+    filters: [is_valid_claim: "yes"]
+  }
+
+  measure: average_allowed_amount {
+    type: average_distinct
+    group_label: "Expected Allowable"
+    description: "The average allowed amount for Medicare reimbursement"
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${allowed_amount} ;;
+    filters: [is_valid_claim: "yes"]
+  }
+
   dimension: expected_allowable {
     type: number
     value_format: "0.00"
+    group_label: "Expected Allowable"
     sql: ${TABLE}.expected_allowable ;;
   }
 
@@ -175,6 +344,33 @@ ELSE NULL END ;;
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${expected_allowable} ;;
+    filters: [is_valid_claim: "yes"]
+  }
+
+  dimension: work_expected_allowable {
+    type: number
+    description: "Expected allowable associated with provider work (excludes transactions where work RVU is zero)"
+    value_format: "0.00"
+    group_label: "Expected Allowable"
+    sql: ${TABLE}.work_expected_allowable ;;
+  }
+
+  measure: total_work_expected_allowable {
+    type: sum_distinct
+    description: "Expected allowable associated with provider work (excludes transactions where work RVU is zero)"
+    group_label: "Expected Allowable"
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${work_expected_allowable} ;;
+  }
+
+  measure: average_work_expected_allowable {
+    type: average_distinct
+    description: "Expected allowable associated with provider work (excludes transactions where work RVU is zero)"
+    group_label: "Expected Allowable"
+    value_format: "$#,##0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${work_expected_allowable} ;;
     filters: [is_valid_claim: "yes"]
   }
 
@@ -247,7 +443,6 @@ ELSE NULL END ;;
     sql: ${patient_responsibility_coinsurance} ;;
   }
 
-  ########## PLACEHOLDER FOR SETTING UP NEW DATA FROM TRANSACTIONS - DE ##########
   dimension: patient_responsibility_deductible {
     type: number
     hidden: yes
