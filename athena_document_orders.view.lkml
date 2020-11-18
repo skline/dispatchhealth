@@ -609,6 +609,21 @@ view: athena_document_orders {
     sql: ${TABLE}."vaccine_route" ;;
   }
 
+  dimension_group: submitted_order {
+    description: "The date the order was submitted"
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${athena_order_submitted.order_submitted_raw} ;;
+  }
+
   dimension: order_created_to_submitted  {
     type: number
     hidden: yes
@@ -627,6 +642,21 @@ view: athena_document_orders {
     value_format: "0.00"
   }
 
+  dimension_group: received_order_result {
+    description: "The date the order was received"
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${athena_result_created.result_created_raw} ;;
+  }
+
   dimension: order_submitted_to_result_rcvd  {
     type: number
     hidden: yes
@@ -643,6 +673,21 @@ view: athena_document_orders {
     filters: [clinical_order_type_group: "LAB, IMAGING", status: "-DELETED"]
     sql: ${order_submitted_to_result_rcvd} ;;
     value_format: "0.00"
+  }
+
+  dimension_group: status_order_closed {
+    description: "The date the order was received"
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${athena_result_closed.result_closed_raw} ;;
   }
 
   dimension: result_rcvd_to_closed  {
