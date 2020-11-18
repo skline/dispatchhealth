@@ -87,7 +87,7 @@ SELECT
             WHERE cancellation_date IS NULL
             GROUP BY 1,2) AS ip
         ON c.claim_primary_patient_ins_id = ip.patient_insurance_id
-    WHERE t.voided_date IS NULL AND c.claim_service_date >= '2020-03-01' AND c.claim_service_date <= '2020-09-01'
+    WHERE t.voided_date IS NULL AND c.claim_service_date >= '2020-03-01'
     GROUP BY 1;;
 
     indexes: ["claim_id"]
