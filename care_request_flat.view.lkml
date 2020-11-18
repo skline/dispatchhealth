@@ -4828,10 +4828,6 @@ end  ;;
       field: overflow_visit
       value: "yes"
     }
-    filters: {
-      field: escalated_on_phone
-      value: "no"
-    }
   }
 
 
@@ -4848,11 +4844,6 @@ end  ;;
       field: overflow_visit
       value: "yes"
     }
-    filters: {
-      field: escalated_on_phone
-      value: "no"
-    }
-
   }
 
   measure: limbo_non_overflow {
@@ -4902,10 +4893,6 @@ end  ;;
     filters: {
       field: overflow_visit
       value: "yes"
-    }
-    filters: {
-      field: escalated_on_phone
-      value: "no"
     }
   }
 

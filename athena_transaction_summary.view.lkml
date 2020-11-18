@@ -9,6 +9,7 @@ view: athena_transaction_summary {
 
   dimension: gpci_work_multiplier {
     type: number
+    group_label: "GPCI Multipliers"
     description: "The GPCI work multiplier for Medicare reimbursement"
     sql: CASE WHEN ${markets.short_name_adj} IN ('ATL','BOI','CLE','COS','DEN','IND',
     'KNX','MIA','NSH','OKC','OLY','PHX','RDU','RIC','SPO','TAC','TPA') THEN 1.000
@@ -27,6 +28,7 @@ value_format: "0.0000"
 
   dimension: gpci_facility_multiplier {
     type: number
+    group_label: "GPCI Multipliers"
     description: "The GPCI facility multiplier for Medicare reimbursement"
     sql: CASE
 WHEN ${markets.short_name_adj} = 'OKC' THEN 0.886
@@ -63,6 +65,7 @@ value_format: "0.0000"
 
   dimension: gpci_malpractice_multiplier {
     type: number
+    group_label: "GPCI Multipliers"
     description: "The GPCI malpractice multiplier for Medicare reimbursement"
     sql: CASE
 WHEN ${markets.short_name_adj} = 'IND' THEN 0.422
@@ -99,7 +102,8 @@ ELSE NULL END ;;
 
   dimension: is_valid_claim {
     type: yesno
-    sql: ${athenadwh_appointments_clone.no_charge_entry_reason} IS NULL AND
+    description: ""
+    sql: ${athena_appointment.no_charge_entry_reason} IS NULL AND
       ${expected_allowable} > 0.01 ;;
   }
 
@@ -112,12 +116,15 @@ ELSE NULL END ;;
 
   dimension: work_rvu {
     type: number
+    hidden: yes
+    group_label: "RVUs"
     value_format: "0.00"
     sql: ${TABLE}.work_rvu ;;
   }
 
   measure: sum_work_rvu {
     type: sum_distinct
+    group_label: "RVUs"
     value_format: "0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${work_rvu} ;;
@@ -125,15 +132,27 @@ ELSE NULL END ;;
 
   dimension: total_rvu {
     type: number
+    hidden: yes
+    group_label: "RVUs"
     value_format: "0.00"
     sql: ${TABLE}.total_rvu ;;
   }
 
   measure: sum_total_rvus {
     type: sum_distinct
+    group_label: "RVUs"
     value_format: "0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${total_rvu} ;;
+  }
+
+  measure: average_total_rvus {
+    type: average_distinct
+    group_label: "RVUs"
+    value_format: "0.00"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${total_rvu} ;;
+    filters: [is_valid_claim: "yes"]
   }
 
   dimension: expected_allowable {
@@ -144,6 +163,7 @@ ELSE NULL END ;;
 
   measure: total_expected_allowable {
     type: sum_distinct
+    group_label: "Expected Allowable"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${expected_allowable} ;;
@@ -151,6 +171,7 @@ ELSE NULL END ;;
 
   measure: average_expected_allowable {
     type: average_distinct
+    group_label: "Expected Allowable"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${expected_allowable} ;;
@@ -159,12 +180,14 @@ ELSE NULL END ;;
 
   dimension: patient_responsibility {
     type: number
+    hidden: yes
     value_format: "$#,##0.00"
     sql: ${TABLE}.patient_responsibility ;;
   }
 
   measure: total_patient_responsibility {
     type: sum_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility} ;;
@@ -172,6 +195,7 @@ ELSE NULL END ;;
 
   measure: average_patient_responsibility {
     type: average_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility} ;;
@@ -179,12 +203,14 @@ ELSE NULL END ;;
 
   dimension: patient_responsibility_copay {
     type: number
+    hidden: yes
     value_format: "$#,##0.00"
     sql: ${TABLE}.patient_responsibility_copay ;;
   }
 
   measure: total_patient_responsibility_copay {
     type: sum_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_copay} ;;
@@ -192,6 +218,7 @@ ELSE NULL END ;;
 
   measure: average_patient_responsibility_copay {
     type: average_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_copay} ;;
@@ -199,12 +226,14 @@ ELSE NULL END ;;
 
   dimension: patient_responsibility_coinsurance {
     type: number
+    hidden: yes
     value_format: "$#,##0.00"
     sql: ${TABLE}.patient_responsibility_coinsurance ;;
   }
 
   measure: total_patient_responsibility_coinsurance {
     type: sum_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_coinsurance} ;;
@@ -212,33 +241,44 @@ ELSE NULL END ;;
 
   measure: average_patient_responsibility_coinsurance {
     type: average_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_coinsurance} ;;
   }
 
   ########## PLACEHOLDER FOR SETTING UP NEW DATA FROM TRANSACTIONS - DE ##########
+  dimension: patient_responsibility_deductible {
+    type: number
+    hidden: yes
+    value_format: "$#,##0.00"
+    sql: ${TABLE}.patient_responsibility_deductible ;;
+  }
   measure: total_patient_responsibility_deductible {
     type: sum_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
-    sql: ${patient_responsibility_coinsurance} ;;
+    sql: ${patient_responsibility_deductible} ;;
   }
   measure: average_patient_responsibility_deductible {
     type: average_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
-    sql: ${patient_responsibility_coinsurance} ;;
+    sql: ${patient_responsibility_deductible} ;;
   }
 
   dimension: patient_responsibility_without_secondary {
     type: number
+    hidden: yes
     value_format: "$#,##0.00"
     sql: ${TABLE}.patient_responsibility_without_secondary ;;
   }
 
   measure: total_patient_responsibility_without_secondary {
     type: sum_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_without_secondary} ;;
@@ -246,6 +286,7 @@ ELSE NULL END ;;
 
   measure: average_patient_responsibility_without_secondary {
     type: average_distinct
+    group_label: "Patient Responsibility"
     value_format: "$#,##0.00"
     sql_distinct_key: ${claim_id} ;;
     sql: ${patient_responsibility_without_secondary} ;;

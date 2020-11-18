@@ -108,7 +108,7 @@ view: funnel_agg {
   measure: total_lwbs_minus_overflow {
     type: sum_distinct
     sql: ${lwbs_minus_overflow} ;;
-    sql_distinct_key: concat(${created_date}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key}  ;;
   }
 
 
@@ -123,7 +123,7 @@ view: funnel_agg {
   measure: total_booked_shaping_placeholder_resolved_count_minus_overflow {
     type: sum_distinct
     sql: ${booked_shaping_placeholder_resolved_count_minus_overflow} ;;
-    sql_distinct_key: concat(${created_date}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key}  ;;
   }
 
 
@@ -162,17 +162,22 @@ view: funnel_agg {
     type: number
   }
 
+  dimension: primary_key {
+    type: string
+    sql: concat(${created_date}, ${name_adj}) ;;
+  }
+
   measure: total_all_lost{
     type: sum_distinct
     value_format: "0"
     sql: ${all_lost} ;;
-    sql_distinct_key: concat(${created_date}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key} ;;
   }
 
   measure: total_all_lost_above_baseline{
     type: sum_distinct
     sql: ${all_lost_above_baseline} ;;
-    sql_distinct_key: concat(${created_date}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key}  ;;
   }
 
   dimension: booked_shaping_lost {
@@ -183,7 +188,7 @@ view: funnel_agg {
   measure: total_booked_shaping_lost{
     type: sum_distinct
     sql: ${booked_shaping_lost} ;;
-    sql_distinct_key: concat(${created_date}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key}  ;;
   }
 
   dimension: overflow_lost {
@@ -202,7 +207,7 @@ view: funnel_agg {
   measure: total_lwbs_lost{
     type: sum_distinct
     sql: ${lwbs_lost} ;;
-    sql_distinct_key: concat(${created_date}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key}  ;;
   }
 
 
@@ -244,7 +249,7 @@ view: funnel_agg {
   measure: total_all_overflow {
     type: sum_distinct
     sql: ${all_overflow} ;;
-    sql_distinct_key: concat(${created_date}, ${name_adj}) ;;
+    sql_distinct_key: ${primary_key}  ;;
   }
 
   measure: overflow_percent {
@@ -268,9 +273,10 @@ view: funnel_agg {
   }
 
 
-  measure: asymptomatic_to_overflow_booked_ratio {
+  measure: ratio_overflow_booked_to_asymptomatic {
     type: number
-    sql: ${productivity_agg.asymptomatic_protocol_percent}/${overflow_plus_booked_shaping_percent} ;;
+    value_format: "0.00"
+    sql: case when${productivity_agg.asymptomatic_protocol_percent}>0 then  ${overflow_plus_booked_shaping_percent}/${productivity_agg.asymptomatic_protocol_percent} else 0 end;;
   }
 
 
@@ -285,10 +291,10 @@ view: funnel_agg {
   measure: inefficiency_index{
     type: number
     value_format: "0.00"
-    sql:case when ${productivity_agg.total_productivity} > .7 and ${overflow_percent}<.2 then
-    (${overflow_percent}-.2)*(${productivity_agg.total_productivity}-.7)*100
+    sql:case when ${productivity_agg.total_productivity} > .7 and ${overflow_plus_booked_shaping_percent}<.25 then
+    (${overflow_plus_booked_shaping_percent}-.25)*(${productivity_agg.total_productivity}-.7)*100
     else
-    (${overflow_percent}-.2)*(.7-${productivity_agg.total_productivity})*100  end;;
+    (${overflow_plus_booked_shaping_percent}-.25)*(.7-${productivity_agg.total_productivity})*100  end;;
   }
 
 }
