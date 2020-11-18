@@ -325,6 +325,7 @@ include: "athena_transaction_summary.view.lkml"
 include: "partner_population.view.lkml"
 include: "views/athena_payers.view.lkml"
 include: "athena_patient_social_history.view.lkml"
+include: "SEM_cost_per_complete_derived.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project

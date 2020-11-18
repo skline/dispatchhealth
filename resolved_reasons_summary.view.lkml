@@ -9,4 +9,9 @@ view: resolved_reasons_summary {
     type: string
     sql: ${TABLE}."department" ;;
   }
+
+  dimension: SYKES {
+    type: yesno
+    sql: ${department} like 'SYKES' ;;
+  }
 }
