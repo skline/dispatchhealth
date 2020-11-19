@@ -926,7 +926,7 @@ view: care_requests {
 
   dimension: billable_est_excluding_bridge_care_and_dh_followups {
       description: "Logic to idenitfy Billable Est excluding Bridge Care and DH Followups for Cost Savings (field retained to allow us to easily change the Cost Savings population moving forward (numerator and Denominator)"
-      type: string
+      type: yesno
       sql: ${billable_est} AND NOT ${care_request_flat.pafu_or_follow_up} ;;
     }
 
