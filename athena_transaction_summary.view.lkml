@@ -207,6 +207,22 @@ ELSE NULL END ;;
     filters: [is_valid_claim: "yes"]
   }
 
+  dimension: payments {
+    type: number
+    hidden: yes
+    value_format: "$#,##0.00"
+    group_label: "Payments"
+    sql: ${TABLE}.payments ;;
+  }
+
+  measure: total_payments {
+    type: sum_distinct
+    value_format: "$#,##0.00"
+    group_label: "Payments"
+    sql_distinct_key: ${claim_id} ;;
+    sql: ${payments} ;;
+  }
+
   dimension: work_rvu {
     type: number
     hidden: yes
