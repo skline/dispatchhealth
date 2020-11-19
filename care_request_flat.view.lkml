@@ -730,7 +730,6 @@ WITH ort AS (
 
   dimension: accepted_or_scheduled {
     type: yesno
-    hidden: yes
     sql: ${accepted_patient} or ${scheduled_visit} ;;
   }
 
@@ -1735,7 +1734,7 @@ WITH ort AS (
     sql: coalesce(case when ${pafu_or_follow_up} then ${scheduled_care_raw} else null end, ${created_raw}) ;;
   }
 
-  dimension_group: scheduled_care_or_accepted_coalese {
+  dimension_group: scheduled_or_accepted_coalese {
     type: time
     description: "The local date/time that the care request was created."
     convert_tz: no
@@ -1754,7 +1753,7 @@ WITH ort AS (
       month_num,
       quarter
     ]
-    sql: coalesce(${scheduled_care_raw} else null end, ${accept_date}) ;;
+    sql: coalesce(${scheduled_raw}, ${accept_raw}) ;;
   }
 
 

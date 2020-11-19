@@ -324,8 +324,8 @@ view: genesys_conversation_summary {
 
   measure: distinct_callers {
     type: count_distinct
-    sql: ${patient_number} ;;
-    sql_distinct_key: ${patient_number} ;;
+    sql: concat(${patient_number}, ${conversationstarttime_hour_of_day}, ${conversationstarttime_date}) ;;
+    sql_distinct_key: concat(${patient_number}, ${conversationstarttime_hour_of_day}, ${conversationstarttime_date});;
     filters: {
       field: inbound_demand
       value: "yes"
@@ -334,8 +334,8 @@ view: genesys_conversation_summary {
 
   measure: distinct_answer_long_callers{
     type: count_distinct
-    sql: ${patient_number} ;;
-    sql_distinct_key: ${patient_number} ;;
+    sql: concat(${patient_number}, ${conversationstarttime_hour_of_day}, ${conversationstarttime_date});;
+    sql_distinct_key: concat(${patient_number}, ${conversationstarttime_hour_of_day}, ${conversationstarttime_date}) ;;
     filters: {
       field: inbound_demand
       value: "yes"
@@ -348,8 +348,8 @@ view: genesys_conversation_summary {
 
   measure: distinct_answer_callers{
     type: count_distinct
-    sql: ${patient_number} ;;
-    sql_distinct_key: ${patient_number} ;;
+    sql: concat(${patient_number}, ${conversationstarttime_hour_of_day}, ${conversationstarttime_date}) ;;
+    sql_distinct_key:concat(${patient_number}, ${conversationstarttime_hour_of_day}, ${conversationstarttime_date}) ;;
     filters: {
       field: inbound_demand
       value: "yes"

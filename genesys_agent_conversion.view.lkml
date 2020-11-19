@@ -14,7 +14,7 @@ view: genesys_agent_conversion {
       column: inbound_phone_calls {field:  genesys_conversation_summary.distinct_callers}
       column: count_answered { field: genesys_conversation_summary.distinct_answer_long_callers}
       column: care_request_count { field: care_request_flat_number.care_request_count }
-      column: accepted_count { field: care_request_flat_number.accepted_count }
+      column: accepted_count { field: care_request_flat_number.accepted_or_scheduled_count }
       column: complete_count { field: care_request_flat_number.complete_count }
       column: agent_name { field: genesys_conversation_wrapup.username }
       filters: {

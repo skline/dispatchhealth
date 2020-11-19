@@ -1,12 +1,12 @@
 view: accepted_agg {
   derived_table: {
     explore_source: care_requests {
-      column: first_accepted_date { field: care_request_flat.first_accepted_date }
-      column: accepted_count { field: care_request_flat.accepted_count }
+      column: first_accepted_date { field: care_request_flat.scheduled_or_accepted_coalese_date }
+      column: accepted_count { field: care_request_flat.accepted_or_scheduled_count }
       column: complete_count { field: care_request_flat.complete_count }
       column: market_id { field: markets.id_adj }
       filters: {
-        field: care_request_flat.first_accepted_date
+        field: care_request_flat.scheduled_or_accepted_coalese_date
         value: "365 days ago for 365 days"
       }
     }

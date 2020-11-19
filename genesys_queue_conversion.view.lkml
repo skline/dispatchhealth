@@ -15,7 +15,7 @@ view: genesys_queue_conversion {
         column: inbound_phone_calls {field: genesys_conversation_summary.distinct_callers}
         column: count_answered { field: genesys_conversation_summary.distinct_answer_long_callers}
         column: care_request_count { field: care_request_flat.care_request_count }
-        column: accepted_count { field: care_request_flat.accepted_count }
+        column: accepted_count { field: care_request_flat.accepted_or_scheduled_count }
         column: complete_count { field: care_request_flat.complete_count }
         column: count_answered_raw {field: genesys_conversation_summary.distinct_answer_callers}
         column: inbound_phone_calls_first {field: genesys_conversation_summary.count_distinct_first}
@@ -26,8 +26,8 @@ view: genesys_queue_conversion {
           value: "180 days ago for 180 days"
         }
         filters: {
-          field: genesys_conversation_summary.queuename
-          value: "General Care,DTC,Partner Direct,DTC Pilot"
+          field: genesys_conversation_summary.distinct_answer_long_callers
+          value: ">0"
         }
         filters: {
           field: markets.id
