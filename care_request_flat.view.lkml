@@ -728,6 +728,12 @@ WITH ort AS (
     sql: ${accept_date} IS NOT NULL ;;
   }
 
+  dimension: accepted_or_scheduled {
+    type: yesno
+    hidden: yes
+    sql: ${accepted_patient} or ${scheduled_visit} ;;
+  }
+
   measure: count_accepted_patients {
     type: count_distinct
     sql: ${care_request_id} ;;
@@ -1728,6 +1734,29 @@ WITH ort AS (
     ]
     sql: coalesce(case when ${pafu_or_follow_up} then ${scheduled_care_raw} else null end, ${created_raw}) ;;
   }
+
+  dimension_group: scheduled_care_or_accepted_coalese {
+    type: time
+    description: "The local date/time that the care request was created."
+    convert_tz: no
+    timeframes: [
+      raw,
+      hour_of_day,
+      time_of_day,
+      date,
+      time,
+      week,
+      month,
+      year,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,
+      month_num,
+      quarter
+    ]
+    sql: coalesce(${scheduled_care_raw} else null end, ${accept_date}) ;;
+  }
+
 
   measure: count_distinct_days_created {
     type: count_distinct
@@ -4080,6 +4109,15 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: accepted_or_scheduled_count {
+    type: count_distinct
+    sql: ${care_request_id} ;;
+    filters: {
+      field: accepted_or_scheduled
+      value: "yes"
+    }
+  }
+
 
 
     measure: complete_count_medicaid {
@@ -4828,10 +4866,6 @@ end  ;;
       field: overflow_visit
       value: "yes"
     }
-    filters: {
-      field: escalated_on_phone
-      value: "no"
-    }
   }
 
 
@@ -4848,11 +4882,6 @@ end  ;;
       field: overflow_visit
       value: "yes"
     }
-    filters: {
-      field: escalated_on_phone
-      value: "no"
-    }
-
   }
 
   measure: limbo_non_overflow {
@@ -4902,10 +4931,6 @@ end  ;;
     filters: {
       field: overflow_visit
       value: "yes"
-    }
-    filters: {
-      field: escalated_on_phone
-      value: "no"
     }
   }
 

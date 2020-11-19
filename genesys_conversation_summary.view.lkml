@@ -36,6 +36,11 @@ view: genesys_conversation_summary {
     sql: case when ${totalagenttalkduration} >0 or  ${TABLE}."answered" >0 then 1 else 0 end ;;
   }
 
+  dimension: answered_long {
+    type: yesno
+    sql: ${totalagenttalkduration} >60000  ;;
+  }
+
   dimension: campaignname {
     type: string
     sql: ${TABLE}."campaignname" ;;
@@ -256,6 +261,25 @@ view: genesys_conversation_summary {
     }
   }
 
+  measure: count_distinct_sla_callers {
+    label: "Count Distinct SLA (Inbound Demand)"
+    type: count_distinct
+    sql: ${patient_number} ;;
+    sql_distinct_key:  ${patient_number};;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+    filters: {
+      field: service_level
+      value: "yes"
+    }
+    filters: {
+      field: direction
+      value: "inbound"
+    }
+  }
+
   measure: answer_rate {
     type: number
     value_format: "0%"
@@ -300,13 +324,42 @@ view: genesys_conversation_summary {
 
   measure: distinct_callers {
     type: count_distinct
-    sql: ${ani} ;;
-    sql_distinct_key: ${ani} ;;
+    sql: ${patient_number} ;;
+    sql_distinct_key: ${patient_number} ;;
     filters: {
       field: inbound_demand
       value: "yes"
     }
   }
+
+  measure: distinct_answer_long_callers{
+    type: count_distinct
+    sql: ${patient_number} ;;
+    sql_distinct_key: ${patient_number} ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+    filters: {
+      field: answered_long
+      value: "yes"
+    }
+  }
+
+  measure: distinct_answer_callers{
+    type: count_distinct
+    sql: ${patient_number} ;;
+    sql_distinct_key: ${patient_number} ;;
+    filters: {
+      field: inbound_demand
+      value: "yes"
+    }
+    filters: {
+      field: answered
+      value: "1"
+    }
+  }
+
 
   measure: distinct_repeat_callers {
     type: number

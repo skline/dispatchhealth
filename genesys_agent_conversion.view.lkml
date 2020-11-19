@@ -11,8 +11,8 @@ view: genesys_agent_conversion {
       column: market_id {field:markets.id}
 
       column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
-      column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
-      column: count_answered {}
+      column: inbound_phone_calls {field:  genesys_conversation_summary.distinct_callers}
+      column: count_answered { field: genesys_conversation_summary.distinct_answer_long_callers}
       column: care_request_count { field: care_request_flat_number.care_request_count }
       column: accepted_count { field: care_request_flat_number.accepted_count }
       column: complete_count { field: care_request_flat_number.complete_count }
@@ -44,11 +44,11 @@ view: genesys_agent_conversion {
 
 
   dimension: inbound_phone_calls {
-    label: "Genesys Conversation Summary Count Distinct (Inbound Demand Minus Market)"
+    label: "Count Ditinct Phone Callers (Inbound Demand)"
     type: number
   }
   dimension: count_answered {
-    label: "Genesys Conversation Summary Count Answered (Inbound Demand)"
+    label: "Count Answered Callers (Inbound Demand)"
     type: number
   }
   dimension: care_request_count {
@@ -87,11 +87,13 @@ view: genesys_agent_conversion {
 
   measure: sum_inbound_phone_calls {
     type: sum_distinct
+    label: "Sum Inbound Callers"
     sql: ${inbound_phone_calls} ;;
     sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id}, ${agent_name}) ;;
   }
 
   measure: sum_inbound_answers {
+    label: "Sum Answered Callers"
     type: sum_distinct
     sql: ${count_answered} ;;
     sql_distinct_key: concat(${conversationstarttime_date}, ${queuename}, ${market_id},  ${agent_name}) ;;

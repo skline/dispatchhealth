@@ -296,7 +296,6 @@ include: "athena_inbox_review_provider.view.lkml"
 include: "athena_diagnosis_sequence.view.lkml"
 include: "athena_diagnosis_codes.view.lkml"
 include: "athena_patient_medical_history.view.lkml"
-include: "athena_patient_social_history.view.lkml"
 include: "daily_volume.view.lkml"
 include: "max_daily_complete.view.lkml"
 include: "monthly_volume_market_cat.view.lkml"
@@ -326,6 +325,12 @@ include: "athena_transaction_summary.view.lkml"
 include: "partner_population.view.lkml"
 include: "inbound_not_answered_or_abandoned.view.lkml"
 include: "views/athena_payers.view.lkml"
+include: "athena_patient_social_history.view.lkml"
+
+include: "SEM_cost_per_complete_derived.view.lkml"
+
+include: "on_call_tracking.view.lkml"
+include: "intraday_monitoring.view.lkml"
 
 
 include: "*.dashboard.lookml"  # include all dashboards in this project
@@ -577,9 +582,9 @@ explore: care_requests {
   }
 
   join: athenadwh_referrals {
-    from:  athenadwh_documents_clone
+    from: athena_document_orders
     relationship:  one_to_many
-    sql_on:  ${athenadwh_clinical_encounters_clone.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
+    sql_on:  ${athena_clinicalencounter.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
       ${athenadwh_referrals.clinical_order_type} LIKE '%REFERRAL%' AND
       ${athenadwh_referrals.status} != 'DELETED' ;;
   }
@@ -774,15 +779,16 @@ join: athena_clinicalencounter {
   sql_on: ${athena_appointment.appointment_id} = ${athena_clinicalencounter.appointment_id} ;;
 }
 
+join: athena_patient_social_history {
+  relationship: one_to_one
+  sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id};;
+}
+
 join: athena_patient_medical_history {
   relationship: one_to_one
   sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_medical_history.chart_id} ;;
 }
 
-join: athena_patient_social_history {
-    relationship: one_to_one
-    sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_social_history.chart_id} ;;
-  }
 
   join: athena_patient_current_medications {
     relationship: one_to_many
@@ -974,6 +980,13 @@ join: document_order_fulfilling_provider {
   relationship: many_to_one
   sql_on: ${athena_document_orders.clinical_provider_id} = ${document_order_fulfilling_provider.clinical_provider_id} ;;
 }
+
+  join: athena_letter_recipient_provider {
+    from: athena_clinicalprovider
+    view_label: "Athena Letter Recipient Provider"
+    relationship: many_to_one
+    sql_on: ${athena_clinicalletter.clinical_provider_recipient_id} = ${athena_letter_recipient_provider.clinical_provider_id} ;;
+  }
 
 join: athena_order_documentaction {
   from: athena_documentaction
@@ -3646,7 +3659,7 @@ explore: intraday_monitoring {
   }
   join: shift_teams {
     relationship: many_to_one
-    sql_on: ${care_requests.shift_team_id} = ${shift_teams.id} ;;
+    sql_on: ${care_request_flat.shift_team_id} = ${shift_teams.id} ;;
   }
 
   join: shifts{
@@ -4708,4 +4721,29 @@ explore: granular_shift_tracking_agg {
   join: high_overflow_days {
     sql_on: ${granular_shift_tracking_agg.shift_date}=${high_overflow_days.start_date} and ${granular_shift_tracking_agg.market_name_adj}=${high_overflow_days.name_adj} ;;
   }
+}
+
+explore:  on_call_tracking
+{
+  join: markets {
+    sql_on: ${on_call_tracking.market_id}=${markets.id} ;;
+  }
+
+
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+  join: intraday_monitoring_prior {
+    from: intraday_monitoring
+    sql_on: ${intraday_monitoring_prior.market} = ${markets.name} and ${intraday_monitoring_prior.created_date}=${on_call_tracking.date_date} and
+    ${intraday_monitoring_prior.created_hour_timezone} = 10;;
+  }
+
+  join: intraday_monitoring_after {
+    from: intraday_monitoring
+    sql_on: ${intraday_monitoring_after.market} = ${markets.name} and ${intraday_monitoring_after.created_date}=${on_call_tracking.date_date} and
+      ${intraday_monitoring_after.created_hour_timezone} = 13;;
+  }
+
 }

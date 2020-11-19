@@ -12,11 +12,14 @@ view: genesys_queue_conversion {
         column: market_id {field:markets.id}
         column: count_distinct_sla {field: genesys_conversation_summary.count_distinct_sla}
         column: wait_time_minutes {field: genesys_conversation_summary.average_wait_time_minutes}
-        column: inbound_phone_calls {field: genesys_conversation_summary.count_distinct}
-        column: count_answered {}
+        column: inbound_phone_calls {field: genesys_conversation_summary.distinct_callers}
+        column: count_answered { field: genesys_conversation_summary.distinct_answer_long_callers}
         column: care_request_count { field: care_request_flat.care_request_count }
         column: accepted_count { field: care_request_flat.accepted_count }
         column: complete_count { field: care_request_flat.complete_count }
+        column: count_answered_raw {field: genesys_conversation_summary.distinct_answer_callers}
+        column: inbound_phone_calls_first {field: genesys_conversation_summary.count_distinct_first}
+
         column: sem_covid {field: number_to_market.sem_covid}
         filters: {
           field: genesys_conversation_summary.conversationstarttime_time
@@ -33,6 +36,15 @@ view: genesys_queue_conversion {
       }
     }
 
+  dimension: inbound_phone_calls_first {
+    label: "Count Distinct Phone Callers First (Inbound Demand)"
+    type: number
+  }
+
+  dimension: count_answered_raw {
+    label: "Count Answered Callers (No Time Constraint) (Inbound Demand)"
+    type: number
+  }
     dimension: queuename {}
 
     dimension: market_id {}
@@ -40,11 +52,11 @@ view: genesys_queue_conversion {
 
 
     dimension: inbound_phone_calls {
-      label: "Genesys Conversation Summary Count Distinct (Inbound Demand Minus Market)"
+      label: "Count Distinct Phone Callers (Inbound Demand)"
       type: number
     }
     dimension: count_answered {
-      label: "Genesys Conversation Summary Count Answered (Inbound Demand)"
+      label: "Count Answered Callers (Inbound Demand)"
       type: number
     }
     dimension: care_request_count {
@@ -82,7 +94,7 @@ view: genesys_queue_conversion {
   measure: sla_percent {
     type: number
     value_format: "0%"
-    sql: ${sum_distinct_sla}::float/(nullif(${sum_inbound_phone_calls},0))::float;;
+    sql: ${sum_distinct_sla}::float/(nullif(${sum_inbound_phone_calls_first},0))::float;;
   }
 
 
@@ -112,15 +124,31 @@ view: genesys_queue_conversion {
   }
 
   measure: sum_inbound_phone_calls {
+    label: "Sum Inbound Callers"
     type: sum_distinct
     sql: ${inbound_phone_calls} ;;
     sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_inbound_answers {
+    label: "Sum Answered Callers"
     type: sum_distinct
     sql: ${count_answered} ;;
     sql_distinct_key: ${primary_key} ;;
+  }
+
+  measure: sum_answered_callers {
+    label: "Sum Answered Callers (No Time Constraint)"
+    type: sum_distinct
+    sql: ${count_answered_raw} ;;
+    sql_distinct_key: ${primary_key};;
+  }
+
+  measure: sum_inbound_phone_calls_first {
+    label: "Sum Inbound Callers First"
+    type: sum_distinct
+    sql: ${inbound_phone_calls_first} ;;
+    sql_distinct_key:${primary_key} ;;
   }
 
 
@@ -151,7 +179,8 @@ view: genesys_queue_conversion {
   measure: answer_rate {
     type: number
     value_format: "0%"
-    sql: case when ${sum_inbound_phone_calls} >0 then ${sum_inbound_answers}::float/${sum_inbound_phone_calls}::float else 0 end ;;
+    sql: case when ${sum_inbound_phone_calls}>0 then ${sum_answered_callers}::float/${sum_inbound_phone_calls}::float else 0 end;;
+
   }
   measure: actuals_compared_to_projections {
     value_format: "0%"

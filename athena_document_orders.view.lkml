@@ -103,6 +103,31 @@ view: athena_document_orders {
     sql: ${TABLE}."clinical_order_genus" ;;
   }
 
+  dimension: labs_flag {
+    description: "A flag indicating labs were ordered (Athena clinical order type group = 'LAB')"
+    type: yesno
+    sql: ${clinical_order_type_group} = 'LAB' ;;
+  }
+
+  dimension: imaging_flag {
+    description: "A flag indicating all non-deleted imaging and ultrasound orders (Athena clinical order genus = 'US' or 'XR')"
+    type: yesno
+    sql: ${clinical_order_genus} IN ('US','XR') AND ${status} <> 'DELETED' ;;
+  }
+
+  measure: count_imaging_us_orders {
+    description: "Count of all imaging and ultrasound orders"
+    type: count_distinct
+    sql: ${document_id} ;;
+    filters: [clinical_order_genus: "US, XR", status: "-DELETED"]
+  }
+
+  dimension: dme_flag {
+    type: yesno
+    description: "A flag indicating durable medical equipment was ordered (Athena document class = 'DME')"
+    sql: ${document_class} = 'DME' ;;
+  }
+
   dimension: clinical_order_type {
     type: string
     description: "The detailed description of the order e.g. 'URINALYSIS DIPSTICK', etc."
@@ -584,6 +609,21 @@ view: athena_document_orders {
     sql: ${TABLE}."vaccine_route" ;;
   }
 
+  dimension_group: submitted_order {
+    description: "The date the order was submitted"
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${athena_order_submitted.order_submitted_raw} ;;
+  }
+
   dimension: order_created_to_submitted  {
     type: number
     hidden: yes
@@ -602,6 +642,21 @@ view: athena_document_orders {
     value_format: "0.00"
   }
 
+  dimension_group: received_order_result {
+    description: "The date the order was received"
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${athena_result_created.result_created_raw} ;;
+  }
+
   dimension: order_submitted_to_result_rcvd  {
     type: number
     hidden: yes
@@ -618,6 +673,21 @@ view: athena_document_orders {
     filters: [clinical_order_type_group: "LAB, IMAGING", status: "-DELETED"]
     sql: ${order_submitted_to_result_rcvd} ;;
     value_format: "0.00"
+  }
+
+  dimension_group: status_order_closed {
+    description: "The date the order was received"
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${athena_result_closed.result_closed_raw} ;;
   }
 
   dimension: result_rcvd_to_closed  {
@@ -732,6 +802,12 @@ view: athena_document_orders {
       value: "yes"
     }
     group_label: "Order Counts"
+  }
+
+  measure: order_type_concat {
+    label: "Description Of Items Ordered"
+    type: string
+    sql: string_agg(DISTINCT ${clinical_order_type}, ' | ') ;;
   }
 
 
