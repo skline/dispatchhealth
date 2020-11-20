@@ -128,6 +128,7 @@ view: geneysis_custom_conversation_attributes {
 
   dimension: customstring04 {
     type: string
+    label: "IVRflow"
     sql: ${TABLE}."customstring04" ;;
   }
 
