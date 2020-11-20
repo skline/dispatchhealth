@@ -1803,7 +1803,7 @@ join: athena_procedurecode {
   }
 
 join: resolved_reasons_summary {
-  sql_on: ${resolved_reasons_summary.resolved_employee}=${care_request_flat.resolved_employee_full_name} ;;
+  sql_on: trim(lower(${resolved_reasons_summary.resolved_employee}))=trim(lower(${care_request_flat.resolved_employee_full_name})) ;;
 }
 
   join: google_trend_data {
@@ -4754,5 +4754,8 @@ explore:  on_call_tracking
     sql_on: ${intraday_monitoring_after.market} = ${markets.name} and ${intraday_monitoring_after.created_date}=${on_call_tracking.date_date} and
       ${intraday_monitoring_after.created_hour_timezone} = 13;;
   }
+  }
 
-}
+  explore: sem_cost_per_complete_derived {
+
+  }
