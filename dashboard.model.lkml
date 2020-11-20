@@ -598,7 +598,6 @@ explore: care_requests {
 
   join: athenadwh_referrals {
     from: athena_document_orders
-    view_label: "Athena Referrals"
     relationship:  one_to_many
     sql_on:  ${athena_clinicalencounter.clinical_encounter_id} = ${athenadwh_referrals.clinical_encounter_id} AND
       ${athenadwh_referrals.clinical_order_type} LIKE '%REFERRAL%' AND
