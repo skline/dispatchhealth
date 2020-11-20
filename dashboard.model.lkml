@@ -325,6 +325,8 @@ include: "athena_transaction_summary.view.lkml"
 include: "partner_population.view.lkml"
 include: "views/athena_payers.view.lkml"
 include: "athena_patient_social_history.view.lkml"
+include: "geolocations_stops_by_care_request.view.lkml"
+include: "athena_cpt_codes.view.lkml"
 
 include: "SEM_cost_per_complete_derived.view.lkml"
 
@@ -835,6 +837,11 @@ join: athena_claim {
   join: athena_transaction_summary {
     relationship: one_to_one
     sql_on: ${athena_claim.claim_id} = ${athena_transaction_summary.claim_id} ;;
+  }
+
+  join: athena_cpt_codes {
+    relationship: one_to_many
+    sql_on: ${athena_claim.claim_id} = ${athena_cpt_codes.claim_id} ;;
   }
 
 # join: athena_claimdiagnosis {
@@ -1767,6 +1774,11 @@ join: athena_procedurecode {
   join: care_request_flat {
     relationship: one_to_one
     sql_on: ${care_request_flat.care_request_id} = ${care_requests.id} ;;
+  }
+
+  join: geolocations_stops_by_care_request {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${geolocations_stops_by_care_request.care_request_id} ;;
   }
   join: callers {
     sql_on: ${care_requests.caller_id} =${callers.id} ;;
