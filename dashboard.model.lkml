@@ -63,6 +63,7 @@ include: "er_admits_prior_visit.view.lkml"
 include: "eligible_patients.view.lkml"
 include: "shift_planning_shifts_clone.view.lkml"
 include: "channel_items.view.lkml"
+include: "channel_attribution.view.lkml"
 include: "provider_profiles.view.lkml"
 include: "payer_dimensions_clone.view.lkml"
 include: "slc_data.view.lkml"
@@ -1905,6 +1906,11 @@ join: resolved_reasons_summary {
   join: channel_items {
     relationship: many_to_one
     sql_on:  ${care_requests.channel_item_id} = ${channel_items.id} ;;
+  }
+
+  join: channel_attribution {
+    relationship: one_to_one
+    sql_on: ${care_requests.id} = ${channel_attribution.care_request_id} ;;
   }
 
   join: partner_population {
