@@ -28,10 +28,24 @@ view: athena_cpt_codes {
     description: "The CPT procedure code, including modifiers (e.g. 99215, 99215 QW)"
   }
 
+  measure: procedure_codes_concatenated {
+    description: "Concatenated CPT Codes"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${procedure_code}), ' | ') ;;
+    group_label: "Diagnosis Codes"
+  }
+
   dimension: procedure_code_description {
     type: string
     description: "The CPT Procedure description"
     sql: ${TABLE}.procedure_code_description ;;
+  }
+
+  measure: procedure_descriptions_concatenated {
+    description: "Concatenated CPT Code Descriptions"
+    type: string
+    sql: array_to_string(array_agg(DISTINCT ${procedure_code_description}), ' | ') ;;
+    group_label: "Diagnosis Codes"
   }
 
   dimension: procedure_code_group {
