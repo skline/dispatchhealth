@@ -232,6 +232,11 @@ view: shift_teams {
     sql: CONCAT(${cars.name}, ${start_mountain_date}, ${dates_hours_reference_clone.datehour_timezone_hour_of_day});;
   }
 
+  dimension: shift_type_id {
+    type: string
+    sql: ${TABLE}.shift_type_id ;;
+  }
+
   measure: count_distinct_shifts {
     type: count_distinct
     sql: ${id} ;;

@@ -211,6 +211,7 @@ include: "markets.view.lkml"
 include: "views/market_regions.view.lkml"
 include: "athena_clinicalencounterdiagnosis.view.lkml"
 include: "shift_teams.view.lkml"
+include: "shift_types.view.lkml"
 include: "market_start_date.view.lkml"
 include: "ad_groups_clone.view.lkml"
 include: "shift_team_market_assignment_logs.view.lkml"
@@ -1485,6 +1486,11 @@ join: athena_procedurecode {
     sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
   }
 
+  join: shift_types {
+    relationship: many_to_one
+    sql_on: ${shift_teams.shift_type_id} = ${shift_types.id} ;;
+  }
+
   join: shifts_end_of_shift_times {
     relationship: many_to_one
     sql_on: ${care_request_flat.shift_team_id} = ${shifts_end_of_shift_times.shift_team_id} ;;
@@ -2233,6 +2239,11 @@ explore: cars {
   join: shift_teams {
     relationship: one_to_many
     sql_on: ${cars.id} = ${shift_teams.car_id} ;;
+  }
+
+  join: shift_types {
+    relationship: many_to_one
+    sql_on: ${shift_teams.shift_type_id} = ${shift_types.id} ;;
   }
 
   join: shift_team_market_assignment_logs {
@@ -3890,6 +3901,11 @@ explore: shift_teams
     relationship: many_to_one
     sql_on: ${care_requests_shift_teams.shift_team_id} = ${shift_teams.id} ;;
     fields: []
+  }
+
+  join: shift_types {
+    relationship: many_to_one
+    sql_on: ${shift_teams.shift_type_id} = ${shift_types.id} ;;
   }
 
   join: care_requests {
