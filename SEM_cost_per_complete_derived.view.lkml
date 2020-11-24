@@ -17,6 +17,7 @@
         column: diversion_savings_obs { field: diversions_by_care_request.diversion_savings_obs }
         column: sum_total_adcost {}
         column: sem_covid { field: number_to_market.sem_covid }
+        column: date {field: ga_adwords_cost_clone.date_date}
         filters: {
           field: adwords_campaigns_clone.brand
           value: "No"
@@ -27,8 +28,9 @@
         }
         filters: {
           field: ga_adwords_cost_clone.date_date
-          value: "2020/04/01 to 2020/04/30"
+          value: "2020/10/01 to 2020/11/30"
         }
+
       }
     }
     dimension: short_name_adj {
@@ -71,5 +73,20 @@
     dimension: sem_covid {
       label: "Number to Market Sem Covid (Yes / No)"
       type: yesno
+    }
+
+    dimension_group: date {
+      type: time
+      timeframes: [
+        raw,
+        date,
+        week,
+        month,
+        quarter,
+        year
+      ]
+      convert_tz: no
+      datatype: date
+      sql: ${TABLE}.date ;;
     }
   }

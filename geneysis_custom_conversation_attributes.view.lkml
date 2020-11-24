@@ -128,6 +128,7 @@ view: geneysis_custom_conversation_attributes {
 
   dimension: customstring04 {
     type: string
+    label: "IVRflow"
     sql: ${TABLE}."customstring04" ;;
   }
 
@@ -195,6 +196,11 @@ view: geneysis_custom_conversation_attributes {
     sql: reverse(split_part(reverse(${customstring04}), '|', 1));;
   }
 
+  dimension: ivrexitdisconnect {
+    type: string
+    sql:  reverse(split_part(reverse(${customstring04}), '|', 2));;
+  }
+
   measure: count {
     type: count
     drill_fields: [participantname]
@@ -223,5 +229,11 @@ measure: exit_type_count {
   type: count
   sql: ${TABLE}."customstring03" ;;
 }
+
+measure: exit_type_disconnect_count {
+  type: count
+  sql: ${ivrexitdisconnect};;
+}
+
 
 }
