@@ -52,17 +52,19 @@ view: genesys_queue_conversion {
 
 
     dimension: inbound_phone_calls {
-      label: "Count Distinct Phone Callers (Inbound Demand)"
+      label: "Count Distinct Phone Callers (Intent Queue)"
       type: number
     }
     dimension: count_answered {
-      label: "Count Answered Callers (Inbound Demand)"
+      label: "Contacts w/ Intent"
+      description: "(Intent Queue, >1 minute talk time w/agent) "
       type: number
     }
     dimension: care_request_count {
       type: number
     }
     dimension: accepted_count {
+      label: "Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled)"
       type: number
     }
     dimension: complete_count {
@@ -124,14 +126,15 @@ view: genesys_queue_conversion {
   }
 
   measure: sum_inbound_phone_calls {
-    label: "Sum Inbound Callers"
+    label: "Sum Callers (Intent Queue)"
     type: sum_distinct
     sql: ${inbound_phone_calls} ;;
     sql_distinct_key: ${primary_key} ;;
   }
 
   measure: sum_inbound_answers {
-    label: "Sum Answered Callers"
+    label: "Sum Contacts w/ Intent"
+    description: "Intent Queue, >1 minute talk time w/agent"
     type: sum_distinct
     sql: ${count_answered} ;;
     sql_distinct_key: ${primary_key} ;;
@@ -159,6 +162,7 @@ view: genesys_queue_conversion {
   }
 
   measure: sum_accepted_count {
+    label: "Sum Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled)"
     type: sum_distinct
     sql: ${accepted_count} ;;
     sql_distinct_key: ${primary_key} ;;
@@ -171,6 +175,7 @@ view: genesys_queue_conversion {
   }
 
   measure: assigned_rate {
+    description: "Sum Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled)/Sum Contacts w/ Intent (Intent Queue, >1 minute talk time w/agent)"
     type: number
     value_format: "0%"
     sql: case when ${sum_inbound_answers} >0 then ${sum_accepted_count}::float/${sum_inbound_answers}::float else 0 end ;;

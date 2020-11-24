@@ -64,11 +64,15 @@ view: genesys_agg {
   }
 
   dimension: inbound_demand{
+    label: "Contacts w/ Intent"
+    description: "Intent Queue, >1 minute talk time w/agent, web/mobille care requests"
     type: number
     sql: ${count_answered} +case when ${non_phone_cr.care_request_count} is not null then ${non_phone_cr.care_request_count} else 0 end;;
   }
 
   measure: sum_inbound_demand{
+    label: "Sum Contacts w/ Intent"
+    description: "Intent Queue and >1 minute talk time w/agent, web/mobille care requests"
     type: sum_distinct
     sql: ${inbound_demand} ;;
     sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
@@ -77,6 +81,7 @@ view: genesys_agg {
 
 
   measure: assigned_rate {
+    description: "Sum Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled)/Sum Contacts w/ Intent (Intent Queue, >1 minute talk time w/agent)"
     type: number
     value_format: "0%"
     sql: case when ${sum_inbound_demand} >0 then ${accepted_agg.sum_accepted}::float/${sum_inbound_demand}::float else 0 end ;;
@@ -103,21 +108,21 @@ view: genesys_agg {
       type: number
     }
     dimension: count_answered {
-      label: "Count Answered Callers (Inbound Demand)"
+      label: "Count Answered Callers (Intent)"
       type: number
     }
 
   dimension: count_answered_raw {
-    label: "Count Answered Callers (No Time Constraint) (Inbound Demand)"
+    label: "Count Answered Callers (No Time Constraint) (Intent)"
     type: number
   }
   dimension: inbound_phone_calls {
-    label: "Count Ditinct Phone Callers (Inbound Demand)"
+    label: "Count Ditinct Phone Callers (Intent)"
     type: number
   }
 
   dimension: inbound_phone_calls_first {
-    label: "Count Distinct Phone Callers First (Inbound Demand)"
+    label: "Count Distinct Phone Callers Inbound (Intent)"
     type: number
   }
 
@@ -150,12 +155,16 @@ view: genesys_agg {
   }
 
   measure: sum_inbound_demand_month_run_rate {
+    label: "Sum Contacts w/ Intent Month Run Rate"
+    description: "Intent Queue and >1 minute talk time w/agent, web/mobille care requests"
     type: number
     value_format: "#,##0"
     sql:  ${sum_inbound_demand}/max(${month_percent});;
   }
 
   measure: sum_inbound_demand_quarterly_run_rate {
+    label: "Sum Contacts w/ Intent Quarter Run Rate"
+    description: "Intent Queue and >1 minute talk time w/agent, web/mobille care requests"
     type: number
     value_format: "#,##0"
     sql:  ${sum_inbound_demand}/max(${quarter_percent});;

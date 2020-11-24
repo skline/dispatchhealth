@@ -512,6 +512,7 @@ WITH ort AS (
     sql: ${TABLE}.reassignment_reason_final ;;
   }
 
+
   dimension: reassignment_reason_other_final {
     type: string
     group_label: "Optimizer Details"
@@ -729,8 +730,9 @@ WITH ort AS (
   }
 
   dimension: accepted_or_scheduled {
+    label: "Accepted, Scheduled (Acute-Care) or Booked Resolved"
     type: yesno
-    sql: ${accepted_patient} or ${scheduled_visit} ;;
+    sql: ${accepted_patient} or (${scheduled_visit} and not ${pafu_or_follow_up}) or ${booked_resolved};;
   }
 
   measure: count_accepted_patients {
@@ -1735,6 +1737,7 @@ WITH ort AS (
   }
 
   dimension_group: scheduled_or_accepted_coalese {
+    group_label: "Scheduled/Accepted/Created Coalese"
     type: time
     description: "The local date/time that the care request was created."
     convert_tz: no
@@ -1753,7 +1756,7 @@ WITH ort AS (
       month_num,
       quarter
     ]
-    sql: coalesce(${scheduled_raw}, ${accept_raw}) ;;
+    sql: coalesce(${scheduled_raw}, ${accept_raw}, ${created_raw}) ;;
   }
 
 
@@ -3049,6 +3052,13 @@ measure: avg_first_on_route_mins {
     sql: ${archive_comment} SIMILAR TO '%(Cancelled by Patient: Going to an Emergency Department|Going to Emergency Department)%' ;;
   }
 
+  dimension: duplicate {
+    type: yesno
+    sql: lower(${archive_comment}) SIMILAR TO '%(duplicate)%' and not ${accepted_or_scheduled} ;;
+
+  }
+
+
   dimension: lwbs_going_to_urgent_care {
     type: yesno
     sql: LOWER(${archive_comment}) SIMILAR TO '%(going to an urgent care|going to urgent care)%' ;;
@@ -4109,8 +4119,10 @@ measure: avg_first_on_route_mins {
   }
 
   measure: accepted_or_scheduled_count {
-    type: count_distinct
-    sql: ${care_request_id} ;;
+    label: "Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled) Count"
+    type: sum_distinct
+    sql: case when ${booked_resolved} then .7 else 1 end ;;
+    sql_distinct_key:  ${care_request_id} ;;
     filters: {
       field: accepted_or_scheduled
       value: "yes"

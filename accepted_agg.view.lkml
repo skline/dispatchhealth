@@ -14,7 +14,7 @@ view: accepted_agg {
     indexes: ["first_accepted_date", "market_id"]
   }
   dimension: first_accepted_date {
-    description: "The first local date and time when the shift team was assigned a care request"
+    label: "Scheduled/Accepted/Created Coalese Date"
     type: date
   }
   dimension: accepted_count {
@@ -27,6 +27,8 @@ view: accepted_agg {
     type: number
   }
   measure: sum_accepted {
+    label: "Sum Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled)"
+    value_format: "0"
     type: sum_distinct
     sql: ${accepted_count} ;;
     sql_distinct_key: concat(${first_accepted_date}, ${market_id}) ;;

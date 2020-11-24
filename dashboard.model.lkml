@@ -3758,6 +3758,7 @@ explore: genesys_conversation_summary {
     from: care_request_flat
     sql_on: (${patients_mobile.patient_id} = ${care_request_flat_number.patient_id}  OR ${care_request_flat_number.origin_phone} = ${genesys_conversation_summary.patient_number})
       and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat_number.created_mountain_raw}))) <36000;;
+    fields: []
   }
   join: diversions_by_care_request {
     relationship: one_to_one
@@ -4031,8 +4032,7 @@ explore: ga_adwords_cost_clone{
   }
 
   join: care_request_flat{
-    sql_on: (${patients.id} = ${care_request_flat.patient_id}  OR ${care_request_flat.origin_phone} = ${genesys_conversation_summary.ani})
-      and abs(EXTRACT(EPOCH FROM (${genesys_conversation_summary.conversationstarttime_raw} - ${care_request_flat.created_mountain_raw}))) <36000;;
+    sql_on: ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id};;
   }
 
   join: care_requests {
