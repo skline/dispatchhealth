@@ -78,6 +78,15 @@ view: genesys_agg {
     sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
   }
 
+  measure: sum_inbound_demand_phone{
+    label: "Sum Phone Contacts w/ Intent"
+    description: "Intent Queue and >1 minute talk time w/agent, web/mobille care requests"
+    type: sum_distinct
+    sql: ${count_answered} ;;
+    sql_distinct_key: concat(${conversationstarttime_date}, ${market_id}) ;;
+  }
+
+
 
 
   measure: assigned_rate {
@@ -86,6 +95,14 @@ view: genesys_agg {
     value_format: "0%"
     sql: case when ${sum_inbound_demand} >0 then ${accepted_agg.sum_accepted}::float/${sum_inbound_demand}::float else 0 end ;;
   }
+
+  measure: assigned_rate_phone {
+    description: "Phone Sum Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled)/Sum Contacts w/ Intent (Intent Queue, >1 minute talk time w/agent)"
+    type: number
+    value_format: "0%"
+    sql: case when ${sum_inbound_demand_phone} >0 then ${accepted_agg.sum_phone_accepted_or_scheduled_phone_count}::float/${sum_inbound_demand_phone}::float else 0 end ;;
+  }
+
 
 
     dimension_group: conversationstarttime {

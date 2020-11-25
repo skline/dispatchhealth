@@ -4129,6 +4129,20 @@ measure: avg_first_on_route_mins {
     }
   }
 
+  measure: accepted_or_scheduled_phone_count {
+    label: "Accepted, Scheduled (Acute-Care) or Booked Resolved (.7 scaled) Count"
+    type: sum_distinct
+    sql: case when ${booked_resolved} then .7 else 1 end ;;
+    sql_distinct_key:  ${care_request_id} ;;
+    filters: {
+      field: accepted_or_scheduled
+      value: "yes"
+    }
+    filters: {
+      field: care_requests.request_type_phone_or_other
+      value: "phone"
+    }
+  }
 
 
     measure: complete_count_medicaid {
