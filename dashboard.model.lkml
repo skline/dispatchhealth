@@ -824,22 +824,82 @@ join: athena_patient_medical_history {
     sql_on: ${athena_clinicalencounter.chart_id} = ${athena_patient_current_medications.chart_id} ;;
   }
 
-join: athena_diagnosis_sequence {
-  relationship: one_to_many
-  sql_on: ${athena_appointment.appointment_id} = ${athena_diagnosis_sequence.appointment_id} ;;
-  fields: [athena_diagnosis_sequence.sequence_number]
-}
+# join: athena_diagnosis_sequence {
+#   relationship: one_to_many
+#   sql_on: ${athena_appointment.appointment_id} = ${athena_diagnosis_sequence.appointment_id} ;;
+#   fields: [athena_diagnosis_sequence.sequence_number]
+# }
+
+  join: athena_diagnosis_sequence {
+    relationship: one_to_many
+    sql_on: ${care_requests.ehr_id} = ${athena_diagnosis_sequence.appointment_char} ;;
+    fields: []
+  }
+
+  join: athena_primary_diagnosis_codes {
+    from: athena_diagnosis_codes
+    view_label: "Athena ICD10 Diagnosis Codes (Primary)"
+    relationship: many_to_one
+    sql_on: ${athena_diagnosis_sequence.icd_code_id} = ${athena_primary_diagnosis_codes.icd_code_id}
+            AND ${athena_diagnosis_sequence.sequence_number} = 1 ;;
+    fields: [athena_primary_diagnosis_codes.asymptomatic_covid_related,
+            athena_primary_diagnosis_codes.diagnosis_code_short,
+            athena_primary_diagnosis_codes.diagnosis_code,
+            athena_primary_diagnosis_codes.diagnosis_code_group,
+            athena_primary_diagnosis_codes.drg_code,
+            athena_primary_diagnosis_codes.unstripped_diagnosis_code,
+            athena_primary_diagnosis_codes.bodily_system,
+            athena_primary_diagnosis_codes.diagnosis_code_group,
+            athena_primary_diagnosis_codes.diagnosis_description,
+            athena_primary_diagnosis_codes.disease_state,
+            athena_primary_diagnosis_codes.diagnosis_codes_concatenated,
+            athena_primary_diagnosis_codes.diagnosis_descriptions_concatenated,
+            athena_primary_diagnosis_codes.likely_flu_diganosis,
+            athena_primary_diagnosis_codes.symptom_based_diagnosis]
+  }
+
+  join: athena_secondary_diagnosis_codes {
+    from: athena_diagnosis_codes
+    view_label: "Athena ICD10 Diagnosis Codes (Secondary)"
+    relationship: many_to_one
+    sql_on: ${athena_diagnosis_sequence.icd_code_id} = ${athena_secondary_diagnosis_codes.icd_code_id}
+      AND ${athena_diagnosis_sequence.sequence_number} = 2 ;;
+    fields: [athena_secondary_diagnosis_codes.diagnosis_code_short,
+      athena_secondary_diagnosis_codes.diagnosis_code,
+      athena_secondary_diagnosis_codes.diagnosis_code_group,
+      athena_secondary_diagnosis_codes.unstripped_diagnosis_code,
+      athena_secondary_diagnosis_codes.bodily_system,
+      athena_secondary_diagnosis_codes.diagnosis_code_group,
+      athena_secondary_diagnosis_codes.diagnosis_description,
+      athena_secondary_diagnosis_codes.disease_state,
+      athena_secondary_diagnosis_codes.diagnosis_codes_concatenated,
+      athena_secondary_diagnosis_codes.diagnosis_descriptions_concatenated]
+  }
+
+  join: athena_tertiary_diagnosis_codes {
+    from: athena_diagnosis_codes
+    view_label: "Athena ICD10 Diagnosis Codes (Tertiary)"
+    relationship: many_to_one
+    sql_on: ${athena_diagnosis_sequence.icd_code_id} = ${athena_tertiary_diagnosis_codes.icd_code_id}
+      AND ${athena_diagnosis_sequence.sequence_number} = 3 ;;
+    fields: [athena_tertiary_diagnosis_codes.diagnosis_code_short,
+      athena_tertiary_diagnosis_codes.diagnosis_code,
+      athena_tertiary_diagnosis_codes.diagnosis_code_group,
+      athena_tertiary_diagnosis_codes.unstripped_diagnosis_code,
+      athena_tertiary_diagnosis_codes.bodily_system,
+      athena_tertiary_diagnosis_codes.diagnosis_code_group,
+      athena_tertiary_diagnosis_codes.diagnosis_description,
+      athena_tertiary_diagnosis_codes.disease_state,
+      athena_tertiary_diagnosis_codes.diagnosis_codes_concatenated,
+      athena_tertiary_diagnosis_codes.diagnosis_descriptions_concatenated]
+  }
 
 join: athena_diagnosis_codes {
+  view_label: "Athena ICD10 Diagnosis Codes (All)"
   relationship: many_to_one
   sql_on: ${athena_diagnosis_sequence.icd_code_id} = ${athena_diagnosis_codes.icd_code_id} ;;
 }
 
-# join: athena_clinicalencounterdiagnosis {
-#   relationship: one_to_many
-#   sql_on: ${athena_clinicalencounter.clinical_encounter_id} = ${athena_clinicalencounterdiagnosis.clinical_encounter_id} AND
-#           ${athena_clinicalencounterdiagnosis.deleted_raw} IS NULL;;
-# }
 
 join: athena_provider {
   relationship: many_to_one
