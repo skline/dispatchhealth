@@ -869,16 +869,10 @@ view: care_requests {
 
   measure: count_complete_visit_with_procedures {
     type: count_distinct
-    description: "The count of completed visits where the CPT code group is 'Procedure'"
+    description: "The count of completed visits where the CPT code group is Procedure, Medication or Labs"
     sql: ${id} ;;
-    filters: {
-      field: athena_procedurecode.procedure_code_group
-      value: "Procedure"
-    }
-    filters: {
-      field: complete_visit
-      value: "yes"
-    }
+    filters: [athena_cpt_codes.procedure_code_group: "Procedure, Medication, Labs",
+              complete_visit: "yes"]
   }
 
   dimension:  referred_point_of_care {
