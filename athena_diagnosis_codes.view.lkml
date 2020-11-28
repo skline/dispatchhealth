@@ -32,7 +32,7 @@ view: athena_diagnosis_codes {
     type: string
     sql: ${TABLE}."bodily_system" ;;
     group_label: "Diagnosis Descriptions"
-    drill_fields: [diagnosis_code_group]
+    drill_fields: [diagnosis_code_group, diagnosis_description]
   }
 
   dimension: code_class {
@@ -68,12 +68,14 @@ view: athena_diagnosis_codes {
     description: "e.g. Mucopurulent chronic bronchitis"
     sql: ${TABLE}."diagnosis_code_description" ;;
     group_label: "Diagnosis Descriptions"
+    drill_fields: [bodily_system, diagnosis_code_group]
   }
 
   dimension: asymptomatic_covid_related {
     type: yesno
     group_label: "Diagnosis Descriptions"
     sql: ${diagnosis_code}  in('Z20828', 'Z03818','Z0389', 'Z209') ;;
+    drill_fields: [diagnosis_description, bodily_system, diagnosis_code_group]
   }
 
   dimension: diagnosis_code_group {
@@ -96,6 +98,7 @@ view: athena_diagnosis_codes {
     description: "First 3 characters of the diagnosis code"
     sql: ${TABLE}."diagnosis_code_short" ;;
     group_label: "Diagnosis Codes"
+    drill_fields: [diagnosis_code]
   }
 
   dimension: drg_code {
