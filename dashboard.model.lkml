@@ -2055,6 +2055,9 @@ join: ga_pageviews_clone {
     sql_on:  ${genesys_conversation_summary.conversationid} =${care_request_flat.contact_id}
       ;;
   }
+  join: inbound_not_answered_or_abandoned  {
+    sql_on: ${genesys_conversation_summary.conversationid}=${inbound_not_answered_or_abandoned.conversationid} ;;
+  }
 
   join: genesys_conversation_summary_sem {
     from: genesys_conversation_summary

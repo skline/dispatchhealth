@@ -48,7 +48,7 @@ view: genesys_agg {
 
   dimension: wait_time_minutes_x_inbound_phone_calls {
     type: number
-    sql: ${wait_time_minutes}*${inbound_phone_calls} ;;
+    sql: ${wait_time_minutes}*${inbound_phone_calls_first} ;;
   }
 
   measure: sum_wait_time_minutes_x_inbound_demand {
@@ -60,7 +60,7 @@ view: genesys_agg {
   measure: avg_wait_time_minutes {
     type: number
     value_format: "0.00"
-    sql: case when ${sum_inbound_phone_calls} >0 then ${sum_wait_time_minutes_x_inbound_demand}::float/${sum_inbound_phone_calls}::float else 0 end ;;
+    sql: case when ${sum_inbound_phone_calls_first} >0 then ${sum_wait_time_minutes_x_inbound_demand}::float/${sum_inbound_phone_calls_first}::float else 0 end ;;
   }
 
   dimension: inbound_demand{
