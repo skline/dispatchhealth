@@ -82,6 +82,7 @@ view: athena_clinicalprovider {
 
   dimension_group: deleted {
     type: time
+    hidden: yes
     timeframes: [
       raw,
       time,
