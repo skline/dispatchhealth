@@ -583,7 +583,10 @@ view: care_requests {
 
   dimension: place_of_service {
     type: string
-    sql: ${TABLE}.place_of_service ;;
+    sql: CASE WHEN
+      ${TABLE}.place_of_service LIKE '{:%' THEN NULL
+      ELSE ${TABLE}.place_of_service
+      END;;
   }
 
   dimension: pos_snf {
