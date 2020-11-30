@@ -3441,7 +3441,7 @@ measure: avg_first_on_route_mins {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 

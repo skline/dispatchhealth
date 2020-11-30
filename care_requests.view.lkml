@@ -896,9 +896,10 @@ view: care_requests {
   }
 
   dimension: billable_est_excluding_bridge_care_and_dh_followups {
-      description: "Logic to idenitfy Billable Est excluding Bridge Care and DH Followups for Cost Savings (field retained to allow us to easily change the Cost Savings population moving forward (numerator and Denominator)"
+      label: "Exclude Bridge Care and DH Followup Cost Savings"
+      description: "Logic to Exclude Billable Est excluding Bridge Care and DH Followups for Cost Savings (field retained to allow us to easily change the Cost Savings population moving forward (numerator and Denominator)"
       type: yesno
-      sql: ${billable_est} AND NOT ${care_request_flat.pafu_or_follow_up} ;;
+      sql:  ${DHFU_follow_up} OR ${post_acute_follow_up} ;;
     }
 
   measure: count_billable_est {
@@ -950,7 +951,7 @@ view: care_requests {
 
     filters: {
       field: billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
     # filters: {
     #   field: escalated_on_scene
@@ -966,7 +967,7 @@ view: care_requests {
     sql: ${billable_est_numeric} ;;
     filters: {
       field: billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
