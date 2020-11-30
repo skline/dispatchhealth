@@ -4839,11 +4839,22 @@ explore: granular_shift_tracking {
   join: markets {
     sql_on: ${markets.id} =${cars.market_id} ;;
   }
+  join: shift_teams {
+    relationship: many_to_one
+    sql_on: ${granular_shift_tracking.shift_team_id} = ${shift_teams.id} ;;
+  }
+  join: shift_types {
+    relationship: many_to_one
+    sql_on: ${shift_teams.shift_type_id} = ${shift_types.id} ;;
+  }
+
+
 }
 explore: granular_shift_tracking_agg {
   join: high_overflow_days {
     sql_on: ${granular_shift_tracking_agg.shift_date}=${high_overflow_days.start_date} and ${granular_shift_tracking_agg.market_name_adj}=${high_overflow_days.name_adj} ;;
   }
+
 }
 
 explore:  on_call_tracking
