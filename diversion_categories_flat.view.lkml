@@ -242,7 +242,7 @@ measure: sum_diagnosis_olny {
   }
   filters: {
     field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-    value: "Yes"
+    value: "No"
   }
 }
 
@@ -258,7 +258,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -274,7 +274,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -290,7 +290,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -306,7 +306,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -322,7 +322,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -338,7 +338,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -354,7 +354,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -370,7 +370,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -385,7 +385,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -401,7 +401,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -417,7 +417,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -433,7 +433,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -449,7 +449,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -465,7 +465,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -481,7 +481,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -497,7 +497,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -513,7 +513,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -529,7 +529,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -545,7 +545,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -561,7 +561,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -577,7 +577,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -593,7 +593,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -609,7 +609,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -625,7 +625,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -641,7 +641,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -657,7 +657,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -673,7 +673,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -689,7 +689,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -705,7 +705,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -721,7 +721,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -737,7 +737,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -753,7 +753,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -769,7 +769,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -785,7 +785,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -801,7 +801,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -817,7 +817,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -833,7 +833,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -849,7 +849,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -865,7 +865,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 
@@ -881,7 +881,7 @@ measure: sum_diagnosis_olny {
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 

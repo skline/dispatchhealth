@@ -621,9 +621,9 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     type:  string
     hidden: yes
     sql: CASE
-          WHEN ${care_requests.DHFU_follow_up} THEN 'No'
+
           WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
-          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_911::INT = 1 THEN 'Yes'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='No' AND ${TABLE}.diversion_911::INT = 1 THEN 'Yes'
           ELSE NULL
           END;;
   }
@@ -662,9 +662,9 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     type:  string
     hidden: yes
     sql: CASE
-          WHEN ${care_requests.DHFU_follow_up} THEN 'No'
+
           WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
-          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_er::INT = 1 THEN 'Yes'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='No' AND ${TABLE}.diversion_er::INT = 1 THEN 'Yes'
           ELSE NULL
           END;;
   }
@@ -703,10 +703,10 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     type:  string
     hidden: yes
     sql: CASE
-          WHEN ${care_requests.DHFU_follow_up} THEN 'No'
+
           WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
           WHEN ${diversion_hosp} THEN 'No'
-          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='Yes' AND ${TABLE}.diversion_obs::INT = 1 THEN 'Yes'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups} ='No' AND ${TABLE}.diversion_obs::INT = 1 THEN 'Yes'
           ELSE NULL
           END;;
   }
@@ -744,9 +744,9 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     type:  string
     hidden: yes
     sql: CASE
-          WHEN ${care_requests.DHFU_follow_up} THEN 'No'
+
           WHEN  ${care_request_flat.escalated_on_scene} THEN 'No'
-          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups}  ='Yes' AND ${TABLE}.diversion_hosp::INT = 1 THEN 'Yes'
+          WHEN ${care_requests.billable_est_excluding_bridge_care_and_dh_followups}  ='No' AND ${TABLE}.diversion_hosp::INT = 1 THEN 'Yes'
           ELSE NULL
           END;;
   }
@@ -824,7 +824,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
     # filters: {
     #   field: care_requests.post_acute_follow_up
@@ -845,7 +845,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
     # filters: {
     #   field: care_requests.post_acute_follow_up
@@ -865,7 +865,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
     # filters: {
     #   field: care_requests.post_acute_follow_up
@@ -886,7 +886,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     }
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
     # filters: {
     #   field: care_requests.post_acute_follow_up
@@ -911,7 +911,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
   measure: count_bounceback_14_day_calc {
@@ -920,7 +920,7 @@ LEFT JOIN ${insurance_coalese.SQL_TABLE_NAME} ic
     sql_distinct_key: ${care_request_id} ;;
     filters: {
       field: care_requests.billable_est_excluding_bridge_care_and_dh_followups
-      value: "Yes"
+      value: "No"
     }
   }
 #   dimension: 14_day_bounceback_case_rate_calculated {
