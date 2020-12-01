@@ -612,7 +612,7 @@ measure: percent_repeat_callers {
     label: "Sum Talk Time (Inbound Demand) Minutes"
     type: sum_distinct
     value_format: "0.00"
-    sql_distinct_key: concat(${conversationid}, ${queuename}) ;;
+    sql_distinct_key: concat(${conversationid}, ${queuename}, ${direction}, ${mediatype}) ;;
     sql: ${totalagenttalkduration}::float/1000/60 ;;
     filters: {
       field: inbound_demand
