@@ -956,6 +956,10 @@ view: care_requests {
       field: billable_est_excluding_bridge_care_and_dh_followups
       value: "No"
     }
+    filters: {
+      field: billable_est
+      value: "yes"
+    }
     # filters: {
     #   field: escalated_on_scene
     #   value: "no"
@@ -1637,7 +1641,7 @@ measure: distinct_day_of_week {
     type: count_distinct
     sql: ${id} ;;
     filters: {
-      field: escalated_on_scene
+      field: escalated_on_scene_ed
       value: "yes"
     }
   }
