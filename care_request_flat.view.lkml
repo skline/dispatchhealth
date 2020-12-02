@@ -84,7 +84,7 @@ WITH ort AS (
         max(callers.created_at) AT TIME ZONE 'UTC' AT TIME ZONE t.pg_tz AS caller_date
       FROM care_requests cr
       LEFT JOIN care_requests_shift_teams crst
-        ON cr.id = crst.care_request_id --AND crst.is_dispatched
+        ON cr.id = crst.care_request_id AND crst.is_dispatched
       LEFT JOIN care_request_statuses AS request
       ON cr.id = request.care_request_id AND request.name = 'requested' and request.deleted_at is null
       LEFT JOIN care_request_statuses schedule
