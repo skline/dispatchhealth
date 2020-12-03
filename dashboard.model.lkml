@@ -839,6 +839,7 @@ join: athena_patient_medical_history {
     from: athena_diagnosis_codes
     view_label: "Athena ICD10 Diagnosis Codes (Primary)"
     relationship: many_to_one
+    sql_where:  ${athena_diagnosis_sequence.sequence_number} = 1;;
     sql_on: ${athena_diagnosis_sequence.icd_code_id} = ${athena_primary_diagnosis_codes.icd_code_id}
             AND ${athena_diagnosis_sequence.sequence_number} = 1 ;;
     fields: [athena_primary_diagnosis_codes.asymptomatic_covid_related,
@@ -1218,21 +1219,21 @@ join: athena_procedurecode {
 
   join: icd_primary_code_dimensions_clone {
     from: icd_code_dimensions_clone
-    view_label: "ICD Primary Code Dimensions Clone"
+    view_label: "ZZZZ - ICD Primary Code Dimensions Clone"
     relationship: many_to_one
     sql_on: ${icd_primary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 1 ;;
   }
 
   join: icd_secondary_code_dimensions_clone {
     from: icd_code_dimensions_clone
-    view_label: "ICD Secondary Code Dimensions Clone"
+    view_label: "ZZZZ - ICD Secondary Code Dimensions Clone"
     relationship: many_to_one
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 2 ;;
   }
 
   join: icd_tertiary_code_dimensions_clone {
     from: icd_code_dimensions_clone
-    view_label: "ICD Tertiary Code Dimensions Clone"
+    view_label: "ZZZZ - ICD Tertiary Code Dimensions Clone"
     relationship: many_to_one
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 3 ;;
   }
@@ -1255,13 +1256,14 @@ join: athena_procedurecode {
   }
 
   join:  icd_code_to_disease_state_mapping {
+    view_label: "ZZZZ - ICD Code to Disease State Mapping"
     relationship: one_to_one
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${icd_code_to_disease_state_mapping.diagnosis_code};;
   }
 
   join: icd_primary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Primary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Primary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND
     ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
@@ -1282,7 +1284,7 @@ join: athena_procedurecode {
 
   join: icd_nonprimary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Non-Primary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Non-Primary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND
       ${athenadwh_clinicalencounter_diagnosis.ordering} <> 0 ;;
@@ -1290,19 +1292,20 @@ join: athena_procedurecode {
 
   join: icd_secondary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Secondary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Secondary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_secondary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 1 ;;
   }
 
   join: icd_tertiary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Tertiary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Tertiary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_tertiary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 2 ;;
   }
 
   join: drg_to_icd10_crosswalk {
+    view_label: "ZZZZ - DRG to ICD10 Crosswalk"
     relationship: one_to_one
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
   }
