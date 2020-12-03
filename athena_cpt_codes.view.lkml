@@ -94,4 +94,11 @@ view: athena_cpt_codes {
     sql: ${procedure_code_group} = 'E&M' ;;
   }
 
+  measure: count_cpt_codes {
+    type: count
+    description: "Count of All Non-E&M CPT Codes"
+    sql: ${cpt_code} ;;
+    filters: [e_and_m_cpt_code: "no"]
+  }
+
 }

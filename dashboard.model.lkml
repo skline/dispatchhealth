@@ -36,7 +36,6 @@ include: "bidtellect_cost_clone.view.lkml"
 include: "diversion.view.lkml"
 include: "market_geo_locations.view.lkml"
 include: "athenadwh_patient_medication_clone.view.lkml"
-include: "shift_details.view.lkml"
 include: "diagnosis_code_group_rank_clone.view.lkml"
 include: "zipcodes.view.lkml"
 include: "facebook_paid_performance_clone.view.lkml"
@@ -1592,16 +1591,6 @@ join: athena_procedurecode {
     sql_on:  ${shift_team_members.user_id} = ${users.id};;
   }
 
-  join: humanity_dashboard_provider_id_crosswalk {
-    relationship: one_to_one
-    sql_on: ${users.id} = ${humanity_dashboard_provider_id_crosswalk.user_id} ;;
-  }
-
-  join: shift_details {
-    relationship: one_to_many
-    sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
-  }
-
   join: medical_necessity_notes {
     from: notes
     relationship: one_to_one
@@ -2219,74 +2208,6 @@ explore: zizzl_detailed_shift_hours {
   }
 }
 
-# explore: shift_team_stops {
-#   join: shift_teams {
-#     relationship: many_to_one
-#     sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
-#   }
-
-#   join: shift_team_members {
-#     relationship: many_to_one
-#     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
-#   }
-
-#   join: users {
-#     relationship: many_to_one
-#     sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
-#   }
-
-#   join: provider_profiles {
-#     relationship: one_to_one
-#     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
-#   }
-
-#   join: cars {
-#     relationship: many_to_one
-#     sql_on: ${shift_teams.car_id} = ${cars.id} ;;
-#   }
-
-#   join: markets {
-#     relationship: many_to_one
-#     sql_on: ${cars.market_id} = ${markets.id_adj} ;;
-#   }
-
-#   join: timezones {
-#     relationship: one_to_one
-#     sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
-#   }
-# }
-
-explore: shift_details {
-  join: markets {
-    relationship: one_to_many
-    sql_on:  ${markets.humanity_id} = ${shift_details.schedule_location_id}::varchar  ;;
-  }
-
-  join: markets_loan {
-    from: markets
-    relationship: one_to_many
-    sql_on:  ${markets_loan.humanity_id} = ${shift_details.schedule_location_id_w_loan}::varchar  ;;
-  }
-  join: humanity_dashboard_provider_id_crosswalk {
-    relationship: many_to_one
-    sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
-  }
-  join: target_staffing {
-    sql_on: ${markets_loan.id} = ${target_staffing.market_id}
-      and ${shift_details.local_expected_start_month}=${target_staffing.month_month}
-      and  ${shift_details.local_expected_end_day_of_week} = ${target_staffing.dow};;
-  }
-
-
-}
-
-# Scott test
-explore: test_shift_details {
-  extends: [shift_details]
-  from: shift_details
-  fields: [shift_details.employee_name,markets.name]
-
-}
 
 explore: cars {
   join: markets {
