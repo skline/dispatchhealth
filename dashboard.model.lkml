@@ -997,7 +997,7 @@ fields: []
 join: network_referrals {
   relationship: many_to_one
   sql_on: ${insurance_network_network_referrals.network_referral_id} = ${network_referrals.id} ;;
-  fields: []
+  # fields: []
 }
 
 join: narrow_network_orders {
