@@ -198,12 +198,20 @@ view: zizzl_rates_hours {
     sql: ${TABLE}."updated_at" ;;
   }
 
+  dimension: clinical_position_flag {
+    type: yesno
+    description: "A flag indicating the position is direct clinical"
+    hidden: yes
+    sql: ${shift_position} LIKE '%DHMT%' OR ${shift_position} LIKE '%NP/PA%'
+      OR ${shift_position} IN ('Telepresentation','Virtual Visit(s)','');;
+  }
+
   measure: sum_direct_clinical_hours {
     type: sum
     description: "The sum of all direct clinical hours"
     sql: ${counter_hours} ;;
     filters: [counter_name: "Regular, Overtime, Salary Plus, Holiday, Time and Half",
-      provider_type: "APP, DHMT"]
+      provider_type: "APP, DHMT", latest: "yes", clinical_position_flag: "yes"]
   }
 
   measure: count {

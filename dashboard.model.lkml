@@ -69,7 +69,7 @@ include: "slc_data.view.lkml"
 include: "mailchimp_lists.view.lkml"
 include: "callers.view.lkml"
 include: "care_request_statuses.view.lkml"
-include: "zizzl_detailed_shift_hours.view.lkml"
+include: "views/zizzl_detailed_shift_hours.view.lkml"
 include: "humanity_dashboard_provider_id_crosswalk.view.lkml"
 include: "athenadwh_clinical_results_clone.view.lkml"
 include: "athenadwh_clinical_providers_fax_clone.view.lkml"
@@ -2177,12 +2177,12 @@ explore: zizzl_detailed_shift_hours {
 
   join: market_start_date {
     relationship: many_to_one
-    sql_on: ${zizzl_detailed_shift_hours.market_id} = ${market_start_date.market_id} ;;
+    sql_on: ${zizzl_detailed_shift_hours.location} = ${market_start_date.market_id} ;;
   }
 
   join: markets {
     relationship: many_to_one
-    sql_on: ${zizzl_detailed_shift_hours.market_id} = ${markets.id} ;;
+    sql_on: ${zizzl_detailed_shift_hours.location} = ${markets.name_adj} ;;
   }
 
   join: timezones {
