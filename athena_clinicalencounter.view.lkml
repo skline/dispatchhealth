@@ -315,7 +315,7 @@ view: athena_clinicalencounter {
   dimension: chart_signed_48_hours {
     description: "A flag indicating that the chart was signed within 48 hours of visit"
     type: yesno
-    hidden: no
+    hidden: yes
     sql: ${hours_to_chart_sign} <= 48 ;;
   }
 
@@ -323,8 +323,16 @@ view: athena_clinicalencounter {
     description: "The count of distinct charts that were signed by the provider within 24 hours of the visit"
     type: count_distinct
     group_label: "Counts"
-    sql: ${chart_id} ;;
+    sql: ${clinical_encounter_id} ;;
     filters: [chart_signed_24_hours: "yes"]
+  }
+
+  measure: count_charts_signed_48_hours {
+    description: "The count of distinct charts that were signed by the provider within 48 hours of the visit"
+    type: count_distinct
+    group_label: "Counts"
+    sql: ${clinical_encounter_id} ;;
+    filters: [chart_signed_48_hours: "yes"]
   }
 
   measure: count {
