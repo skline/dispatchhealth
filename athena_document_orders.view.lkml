@@ -103,6 +103,14 @@ view: athena_document_orders {
     sql: ${TABLE}."clinical_order_genus" ;;
   }
 
+  dimension: imaging_clinical_order_genus {
+    type: string
+    description: "The clinical order genus associated with all imaging orders"
+    group_label: "Description"
+    sql: CASE WHEN ${clinical_order_genus} IN ('XR','US','CT','MR') AND ${status} <> 'DELETED' THEN ${clinical_order_genus}
+         ELSE NULL END;;
+  }
+
   dimension: labs_flag {
     description: "A flag indicating labs were ordered (Athena clinical order type group = 'LAB')"
     type: yesno
