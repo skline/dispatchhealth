@@ -206,12 +206,32 @@ view: zizzl_rates_hours {
       OR ${shift_position} IN ('Telepresentation','Virtual Visit(s)','');;
   }
 
-  measure: sum_direct_clinical_hours {
+  dimension: clinical_hours {
+    type: number
+    sql: CASE WHEN ${counter_name} IN ('Regular', 'Overtime', 'Salary Plus', 'Holiday', 'Time and Half')
+          AND ${latest} AND ${clinical_position_flag} THEN ${counter_hours}
+         ELSE NULL
+        END;;
+  }
+
+  measure: sum_direct_app_clinical_hours {
     type: sum
-    description: "The sum of all direct clinical hours"
+    group_label: "Clinical Hours"
+    value_format: "0.00"
+    description: "The sum of all direct APP clinical hours"
     sql: ${counter_hours} ;;
     filters: [counter_name: "Regular, Overtime, Salary Plus, Holiday, Time and Half",
-      provider_type: "APP, DHMT", latest: "yes", clinical_position_flag: "yes"]
+      provider_type: "APP", latest: "yes", clinical_position_flag: "yes"]
+  }
+
+  measure: sum_direct_dhmt_clinical_hours {
+    type: sum
+    group_label: "Clinical Hours"
+    value_format: "0.00"
+    description: "The sum of all direct DHMT clinical hours"
+    sql: ${counter_hours} ;;
+    filters: [counter_name: "Regular, Overtime, Salary Plus, Holiday, Time and Half",
+      provider_type: "DHMT", latest: "yes", clinical_position_flag: "yes"]
   }
 
   measure: count {
