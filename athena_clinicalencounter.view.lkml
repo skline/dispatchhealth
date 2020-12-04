@@ -315,7 +315,7 @@ view: athena_clinicalencounter {
   dimension: chart_signed_48_hours {
     description: "A flag indicating that the chart was signed within 48 hours of visit"
     type: yesno
-    hidden: yes
+    hidden: no
     sql: ${hours_to_chart_sign} <= 48 ;;
   }
 
