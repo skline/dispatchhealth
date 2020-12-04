@@ -110,16 +110,16 @@ view: athena_document_orders {
   }
 
   dimension: imaging_flag {
-    description: "A flag indicating all non-deleted imaging and ultrasound orders (Athena clinical order genus = 'US' or 'XR')"
+    description: "A flag indicating all non-deleted imaging, CT, MRI and ultrasound orders (Athena clinical order genus = 'US' or 'XR')"
     type: yesno
-    sql: ${clinical_order_genus} IN ('US','XR') AND ${status} <> 'DELETED' ;;
+    sql: ${clinical_order_genus} IN ('US','XR', 'CT','MR') AND ${status} <> 'DELETED' ;;
   }
 
   measure: count_imaging_us_orders {
     description: "Count of all imaging and ultrasound orders"
     type: count_distinct
     sql: ${document_id} ;;
-    filters: [clinical_order_genus: "US, XR", status: "-DELETED"]
+    filters: [clinical_order_genus: "US, XR, CT, MR", status: "-DELETED"]
   }
 
   dimension: dme_flag {
