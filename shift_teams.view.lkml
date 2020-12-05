@@ -162,9 +162,9 @@ view: shift_teams {
 
   measure: sum_app_actual_shift_hours {
     description: "Zizzl APP hours if available.  Otherwise, shift team hours"
-    type: sum
+    type: sum_distinct
     value_format: "0.0"
-    # sql_distinct_key: ${id} ;;
+    sql_distinct_key: ${zizzl_rates_hours.id} ;;
     sql: ${actual_shift_hours};;
     filters: [provider_profiles.position: "advanced practice provider"]
   }

@@ -125,9 +125,42 @@ view: athena_document_orders {
 
   measure: count_imaging_us_orders {
     description: "Count of all imaging and ultrasound orders"
+    group_label: "Counts"
     type: count_distinct
     sql: ${document_id} ;;
     filters: [clinical_order_genus: "US, XR, CT, MR", status: "-DELETED"]
+  }
+
+  measure: count_xray_orders {
+    description: "Count of all X-ray orders"
+    group_label: "Counts"
+    type: count_distinct
+    sql: ${document_id} ;;
+    filters: [clinical_order_genus: "XR", status: "-DELETED"]
+  }
+
+  measure: count_ultrasound_orders {
+    description: "Count of all ultrasound orders"
+    group_label: "Counts"
+    type: count_distinct
+    sql: ${document_id} ;;
+    filters: [clinical_order_genus: "US", status: "-DELETED"]
+  }
+
+  measure: count_ct_scan_orders {
+    description: "Count of all CT scan orders"
+    group_label: "Counts"
+    type: count_distinct
+    sql: ${document_id} ;;
+    filters: [clinical_order_genus: "CT", status: "-DELETED"]
+  }
+
+  measure: count_mri_orders {
+    description: "Count of all MRI orders"
+    group_label: "Counts"
+    type: count_distinct
+    sql: ${document_id} ;;
+    filters: [clinical_order_genus: "MR", status: "-DELETED"]
   }
 
   dimension: dme_flag {
