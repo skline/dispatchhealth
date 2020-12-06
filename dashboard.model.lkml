@@ -281,11 +281,12 @@ include: "multicare_providers.view.lkml"
 include: "patient_details_flat.view.lkml"
 include: "houston_zipcodes_processed.view.lkml"
 include: "intraday_monitoring.view.lkml"
-include: "crt.view.lkml"
-include: "fres.view.lkml"
-include: "sbm.view.lkml"
-include: "res_crt.view.lkml"
+include: "athena_order_created.view.lkml"
+include: "athena_first_result.view.lkml"
+include: "athena_order_submitted.view.lkml"
+include: "athena_result_created.view.lkml"
 include: "athena_result_closed.view.lkml"
+include: "athena_inbox_turnaround.view.lkml"
 include: "athena_patientmedication_prescriptions.view.lkml"
 include: "athena_clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
@@ -1068,6 +1069,12 @@ join: athena_result_closed {
   relationship: one_to_one
   sql_on: ${document_order_results.document_id} = ${athena_result_closed.document_id} ;;
   fields: []
+}
+
+join: athena_inbox_turnaround {
+  relationship: one_to_one
+  sql_on:  ${document_order_results.document_id} = ${athena_inbox_turnaround.document_id};;
+  # fields: []
 }
 
 join: document_order_fulfilling_provider {
