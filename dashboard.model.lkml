@@ -36,7 +36,6 @@ include: "bidtellect_cost_clone.view.lkml"
 include: "diversion.view.lkml"
 include: "market_geo_locations.view.lkml"
 include: "athenadwh_patient_medication_clone.view.lkml"
-include: "shift_details.view.lkml"
 include: "diagnosis_code_group_rank_clone.view.lkml"
 include: "zipcodes.view.lkml"
 include: "facebook_paid_performance_clone.view.lkml"
@@ -70,7 +69,7 @@ include: "slc_data.view.lkml"
 include: "mailchimp_lists.view.lkml"
 include: "callers.view.lkml"
 include: "care_request_statuses.view.lkml"
-#include: "zizzl_detailed_shift_hours.view.lkml"
+include: "views/zizzl_detailed_shift_hours.view.lkml"
 include: "humanity_dashboard_provider_id_crosswalk.view.lkml"
 include: "athenadwh_clinical_results_clone.view.lkml"
 include: "athenadwh_clinical_providers_fax_clone.view.lkml"
@@ -282,11 +281,12 @@ include: "multicare_providers.view.lkml"
 include: "patient_details_flat.view.lkml"
 include: "houston_zipcodes_processed.view.lkml"
 include: "intraday_monitoring.view.lkml"
-include: "crt.view.lkml"
-include: "fres.view.lkml"
-include: "sbm.view.lkml"
-include: "res_crt.view.lkml"
+include: "athena_order_created.view.lkml"
+include: "athena_first_result.view.lkml"
+include: "athena_order_submitted.view.lkml"
+include: "athena_result_created.view.lkml"
 include: "athena_result_closed.view.lkml"
+include: "athena_inbox_turnaround.view.lkml"
 include: "athena_patientmedication_prescriptions.view.lkml"
 include: "athena_clinicalletter.view.lkml"
 include: "notes_aggregated.view.lkml"
@@ -330,6 +330,7 @@ include: "views/athena_payers.view.lkml"
 include: "athena_patient_social_history.view.lkml"
 include: "geolocations_stops_by_care_request.view.lkml"
 include: "athena_cpt_codes.view.lkml"
+include: "views/zizzl_rates_hours.view.lkml"
 
 include: "SEM_cost_per_complete_derived.view.lkml"
 
@@ -840,6 +841,7 @@ join: athena_patient_medical_history {
     from: athena_diagnosis_codes
     view_label: "Athena ICD10 Diagnosis Codes (Primary)"
     relationship: many_to_one
+    sql_where:  ${athena_diagnosis_sequence.sequence_number} = 1;;
     sql_on: ${athena_diagnosis_sequence.icd_code_id} = ${athena_primary_diagnosis_codes.icd_code_id}
             AND ${athena_diagnosis_sequence.sequence_number} = 1 ;;
     fields: [athena_primary_diagnosis_codes.asymptomatic_covid_related,
@@ -1059,14 +1061,20 @@ join: athena_first_result {
 
 join: athena_result_created {
   relationship: one_to_one
-  sql_on:  ${document_order_results.document_id} = ${athena_result_created.document_id};;
+  sql_on:  ${athena_document_results.document_id} = ${athena_result_created.document_id};;
   fields: []
 }
 
 join: athena_result_closed {
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${athena_result_closed.document_id} ;;
-  fields: []
+  sql_on: ${athena_document_results.document_id} = ${athena_result_closed.document_id} ;;
+  # fields: []
+}
+
+join: athena_inbox_turnaround {
+  relationship: one_to_one
+  sql_on:  ${athena_document_results.document_id} = ${athena_inbox_turnaround.document_id};;
+  # fields: []
 }
 
 join: document_order_fulfilling_provider {
@@ -1097,18 +1105,11 @@ join: athena_result_documentaction {
   sql_on: ${athena_document_results.document_id} = ${athena_result_documentaction.document_id} ;;
 }
 
-join: document_order_results {
-  from: athena_document_results
-  view_label: "Athena Order Results"
-  relationship: one_to_one
-  sql_on: ${athena_document_orders.document_id} = ${document_order_results.order_document_id} ;;
-}
-
 join: document_result_last_action {
   from: last_documentaction
   view_label: "Athena Document Result Last Action"
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${document_result_last_action.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${document_result_last_action.document_id} ;;
 }
 
 join: athena_document_letters {
@@ -1145,7 +1146,7 @@ join: athena_document_others {
 
 join: athena_clinicalresult {
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${athena_clinicalresult.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${athena_clinicalresult.document_id} ;;
 }
 
 join: athena_clinicalresultobservation {
@@ -1219,21 +1220,21 @@ join: athena_procedurecode {
 
   join: icd_primary_code_dimensions_clone {
     from: icd_code_dimensions_clone
-    view_label: "ICD Primary Code Dimensions Clone"
+    view_label: "ZZZZ - ICD Primary Code Dimensions Clone"
     relationship: many_to_one
     sql_on: ${icd_primary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 1 ;;
   }
 
   join: icd_secondary_code_dimensions_clone {
     from: icd_code_dimensions_clone
-    view_label: "ICD Secondary Code Dimensions Clone"
+    view_label: "ZZZZ - ICD Secondary Code Dimensions Clone"
     relationship: many_to_one
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 2 ;;
   }
 
   join: icd_tertiary_code_dimensions_clone {
     from: icd_code_dimensions_clone
-    view_label: "ICD Tertiary Code Dimensions Clone"
+    view_label: "ZZZZ - ICD Tertiary Code Dimensions Clone"
     relationship: many_to_one
     sql_on: ${icd_secondary_code_dimensions_clone.id} = CAST(${icd_visit_joins_clone.icd_dim_id} AS INT) AND ${icd_visit_joins_clone.sequence_number} = 3 ;;
   }
@@ -1256,13 +1257,14 @@ join: athena_procedurecode {
   }
 
   join:  icd_code_to_disease_state_mapping {
+    view_label: "ZZZZ - ICD Code to Disease State Mapping"
     relationship: one_to_one
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${icd_code_to_disease_state_mapping.diagnosis_code};;
   }
 
   join: icd_primary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Primary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Primary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND
     ${athenadwh_clinicalencounter_diagnosis.ordering} = 0 ;;
@@ -1283,7 +1285,7 @@ join: athena_procedurecode {
 
   join: icd_nonprimary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Non-Primary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Non-Primary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_primary_diagnosis_code.icd_code_id} AND
       ${athenadwh_clinicalencounter_diagnosis.ordering} <> 0 ;;
@@ -1291,19 +1293,20 @@ join: athena_procedurecode {
 
   join: icd_secondary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Secondary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Secondary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_secondary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 1 ;;
   }
 
   join: icd_tertiary_diagnosis_code {
     from: athenadwh_icdcodeall
-    view_label: "ICD Tertiary Diagnosis Codes"
+    view_label: "ZZZZ - ICD Tertiary Diagnosis Codes"
     relationship: one_to_one
     sql_on: ${athenadwh_clinicalencounter_dxicd10.icd_code_id} = ${icd_tertiary_diagnosis_code.icd_code_id} AND ${athenadwh_clinicalencounter_diagnosis.ordering} = 2 ;;
   }
 
   join: drg_to_icd10_crosswalk {
+    view_label: "ZZZZ - DRG to ICD10 Crosswalk"
     relationship: one_to_one
     sql_on: ${icd_code_dimensions_clone.diagnosis_code} = ${drg_to_icd10_crosswalk.icd_10_code} ;;
   }
@@ -1590,16 +1593,6 @@ join: athena_procedurecode {
   join: users {
     relationship: one_to_one
     sql_on:  ${shift_team_members.user_id} = ${users.id};;
-  }
-
-  join: humanity_dashboard_provider_id_crosswalk {
-    relationship: one_to_one
-    sql_on: ${users.id} = ${humanity_dashboard_provider_id_crosswalk.user_id} ;;
-  }
-
-  join: shift_details {
-    relationship: one_to_many
-    sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
   }
 
   join: medical_necessity_notes {
@@ -2170,78 +2163,49 @@ join: ga_pageviews_clone {
 
 }
 
-explore: athenadwh_transactions_clone {}
+explore: athenadwh_transactions_clone {
 
-
-
-# explore: shift_team_stops {
-#   join: shift_teams {
-#     relationship: many_to_one
-#     sql_on: ${shift_team_stops.shift_team_id} = ${shift_teams.id} ;;
-#   }
-
-#   join: shift_team_members {
-#     relationship: many_to_one
-#     sql_on: ${shift_team_members.shift_team_id} = ${shift_teams.id} ;;
-#   }
-
-#   join: users {
-#     relationship: many_to_one
-#     sql_on: ${shift_team_members.user_id} = ${users.id}  ;;
-#   }
-
-#   join: provider_profiles {
-#     relationship: one_to_one
-#     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
-#   }
-
-#   join: cars {
-#     relationship: many_to_one
-#     sql_on: ${shift_teams.car_id} = ${cars.id} ;;
-#   }
-
-#   join: markets {
-#     relationship: many_to_one
-#     sql_on: ${cars.market_id} = ${markets.id_adj} ;;
-#   }
-
-#   join: timezones {
-#     relationship: one_to_one
-#     sql_on: ${markets.sa_time_zone} = ${timezones.rails_tz} ;;
-#   }
-# }
-
-explore: shift_details {
-  join: markets {
-    relationship: one_to_many
-    sql_on:  ${markets.humanity_id} = ${shift_details.schedule_location_id}::varchar  ;;
+  join: provider_profiles {
+    relationship: one_to_one
+    sql_on: ${users.id} = ${provider_profiles.user_id} ;;
   }
 
-  join: markets_loan {
-    from: markets
-    relationship: one_to_many
-    sql_on:  ${markets_loan.humanity_id} = ${shift_details.schedule_location_id_w_loan}::varchar  ;;
-  }
-  join: humanity_dashboard_provider_id_crosswalk {
+  join: market_start_date {
     relationship: many_to_one
-    sql_on: ${shift_details.employee_id} = ${humanity_dashboard_provider_id_crosswalk.humanity_id} ;;
-  }
-  join: target_staffing {
-    sql_on: ${markets_loan.id} = ${target_staffing.market_id}
-      and ${shift_details.local_expected_start_month}=${target_staffing.month_month}
-      and  ${shift_details.local_expected_end_day_of_week} = ${target_staffing.dow};;
+    sql_on: ${zizzl_detailed_shift_hours.location} = ${market_start_date.market_id} ;;
   }
 
+  join: markets {
+    relationship: many_to_one
+    sql_on: ${zizzl_detailed_shift_hours.location} = ${markets.name_adj} ;;
+  }
 
+  join: timezones {
+    relationship: many_to_one
+    sql_on: ${timezones.rails_tz} = ${markets.sa_time_zone} ;;
+  }
+
+  join: shift_team_members {
+    relationship: one_to_many
+    sql_on: ${shift_team_members.user_id} = ${users.id} ;;
+  }
+
+
+
+  join: shift_teams {
+    relationship: one_to_many
+    sql_on: ${shift_team_members.shift_team_id}= ${shift_teams.id} AND
+          ${zizzl_detailed_shift_hours.counter_date} = ${shift_teams.start_date} AND
+          ${zizzl_detailed_shift_hours.counter_name} IN ('Regular','Salary Plus')
+               AND (${zizzl_detailed_shift_hours.shift_name} != 'Administration' OR ${zizzl_detailed_shift_hours.shift_name} IS NULL)
+               AND ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%' ;;
+  }
+
+  join: cars {
+    sql_on: ${cars.id}=${shift_teams.car_id} ;;
+  }
 }
 
-# Scott test
-explore: test_shift_details {
-  extends: [shift_details]
-  from: shift_details
-  fields: [shift_details.employee_name,markets.name]
-
-}
 
 explore: cars {
   join: markets {
@@ -3949,6 +3913,12 @@ explore: shift_teams
   join: shift_team_members {
     relationship: one_to_many
     sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
+  }
+
+  join: zizzl_rates_hours {
+    relationship: one_to_many
+    sql_on: ${shift_team_members.user_id} = ${zizzl_rates_hours.employee_id}
+      AND ${shift_teams.start_date} = ${zizzl_rates_hours.shift_date};;
   }
 
   join: shifts_by_cars {

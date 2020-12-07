@@ -48,6 +48,11 @@ dimension: care_request_id {
     type: number
     sql: ${TABLE}.referral ;;
   }
+
+  measure: count_referrals {
+    type: sum
+    sql: ${referral} ;;
+  }
   dimension: after_hours {
     description: "Weekends or After 3 PM"
     type: number
