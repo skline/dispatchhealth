@@ -1,5 +1,5 @@
 view: service_lines_intra {
-  sql_table_name: looker_scratch.service_lines_intra ;;
+  sql_table_name: public.service_lines_intra ;;
 
   dimension: id {
     primary_key: yes
