@@ -1068,7 +1068,7 @@ join: athena_result_created {
 join: athena_result_closed {
   relationship: one_to_one
   sql_on: ${athena_document_results.document_id} = ${athena_result_closed.document_id} ;;
-  fields: []
+  # fields: []
 }
 
 join: athena_inbox_turnaround {
