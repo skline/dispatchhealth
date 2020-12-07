@@ -2163,7 +2163,13 @@ join: ga_pageviews_clone {
 
 }
 
-explore: athenadwh_transactions_clone {
+explore: athenadwh_transactions_clone {}
+
+explore: zizzl_detailed_shift_hours {
+  join: users {
+    relationship: many_to_one
+    sql_on: ${zizzl_detailed_shift_hours.employee_id} = ${users.id}  ;;
+  }
 
   join: provider_profiles {
     relationship: one_to_one
@@ -2334,7 +2340,7 @@ explore: productivity_data_clone {
 
   join: market_start_date{
     relationship: one_to_one
-    sql_on: ${markets.id}=${market_start_date.market_id} ;;
+    sql_on: ${markets.id_adj}=${market_start_date.market_id} ;;
   }
 
   join: shift_planning_facts_clone {
@@ -3055,7 +3061,7 @@ explore: markets {
     sql_on: ${markets.id} = ${regional_markets.market_id} ;;
   }
   join: market_start_date{
-    sql_on: ${markets.id_adj}=${market_start_date.market_id} ;;
+    sql_on: ${markets.id}=${market_start_date.market_id} ;;
   }
 
 }
@@ -3941,6 +3947,15 @@ explore: shift_teams
 #   sql_on: ${shift_teams.id} = ${zizzl_detailed_shift_hours.shift_team_id} AND ${users.id} = ${zizzl_detailed_shift_hours.employee_id};;
 #  }
 
+  join: zizzl_detailed_shift_hours {
+    relationship: one_to_many
+    sql_on: ${users.id} = ${zizzl_detailed_shift_hours.employee_id} AND
+    ${zizzl_detailed_shift_hours.counter_date} = ${shift_teams.start_date} AND
+    ${zizzl_detailed_shift_hours.counter_name} IN ('Regular','Salary Plus')
+         AND (${zizzl_detailed_shift_hours.shift_name} != 'Administration' OR ${zizzl_detailed_shift_hours.shift_name} IS NULL)
+         AND (${zizzl_detailed_shift_hours.shift_name} LIKE 'DHMT/%' OR ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%');;
+  }
+
   join: provider_profiles {
     relationship: one_to_one
     sql_on: ${users.id} = ${provider_profiles.user_id} ;;
@@ -4547,6 +4562,14 @@ explore: bulk_variable_shift_tracking {
     sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
   }
 
+  join: zizzl_detailed_shift_hours {
+    relationship: one_to_many
+    sql_on: ${users.id} = ${zizzl_detailed_shift_hours.employee_id} AND
+          ${zizzl_detailed_shift_hours.counter_date} = ${shift_teams.start_date} AND
+          ${zizzl_detailed_shift_hours.counter_name} IN ('Regular','Salary Plus')
+               AND (${zizzl_detailed_shift_hours.shift_name} != 'Administration' OR ${zizzl_detailed_shift_hours.shift_name} IS NULL)
+               AND ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%' ;;
+  }
 }
 explore: variable_shift_tracking {
   sql_always_where: ${variable_shift_tracking.date_date} < current_date ;;
@@ -4574,7 +4597,14 @@ explore: variable_shift_tracking {
     sql_on: ${shift_teams.id} = ${shift_team_members.shift_team_id} ;;
   }
 
-
+  join: zizzl_detailed_shift_hours {
+    relationship: one_to_many
+    sql_on: ${users.id} = ${zizzl_detailed_shift_hours.employee_id} AND
+          ${zizzl_detailed_shift_hours.counter_date} = ${shift_teams.start_date} AND
+          ${zizzl_detailed_shift_hours.counter_name} IN ('Regular','Salary Plus')
+               AND (${zizzl_detailed_shift_hours.shift_name} != 'Administration' OR ${zizzl_detailed_shift_hours.shift_name} IS NULL)
+               AND ${zizzl_detailed_shift_hours.shift_name} LIKE 'NP/PA/%' ;;
+  }
 
 }
 
