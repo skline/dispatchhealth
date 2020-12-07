@@ -1061,19 +1061,19 @@ join: athena_first_result {
 
 join: athena_result_created {
   relationship: one_to_one
-  sql_on:  ${document_order_results.document_id} = ${athena_result_created.document_id};;
+  sql_on:  ${athena_document_results.document_id} = ${athena_result_created.document_id};;
   fields: []
 }
 
 join: athena_result_closed {
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${athena_result_closed.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${athena_result_closed.document_id} ;;
   fields: []
 }
 
 join: athena_inbox_turnaround {
   relationship: one_to_one
-  sql_on:  ${document_order_results.document_id} = ${athena_inbox_turnaround.document_id};;
+  sql_on:  ${athena_document_results.document_id} = ${athena_inbox_turnaround.document_id};;
   # fields: []
 }
 
@@ -1105,18 +1105,11 @@ join: athena_result_documentaction {
   sql_on: ${athena_document_results.document_id} = ${athena_result_documentaction.document_id} ;;
 }
 
-join: document_order_results {
-  from: athena_document_results
-  view_label: "Athena Order Results"
-  relationship: one_to_one
-  sql_on: ${athena_document_orders.document_id} = ${document_order_results.order_document_id} ;;
-}
-
 join: document_result_last_action {
   from: last_documentaction
   view_label: "Athena Document Result Last Action"
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${document_result_last_action.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${document_result_last_action.document_id} ;;
 }
 
 join: athena_document_letters {
@@ -1153,7 +1146,7 @@ join: athena_document_others {
 
 join: athena_clinicalresult {
   relationship: one_to_one
-  sql_on: ${document_order_results.document_id} = ${athena_clinicalresult.document_id} ;;
+  sql_on: ${athena_document_results.document_id} = ${athena_clinicalresult.document_id} ;;
 }
 
 join: athena_clinicalresultobservation {
